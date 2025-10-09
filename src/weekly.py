@@ -139,7 +139,7 @@ def update_weekly_playlist(
     ytm,
     get_existing_playlist_by_name,
     create_playlist_with_items,
-    minimal_diff_update,
+    minimal_diff_update,  # we will pass sync_playlist from main
     *,
     settings,
     valid_video_ids: List[str],
@@ -193,6 +193,12 @@ def update_weekly_playlist(
         log.info("Creating weekly playlist '%s' (privacy=%s) ...", weekly_name, weekly_privacy)
         try:
             weekly_id = create_playlist_with_items(ytm, weekly_name, weekly_desc, weekly_privacy, valid_video_ids)
+            # Optional: run the same unified sync post-create for identical behavior
+            if weekly_id:
+                try:
+                    minimal_diff_update(ytm, weekly_id, valid_video_ids)
+                except Exception as e:
+                    log.warning("Weekly post-create sync failed: %s", e)
         except Exception as e:
             log.error("Weekly create failed: %s", e)
             weekly_id = None

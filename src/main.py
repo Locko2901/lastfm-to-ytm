@@ -11,7 +11,7 @@ from .lastfm import Scrobble, fetch_recent
 from .recency import WeightedTrack, collapse_recency_weighted, dedupe_keep_latest, unique_preserve_order
 from .search import find_on_ytm
 from .ytm_client import build_oauth_client, create_playlist_with_items, get_existing_playlist_by_name
-from .playlist import minimal_diff_update
+from .playlist import sync_playlist
 
 from .weekly import update_weekly_playlist
 
@@ -26,8 +26,9 @@ def _resolve_tracks_to_video_ids(
     video_ids: List[str] = []
     misses = 0
     cache: dict[Tuple[str, str], Optional[str]] = {}
+    total_tracks = len(tracks)
 
-    for t in tracks:
+    for index, t in enumerate(tracks, start=1):
         artist = t.artist  # type: ignore[attr-defined]
         title = t.track  # type: ignore[attr-defined]
         album = getattr(t, "album", None)
@@ -42,11 +43,13 @@ def _resolve_tracks_to_video_ids(
         if vid:
             video_ids.append(vid)
             if isinstance(t, WeightedTrack):
-                log.info("Song: %s, Plays: %d, Score: %.4f", t.track, t.plays, t.score)
+                log.info("%d/%d Song: %s, Plays: %d, Score: %.4f", index, total_tracks, t.track, t.plays, t.score)
+            else:
+                log.info("%d/%d Song: %s", index, total_tracks, t.track)
         else:
             misses += 1
             album_info = f" (album: {album})" if album else ""
-            log.warning("Not found: %s - %s%s", artist, title, album_info)
+            log.warning("%d/%d Not found: %s - %s%s", index, total_tracks, artist, title, album_info)
 
     return video_ids, misses
 
@@ -109,7 +112,7 @@ def run(settings: Settings) -> None:
         except Exception:
             pass
         try:
-            minimal_diff_update(ytm, existing_id, valid_video_ids)
+            sync_playlist(ytm, existing_id, valid_video_ids)
         except Exception as e:
             log.error("Update failed: %s", e)
             return
@@ -124,6 +127,8 @@ def run(settings: Settings) -> None:
                 settings.privacy_status,
                 valid_video_ids,
             )
+            # Optional: run sync to verify order even after create (usually not needed)
+            # sync_playlist(ytm, pl_id, valid_video_ids)
         except Exception as e:
             log.error("Create failed: %s", e)
             return
@@ -132,7 +137,7 @@ def run(settings: Settings) -> None:
         ytm,
         get_existing_playlist_by_name,
         create_playlist_with_items,
-        minimal_diff_update,
+        sync_playlist,
         settings=settings,
         valid_video_ids=valid_video_ids,
         base_desc=desc,
