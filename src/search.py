@@ -3,6 +3,7 @@ import unicodedata
 from difflib import SequenceMatcher
 from typing import Optional, List, Dict, Set
 
+# both unidecode and text_unidecode work, use whichever you prefer
 try:
     from unidecode import unidecode as _unidecode
 except ImportError:
@@ -277,10 +278,6 @@ def _coverage(sub: Set[str], sup: Set[str]) -> float:
 
 
 def _artist_title_presence_bonus(artist: str, title: str, candidate_title: str) -> float:
-    """
-    Small bonus when candidate title contains both the artist and the song title.
-    Coverage-based and capped.
-    """
     cand_tokens = _tokens(candidate_title)
     if not cand_tokens:
         return 0.0
