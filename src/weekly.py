@@ -75,7 +75,6 @@ def _find_weekly_playlists(ytm, base_prefix: str) -> List[Dict[str, str]]:
         if isinstance(title, str) and isinstance(pid, str) and title.startswith(marker):
             tail = title[len(marker) :].strip()
             try:
-                # exact ISO date
                 _ = date.fromisoformat(tail)
                 out.append({"title": title, "playlistId": pid})
             except Exception:
@@ -139,7 +138,7 @@ def update_weekly_playlist(
     ytm,
     get_existing_playlist_by_name,
     create_playlist_with_items,
-    minimal_diff_update,  # we will pass sync_playlist from main
+    minimal_diff_update,
     *,
     settings,
     valid_video_ids: List[str],
@@ -164,7 +163,7 @@ def update_weekly_playlist(
     week_start = _parse_week_start(week_start_label)
 
     now = datetime.now(tz)
-    sow = _start_of_week(now, week_start)  # timezone-aware
+    sow = _start_of_week(now, week_start)
     weekly_name = _weekly_playlist_name(base_prefix, sow.date())
 
     weekly_privacy = getattr(settings, "weekly_privacy_status", None) or settings.privacy_status
@@ -193,7 +192,6 @@ def update_weekly_playlist(
         log.info("Creating weekly playlist '%s' (privacy=%s) ...", weekly_name, weekly_privacy)
         try:
             weekly_id = create_playlist_with_items(ytm, weekly_name, weekly_desc, weekly_privacy, valid_video_ids)
-            # Optional: run the same unified sync post-create for identical behavior
             if weekly_id:
                 try:
                     minimal_diff_update(ytm, weekly_id, valid_video_ids)

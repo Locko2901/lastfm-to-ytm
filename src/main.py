@@ -127,8 +127,6 @@ def run(settings: Settings) -> None:
                 settings.privacy_status,
                 valid_video_ids,
             )
-            # Optional: run sync to verify order even after create (usually not needed)
-            # sync_playlist(ytm, pl_id, valid_video_ids)
         except Exception as e:
             log.error("Create failed: %s", e)
             return
