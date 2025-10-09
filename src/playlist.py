@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 import bisect
+import time
+import logging
 from typing import Dict, Iterable, List, Optional, Set, Tuple
 
 from ytmusicapi import YTMusic
+
+log = logging.getLogger(__name__)
 
 
 def _chunked(seq: Iterable, n: int):
@@ -242,3 +246,62 @@ def minimal_diff_update(ytm: YTMusic, playlist_id: str, desired_video_ids: List[
         _reorder_min_moves(ytm, playlist_id, desired_video_ids, current_order, video_to_set)
     except Exception:
         _replace_playlist_items_safe(ytm, playlist_id, desired_video_ids)
+
+
+def _normalize_desired_ids(desired_video_ids: List[str]) -> List[str]:
+    desired = [v for v in desired_video_ids if isinstance(v, str) and len(v) == 11]
+    seen: Set[str] = set()
+    uniq: List[str] = []
+    for v in desired:
+        if v not in seen:
+            seen.add(v)
+            uniq.append(v)
+    return uniq
+
+
+def get_playlist_video_ids(ytm: YTMusic, playlist_id: str) -> List[str]:
+    """
+    Return the current playlist order as a list of 11-char videoIds.
+    """
+    items = _get_playlist_items(ytm, playlist_id)
+    out: List[str] = []
+    for it in items:
+        vid = it.get("videoId")
+        if isinstance(vid, str) and len(vid) == 11:
+            out.append(vid)
+    return out
+
+
+def sync_playlist(
+    ytm: YTMusic,
+    playlist_id: str,
+    desired_video_ids: List[str],
+    *,
+    verify_attempts: int = 3,
+    verify_sleep_s: float = 1.0,
+    force_replace_on_mismatch: bool = True,
+) -> None:
+    desired = _normalize_desired_ids(desired_video_ids)
+    if not desired:
+        _replace_playlist_items_safe(ytm, playlist_id, [])
+        return
+
+    minimal_diff_update(ytm, playlist_id, desired)
+
+    def _matches() -> bool:
+        current = get_playlist_video_ids(ytm, playlist_id)
+        return current == desired
+
+    for _ in range(max(1, verify_attempts)):
+        if _matches():
+            return
+        time.sleep(max(0.0, verify_sleep_s))
+
+    if force_replace_on_mismatch:
+        _replace_playlist_items_safe(ytm, playlist_id, desired)
+        for _ in range(2):
+            if _matches():
+                return
+            time.sleep(max(0.0, verify_sleep_s))
+        if not _matches():
+            log.warning("Playlist %s order still mismatched after forced replace.", playlist_id)
