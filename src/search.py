@@ -27,8 +27,10 @@ NEGATIVE_TERMS = {
     "live", "acoustic", "cover", "karaoke", "instrumental", "remix", "edit", "nightcore",
     "sped", "slowed", "8d", "loop", "mashup", "mix", "medley", "tribute", "parody",
     "reverb", "pitch", "chipmunk", "fanmade", "speed", "rework", "bootleg",
-    "daycore", "bassboosted", "bass", "boosted", "tiktok", "phonk", "version"
+    "daycore", "bassboosted", "bass", "boosted", "tiktok", "phonk", "version",
+    "lyric", "lyrics", "visualizer", "teaser", "preview", "short", "radio", "demo"
 }
+
 HARD_NEGATIVE_TERMS = {
     "nightcore", "daycore", "sped", "slowed", "8d", "chipmunk", "reverb", "pitch", "bassboosted"
 }
@@ -112,8 +114,24 @@ def _clean_title_for_match(title: str, artist_tokens: Set[str]) -> str:
 
 def _split_artist_aliases(artist: str) -> List[str]:
     s = _normalize_base(_strip_feat_clauses(artist or ""))
+    s = _remove_bracketed(s)
     parts = [p for p in RE_ARTIST_SPLIT.split(s) if p]
-    return parts or [s]
+    if len(parts) <= 1 and RE_DASH.search(s):
+        dparts = [p.strip() for p in RE_DASH.split(s) if p and p.strip()]
+        if 1 < len(dparts) <= 4:
+            parts.extend(dparts)
+    out: List[str] = []
+    seen: Set[str] = set()
+    for p in parts + [s]:
+        p = p.strip()
+        if not p:
+            continue
+        key = _match_key(p)
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(p)
+    return out or [s]
 
 
 def _match_key(s: str) -> str:
@@ -237,6 +255,21 @@ def _video_mismatch_penalty(r: Dict) -> float:
     return 0.10 if j < 0.3 else 0.0
 
 
+def _style_mismatch_penalty(user_title: str, candidate_title: str, result_type: str) -> float:
+    """
+    If the user title explicitly includes a hard style token (sped, slowed, nightcore, 8d, daycore, chipmunk, bassboosted)
+    but the candidate title doesn't, apply a small penalty so the correct style is preferred.
+    Still keep it soft enough to allow fallback to the normal version if no styled version exists.
+    """
+    user_styles = _tokens(user_title) & HARD_NEGATIVE_TERMS
+    if not user_styles:
+        return 0.0
+    cand_styles = _tokens(candidate_title) & HARD_NEGATIVE_TERMS
+    if user_styles.issubset(cand_styles):
+        return 0.0
+    return 0.18 if (result_type or "").lower() == "video" else 0.12
+
+
 def _coverage(sub: Set[str], sup: Set[str]) -> float:
     if not sub:
         return 0.0
@@ -269,6 +302,56 @@ def _artist_title_presence_bonus(artist: str, title: str, candidate_title: str) 
     return min(0.07, 0.10 * both + 0.02 if both >= 0.5 else 0.04 * both)
 
 
+def _build_queries(artist: str, title: str, album: Optional[str]) -> List[str]:
+    """
+    Build a set of search queries that try:
+      - alias + core_title (brackets/features stripped)
+      - alias + bracketless title
+      - ascii-folded variants
+      - quoted pairs
+      - album-assisted variants
+      - title-only quoted fallback (when artist info is messy)
+    """
+    aliases = _split_artist_aliases(artist)
+    alias_union = set().union(*(_tokens(a) for a in aliases)) if aliases else _tokens(artist)
+    core_title = _clean_title_for_match(title, alias_union)
+    bracketless_title = _remove_bracketed(title or "").strip()
+    bracketless_core = _clean_title_for_match(bracketless_title, alias_union)
+    title_variants: List[str] = []
+    seen_tv: Set[str] = set()
+    for t in [core_title, bracketless_title, bracketless_core]:
+        t = _collapse_ws(t)
+        if t and t not in seen_tv:
+            seen_tv.add(t)
+            title_variants.append(t)
+    folded_core = _collapse_ws(_ascii_fold(core_title))
+    if folded_core and folded_core not in seen_tv:
+        seen_tv.add(folded_core)
+        title_variants.append(folded_core)
+    queries: List[str] = []
+    seen_q: Set[str] = set()
+    use_aliases = aliases or [artist]
+
+    for alias in use_aliases:
+        alias = _collapse_ws(alias)
+        if not alias:
+            continue
+        for t in title_variants:
+            for pat in (f"{alias} - {t}", f"\"{t}\" \"{alias}\"", f"{t} {alias}"):
+                if pat not in seen_q:
+                    seen_q.add(pat)
+                    queries.append(pat)
+            if album:
+                pat = f"{alias} - {t} {album}"
+                if pat not in seen_q:
+                    seen_q.add(pat)
+                    queries.append(pat)
+    if core_title and f"\"{core_title}\"" not in seen_q:
+        queries.append(f"\"{core_title}\"")
+
+    return queries
+
+
 def _score_candidate(r: Dict, artist: str, title: str, album: Optional[str]) -> float:
     rt = (r.get("resultType") or "").lower()
     if rt not in ("song", "video", ""):
@@ -276,7 +359,6 @@ def _score_candidate(r: Dict, artist: str, title: str, album: Optional[str]) -> 
 
     candidate_title = r.get("title") or ""
     author_cf = (r.get("author") or "").casefold()
-
     hard_hits = _hard_negative_hits(candidate_title, title)
     if hard_hits and rt == "video" and "topic" not in author_cf:
         return 0.0
@@ -296,18 +378,16 @@ def _score_candidate(r: Dict, artist: str, title: str, album: Optional[str]) -> 
     )
 
     score += _artist_title_presence_bonus(artist, title, candidate_title)
-
     score -= _negative_penalty(candidate_title, title)
+    score -= _style_mismatch_penalty(title, candidate_title, rt)
     score -= _video_mismatch_penalty(r)
 
     if rt == "song":
         score += 0.05
     elif rt == "video":
         score -= 0.01
-
     if "topic" in author_cf and uploader_score >= 0.6:
-        score += 0.01
-
+        score += 0.02  
     return max(0.0, min(1.0, score))
 
 
@@ -316,31 +396,8 @@ def find_on_ytm(ytm, artist: str, title: str, album: Optional[str] = None) -> Op
     Search YouTube Music and return a videoId if a high-confidence match is found.
     Prefers 'songs', then 'videos'; ranks by title/artist/album similarity and avoids common mismatches.
     """
-    base_queries = [
-        f"{artist} - {title}",
-        f"{title} {artist}",
-        f"\"{title}\" \"{artist}\"",
-    ]
-    if album:
-        base_queries.append(f"{artist} - {title} {album}")
-
-    alias_queries = []
-    for alias in _split_artist_aliases(artist):
-        if alias and alias != artist:
-            alias_queries.extend([
-                f"{alias} - {title}",
-                f"{title} {alias}",
-                f"\"{title}\" \"{alias}\"",
-            ])
-
-    seen_q = set()
-    queries: List[str] = []
-    for q in base_queries + alias_queries:
-        if q not in seen_q:
-            seen_q.add(q)
-            queries.append(q)
-
-    filters = ["songs", "videos", None]
+    queries = _build_queries(artist, title, album)
+    filters = ["songs", "videos", "uploads", None]
 
     best_vid: Optional[str] = None
     best_score = 0.0
@@ -353,9 +410,9 @@ def find_on_ytm(ytm, artist: str, title: str, album: Optional[str] = None) -> Op
     for q in queries:
         for flt in filters:
             try:
-                results = ytm.search(q, filter=flt, limit=20)
+                results = ytm.search(q, filter=flt, limit=25)
             except Exception:
-                results = []
+                  results = []
             if not results:
                 continue
 
@@ -385,4 +442,5 @@ def find_on_ytm(ytm, artist: str, title: str, album: Optional[str] = None) -> Op
         return best_vid
     if best_score >= (threshold - 0.06):
         return best_vid
+
     return None
