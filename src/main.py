@@ -13,7 +13,10 @@ from .search import find_on_ytm
 from .ytm_client import build_oauth_client, create_playlist_with_items, get_existing_playlist_by_name
 from .playlist import minimal_diff_update
 
+from .weekly import update_weekly_playlist
+
 log = logging.getLogger(__name__)
+
 
 def _resolve_tracks_to_video_ids(
     ytm_search: YTMusic,
@@ -66,11 +69,19 @@ def run(settings: Settings) -> None:
             half_life_hours=settings.recency_half_life_hours,
             max_unique=settings.recency_max_unique,
         )
-        log.info("Aggregated to %d unique tracks (half-life=%.1fh). Resolving on YTM...", len(tracks), settings.recency_half_life_hours)
+        log.info(
+            "Aggregated to %d unique tracks (half-life=%.1fh). Resolving on YTM...",
+            len(tracks),
+            settings.recency_half_life_hours,
+        )
     else:
         ordered = sorted(recents, key=lambda x: x.ts, reverse=True)
         tracks = dedupe_keep_latest(ordered) if settings.deduplicate else ordered  # type: ignore[assignment]
-        log.info("Prepared %d tracks (%s). Resolving on YTM...", len(tracks), "deduped" if settings.deduplicate else "with repeats")
+        log.info(
+            "Prepared %d tracks (%s). Resolving on YTM...",
+            len(tracks),
+            "deduped" if settings.deduplicate else "with repeats",
+        )
 
     video_ids, misses = _resolve_tracks_to_video_ids(ytm_search, tracks, settings.sleep_between_searches)
     valid_video_ids = [vid for vid in video_ids if isinstance(vid, str) and len(vid) == 11]
@@ -89,7 +100,12 @@ def run(settings: Settings) -> None:
     if existing_id:
         log.info("Updating existing playlist '%s' (%s) ...", settings.playlist_name, existing_id)
         try:
-            ytm.edit_playlist(existing_id, title=settings.playlist_name, description=desc, privacyStatus=settings.privacy_status)
+            ytm.edit_playlist(
+                existing_id,
+                title=settings.playlist_name,
+                description=desc,
+                privacyStatus=settings.privacy_status,
+            )
         except Exception:
             pass
         try:
@@ -101,12 +117,31 @@ def run(settings: Settings) -> None:
     else:
         log.info("Creating playlist '%s' (privacy=%s) ...", settings.playlist_name, settings.privacy_status)
         try:
-            pl_id = create_playlist_with_items(ytm, settings.playlist_name, desc, settings.privacy_status, valid_video_ids)
+            pl_id = create_playlist_with_items(
+                ytm,
+                settings.playlist_name,
+                desc,
+                settings.privacy_status,
+                valid_video_ids,
+            )
         except Exception as e:
             log.error("Create failed: %s", e)
             return
 
+    weekly_id = update_weekly_playlist(
+        ytm,
+        get_existing_playlist_by_name,
+        create_playlist_with_items,
+        minimal_diff_update,
+        settings=settings,
+        valid_video_ids=valid_video_ids,
+        base_desc=desc,
+    )
+
     log.info("Done. Playlist ID: %s", pl_id)
     log.info("Open: https://music.youtube.com/playlist?list=%s", pl_id)
+    if weekly_id:
+        log.info("Weekly playlist ID: %s", weekly_id)
+        log.info("Open: https://music.youtube.com/playlist?list=%s", weekly_id)
     if misses:
         log.info("%d tracks not found on YTM search.", misses)

@@ -4,7 +4,6 @@ import os
 import logging
 from dataclasses import dataclass
 from typing import Optional
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -58,42 +57,73 @@ class Settings:
     # Logging
     log_level: str = "INFO"
 
+    # Weekly playlist settings (read from env; used by weekly.update_weekly_playlist)
+    weekly_enabled: bool = True
+    weekly_playlist_prefix: Optional[str] = None
+    weekly_privacy_status: Optional[str] = None
+    weekly_week_start: str = "MON"
+    weekly_timezone: str = "UTC"
+    weekly_keep_weeks: int = 2
+
     @property
     def privacy_status(self) -> str:
         return "PUBLIC" if self.make_public else "PRIVATE"
 
     @staticmethod
     def from_env() -> "Settings":
+        # Required
         lastfm_user = os.getenv("LASTFM_USER", "").strip()
         lastfm_api_key = os.getenv("LASTFM_API_KEY", "").strip()
         if not lastfm_user or not lastfm_api_key:
             raise RuntimeError("LASTFM_USER and LASTFM_API_KEY must be set in environment or .env")
 
+        # Core
         ytm_auth_path = os.getenv("YTM_AUTH_PATH", "browser.json")
-
         playlist_name = os.getenv("PLAYLIST_NAME", "Last.fm Recents (auto)")
         make_public = _str_to_bool(os.getenv("MAKE_PUBLIC"), False)
 
+        # Fetch/search
         limit = _str_to_int(os.getenv("LIMIT"), 100)
-        limit = max(1, min(200, limit))
+        limit = max(1, min(400, limit))
         deduplicate = _str_to_bool(os.getenv("DEDUPLICATE"), True)
         sleep_between_searches = _str_to_float(os.getenv("SLEEP_BETWEEN_SEARCHES"), 0.25)
         use_anon_search = _str_to_bool(os.getenv("USE_ANON_SEARCH"), False)
         chunk_size = _str_to_int(os.getenv("CHUNK_SIZE"), 75)
 
+        # Recency weighting
         use_recency_weighting = _str_to_bool(os.getenv("USE_RECENCY_WEIGHTING"), True)
         recency_half_life_hours = _str_to_float(os.getenv("RECENCY_HALF_LIFE_HOURS"), 24.0)
         recency_max_unique_env = os.getenv("RECENCY_MAX_UNIQUE")
-        recency_max_unique = None
+        recency_max_unique: Optional[int] = None
         if recency_max_unique_env:
             try:
                 recency_max_unique = int(recency_max_unique_env)
             except Exception:
                 recency_max_unique = None
 
+        # Logging
         log_level = os.getenv("LOG_LEVEL", "INFO").upper()
         if log_level not in {"CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"}:
             log_level = "INFO"
+
+        # Weekly settings
+        weekly_enabled = _str_to_bool(os.getenv("WEEKLY_ENABLED"), True)
+
+        weekly_playlist_prefix_env = os.getenv("WEEKLY_PLAYLIST_PREFIX")
+        weekly_playlist_prefix = weekly_playlist_prefix_env.strip() if weekly_playlist_prefix_env else None
+        if weekly_playlist_prefix == "":
+            weekly_playlist_prefix = None
+
+        # Weekly privacy: if WEEKLY_MAKE_PUBLIC is set, convert to PUBLIC/PRIVATE;
+        # otherwise leave as None to inherit main playlist privacy.
+        weekly_make_public_env = os.getenv("WEEKLY_MAKE_PUBLIC")
+        weekly_privacy_status: Optional[str] = None
+        if weekly_make_public_env is not None:
+            weekly_privacy_status = "PUBLIC" if _str_to_bool(weekly_make_public_env, False) else "PRIVATE"
+
+        weekly_week_start = os.getenv("WEEKLY_WEEK_START", "MON")
+        weekly_timezone = os.getenv("WEEKLY_TIMEZONE", "UTC") or "UTC"
+        weekly_keep_weeks = _str_to_int(os.getenv("WEEKLY_KEEP_WEEKS"), 2)
 
         return Settings(
             lastfm_user=lastfm_user,
@@ -110,6 +140,12 @@ class Settings:
             recency_half_life_hours=recency_half_life_hours,
             recency_max_unique=recency_max_unique,
             log_level=log_level,
+            weekly_enabled=weekly_enabled,
+            weekly_playlist_prefix=weekly_playlist_prefix,
+            weekly_privacy_status=weekly_privacy_status,
+            weekly_week_start=weekly_week_start,
+            weekly_timezone=weekly_timezone,
+            weekly_keep_weeks=weekly_keep_weeks,
         )
 
 
