@@ -25,7 +25,7 @@ def fetch_recent(username: str, api_key: str, limit: int = 100) -> List[Scrobble
         "user": username,
         "api_key": api_key,
         "format": "json",
-        "limit": max(1, min(200, int(limit))),
+        "limit": max(1, min(400, int(limit))),
     }
     resp = requests.get(url, params=params, timeout=20)
     resp.raise_for_status()
