@@ -131,7 +131,6 @@ This tool uses a half-life–based exponential decay to rank tracks by how recen
   1) Higher total score
   2) More recent latest play (ts)
   3) Higher play count
-- Case-insensitive aggregation by `(artist, track)`; album is updated from the latest-scrobbled non-empty album
 
 ## Search and Matching
 
