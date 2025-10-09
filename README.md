@@ -17,7 +17,7 @@ Create and maintain a YouTube Music playlist from your Last.fm listening history
 - [How It Works](#how-it-works)
 - [Search and Matching](#search-and-matching)
 - [Weekly Playlists](#weekly-playlists)
-- [Scheduling (Optional)](#scheduling-optional)
+- [Scheduling (Optional but Encouraged)](#scheduling-optional-but-encouraged)
 - [Troubleshooting](#troubleshooting)
 - [Credits](#credits)
 - [License](#license)
