@@ -1,13 +1,24 @@
 import re
 import unicodedata
+import logging
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from difflib import SequenceMatcher
 from typing import Optional, List, Dict, Set
 
-# both unidecode and text_unidecode work, use whichever you prefer
 try:
     from unidecode import unidecode as _unidecode
 except ImportError:
     from text_unidecode import unidecode as _unidecode
+
+log = logging.getLogger(__name__)
+
+_search_stats = {
+    'total_queries': 0,
+    'songs_searched': 0,
+    'early_terminations': 0,
+    'session_start': None
+}
 
 RE_PARENS = re.compile(r"[()\[\]\{\}（）【】「」『』〈〉《》＜＞‹›⟨⟩].*?[()\[\]\{\}（）【】「」『』〈〉《》＜＞‹›⟨⟩]")
 RE_NON_ALNUM = re.compile(r"[^a-z0-9]+")
@@ -257,11 +268,7 @@ def _video_mismatch_penalty(r: Dict) -> float:
 
 
 def _style_mismatch_penalty(user_title: str, candidate_title: str, result_type: str) -> float:
-    """
-    If the user title explicitly includes a hard style token (sped, slowed, nightcore, 8d, daycore, chipmunk, bassboosted)
-    but the candidate title doesn't, apply a small penalty so the correct style is preferred.
-    Still keep it soft enough to allow fallback to the normal version if no styled version exists.
-    """
+    """Penalty for style mismatches (nightcore, sped up, etc) with soft fallback."""
     user_styles = _tokens(user_title) & HARD_NEGATIVE_TERMS
     if not user_styles:
         return 0.0
@@ -300,15 +307,7 @@ def _artist_title_presence_bonus(artist: str, title: str, candidate_title: str) 
 
 
 def _build_queries(artist: str, title: str, album: Optional[str]) -> List[str]:
-    """
-    Build a set of search queries that try:
-      - alias + core_title (brackets/features stripped)
-      - alias + bracketless title
-      - ascii-folded variants
-      - quoted pairs
-      - album-assisted variants
-      - title-only quoted fallback (when artist info is messy)
-    """
+    """Build search queries with various artist/title combinations and fallbacks."""
     aliases = _split_artist_aliases(artist)
     alias_union = set().union(*(_tokens(a) for a in aliases)) if aliases else _tokens(artist)
     core_title = _clean_title_for_match(title, alias_union)
@@ -388,13 +387,20 @@ def _score_candidate(r: Dict, artist: str, title: str, album: Optional[str]) -> 
     return max(0.0, min(1.0, score))
 
 
-def find_on_ytm(ytm, artist: str, title: str, album: Optional[str] = None) -> Optional[str]:
-    """
-    Search YouTube Music and return a videoId if a high-confidence match is found.
-    Prefers 'songs', then 'videos'; ranks by title/artist/album similarity and avoids common mismatches.
-    """
+def find_on_ytm(ytm, artist: str, title: str, album: Optional[str] = None, early_termination_score: float = 0.9, max_workers: int = 2) -> Optional[str]:
+    """Search YouTube Music for a song and return videoId if high-confidence match found."""
+    global _search_stats
+    
+    if _search_stats['session_start'] is None:
+        _search_stats['session_start'] = time.time()
+    
+    song_query_count = 0
+    _search_stats['songs_searched'] += 1
+    
+    log.debug("Searching for: %s - %s%s", artist, title, f" ({album})" if album else "")
+    
     queries = _build_queries(artist, title, album)
-    filters = ["songs", "videos", "uploads", None]
+    filters = ["songs", "videos", None]
 
     best_vid: Optional[str] = None
     best_score = 0.0
@@ -403,33 +409,93 @@ def find_on_ytm(ytm, artist: str, title: str, album: Optional[str] = None) -> Op
 
     base_threshold = 0.66 if not album else 0.68
     video_extra = 0.05
+    
+    early_termination_enabled = early_termination_score < 1.0
+    early_termination_threshold = max(early_termination_score, base_threshold + video_extra)
 
-    for q in queries:
-        for flt in filters:
+    def search_with_filter(query_filter_pair):
+        """Search function for concurrent execution"""
+        query, flt = query_filter_pair
+        local_query_count = 0
+        try:
+            log.debug("Searching query='%s' with filter='%s'", query, flt or "None")
+            results = ytm.search(query, filter=flt, limit=25)
+            local_query_count += 1
+            return results, local_query_count, None
+        except Exception as e:
+            log.debug("Search failed for query '%s' with filter '%s': %s", query, flt or "None", str(e))
+            return [], 1, str(e)  # Still count as a query attempt
+
+    # Create query-filter pairs for concurrent execution
+    query_filter_pairs = [(q, flt) for q in queries for flt in filters]
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Submit all search tasks
+        future_to_pair = {
+            executor.submit(search_with_filter, pair): pair 
+            for pair in query_filter_pairs
+        }
+        
+        for future in as_completed(future_to_pair):
+            query, flt = future_to_pair[future]
+            
             try:
-                results = ytm.search(q, filter=flt, limit=25)
-            except Exception:
-                  results = []
-            if not results:
+                results, local_count, error = future.result()
+                song_query_count += local_count
+                
+                if error:
+                    if "Invalid filter" in error:
+                        log.warning("Search failed for query '%s' with filter '%s': %s", query, flt or "None", error)
+                    continue
+                
+                if not results:
+                    continue
+
+                for r in results:
+                    rt = (r.get("resultType") or "").lower()
+                    if rt not in ("song", "video", ""):
+                        continue
+
+                    vid = r.get("videoId")
+                    if not (isinstance(vid, str) and len(vid) == 11):
+                        continue
+                    if vid in seen:
+                        continue
+                    seen.add(vid)
+
+                    score = _score_candidate(r, artist, title, album)
+                    if score > best_score:
+                        best_score = score
+                        best_vid = vid
+                        best_rt = rt
+                        
+                        # Early termination check
+                        if early_termination_enabled and score >= early_termination_threshold:
+                            log.debug("Early termination: score %.3f >= threshold %.3f", score, early_termination_threshold)
+                            _search_stats['early_terminations'] += 1
+                            # Cancel remaining futures for efficiency
+                            for remaining_future in future_to_pair:
+                                if remaining_future != future and not remaining_future.done():
+                                    remaining_future.cancel()
+                            break
+                
+                # Break out of outer loop if early termination triggered
+                if early_termination_enabled and best_score >= early_termination_threshold:
+                    break
+                    
+            except Exception as e:
+                log.debug("Error processing search future: %s", str(e))
                 continue
-
-            for r in results:
-                rt = (r.get("resultType") or "").lower()
-                if rt not in ("song", "video", ""):
-                    continue
-
-                vid = r.get("videoId")
-                if not (isinstance(vid, str) and len(vid) == 11):
-                    continue
-                if vid in seen:
-                    continue
-                seen.add(vid)
-
-                score = _score_candidate(r, artist, title, album)
-                if score > best_score:
-                    best_score = score
-                    best_vid = vid
-                    best_rt = rt
+    
+    # Update global stats
+    _search_stats['total_queries'] += song_query_count
+    
+    # Log per-song results
+    if best_vid:
+        log.debug("Found match: %s (score: %.3f, type: %s, queries: %d)", 
+                 best_vid, best_score, best_rt, song_query_count)
+    else:
+        log.debug("No match found (queries: %d)", song_query_count)
 
     if not best_vid:
         return None
@@ -441,3 +507,67 @@ def find_on_ytm(ytm, artist: str, title: str, album: Optional[str] = None) -> Op
         return best_vid
 
     return None
+
+
+def log_search_statistics():
+    """Log comprehensive search statistics for the session."""
+    global _search_stats
+    
+    if _search_stats['session_start'] is None:
+        log.info("No search statistics available - no searches performed this session")
+        return
+    
+    session_duration = time.time() - _search_stats['session_start']
+    
+    log.info("=== Search Session Statistics ===")
+    log.info("Total songs searched: %d", _search_stats['songs_searched'])
+    log.info("Total API queries: %d", _search_stats['total_queries'])
+    if _search_stats['songs_searched'] > 0:
+        log.info("Average queries per song: %.2f", _search_stats['total_queries'] / _search_stats['songs_searched'])
+    log.info("Early terminations: %d", _search_stats['early_terminations'])
+    if _search_stats['songs_searched'] > 0:
+        log.info("Early termination rate: %.1f%%", 
+                100.0 * _search_stats['early_terminations'] / _search_stats['songs_searched'])
+    log.info("Session duration: %.1f seconds", session_duration)
+    if session_duration > 0:
+        log.info("Search rate: %.2f songs/second", _search_stats['songs_searched'] / session_duration)
+        log.info("Query rate: %.2f queries/second", _search_stats['total_queries'] / session_duration)
+    log.info("==================================")
+
+
+def get_search_statistics():
+    """Get search statistics as a dictionary."""
+    global _search_stats
+    
+    if _search_stats['session_start'] is None:
+        return {
+            'total_queries': 0,
+            'songs_searched': 0,
+            'early_terminations': 0,
+            'session_duration': 0,
+            'early_termination_rate': 0,
+            'search_rate': 0,
+            'query_rate': 0
+        }
+    
+    session_duration = time.time() - _search_stats['session_start']
+    
+    return {
+        'total_queries': _search_stats['total_queries'],
+        'songs_searched': _search_stats['songs_searched'],
+        'early_terminations': _search_stats['early_terminations'],
+        'session_duration': session_duration,
+        'early_termination_rate': 100.0 * _search_stats['early_terminations'] / _search_stats['songs_searched'] 
+                                 if _search_stats['songs_searched'] > 0 else 0,
+        'search_rate': _search_stats['songs_searched'] / session_duration if session_duration > 0 else 0,
+        'query_rate': _search_stats['total_queries'] / session_duration if session_duration > 0 else 0
+    }
+
+
+def reset_search_statistics():
+    global _search_stats
+    _search_stats['total_queries'] = 0
+    _search_stats['songs_searched'] = 0
+    _search_stats['early_terminations'] = 0
+    _search_stats['session_start'] = time.time()
+    log.debug("Search statistics reset")

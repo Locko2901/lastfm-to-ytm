@@ -25,13 +25,13 @@ Create and maintain a YouTube Music playlist from your Last.fm listening history
 ## Features
 
 - Creates/updates a YouTube Music playlist using your Last.fm scrobbles.
-- Optional recency-weighted selection to prioritize what you’ve listened to lately.
+- Optional recency-weighted selection to prioritize what you've listened to lately.
 - Intelligent search and matching on YouTube Music:
   - Prefers official Songs over user-uploaded Videos
   - Handles artist variations/collaborations
   - Avoids common mismatches (covers, remixes, live versions) where possible
   - Considers title, artist, and album similarity
-- Weekly playlist snapshots: “Your Playlist Name week of YYYY-MM-DD”.
+- Weekly playlist snapshots: "Your Playlist Name week of YYYY-MM-DD".
 - Configurable via environment variables or a `.env` file.
 - Safe, incremental updates with batching and rate-limit-friendly delays.
 
@@ -207,11 +207,17 @@ Windows Task Scheduler:
   - Set `LOG_LEVEL=DEBUG` for verbose output
 - Missing or wrong matches:
   - Toggle `USE_ANON_SEARCH`
-  - Increase `SLEEP_BETWEEN_SEARCHES` slightly
+  - Increase `EARLY_TERMINATION_SCORE` for more thorough searching (0.8-0.9)
+  - Set `EARLY_TERMINATION_SCORE=1.0` to disable early termination entirely
   - Some tracks may be region-restricted or unavailable on YouTube Music
+- Search performance issues:
+  - Decrease `EARLY_TERMINATION_SCORE` for faster searching (0.9-0.95)
+  - Set `SLEEP_BETWEEN_SEARCHES=0` for maximum speed
+  - Check search statistics in logs to monitor API usage and performance
 - Rate limiting or throttling:
   - Increase `SLEEP_BETWEEN_SEARCHES`
   - Reduce `CHUNK_SIZE`
+  - Monitor API usage in the session statistics logs
 - Weekly date mismatches:
   - Time zones and UTC timestamps from Last.fm can shift what falls into a given week
 

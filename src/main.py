@@ -7,11 +7,11 @@ from typing import List, Optional, Tuple
 from ytmusicapi import YTMusic
 
 from .config import Settings
-from .lastfm import Scrobble, fetch_recent
+from .lastfm import Scrobble, fetch_recent_with_diversity
 from .recency import WeightedTrack, collapse_recency_weighted, dedupe_keep_latest, unique_preserve_order
-from .search import find_on_ytm
+from .search import find_on_ytm, log_search_statistics, reset_search_statistics, get_search_statistics
 from .ytm_client import build_oauth_client, create_playlist_with_items, get_existing_playlist_by_name
-from .playlist import sync_playlist
+from .playlist import sync_playlist, reset_query_counter as reset_playlist_counter, log_playlist_statistics, get_playlist_statistics
 
 from .weekly import update_weekly_playlist
 
@@ -22,6 +22,7 @@ def _resolve_tracks_to_video_ids(
     ytm_search: YTMusic,
     tracks: List[Scrobble | WeightedTrack],
     sleep_between: float,
+    early_termination_score: float,
 ) -> Tuple[List[str], int]:
     video_ids: List[str] = []
     misses = 0
@@ -36,7 +37,7 @@ def _resolve_tracks_to_video_ids(
 
         vid = cache.get(key)
         if vid is None:
-            vid = find_on_ytm(ytm_search, artist, title, album)
+            vid = find_on_ytm(ytm_search, artist, title, album, early_termination_score)
             cache[key] = vid
             time.sleep(max(0.0, sleep_between))
 
@@ -60,8 +61,11 @@ def run(settings: Settings) -> None:
     ytm = build_oauth_client(settings.ytm_auth_path)
     ytm_search = ytm if not settings.use_anon_search else YTMusic()
 
+    reset_search_statistics()
+    reset_playlist_counter()
+
     log.info("Fetching up to %d recent scrobbles for '%s' ...", settings.limit, settings.lastfm_user)
-    recents: List[Scrobble] = fetch_recent(settings.lastfm_user, settings.lastfm_api_key, settings.limit)
+    recents: List[Scrobble] = fetch_recent_with_diversity(settings.lastfm_user, settings.lastfm_api_key, settings.limit)
     if not recents:
         log.warning("No recent scrobbles found. Exiting.")
         return
@@ -86,7 +90,7 @@ def run(settings: Settings) -> None:
             "deduped" if settings.deduplicate else "with repeats",
         )
 
-    video_ids, misses = _resolve_tracks_to_video_ids(ytm_search, tracks, settings.sleep_between_searches)
+    video_ids, misses = _resolve_tracks_to_video_ids(ytm_search, tracks, settings.sleep_between_searches, settings.early_termination_score)
     valid_video_ids = [vid for vid in video_ids if isinstance(vid, str) and len(vid) == 11]
     valid_video_ids = unique_preserve_order(valid_video_ids)
 
@@ -148,3 +152,25 @@ def run(settings: Settings) -> None:
         log.info("Open: https://music.youtube.com/playlist?list=%s", weekly_id)
     if misses:
         log.info("%d tracks not found on YTM search.", misses)
+    
+    log_search_statistics()
+    log_playlist_statistics()
+    search_stats = get_search_statistics()
+    playlist_stats = get_playlist_statistics()
+    
+    total_api_calls = search_stats.get('total_queries', 0) + playlist_stats.get('total_queries', 0)
+    total_duration = max(search_stats.get('session_duration', 0), playlist_stats.get('session_duration', 0))
+    
+    log.info("=== Combined Session Summary ===")
+    log.info("Total API calls this session: %d", total_api_calls)
+    log.info("Search queries: %d (%.1f%%)", 
+             search_stats.get('total_queries', 0),
+             100.0 * search_stats.get('total_queries', 0) / total_api_calls if total_api_calls > 0 else 0)
+    log.info("Playlist queries: %d (%.1f%%)", 
+             playlist_stats.get('total_queries', 0),
+             100.0 * playlist_stats.get('total_queries', 0) / total_api_calls if total_api_calls > 0 else 0)
+    
+    if total_duration > 0:
+        log.info("Overall API rate: %.2f calls/second", total_api_calls / total_duration)
+    
+    log.info("=================================")
