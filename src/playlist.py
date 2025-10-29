@@ -198,12 +198,11 @@ def _add_missing(ytm: YTMusic, playlist_id: str, desired_order: List[str], prese
                                     detected_substitutions[orig_vid] = new_vid
                                     log.info("Detected substitution during add: %s -> %s", orig_vid, new_vid)
                     
-                    before_count = len(items_after)  # Update for next iteration
+                    before_count = len(items_after)
                 
             except Exception as e:
                 _query_counter.increment_error('retries')
                 log.warning("Failed to add chunk after retries: %s", e)
-                # Try individual additions as fallback
                 for vid in chunk:
                     try:
                         def _add_item():
@@ -247,15 +246,12 @@ def _lis_indices(seq: List[int]) -> List[int]:
 
 def _get_video_title(ytm: YTMusic, video_id: str) -> str:
     try:
-        # Try multiple methods to get video info
         info = ytm.get_song(video_id)
         if info and 'title' in info:
             return info['title']
         elif info:
-            # Try alternative fields if title is missing
             return info.get('name', f"<no-title:{video_id}>")
         
-        # If get_song fails, try search as backup
         try:
             search_results = ytm.search(video_id, filter="songs", limit=1)
             if search_results and len(search_results) > 0:
@@ -317,10 +313,9 @@ def _replace_playlist_items_safe(ytm: YTMusic, playlist_id: str, new_video_ids: 
             _query_counter.increment_error('retries')
             log.warning("replace_playlist_items failed after retries, falling back to manual replace: %s", e)
 
-    # Manual replace: remove all, then add all
     _query_counter.increment('get_playlist')
     log.debug("API Query #%d: get_playlist(%s) for manual replace", _query_counter.get_count(), playlist_id)
-    pl = ytm.get_playlist(playlist_id, limit=None)  # Changed to None to get all items
+    pl = ytm.get_playlist(playlist_id, limit=None)
     tracks = pl.get("tracks") or []
     log.debug("Got %d tracks for manual replace", len(tracks))
 
@@ -334,9 +329,8 @@ def _replace_playlist_items_safe(ytm: YTMusic, playlist_id: str, new_video_ids: 
                 item["videoId"] = vid
             to_remove.append(item)
 
-    # Remove in chunks with retry logic but no delays
     if to_remove:
-        for chunk in _chunked(to_remove, 50):  # Larger chunks since no delay concerns
+        for chunk in _chunked(to_remove, 50): 
             def _remove_chunk():
                 _query_counter.increment('remove_playlist_items')
                 log.debug("API Query #%d: remove_playlist_items(%s, %d items)", _query_counter.get_count(), playlist_id, len(chunk))
@@ -347,7 +341,6 @@ def _replace_playlist_items_safe(ytm: YTMusic, playlist_id: str, new_video_ids: 
             except Exception as e:
                 _query_counter.increment_error('retries')
                 log.warning("Failed to remove chunk from playlist %s after retries: %s", playlist_id, e)
-                # Try removing items individually
                 for item in chunk:
                     try:
                         def _remove_item():
@@ -359,7 +352,6 @@ def _replace_playlist_items_safe(ytm: YTMusic, playlist_id: str, new_video_ids: 
                         _query_counter.increment_error('individual_fallbacks')
                         log.debug("Failed to remove individual item %s", item.get('videoId', 'unknown'))
 
-    # Add in chunks with retry logic but no delays
     if new_video_ids:
         for chunk in _chunked(new_video_ids, 50):  # Larger chunks since no delay concerns
             def _add_chunk():
@@ -372,7 +364,6 @@ def _replace_playlist_items_safe(ytm: YTMusic, playlist_id: str, new_video_ids: 
             except Exception as e:
                 _query_counter.increment_error('retries')
                 log.warning("Failed to add chunk to playlist %s after retries: %s", playlist_id, e)
-                # Try adding individually
                 for vid in chunk:
                     try:
                         def _add_item():
@@ -548,12 +539,10 @@ def _validate_video_accessibility(ytm: YTMusic, video_ids: List[str], max_batch_
     """
     valid_ids = []
     
-    # Process in batches without delays
     for i in range(0, len(video_ids), max_batch_size):
         batch = video_ids[i:i + max_batch_size]
         for vid in batch:
             try:
-                # Try to get basic video info - if this fails, the video is likely unavailable
                 info = ytm.get_song(vid)
                 if info and info.get('videoId') == vid:
                     valid_ids.append(vid)
@@ -591,7 +580,6 @@ def _log_playlist_mismatch(playlist_id: str, desired: List[str], current: List[s
     if len(desired) != len(current):
         log.warning("  Length mismatch indicates some videos may be unavailable or restricted")
         
-        # Find missing videos (in desired but not current)
         desired_set = set(desired)
         current_set = set(current)
         missing = [vid for vid in desired if vid not in current_set]
@@ -602,7 +590,6 @@ def _log_playlist_mismatch(playlist_id: str, desired: List[str], current: List[s
         if extra:
             log.warning("  Extra in current playlist: %s", extra[:5] + (['...'] if len(extra) > 5 else []))
     else:
-        # Same length, find position mismatches
         mismatches = []
         for i in range(min(len(desired), len(current))):
             if desired[i] != current[i]:
@@ -613,7 +600,6 @@ def _log_playlist_mismatch(playlist_id: str, desired: List[str], current: List[s
         if mismatches:
             log.warning("  Position mismatches (pos, expected, actual):")
             for pos, exp, act in mismatches:
-                # Try to get song titles for better debugging
                 if ytm:
                     try:
                         exp_title = _get_video_title(ytm, exp)
@@ -626,7 +612,6 @@ def _log_playlist_mismatch(playlist_id: str, desired: List[str], current: List[s
             if len(mismatches) == max_details and len(desired) > max_details:
                 log.warning("    ... and potentially more mismatches")
         
-        # Detailed analysis for problematic videos
         if ytm and mismatches and len(mismatches) <= 5:
             log.warning("  Analyzing problematic videos in detail:")
             problematic_videos = set()
@@ -634,7 +619,7 @@ def _log_playlist_mismatch(playlist_id: str, desired: List[str], current: List[s
                 problematic_videos.add(exp)
                 problematic_videos.add(act)
             
-            for vid in list(problematic_videos)[:8]:  # Limit analysis to avoid spam
+            for vid in list(problematic_videos)[:8]:
                 analysis = _analyze_video_accessibility(ytm, vid)
                 log.warning("    Video %s: get_song=%s, search_finds=%s, title='%s', error='%s'", 
                            vid, analysis['get_song_works'], analysis['search_finds_it'], 
@@ -651,7 +636,6 @@ def _filter_problematic_videos(ytm: YTMusic, video_ids: List[str]) -> List[str]:
     
     for vid in video_ids:
         try:
-            # Quick test - just try to get basic info
             info = ytm.get_song(vid)
             if info and (info.get('videoId') == vid or info.get('title')):
                 valid_ids.append(vid)
@@ -693,7 +677,6 @@ def _are_same_song(ytm: YTMusic, vid1: str, vid2: str, cache: Dict[str, dict] = 
     if cache is None:
         cache = {}
     
-    # Get song info with caching
     def get_cached_info(vid):
         if vid not in cache:
             try:
@@ -711,7 +694,6 @@ def _are_same_song(ytm: YTMusic, vid1: str, vid2: str, cache: Dict[str, dict] = 
     if not info1 or not info2:
         return False
     
-    # Extract metadata
     title1 = info1.get('title', '').strip()
     title2 = info2.get('title', '').strip()
     artists1 = [a.get('name', '').strip() for a in info1.get('artists', []) if a.get('name')]
@@ -721,7 +703,6 @@ def _are_same_song(ytm: YTMusic, vid1: str, vid2: str, cache: Dict[str, dict] = 
     duration1 = info1.get('duration_seconds')
     duration2 = info2.get('duration_seconds')
     
-    # Score-based matching (more robust than boolean checks)
     similarity_score = 0.0
     max_score = 0.0
     
@@ -767,9 +748,9 @@ def _are_same_song(ytm: YTMusic, vid1: str, vid2: str, cache: Dict[str, dict] = 
     if duration1 and duration2 and duration1 > 0 and duration2 > 0:
         max_score += 0.1
         duration_diff = abs(duration1 - duration2)
-        if duration_diff <= 2:  # Within 2 seconds
+        if duration_diff <= 2:
             similarity_score += 0.1
-        elif duration_diff <= 10:  # Within 10 seconds
+        elif duration_diff <= 10:
             similarity_score += 0.05
     
     # Calculate final similarity as percentage of possible score
@@ -782,9 +763,6 @@ def _are_same_song(ytm: YTMusic, vid1: str, vid2: str, cache: Dict[str, dict] = 
     
     # Fallback: if no metadata available, assume different
     return False
-
-
-
 
 
 def _detect_video_substitutions_smart(ytm: YTMusic, expected_ids: List[str], actual_ids: List[str], cache: Dict[str, dict] = None) -> Dict[str, str]:
@@ -807,7 +785,7 @@ def _detect_video_substitutions_smart(ytm: YTMusic, expected_ids: List[str], act
     extra_in_actual = actual_set - expected_set
     
     if not missing_from_actual or not extra_in_actual:
-        return substitutions  # No substitutions possible
+        return substitutions
     
     log.debug("Checking for substitutions: %d missing, %d extra videos", 
              len(missing_from_actual), len(extra_in_actual))
@@ -853,20 +831,16 @@ def sync_playlist(
                  playlist_id, queries_used, final_count)
         return
     
-    # Optionally validate video accessibility before proceeding
     if validate_videos:
         log.debug("Validating accessibility of %d videos...", len(desired))
         desired = _validate_video_accessibility(ytm, desired)
 
-    # Step 1: Try the normal update process (may detect substitutions proactively)
     detected_substitutions = minimal_diff_update(ytm, playlist_id, desired)
     
-    # Apply any substitutions found during the update
     if detected_substitutions:
         log.info("Applying %d substitutions detected during playlist update", len(detected_substitutions))
         desired = _apply_substitutions(desired, detected_substitutions)
 
-    # Step 2: Quick verification
     current = get_playlist_video_ids(ytm, playlist_id)
     if current == desired:
         final_count = _query_counter.get_count()
@@ -875,9 +849,8 @@ def sync_playlist(
                  playlist_id, queries_used, final_count)
         return
 
-    # Step 3: Check for additional substitutions EARLY (before trying replace mechanisms)
     additional_substitutions = {}
-    substitution_cache = {}  # Reuse API calls
+    substitution_cache = {}
     
     if accept_substitutions:
         log.debug("Checking for additional video substitutions before retrying...")
@@ -887,11 +860,9 @@ def sync_playlist(
             log.info("Detected %d additional video substitutions, applying them...", len(additional_substitutions))
             adjusted_desired = _apply_substitutions(desired, additional_substitutions)
             
-            # Try sync with adjusted IDs
             if adjusted_desired != desired:
                 minimal_diff_update(ytm, playlist_id, adjusted_desired)
                 
-                # Verify the adjusted sync worked
                 current = get_playlist_video_ids(ytm, playlist_id)
                 if current == adjusted_desired:
                     log.info("Playlist sync successful with substituted video IDs")
@@ -901,10 +872,8 @@ def sync_playlist(
                              playlist_id, queries_used, final_count)
                     return
                 else:
-                    # Update our desired list for further attempts
                     desired = adjusted_desired
 
-    # Step 4: Try full replace as last resort (only if substitutions didn't work)
     if current != desired:
         log.debug("Substitutions didn't resolve mismatch, trying full replace...")
         _replace_playlist_items_safe(ytm, playlist_id, desired)
@@ -920,7 +889,6 @@ def sync_playlist(
                          playlist_id, queries_used, final_count)
                 return
 
-    # Step 5: Analyze final state and determine if acceptable
     current = get_playlist_video_ids(ytm, playlist_id)
     current_set = set(current)
     desired_set = set(desired)
