@@ -17,6 +17,7 @@ Create and maintain a YouTube Music playlist from your Last.fm listening history
 - [How It Works](#how-it-works)
 - [Search and Matching](#search-and-matching)
 - [Weekly Playlists](#weekly-playlists)
+- [Known Issues](#known-issues)
 - [Scheduling (Optional but Encouraged)](#scheduling-optional-but-encouraged)
 - [Troubleshooting](#troubleshooting)
 - [Credits](#credits)
@@ -146,10 +147,15 @@ If a track cannot be matched reliably, it may be skipped or a best-effort match 
 ## Weekly Playlists
 
 When `WEEKLY_ENABLED=true`, the tool creates/updates weekly playlists named:
-- “{PLAYLIST_NAME} week of YYYY-MM-DD”, or
-- “{WEEKLY_PLAYLIST_PREFIX} week of YYYY-MM-DD” if a prefix is set.
+- "{PLAYLIST_NAME} week of YYYY-MM-DD", or
+- "{WEEKLY_PLAYLIST_PREFIX} week of YYYY-MM-DD" if a prefix is set.
 
-The date corresponds to the start of the week used by the tool. Over time, you’ll build a library of weekly snapshots.
+The date corresponds to the start of the week used by the tool. Over time, you'll build a library of weekly snapshots.
+
+## Known Issues
+
+- **Deduplication Accuracy**: The deduplication logic may occasionally classify an original song and its remix as duplicates, causing the remix to be discarded even when both were scrobbled separately.
+- **Search Preferences**: The search algorithm may prefer original songs over remixes even when the remix was specifically scrobbled, potentially replacing your intended track selection.
 
 ## Scheduling (Optional but Encouraged)
 
@@ -196,6 +202,7 @@ Windows Task Scheduler:
 
 ## Troubleshooting
 
+- **Important**: When `USE_ANON_SEARCH=false` (default), your YouTube Music searches will appear in your YouTube search history.
 - YouTube Music auth errors:
   - Ensure `YTM_AUTH_PATH` points to a valid ytmusicapi JSON
   - Re-export credentials following the ytmusicapi setup guide
