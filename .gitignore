@@ -5,6 +5,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.ruff_cache/
 
 # Distribution / packaging
 *.egg-info/
@@ -15,9 +16,16 @@ build/
 .env
 browser.json
 
-# IDE specific files (optional)
+# YTMusic cache directory
+yt_cache/
+
+# IDE specific files
 .vscode/
 .idea/
 
 # Logs
 *.log
+
+# misc
+.github
+search_overrides.json
