@@ -186,6 +186,7 @@ def find_on_ytm(
                         error_msg,
                     )
                 return [], 1, error_msg
+        return [], 0, "max retries exhausted"
 
     query_filter_pairs = [(q, flt) for q in queries for flt in filters]
 

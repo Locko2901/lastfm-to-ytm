@@ -28,7 +28,7 @@ class _QueryCounter:
     def reset(self):
         self.count = 0
         self.session_start = time.time()
-        self.operation_counts = {k: 0 for k in self.operation_counts}
+        self.operation_counts = dict.fromkeys(self.operation_counts, 0)
 
     def get_count(self):
         return self.count
@@ -43,14 +43,17 @@ _query_counter = _QueryCounter()
 
 
 def reset_query_counter():
+    """Reset the query counter for a new session."""
     _query_counter.reset()
 
 
 def get_query_count():
+    """Return total API query count."""
     return _query_counter.get_count()
 
 
 def log_playlist_statistics():
+    """Log playlist session statistics."""
     if _query_counter.session_start is None:
         return
 
@@ -74,6 +77,7 @@ def log_playlist_statistics():
 
 
 def get_playlist_statistics():
+    """Return playlist session statistics as a dict."""
     return {
         "total_queries": _query_counter.get_count(),
         "session_duration": _query_counter.get_session_duration(),

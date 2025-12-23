@@ -54,15 +54,14 @@ class SearchCache(JSONCache):
                     cutoff = now - timedelta(days=self.ttl_days)
                     if timestamp < cutoff:
                         expired_keys.append(key)
-            else:
-                # Not-found entry - use shorter TTL
-                if self.notfound_ttl_days > 0:
-                    cutoff = now - timedelta(days=self.notfound_ttl_days)
-                    if timestamp < cutoff:
-                        expired_keys.append(key)
-                elif self.notfound_ttl_days == 0:
-                    # Don't cache not-found at all
+            # Not-found entry - use shorter TTL
+            elif self.notfound_ttl_days > 0:
+                cutoff = now - timedelta(days=self.notfound_ttl_days)
+                if timestamp < cutoff:
                     expired_keys.append(key)
+            elif self.notfound_ttl_days == 0:
+                # Don't cache not-found at all
+                expired_keys.append(key)
 
         if expired_keys:
             for key in expired_keys:
@@ -107,19 +106,17 @@ class SearchCache(JSONCache):
                         return None
                 self._metrics.record_hit()
                 return video_id
-            else:
-                # Check not-found TTL
-                if self.notfound_ttl_days > 0:
-                    cutoff = now - timedelta(days=self.notfound_ttl_days)
-                    if timestamp < cutoff:
-                        self._metrics.record_miss()
-                        return None
-                    self._metrics.record_hit()
-                    return NOT_FOUND
-                else:
-                    # Not caching not-found
+            # Check not-found TTL
+            if self.notfound_ttl_days > 0:
+                cutoff = now - timedelta(days=self.notfound_ttl_days)
+                if timestamp < cutoff:
                     self._metrics.record_miss()
                     return None
+                self._metrics.record_hit()
+                return NOT_FOUND
+            # Not caching not-found
+            self._metrics.record_miss()
+            return None
 
         self._metrics.record_miss()
         return None

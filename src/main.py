@@ -103,6 +103,7 @@ def _resolve_tracks_to_video_ids(
 
 
 def run(settings: Settings) -> None:
+    """Run the main playlist sync workflow."""
     if settings.lastfm_force_ipv4:
         enable_ipv4_only()
 

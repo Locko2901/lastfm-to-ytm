@@ -25,15 +25,15 @@ def split_artist_aliases(artist: str) -> list[str]:
             parts.extend(dparts)
     out: list[str] = []
     seen: set[str] = set()
-    for p in parts + [s]:
-        p = p.strip()
-        if not p:
+    for part in [*parts, s]:
+        stripped = part.strip()
+        if not stripped:
             continue
-        key = match_key(p)
+        key = match_key(stripped)
         if key in seen:
             continue
         seen.add(key)
-        out.append(p)
+        out.append(stripped)
     return out or [s]
 
 
@@ -86,11 +86,11 @@ def build_queries(artist: str, title: str, album: str | None, *, already_tried: 
     title_variants: list[str] = []
     seen_tv: set[str] = set()
 
-    for t in [original_normalized, core_title, bracketless_title, bracketless_core]:
-        t = collapse_ws(t)
-        if t and t not in seen_tv:
-            seen_tv.add(t)
-            title_variants.append(t)
+    for title_candidate in [original_normalized, core_title, bracketless_title, bracketless_core]:
+        collapsed = collapse_ws(title_candidate)
+        if collapsed and collapsed not in seen_tv:
+            seen_tv.add(collapsed)
+            title_variants.append(collapsed)
     folded_core = collapse_ws(ascii_fold(core_title))
     if folded_core and folded_core not in seen_tv:
         seen_tv.add(folded_core)
@@ -100,8 +100,8 @@ def build_queries(artist: str, title: str, album: str | None, *, already_tried: 
     seen_q: set[str] = set(already_tried) if already_tried else set()
     use_aliases = aliases or [artist]
 
-    for alias in use_aliases:
-        alias = collapse_ws(alias)
+    for alias_candidate in use_aliases:
+        alias = collapse_ws(alias_candidate)
         if not alias:
             continue
         for t in title_variants:

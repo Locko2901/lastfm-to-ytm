@@ -122,6 +122,7 @@ def update_weekly_playlist(
     base_desc: str,
     cache=None,
 ) -> str | None:
+    """Create or update the weekly playlist snapshot."""
     weekly_enabled = bool(getattr(settings, "weekly_enabled", True))
     if not weekly_enabled:
         log.info("Weekly playlist is disabled")

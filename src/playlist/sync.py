@@ -142,22 +142,21 @@ def _are_same_song(ytm: YTMusic, vid1: str, vid2: str) -> bool:
             )
             return True
 
-        if artist_match and norm_title1 and norm_title2:
-            if norm_title1 in norm_title2 or norm_title2 in norm_title1:
-                min_len = min(len(norm_title1), len(norm_title2))
-                if min_len >= 3:
-                    log.info(
-                        "Detected YouTube substitution: %s -> %s (same song)",
-                        vid1,
-                        vid2,
-                    )
-                    log.debug(
-                        "  Title contains match: '%s' ~ '%s', Artists: %s",
-                        norm_title1,
-                        norm_title2,
-                        artists1,
-                    )
-                    return True
+        if artist_match and norm_title1 and norm_title2 and (norm_title1 in norm_title2 or norm_title2 in norm_title1):
+            min_len = min(len(norm_title1), len(norm_title2))
+            if min_len >= 3:
+                log.info(
+                    "Detected YouTube substitution: %s -> %s (same song)",
+                    vid1,
+                    vid2,
+                )
+                log.debug(
+                    "  Title contains match: '%s' ~ '%s', Artists: %s",
+                    norm_title1,
+                    norm_title2,
+                    artists1,
+                )
+                return True
 
         log.debug(
             "Videos are different songs: '%s' by %s vs '%s' by %s",
@@ -237,8 +236,7 @@ def sync_playlist(
     accept_substitutions: bool = True,
     max_retries: int = 3,
 ) -> None:
-    """
-    Synchronize a playlist with desired video IDs.
+    """Synchronize a playlist with desired video IDs.
 
     Simple flow:
     1. Replace playlist content
@@ -335,9 +333,7 @@ def sync_playlist(
                 substitutions.update(new_substitutions)
                 log.info("Found %d YouTube substitutions", len(new_substitutions))
 
-                adjusted_desired = []
-                for vid in desired_video_ids:
-                    adjusted_desired.append(substitutions.get(vid, vid))
+                adjusted_desired = [substitutions.get(vid, vid) for vid in desired_video_ids]
 
                 if set(adjusted_desired) == current_set:
                     log.info(

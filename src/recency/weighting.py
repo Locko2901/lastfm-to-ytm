@@ -7,6 +7,8 @@ from ..lastfm import Scrobble
 
 @dataclass(frozen=True)
 class WeightedTrack:
+    """A track with aggregated play count and recency score."""
+
     artist: str
     track: str
     album: str
