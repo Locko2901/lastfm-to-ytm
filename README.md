@@ -3,11 +3,12 @@
 [![Uses Last.fm API](https://img.shields.io/badge/Uses-Last.fm%20API-D51007?logo=last.fm&logoColor=white)](https://www.last.fm/api)
 [![MIT License](https://img.shields.io/github/license/Locko2901/lastfm-to-ytm)](LICENSE)
 
-# Last.fm → YouTube Music Playlist Creator
+# Last.fm -> YouTube Music Playlist Creator
 
 Create and maintain a YouTube Music playlist from your Last.fm listening history. This tool fetches your recent scrobbles, intelligently finds matches on YouTube Music, and keeps a playlist updated. Optionally, it can snapshot your listening into weekly playlists (e.g., “Your Playlist Name week of YYYY-MM-DD”).
 
 ## Table of Contents
+
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
@@ -17,7 +18,6 @@ Create and maintain a YouTube Music playlist from your Last.fm listening history
 - [How It Works](#how-it-works)
 - [Search and Matching](#search-and-matching)
 - [Weekly Playlists](#weekly-playlists)
-- [Known Issues](#known-issues)
 - [Scheduling (Optional but Encouraged)](#scheduling-optional-but-encouraged)
 - [Troubleshooting](#troubleshooting)
 - [Credits](#credits)
@@ -38,7 +38,7 @@ Create and maintain a YouTube Music playlist from your Last.fm listening history
 
 ## Prerequisites
 
-- Python 3.6+ installed.
+- Python 3.10+ installed.
 - A Last.fm API key: https://www.last.fm/api
 - YouTube Music authentication exported for ytmusicapi:
   - Setup guide: https://ytmusicapi.readthedocs.io/en/stable/setup/browser.html
@@ -48,12 +48,14 @@ Create and maintain a YouTube Music playlist from your Last.fm listening history
 ## Installation
 
 Clone the repo
+
 ```bash
 git clone https://github.com/Locko2901/lastfm-to-ytm.git
 cd lastfm-to-ytm
 ```
 
 Create & activate a virtual environment
+
 ```bash
 python -m venv .venv
 
@@ -65,6 +67,7 @@ source .venv/bin/activate
 ```
 
 Install dependencies
+
 ```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
@@ -73,10 +76,12 @@ pip install -r requirements.txt
 ## Authentication
 
 ### Last.fm
+
 - Get an API key at https://www.last.fm/api
 - Set `LASTFM_API_KEY` and `LASTFM_USER` in the `.env` file.
 
 ### YouTube Music (ytmusicapi)
+
 - Export your auth following the ytmusicapi docs:
   - https://ytmusicapi.readthedocs.io/en/stable/setup/browser.html
 - This tool supports browser-based auth only (OAuth is not supported).
@@ -100,6 +105,7 @@ python run.py
 ```
 
 ## What happens:
+
 - Updates or creates the main playlist named by `PLAYLIST_NAME`.
 - If `WEEKLY_ENABLED=true`, also creates/updates the weekly playlist for the current week:
   - If `WEEKLY_PLAYLIST_PREFIX` is set:
@@ -111,31 +117,30 @@ python run.py
 
 ## How It Works
 
-1) Fetch recent scrobbles from Last.fm  
-2) Process tracks:
+1. Fetch recent scrobbles from Last.fm
+2. Process tracks:
    - If `USE_RECENCY_WEIGHTING=true`, score each track using exponential decay (see below)
    - Otherwise, pick up to `LIMIT` most recent unique tracks
    - If `DEDUPLICATE=true`, ensure the final playlist does not include duplicates
-3) Search YouTube Music for each track and choose the best match (see [Search and Matching](#search-and-matching))  
-4) Create or update YouTube Music playlist(s) in batches (`CHUNK_SIZE`) with delays (`SLEEP_BETWEEN_SEARCHES`) to be rate-limit friendly
+3. Search YouTube Music for each track and choose the best match (see [Search and Matching](#search-and-matching))
+4. Create or update YouTube Music playlist(s) with delays (`SLEEP_BETWEEN_SEARCHES`) to be rate-limit friendly
 
 ## Recency Weighting — Under the Hood
 
-This tool uses a half-life–based exponential decay to rank tracks by how recently you listened to them, while still accounting for multiple plays.
+This tool combines play count and recency to rank tracks:
 
-- Per-play weight:
-  - `weight = 0.5 ** (age_hours / half_life_hours)` (if `half_life_hours > 0`, else `1.0`)
-  - More recent plays contribute more weight; a play exactly one half-life old contributes 0.5
-- Per-track score:
-  - Sum the weights of all scrobbles for that track
-- Sorting priority:
-  1) Higher total score
-  2) More recent latest play (ts)
-  3) Higher play count
+- **Play score**: `plays / max_plays` (normalized to 0-1)
+- **Recency score**: `0.5 ** (age_hours / half_life_hours)` based on the most recent play
+  - A track played exactly one half-life ago scores 0.5
+  - More recent = higher score (up to 1.0)
+- **Final score**: `play_weight * play_score + (1 - play_weight) * recency_score`
+  - Default: 70% play count, 30% recency (`RECENCY_PLAY_WEIGHT=0.7`)
+- **Sorting priority**: Higher score -> more recent play -> higher play count
 
 ## Search and Matching
 
 The matching algorithm aims to select the “right” track:
+
 - Prefers official Song results over user-uploaded Videos.
 - Scores title, artist(s), and album similarity.
 - Handles common artist variations and multi-artist collaborations.
@@ -147,21 +152,71 @@ If a track cannot be matched reliably, it may be skipped or a best-effort match 
 ## Weekly Playlists
 
 When `WEEKLY_ENABLED=true`, the tool creates/updates weekly playlists named:
+
 - "{PLAYLIST_NAME} week of YYYY-MM-DD", or
 - "{WEEKLY_PLAYLIST_PREFIX} week of YYYY-MM-DD" if a prefix is set.
 
 The date corresponds to the start of the week used by the tool. Over time, you'll build a library of weekly snapshots.
 
-## Known Issues
+## Manual Search Overrides
 
-- **Deduplication Accuracy**: The deduplication logic may occasionally classify an original song and its remix as duplicates, causing the remix to be discarded even when both were scrobbled separately.
-- **Search Preferences**: The search algorithm may prefer original songs over remixes even when the remix was specifically scrobbled, potentially replacing your intended track selection.
+Sometimes the automatic search may fail to find a song or may find the wrong version. You can manually override specific searches or blacklist tracks entirely.
+
+### How to Add an Override
+
+1. **Find the correct YouTube Music video ID**:
+   - Search for the song on YouTube Music
+   - Copy the URL (e.g., `https://music.youtube.com/watch?v=dQw4w9WgXcQ`)
+   - The video ID is the part after `v=` (e.g., `dQw4w9WgXcQ`)
+
+2. **Create the overrides file** (if it doesn't exist):
+   ```bash
+   cp config/search_overrides.json.example config/search_overrides.json
+   ```
+
+3. **Add your override** to `config/search_overrides.json`:
+   ```json
+   {
+     "_overrides": {
+       "rick astley|never gonna give you up": {
+         "artist": "Rick Astley",
+         "title": "Never Gonna Give You Up",
+         "video_id": "dQw4w9WgXcQ",
+         "reason": "Search found wrong version"
+       }
+     },
+     "_blacklist": {
+       "artist name|unwanted track": {
+         "artist": "Artist Name",
+         "title": "Unwanted Track",
+         "reason": "Don't want this in playlist"
+       }
+     }
+   }
+   ```
+
+4. **Run the tool again** - it will now use your manual override
+
+### Notes
+
+- The key must be `artist|title` in **lowercase**
+- Add overrides to the `_overrides` section, blacklisted tracks to `_blacklist`
+- The `reason` field is optional but helpful for documentation
+- Overrides take priority over both the search cache and API searches
+- Blacklisted tracks are skipped entirely during playlist generation
+- Both persist until you manually remove them (no expiration)
+
+This feature fixes common issues:
+- **Search didn't find song**: Add the correct video ID to `_overrides`
+- **Search found wrong song**: Override with the correct video ID
+- **Unwanted tracks**: Add to `_blacklist` to exclude from playlists
 
 ## Scheduling (Optional but Encouraged)
 
 #### This tool is meant to run on a scedule to keep the playlists up to date.
 
 Cron (Linux/macOS):
+
 ```bash
 crontab -e
 
@@ -170,6 +225,7 @@ crontab -e
 ```
 
 systemd (Linux):
+
 ```bash
 # /etc/systemd/system/lastfm-ytm.service
 [Unit]
@@ -194,6 +250,7 @@ WantedBy=timers.target
 ```
 
 Windows Task Scheduler:
+
 - Action: Start a program
 - Program/script: path to `python.exe`
 - Add arguments: `C:\path\to\repo\run.py`
@@ -217,13 +274,14 @@ Windows Task Scheduler:
   - Increase `EARLY_TERMINATION_SCORE` for more thorough searching (0.8-0.9)
   - Set `EARLY_TERMINATION_SCORE=1.0` to disable early termination entirely
   - Some tracks may be region-restricted or unavailable on YouTube Music
+  - **Use manual overrides** (see below) to fix specific songs that search can't find or finds incorrectly
 - Search performance issues:
   - Decrease `EARLY_TERMINATION_SCORE` for faster searching (0.9-0.95)
   - Set `SLEEP_BETWEEN_SEARCHES=0` for maximum speed
   - Check search statistics in logs to monitor API usage and performance
 - Rate limiting or throttling:
   - Increase `SLEEP_BETWEEN_SEARCHES`
-  - Reduce `CHUNK_SIZE`
+  - Reduce `SEARCH_MAX_WORKERS`
   - Monitor API usage in the session statistics logs
 - Weekly date mismatches:
   - Time zones and UTC timestamps from Last.fm can shift what falls into a given week
