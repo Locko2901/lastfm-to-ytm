@@ -23,6 +23,7 @@ class PlaylistCache(JSONCache):
         self._load()
 
     def get_id(self, playlist_name: str) -> str | None:
+        """Get cached playlist ID by name."""
         entry = self._cache.get(playlist_name)
         if entry and isinstance(entry, dict):
             playlist_id = entry.get("id")
@@ -36,6 +37,7 @@ class PlaylistCache(JSONCache):
         return None
 
     def get_template(self, playlist_name: str) -> list[str] | None:
+        """Get cached video IDs template for playlist."""
         entry = self._cache.get(playlist_name)
         if entry and isinstance(entry, dict):
             video_ids = entry.get("video_ids")
@@ -49,6 +51,7 @@ class PlaylistCache(JSONCache):
         return None
 
     def set_template(self, playlist_name: str, playlist_id: str, video_ids: list[str]) -> None:
+        """Cache playlist ID and video IDs template."""
         log.info(
             "Caching template: '%s' -> %s (%d videos)",
             playlist_name,
@@ -63,6 +66,7 @@ class PlaylistCache(JSONCache):
         self._save()
 
     def template_changed(self, playlist_name: str, new_video_ids: list[str]) -> bool:
+        """Check if video IDs differ from cached template."""
         cached_ids = self.get_template(playlist_name)
         if not cached_ids:
             return True
@@ -80,6 +84,7 @@ class PlaylistCache(JSONCache):
         return False
 
     def remove(self, playlist_name: str) -> None:
+        """Remove playlist from cache."""
         if playlist_name in self._cache:
             log.info("Removing from cache: '%s'", playlist_name)
             del self._cache[playlist_name]

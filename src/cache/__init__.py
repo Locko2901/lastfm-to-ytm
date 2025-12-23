@@ -21,12 +21,15 @@ class CacheMetrics:
         self.writes = 0
 
     def record_hit(self) -> None:
+        """Record a cache hit."""
         self.hits += 1
 
     def record_miss(self) -> None:
+        """Record a cache miss."""
         self.misses += 1
 
     def record_write(self) -> None:
+        """Record a cache write."""
         self.writes += 1
 
     def get_stats(self) -> dict[str, Any]:
@@ -64,6 +67,7 @@ class CacheMetrics:
             )
 
     def reset(self) -> None:
+        """Reset all counters to zero."""
         self.hits = 0
         self.misses = 0
         self.writes = 0
@@ -95,11 +99,8 @@ class JSONCache(Generic[T]):
             File handle with acquired lock
         """
         if not self.enable_locking:
-            if mode == "r" and self.cache_file.exists():
-                with open(self.cache_file, mode) as f:
-                    yield f
-            elif mode == "w":
-                with open(self.cache_file, mode) as f:
+            if (mode == "r" and self.cache_file.exists()) or mode == "w":
+                with self.cache_file.open(mode) as f:
                     yield f
             else:
                 yield None
@@ -114,7 +115,7 @@ class JSONCache(Generic[T]):
         lock_mode = fcntl.LOCK_SH if mode == "r" else fcntl.LOCK_EX
 
         try:
-            with open(self.cache_file, mode if mode == "w" else "r+") as f:
+            with self.cache_file.open(mode if mode == "w" else "r+") as f:
                 fcntl.flock(f.fileno(), lock_mode)
                 try:
                     yield f
@@ -152,7 +153,7 @@ class JSONCache(Generic[T]):
             self.cache_file.parent.mkdir(parents=True, exist_ok=True)
             temp_file = self.cache_file.with_suffix(".tmp")
 
-            with open(temp_file, "w") as f:
+            with temp_file.open("w") as f:
                 if self.enable_locking:
                     fcntl.flock(f.fileno(), fcntl.LOCK_EX)
                 try:
@@ -178,9 +179,11 @@ class JSONCache(Generic[T]):
         self._save()
 
     def size(self) -> int:
+        """Return number of entries in cache."""
         return len(self._cache)
 
     def get_metrics(self) -> CacheMetrics:
+        """Return cache metrics tracker."""
         return self._metrics
 
     def log_metrics(self, cache_name: str) -> None:

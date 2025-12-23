@@ -7,7 +7,7 @@ from .metrics import (
 
 __all__ = [
     "find_on_ytm",
-    "log_search_statistics",
     "get_search_statistics",
+    "log_search_statistics",
     "reset_search_statistics",
 ]

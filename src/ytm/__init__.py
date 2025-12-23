@@ -6,8 +6,8 @@ from .operations import (
 )
 
 __all__ = [
-    "build_oauth_client",
-    "get_existing_playlist_by_name",
     "add_items_fallback",
+    "build_oauth_client",
     "create_playlist_with_items",
+    "get_existing_playlist_by_name",
 ]

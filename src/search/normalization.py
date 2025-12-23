@@ -58,18 +58,22 @@ UPLOADER_NOISE = {
 
 
 def collapse_ws(s: str) -> str:
+    """Collapse whitespace to single spaces."""
     return " ".join(s.split())
 
 
 def nfkc_casefold(s: str) -> str:
+    """Normalize to NFKC and casefold."""
     return unicodedata.normalize("NFKC", s).casefold()
 
 
 def ascii_fold(s: str) -> str:
+    """Normalize to ASCII via unidecode."""
     return _unidecode(unicodedata.normalize("NFKC", s).casefold())
 
 
 def alnum_space(s: str) -> str:
+    """Keep only alphanumeric chars, replace others with space."""
     return "".join(ch if ch.isalnum() else " " for ch in s)
 
 

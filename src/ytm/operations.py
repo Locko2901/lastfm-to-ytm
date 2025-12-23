@@ -69,6 +69,7 @@ def get_existing_playlist_by_name(
 
 
 def add_items_fallback(ytm: YTMusic, pl_id: str, video_ids: list[str], chunk_size: int = 75) -> None:
+    """Add items to playlist in chunks with single-item fallback on error."""
     for start in range(0, len(video_ids), chunk_size):
         chunk = video_ids[start : start + chunk_size]
         try:

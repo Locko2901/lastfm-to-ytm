@@ -36,6 +36,8 @@ def _str_to_int(val: str | None, default: int) -> int:
 
 @dataclass(frozen=True)
 class Settings:
+    """Application configuration loaded from environment variables."""
+
     lastfm_user: str
     lastfm_api_key: str
     ytm_auth_path: str = str(PROJECT_ROOT / "browser.json")
@@ -71,10 +73,12 @@ class Settings:
 
     @property
     def privacy_status(self) -> str:
+        """Return YouTube privacy status string."""
         return "PUBLIC" if self.make_public else "PRIVATE"
 
     @staticmethod
     def from_env() -> "Settings":
+        """Load settings from environment variables."""
         lastfm_user = os.getenv("LASTFM_USER", "").strip()
         lastfm_api_key = os.getenv("LASTFM_API_KEY", "").strip()
         if not lastfm_user or not lastfm_api_key:
@@ -169,6 +173,7 @@ class Settings:
 
 
 def configure_logging(level: str) -> None:
+    """Configure logging with the specified level."""
     logging.basicConfig(
         level=getattr(logging, level, logging.INFO),
         format="%(levelname)s: %(message)s",

@@ -20,6 +20,7 @@ Create and maintain a YouTube Music playlist from your Last.fm listening history
 - [Weekly Playlists](#weekly-playlists)
 - [Scheduling (Optional but Encouraged)](#scheduling-optional-but-encouraged)
 - [Troubleshooting](#troubleshooting)
+- [Development](#development)
 - [Credits](#credits)
 - [License](#license)
 
@@ -70,7 +71,13 @@ Install dependencies
 
 ```bash
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+pip install .
+```
+
+For development (includes ruff linter):
+
+```bash
+pip install -e ".[dev]"
 ```
 
 ## Authentication
@@ -285,6 +292,29 @@ Windows Task Scheduler:
   - Monitor API usage in the session statistics logs
 - Weekly date mismatches:
   - Time zones and UTC timestamps from Last.fm can shift what falls into a given week
+
+## Development
+
+Install dev dependencies:
+
+```bash
+pip install -e ".[dev]"
+```
+
+Lint and format:
+
+```bash
+# Check for issues
+ruff check .
+
+# Auto-fix issues
+ruff check . --fix
+
+# Format code
+ruff format .
+```
+
+The project uses [ruff](https://docs.astral.sh/ruff/) for linting and formatting with strict rules including pydocstyle (Google convention), import sorting, and various code quality checks.
 
 ## Credits
 
