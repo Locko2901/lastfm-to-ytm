@@ -125,7 +125,7 @@ python run.py
 3. Search YouTube Music for each track and choose the best match (see [Search and Matching](#search-and-matching))
 4. Create or update YouTube Music playlist(s) with delays (`SLEEP_BETWEEN_SEARCHES`) to be rate-limit friendly
 
-## Recency Weighting — Under the Hood
+## Recency Weighting - Under the Hood
 
 This tool combines play count and recency to rank tracks:
 
@@ -288,9 +288,9 @@ Windows Task Scheduler:
 
 ## Credits
 
-- [ytmusicapi](https://ytmusicapi.readthedocs.io/) — YouTube Music API wrapper
+- [ytmusicapi](https://ytmusicapi.readthedocs.io/) - YouTube Music API wrapper
 - Thanks to the Last.fm and YouTube Music communities.
 
 ## License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
