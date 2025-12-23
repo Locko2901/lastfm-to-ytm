@@ -46,7 +46,7 @@ class Settings:
     limit: int = 100
     deduplicate: bool = True
     sleep_between_searches: float = 0.25
-    use_anon_search: bool = False
+    use_anon_search: bool = True
     early_termination_score: float = 0.9
     use_recency_weighting: bool = True
     recency_half_life_hours: float = 24.0

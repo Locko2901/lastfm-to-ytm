@@ -266,7 +266,7 @@ Windows Task Scheduler:
 
 ## Troubleshooting
 
-- **Important**: When `USE_ANON_SEARCH=false` (default), your YouTube Music searches will appear in your YouTube search history.
+- **Important**: When `USE_ANON_SEARCH=false`, your YouTube Music searches will appear in your YouTube search history.
 - YouTube Music auth errors:
   - Ensure `YTM_AUTH_PATH` points to a valid ytmusicapi JSON
   - Re-export credentials following the ytmusicapi setup guide
