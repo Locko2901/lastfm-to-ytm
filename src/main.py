@@ -274,6 +274,14 @@ def run(settings: Settings) -> None:
         video_ids = reordered_video_ids
         tracks = final_tracks
 
+    if backfill_happened:
+        log.info("Final playlist order after backfills:")
+        for i, t in enumerate(tracks[: len(video_ids)], 1):
+            artist = t.artist  # type: ignore[attr-defined]
+            track_name = t.track  # type: ignore[attr-defined]
+            score_info = f" (score: {t.score:.4f})" if hasattr(t, "score") else ""
+            log.info("  %3d. %s - %s%s", i, artist, track_name, score_info)
+
     if len(video_ids) < target_count:
         log.warning("Only found %d/%d unique tracks", len(video_ids), target_count)
     else:
