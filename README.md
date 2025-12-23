@@ -3,7 +3,7 @@
 [![Uses Last.fm API](https://img.shields.io/badge/Uses-Last.fm%20API-D51007?logo=last.fm&logoColor=white)](https://www.last.fm/api)
 [![MIT License](https://img.shields.io/github/license/Locko2901/lastfm-to-ytm)](LICENSE)
 
-# Last.fm -> YouTube Music Playlist Creator
+# Last.fm → YouTube Music Playlist Creator
 
 Create and maintain a YouTube Music playlist from your Last.fm listening history. This tool fetches your recent scrobbles, intelligently finds matches on YouTube Music, and keeps a playlist updated. Optionally, it can snapshot your listening into weekly playlists (e.g., “Your Playlist Name week of YYYY-MM-DD”).
 
