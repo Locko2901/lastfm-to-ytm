@@ -105,6 +105,8 @@ Rename the example environment file and fill in your settings:
 4. Adjust other settings as needed (playlist name, visibility, limits, etc.)
 5. Save the file
 
+> The `.env.example` file is fully documented with inline comments explaining each setting, including playlist options, search behavior, caching, retries, and more.
+
 ## Usage
 
 ```bash
