@@ -27,17 +27,18 @@ def _resolve_tracks_to_video_ids(
     search_overrides,
     max_retries: int = 3,
     max_workers: int = 2,
-) -> tuple[list[str], int]:
+) -> tuple[list[str], int, dict[tuple[str, str], str]]:
     """Resolve tracks to video IDs, deduplicating by video ID."""
     track_metadata: list[tuple[str, Scrobble | WeightedTrack]] = []
+    track_to_vid: dict[tuple[str, str], str] = {}
     misses = 0
     total_tracks = len(tracks)
     seen_vids: set[str] = set()
     unique_count = 0
 
     for index, t in enumerate(tracks, start=1):
-        artist = t.artist  # type: ignore[attr-defined]
-        title = t.track  # type: ignore[attr-defined]
+        artist = t.artist
+        title = t.track
         album = getattr(t, "album", None)
 
         if search_overrides.is_blacklisted(artist, title):
@@ -75,6 +76,8 @@ def _resolve_tracks_to_video_ids(
             if not is_duplicate:
                 seen_vids.add(vid)
                 track_metadata.append((vid, t))
+                track_key = (artist.lower(), title.lower())
+                track_to_vid[track_key] = vid
                 unique_count += 1
 
             dup_marker = " [DUP]" if is_duplicate else ""
@@ -99,7 +102,7 @@ def _resolve_tracks_to_video_ids(
     if (total_tracks - misses) - unique_count > 0:
         log.info("Skipped %d duplicates", (total_tracks - misses) - unique_count)
 
-    return [vid for vid, _ in track_metadata], misses
+    return [vid for vid, _ in track_metadata], misses, track_to_vid
 
 
 def run(settings: Settings) -> None:
@@ -164,9 +167,9 @@ def run(settings: Settings) -> None:
 
     log.info("Resolving %d unique tracks on YTM...", len(tracks))
 
-    seen_track_keys = {(t.artist.lower(), t.track.lower()) for t in tracks}  # type: ignore[attr-defined]
+    seen_track_keys = {(t.artist.lower(), t.track.lower()) for t in tracks}
 
-    video_ids, misses = _resolve_tracks_to_video_ids(
+    video_ids, misses, track_to_vid = _resolve_tracks_to_video_ids(
         ctx.ytm_search,
         tracks,
         settings.sleep_between_searches,
@@ -217,7 +220,7 @@ def run(settings: Settings) -> None:
             new_tracks = [
                 t
                 for t in deduped  # type: ignore[assignment]
-                if (t.artist.lower(), t.track.lower()) not in seen_track_keys  # type: ignore[attr-defined]
+                if (t.artist.lower(), t.track.lower()) not in seen_track_keys
             ]
 
         if not new_tracks:
@@ -225,12 +228,12 @@ def run(settings: Settings) -> None:
             break
 
         for t in new_tracks:
-            seen_track_keys.add((t.artist.lower(), t.track.lower()))  # type: ignore[attr-defined]
+            seen_track_keys.add((t.artist.lower(), t.track.lower()))
 
         log.info("Processing %d new tracks...", len(new_tracks))
         tracks.extend(new_tracks)  # type: ignore[arg-type]
 
-        new_video_ids, new_misses = _resolve_tracks_to_video_ids(
+        new_video_ids, new_misses, new_track_to_vid = _resolve_tracks_to_video_ids(
             ctx.ytm_search,
             new_tracks,
             settings.sleep_between_searches,
@@ -244,6 +247,10 @@ def run(settings: Settings) -> None:
         unique_new_vids = [vid for vid in new_video_ids if vid not in seen_video_ids]
         video_ids.extend(unique_new_vids)
         seen_video_ids.update(unique_new_vids)
+        # Merge new mappings (don't overwrite existing - keep first resolution)
+        for key, vid in new_track_to_vid.items():
+            if key not in track_to_vid:
+                track_to_vid[key] = vid
         misses += new_misses
         current_pass += 1
 
@@ -255,30 +262,35 @@ def run(settings: Settings) -> None:
             play_weight=settings.recency_play_weight,
         )
 
-        track_to_vid = {}
-        for i, t in enumerate(tracks):
-            if i < len(video_ids):
-                key = (t.artist.lower(), t.track.lower())  # type: ignore[attr-defined]
-                if key not in track_to_vid:
-                    track_to_vid[key] = video_ids[i]
-
         reordered_video_ids = []
+        reordered_tracks = []
         for t in final_tracks:
             key = (t.artist.lower(), t.track.lower())
             if key in track_to_vid:
                 vid = track_to_vid[key]
                 if vid not in reordered_video_ids:
                     reordered_video_ids.append(vid)
+                    reordered_tracks.append(t)
 
         log.info("Reordered: %d tracks", len(reordered_video_ids))
         video_ids = reordered_video_ids
-        tracks = final_tracks
+        tracks = reordered_tracks
+
+    elif backfill_happened:
+        resolved_tracks = []
+        for vid in video_ids:
+            for t in tracks:
+                key = (t.artist.lower(), t.track.lower())
+                if track_to_vid.get(key) == vid:
+                    resolved_tracks.append(t)
+                    break
+        tracks = resolved_tracks
 
     if backfill_happened:
         log.info("Final playlist order after backfills:")
-        for i, t in enumerate(tracks[: len(video_ids)], 1):
-            artist = t.artist  # type: ignore[attr-defined]
-            track_name = t.track  # type: ignore[attr-defined]
+        for i, t in enumerate(tracks, 1):
+            artist = t.artist
+            track_name = t.track
             score_info = f" (score: {t.score:.4f})" if hasattr(t, "score") else ""
             log.info("  %3d. %s - %s%s", i, artist, track_name, score_info)
 
