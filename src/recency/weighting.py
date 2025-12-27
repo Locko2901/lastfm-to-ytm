@@ -5,7 +5,7 @@ from typing import Any
 from ..lastfm import Scrobble
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class WeightedTrack:
     """A track with aggregated play count and recency score."""
 

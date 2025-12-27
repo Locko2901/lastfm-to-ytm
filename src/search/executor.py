@@ -1,6 +1,7 @@
 import logging
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Lock
 
 from .metrics import (
     increment_early_terminations,
@@ -190,6 +191,8 @@ def find_on_ytm(
 
     query_filter_pairs = [(q, flt) for q in queries for flt in filters]
 
+    state_lock = Lock()
+
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_pair = {executor.submit(search_with_filter, pair): pair for pair in query_filter_pairs}
 
@@ -198,7 +201,8 @@ def find_on_ytm(
 
             try:
                 results, local_count, error = future.result()
-                song_query_count += local_count
+                with state_lock:
+                    song_query_count += local_count
 
                 if error:
                     if "Invalid filter" in error:
@@ -221,9 +225,11 @@ def find_on_ytm(
                     vid = r.get("videoId")
                     if not (isinstance(vid, str) and len(vid) == 11):
                         continue
-                    if vid in seen:
-                        continue
-                    seen.add(vid)
+
+                    with state_lock:
+                        if vid in seen:
+                            continue
+                        seen.add(vid)
 
                     score = score_candidate(r, artist, title, album)
 
@@ -236,22 +242,23 @@ def find_on_ytm(
                             rt,
                         )
 
-                    if score > best_score:
-                        best_score = score
-                        best_vid = vid
-                        best_rt = rt
+                    with state_lock:
+                        if score > best_score:
+                            best_score = score
+                            best_vid = vid
+                            best_rt = rt
 
-                        if early_termination_enabled and score >= early_termination_threshold:
-                            log.debug(
-                                "Early termination: score %.3f >= %.3f",
-                                score,
-                                early_termination_threshold,
-                            )
-                            increment_early_terminations()
-                            for remaining_future in future_to_pair:
-                                if remaining_future != future and not remaining_future.done():
-                                    remaining_future.cancel()
-                            break
+                    if early_termination_enabled and score >= early_termination_threshold:
+                        log.debug(
+                            "Early termination: score %.3f >= %.3f",
+                            score,
+                            early_termination_threshold,
+                        )
+                        increment_early_terminations()
+                        for remaining_future in future_to_pair:
+                            if remaining_future != future and not remaining_future.done():
+                                remaining_future.cancel()
+                        break
 
                 if early_termination_enabled and best_score >= early_termination_threshold:
                     break
