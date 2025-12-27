@@ -143,8 +143,11 @@ class JSONCache(Generic[T]):
                     self.cache_file.name,
                     len(self._cache),
                 )
-            except (json.JSONDecodeError, ValueError) as e:
-                log.warning("Failed to load cache from %s: %s", self.cache_file.name, e)
+            except json.JSONDecodeError as e:
+                log.warning("Corrupted cache file %s, resetting: %s", self.cache_file.name, e)
+                self._cache = {}
+            except (PermissionError, OSError) as e:
+                log.error("Cannot read cache file %s: %s", self.cache_file.name, e)
                 self._cache = {}
 
     def _save(self) -> None:
@@ -169,8 +172,11 @@ class JSONCache(Generic[T]):
                 len(self._cache),
             )
             self._metrics.record_write()
+        except (PermissionError, OSError) as e:
+            log.error("Cannot write cache file %s: %s", self.cache_file.name, e)
+            raise
         except Exception as e:
-            log.error("Failed to save cache to %s: %s", self.cache_file.name, e)
+            log.error("Unexpected error saving cache to %s: %s", self.cache_file.name, e)
 
     def clear(self) -> None:
         """Clear all cache entries."""

@@ -1,6 +1,6 @@
 import logging
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -39,7 +39,7 @@ class Settings:
     """Application configuration loaded from environment variables."""
 
     lastfm_user: str
-    lastfm_api_key: str
+    lastfm_api_key: str = field(repr=False)  # Exclude from repr
     ytm_auth_path: str = str(PROJECT_ROOT / "browser.json")
     playlist_name: str = "Last.fm Recents (auto)"
     make_public: bool = False
