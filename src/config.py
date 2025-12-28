@@ -14,14 +14,27 @@ CACHE_DIR = Path(os.getenv("CACHE_DIR", str(PROJECT_ROOT / "cache")))
 CONFIG_DIR = Path(os.getenv("CONFIG_DIR", str(PROJECT_ROOT / "config")))
 
 
+def _strip_inline_comment(val: str | None) -> str | None:
+    """Strip inline comments (# preceded by whitespace) from env values."""
+    if val is None:
+        return None
+    for marker in (" #", "\t#"):
+        idx = val.find(marker)
+        if idx != -1:
+            val = val[:idx]
+    return val.strip() or None
+
+
 def _str_to_bool(val: str | None, default: bool = False) -> bool:
     if val is None:
         return default
-    return val.strip().lower() in {"1", "true", "t", "yes", "y", "on"}
+    val = _strip_inline_comment(val) or ""
+    return val.lower() in {"1", "true", "t", "yes", "y", "on"}
 
 
 def _str_to_float(val: str | None, default: float) -> float:
     try:
+        val = _strip_inline_comment(val)
         return float(val) if val is not None else default
     except Exception:
         return default
@@ -29,6 +42,7 @@ def _str_to_float(val: str | None, default: float) -> float:
 
 def _str_to_int(val: str | None, default: int) -> int:
     try:
+        val = _strip_inline_comment(val)
         return int(val) if val is not None else default
     except Exception:
         return default
@@ -104,24 +118,21 @@ class Settings:
         if max_raw_scrobbles == 0:
             max_raw_scrobbles = 999999  # Effectively unlimited
 
-        log_level = os.getenv("LOG_LEVEL", "INFO").upper()
+        log_level = (_strip_inline_comment(os.getenv("LOG_LEVEL")) or "INFO").upper()
         if log_level not in {"CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"}:
             log_level = "INFO"
 
         weekly_enabled = _str_to_bool(os.getenv("WEEKLY_ENABLED"), True)
 
-        weekly_playlist_prefix_env = os.getenv("WEEKLY_PLAYLIST_PREFIX")
-        weekly_playlist_prefix = weekly_playlist_prefix_env.strip() if weekly_playlist_prefix_env else None
-        if weekly_playlist_prefix == "":
-            weekly_playlist_prefix = None
+        weekly_playlist_prefix = _strip_inline_comment(os.getenv("WEEKLY_PLAYLIST_PREFIX"))
 
-        weekly_make_public_env = os.getenv("WEEKLY_MAKE_PUBLIC")
+        weekly_make_public_env = _strip_inline_comment(os.getenv("WEEKLY_MAKE_PUBLIC"))
         weekly_privacy_status: str | None = None
         if weekly_make_public_env is not None:
             weekly_privacy_status = "PUBLIC" if _str_to_bool(weekly_make_public_env, False) else "PRIVATE"
 
-        weekly_week_start = os.getenv("WEEKLY_WEEK_START", "MON")
-        weekly_timezone = os.getenv("WEEKLY_TIMEZONE", "UTC") or "UTC"
+        weekly_week_start = _strip_inline_comment(os.getenv("WEEKLY_WEEK_START")) or "MON"
+        weekly_timezone = _strip_inline_comment(os.getenv("WEEKLY_TIMEZONE")) or "UTC"
         weekly_keep_weeks = _str_to_int(os.getenv("WEEKLY_KEEP_WEEKS"), 2)
         api_max_retries = _str_to_int(os.getenv("API_MAX_RETRIES"), 3)
         search_max_workers = _str_to_int(os.getenv("SEARCH_MAX_WORKERS"), 2)
