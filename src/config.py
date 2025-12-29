@@ -15,8 +15,9 @@ CONFIG_DIR = Path(os.getenv("CONFIG_DIR", str(PROJECT_ROOT / "config")))
 
 
 def _strip_inline_comment(val: str | None) -> str | None:
-    """Strip inline comments (# preceded by whitespace) from env values."""
     if val is None:
+        return None
+    if val.startswith("#"):
         return None
     for marker in (" #", "\t#"):
         idx = val.find(marker)
