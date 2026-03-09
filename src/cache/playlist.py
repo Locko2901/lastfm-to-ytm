@@ -90,6 +90,46 @@ class PlaylistCache(JSONCache):
             del self._cache[playlist_name]
             self._save()
 
+    def prune_old_weeklies(self, base_prefix: str, keep_count: int = 1) -> list[str]:
+        """Remove old weekly playlist entries from cache."""
+        import re
+        from datetime import date
+        
+        if keep_count <= 0:
+            keep_count = 1
+        
+        marker = f"{base_prefix} week of "
+        date_pattern = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+        
+        weekly_entries: list[tuple[date, str]] = []
+        for name in list(self._cache.keys()):
+            if not name.startswith(marker):
+                continue
+            tail = name[len(marker):].strip()
+            if date_pattern.match(tail):
+                try:
+                    d = date.fromisoformat(tail)
+                    weekly_entries.append((d, name))
+                except Exception:
+                    continue
+        
+        if len(weekly_entries) <= keep_count:
+            return []
+        
+        weekly_entries.sort(key=lambda x: x[0], reverse=True)
+        to_remove = weekly_entries[keep_count:]
+        
+        removed = []
+        for _, name in to_remove:
+            log.info("Pruning old weekly from cache: '%s'", name)
+            del self._cache[name]
+            removed.append(name)
+        
+        if removed:
+            self._save()
+        
+        return removed
+
     def verify_exists(self, ytm: YTMusic, playlist_name: str) -> bool:
         """Verify cached playlist still exists on YouTube Music.
 

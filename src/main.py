@@ -1,11 +1,14 @@
+import json
 import logging
 import time
+import traceback
+from datetime import UTC, datetime
 
 from ytmusicapi import YTMusic
 
 from .cache.playlist import PlaylistCache
 from .cache.search import NOT_FOUND, SearchCache, SearchOverrides
-from .config import Settings
+from .config import CACHE_DIR, Settings
 from .context import RuntimeContext
 from .lastfm import Scrobble, enable_ipv4_only, fetch_recent_with_diversity
 from .playlist import log_playlist_statistics, sync_playlist
@@ -27,10 +30,15 @@ def _resolve_tracks_to_video_ids(
     search_overrides,
     max_retries: int = 3,
     max_workers: int = 2,
-) -> tuple[list[str], int, dict[tuple[str, str], str]]:
-    """Resolve tracks to video IDs, deduplicating by video ID."""
+) -> tuple[list[str], int, dict[tuple[str, str], str], list[dict]]:
+    """Resolve tracks to video IDs, deduplicating by video ID.
+
+    Returns:
+        Tuple of (video_ids, misses, track_to_vid, run_log_mappings)
+    """
     track_metadata: list[tuple[str, Scrobble | WeightedTrack]] = []
     track_to_vid: dict[tuple[str, str], str] = {}
+    run_log_mappings: list[dict] = []
     misses = 0
     total_tracks = len(tracks)
     seen_vids: set[str] = set()
@@ -43,10 +51,12 @@ def _resolve_tracks_to_video_ids(
 
         if search_overrides.is_blacklisted(artist, title):
             misses += 1
+            run_log_mappings.append({"artist": artist, "title": title, "source": "blacklisted"})
             continue
 
         # Priority: overrides -> cache -> YTM search
         vid = search_overrides.get(artist, title)
+        yt_title = None
         source = "override" if vid else None
         if vid is None:
             cached = search_cache.get(artist, title)
@@ -54,11 +64,17 @@ def _resolve_tracks_to_video_ids(
                 # Previously searched and not found - skip without re-searching
                 misses += 1
                 log.info("%d/%d %s [not found, cached]", index, total_tracks, title)
+                run_log_mappings.append({"artist": artist, "title": title, "source": "not_found_cached"})
                 continue
             vid = cached
+            if vid:
+                # Get yt_title from cache entry if available
+                cache_entry = search_cache.get_entry(artist, title)
+                if cache_entry:
+                    yt_title = cache_entry.get("yt_title")
             source = "cache" if vid else None
         if vid is None:
-            vid = find_on_ytm(
+            search_result = find_on_ytm(
                 ytm_search,
                 artist,
                 title,
@@ -67,7 +83,11 @@ def _resolve_tracks_to_video_ids(
                 max_workers=max_workers,
                 max_retries=max_retries,
             )
-            search_cache.set(artist, title, vid)
+            if search_result:
+                vid, yt_title = search_result
+            else:
+                vid, yt_title = None, None
+            search_cache.set(artist, title, vid, yt_title)
             time.sleep(max(0.0, sleep_between))
             source = "search"
 
@@ -79,6 +99,7 @@ def _resolve_tracks_to_video_ids(
                 track_key = (artist.lower(), title.lower())
                 track_to_vid[track_key] = vid
                 unique_count += 1
+                run_log_mappings.append({"artist": artist, "title": title, "source": source})
 
             dup_marker = " [DUP]" if is_duplicate else ""
             cache_marker = f" [{source}]" if source != "search" else ""
@@ -98,11 +119,67 @@ def _resolve_tracks_to_video_ids(
         else:
             misses += 1
             log.warning("%d/%d Not found: %s - %s", index, total_tracks, artist, title)
+            run_log_mappings.append({"artist": artist, "title": title, "source": "not_found"})
 
     if (total_tracks - misses) - unique_count > 0:
         log.info("Skipped %d duplicates", (total_tracks - misses) - unique_count)
 
-    return [vid for vid, _ in track_metadata], misses, track_to_vid
+    return [vid for vid, _ in track_metadata], misses, track_to_vid, run_log_mappings
+
+
+def _save_run_log(mappings: list[dict]) -> None:
+    """Save the run log for the web dashboard.
+
+    Only stores minimal data (artist, title, source) - the web dashboard
+    enriches with video_id/yt_title from the search cache.
+    """
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    log_file = CACHE_DIR / ".last_run_log.json"
+    data = {
+        "timestamp": datetime.now(UTC).isoformat(),
+        "total": len(mappings),
+        "mappings": mappings,
+    }
+    with log_file.open("w") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    log.info("Saved run log with %d mappings to %s", len(mappings), log_file)
+
+
+def _save_failure_log(error_message: str, traceback_str: str | None = None) -> None:
+    """Save a failure log when sync fails.
+
+    This is preserved across runs until a successful sync clears it.
+    """
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    log_file = CACHE_DIR / ".last_failure.json"
+
+    # Generate helpful hints based on error type
+    hint = None
+    error_lower = error_message.lower()
+    if "401" in error_message or "unauthorized" in error_lower:
+        hint = "Authentication expired. Try regenerating YouTube Music auth or check your Last.fm API key."
+    elif "403" in error_message or "forbidden" in error_lower:
+        hint = "Access denied. You may need to regenerate YouTube Music auth, or you've been rate-limited."
+    elif "rate limit" in error_lower:
+        hint = "Rate limited by YouTube Music. Wait a few minutes before trying again."
+
+    data = {
+        "timestamp": datetime.now(UTC).isoformat(),
+        "error": error_message,
+        "traceback": traceback_str,
+        "hint": hint,
+    }
+    with log_file.open("w") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    log.info("Saved failure log to %s", log_file)
+
+
+def _clear_failure_log() -> None:
+    """Clear the failure log on successful sync."""
+    log_file = CACHE_DIR / ".last_failure.json"
+    if log_file.exists():
+        log_file.unlink()
+        log.debug("Cleared failure log")
 
 
 def run(settings: Settings) -> None:
@@ -169,7 +246,7 @@ def run(settings: Settings) -> None:
 
     seen_track_keys = {(t.artist.lower(), t.track.lower()) for t in tracks}
 
-    video_ids, misses, track_to_vid = _resolve_tracks_to_video_ids(
+    video_ids, misses, track_to_vid, run_log_mappings = _resolve_tracks_to_video_ids(
         ctx.ytm_search,
         tracks,
         settings.sleep_between_searches,
@@ -233,7 +310,7 @@ def run(settings: Settings) -> None:
         log.info("Processing %d new tracks...", len(new_tracks))
         tracks.extend(new_tracks)  # type: ignore[arg-type]
 
-        new_video_ids, new_misses, new_track_to_vid = _resolve_tracks_to_video_ids(
+        new_video_ids, new_misses, new_track_to_vid, new_run_log = _resolve_tracks_to_video_ids(
             ctx.ytm_search,
             new_tracks,
             settings.sleep_between_searches,
@@ -247,6 +324,7 @@ def run(settings: Settings) -> None:
         unique_new_vids = [vid for vid in new_video_ids if vid not in seen_video_ids]
         video_ids.extend(unique_new_vids)
         seen_video_ids.update(unique_new_vids)
+        run_log_mappings.extend(new_run_log)
         # Merge new mappings (don't overwrite existing - keep first resolution)
         for key, vid in new_track_to_vid.items():
             if key not in track_to_vid:
@@ -293,6 +371,19 @@ def run(settings: Settings) -> None:
             track_name = t.track
             score_info = f" (score: {t.score:.4f})" if hasattr(t, "score") else ""
             log.info("  %3d. %s - %s%s", i, artist, track_name, score_info)
+
+        run_log_by_key = {(m["artist"].lower(), m["title"].lower()): m for m in run_log_mappings}
+        reordered_run_log = []
+        for t in tracks:
+            key = (t.artist.lower(), t.track.lower())
+            if key in run_log_by_key:
+                reordered_run_log.append(run_log_by_key[key])
+        final_keys = {(t.artist.lower(), t.track.lower()) for t in tracks}
+        for m in run_log_mappings:
+            key = (m["artist"].lower(), m["title"].lower())
+            if key not in final_keys:
+                reordered_run_log.append(m)
+        run_log_mappings = reordered_run_log
 
     if len(video_ids) < target_count:
         log.warning("Only found %d/%d unique tracks", len(video_ids), target_count)
@@ -347,12 +438,18 @@ def run(settings: Settings) -> None:
                 ctx.playlist_cache.set_template(settings.playlist_name, existing_id, valid_video_ids)
             except Exception as e:
                 error_msg = str(e)
-                if "403" in error_msg or "Forbidden" in error_msg:
+                if "401" in error_msg or "Unauthorized" in error_msg:
+                    log.error("Sync failed: HTTP 401 - authentication expired")
+                    _save_failure_log("HTTP 401 - Unauthorized", traceback.format_exc())
+                elif "403" in error_msg or "Forbidden" in error_msg:
                     log.error("Sync failed: HTTP 403 - rate limit or auth expired")
+                    _save_failure_log("HTTP 403 - rate limit or auth expired", traceback.format_exc())
                 elif "Expecting value" in error_msg:
                     log.error("Sync failed: Invalid API response (likely rate limited)")
+                    _save_failure_log("Invalid API response (likely rate limited)", traceback.format_exc())
                 else:
                     log.error("Sync failed: %s", e)
+                    _save_failure_log(str(e), traceback.format_exc())
                 return
         else:
             log.info("Playlist already up to date")
@@ -373,6 +470,7 @@ def run(settings: Settings) -> None:
             log.info("Created playlist with %d tracks", len(valid_video_ids))
         except Exception as e:
             log.error("Create failed: %s", e)
+            _save_failure_log(f"Create failed: {e}", traceback.format_exc())
             return
 
     weekly_id = update_weekly_playlist(
@@ -391,6 +489,12 @@ def run(settings: Settings) -> None:
         log.info("Weekly: https://music.youtube.com/playlist?list=%s", weekly_id)
     if misses:
         log.info("%d tracks not found", misses)
+
+    # Clear failure log on successful sync
+    _clear_failure_log()
+
+    # Save run log for web dashboard
+    _save_run_log(run_log_mappings)
 
     log_search_statistics()
     log_playlist_statistics()

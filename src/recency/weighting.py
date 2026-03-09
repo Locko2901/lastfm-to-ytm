@@ -86,4 +86,26 @@ def collapse_recency_weighted(
         )
 
     items.sort(key=lambda x: (-x.score, -x.ts, -x.plays))
+
+    from datetime import UTC, datetime
+
+    log = __import__("logging").getLogger(__name__)
+    log.debug("=== Top 50 track timestamps (play_weight=%.2f, half_life=%.1fh, max_plays=%d) ===", play_weight, half_life_hours, max_plays)
+    for i, t in enumerate(items[:50], 1):
+        age_hours = (now - t.ts) / 3600.0
+        recency_score = 0.5 ** (age_hours / float(half_life_hours)) if half_life_hours > 0 else 1.0
+        play_score = t.plays / max_plays
+        dt = datetime.fromtimestamp(t.ts, tz=UTC)
+        log.debug(
+            "  %2d. %-25s | plays=%2d (%.2f) | last=%s (%.1fh ago, rec=%.3f) | score=%.4f",
+            i,
+            t.track[:25],
+            t.plays,
+            play_score,
+            dt.strftime("%m-%d %H:%M"),
+            age_hours,
+            recency_score,
+            t.score,
+        )
+
     return items
