@@ -22,10 +22,11 @@ def _try_exact_query(
     album: str | None,
     max_retries: int,
     early_termination_score: float,
-) -> tuple[str, float, int] | None:
-    """Try exact query with all three filters. Returns (vid, score, query_count) if good match found."""
+) -> tuple[str, str | None, float, int] | None:
+    """Try exact query with all three filters. Returns (vid, yt_title, score, query_count) if good match found."""
     filters = ["songs", "videos", None]
     best_vid: str | None = None
+    yt_title: str | None = None
     best_score = 0.0
     query_count = 0
     seen: set[str] = set()
@@ -58,6 +59,7 @@ def _try_exact_query(
                     if score > best_score:
                         best_score = score
                         best_vid = vid
+                        yt_title = r.get("title")
 
                         if score >= early_termination_threshold:
                             log.debug(
@@ -65,7 +67,7 @@ def _try_exact_query(
                                 score,
                                 early_termination_threshold,
                             )
-                            return (best_vid, best_score, query_count)
+                            return (best_vid, yt_title, best_score, query_count)
 
                 break
 
@@ -89,7 +91,7 @@ def _try_exact_query(
                 break
 
     if best_vid and best_score >= (base_threshold - 0.06):
-        return (best_vid, best_score, query_count)
+        return (best_vid, yt_title, best_score, query_count)
 
     return None
 
@@ -102,8 +104,8 @@ def find_on_ytm(
     early_termination_score: float = 0.9,
     max_workers: int = 2,
     max_retries: int = 3,
-) -> str | None:
-    """Search YouTube Music for a song and return videoId if match found."""
+) -> tuple[str, str | None] | None:
+    """Search YouTube Music for a song and return (videoId, yt_title) if match found."""
     increment_songs_searched()
 
     song_query_count = 0
@@ -114,7 +116,7 @@ def find_on_ytm(
     exact_query = f"{artist} - {title}"
     exact_result = _try_exact_query(ytm, exact_query, artist, title, album, max_retries, early_termination_score)
     if exact_result:
-        vid, score, query_count = exact_result
+        vid, yt_title, score, query_count = exact_result
         song_query_count += query_count
         increment_queries(song_query_count)
         log.debug(
@@ -123,7 +125,7 @@ def find_on_ytm(
             score,
             song_query_count,
         )
-        return vid
+        return (vid, yt_title)
 
     song_query_count += 3
 
@@ -133,6 +135,7 @@ def find_on_ytm(
     filters = ["songs", "videos", None]
 
     best_vid: str | None = None
+    yt_title: str | None = None
     best_score = 0.0
     best_rt = ""
     seen: set[str] = set()
@@ -247,6 +250,7 @@ def find_on_ytm(
                             best_score = score
                             best_vid = vid
                             best_rt = rt
+                            yt_title = r.get("title")
 
                     if early_termination_enabled and score >= early_termination_threshold:
                         log.debug(
@@ -284,10 +288,10 @@ def find_on_ytm(
 
     threshold = base_threshold + (video_extra if best_rt == "video" else 0.0)
     if best_score >= threshold:
-        return best_vid
+        return (best_vid, yt_title)
     if best_score >= (threshold - 0.06):
         log.debug("Accepting below threshold: score %.3f", best_score)
-        return best_vid
+        return (best_vid, yt_title)
 
     log.debug("Rejecting: score %.3f < threshold %.3f", best_score, threshold)
     return None

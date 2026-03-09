@@ -106,7 +106,7 @@ class Settings:
         limit = _str_to_int(os.getenv("LIMIT"), 100)
         deduplicate = _str_to_bool(os.getenv("DEDUPLICATE"), True)
         sleep_between_searches = _str_to_float(os.getenv("SLEEP_BETWEEN_SEARCHES"), 0.25)
-        use_anon_search = _str_to_bool(os.getenv("USE_ANON_SEARCH"), False)
+        use_anon_search = _str_to_bool(os.getenv("USE_ANON_SEARCH"), True)
         early_termination_score = _str_to_float(os.getenv("EARLY_TERMINATION_SCORE"), 0.9)
 
         use_recency_weighting = _str_to_bool(os.getenv("USE_RECENCY_WEIGHTING"), True)

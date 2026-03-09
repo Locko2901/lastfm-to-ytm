@@ -121,19 +121,29 @@ class SearchCache(JSONCache):
         self._metrics.record_miss()
         return None
 
-    def set(self, artist: str, title: str, video_id: str | None) -> None:
-        """Cache a video ID for artist/title."""
-        # Don't cache not-found if notfound_ttl is 0
+    def get_entry(self, artist: str, title: str) -> dict | None:
+        """Get full cache entry for artist/title (includes yt_title if available)."""
+        key = self._make_key(artist, title)
+        entry = self._cache.get(key)
+        if not entry:
+            return None
+        return entry
+
+    def set(self, artist: str, title: str, video_id: str | None, yt_title: str | None = None) -> None:
+        """Cache a video ID (and optionally YouTube title) for artist/title."""
         if video_id is None and self.notfound_ttl_days == 0:
             return
 
         key = self._make_key(artist, title)
-        self._cache[key] = {
+        entry = {
             "artist": artist,
             "title": title,
             "video_id": video_id,
             "timestamp": datetime.now(UTC).isoformat(),
         }
+        if yt_title:
+            entry["yt_title"] = yt_title
+        self._cache[key] = entry
         self._save()
 
     def stats(self) -> dict[str, int]:
