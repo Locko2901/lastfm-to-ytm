@@ -114,10 +114,7 @@ def clear_cache_entry():
 
     if artist and title:
         cache = load_search_cache()
-        key = cache._make_key(artist, title)
-        if key in cache._cache:
-            del cache._cache[key]
-            cache._save()
+        cache.delete_by_track(artist, title)
 
     redirect_tab = request.form.get("redirect_tab", "playlist")
     return redirect(url_for("index") + f"?tab={redirect_tab}")

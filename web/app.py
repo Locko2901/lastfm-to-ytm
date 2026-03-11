@@ -12,26 +12,20 @@ from flask import Flask, g, render_template
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.config import CACHE_DIR, CONFIG_DIR, PROJECT_ROOT
-
 from .routes import actions_bp, api_bp, auth_bp, sync_bp
 from .services import (
+    ENV_FILE,
     get_cache_stats,
     get_cached_tracks,
     get_last_sync_time,
     get_not_found_tracks,
     get_overrides_data,
     get_playlist_links,
-    load_overrides,
-    load_run_log,
+    get_playlist_mappings,
+    get_setup_status,
     sync_state,
 )
 from .services.scheduler import init_scheduler_from_env
-
-ENV_FILE = PROJECT_ROOT / ".env"
-BROWSER_JSON_FILE = PROJECT_ROOT / "browser.json"
-RUN_LOG_FILE = CACHE_DIR / ".last_run_log.json"
-OVERRIDES_FILE = CONFIG_DIR / "search_overrides.json"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -117,22 +111,7 @@ app.register_blueprint(actions_bp)
 @app.route("/")
 def index():
     """Main dashboard page."""
-    run_log = load_run_log()
-    all_mappings = run_log["mappings"]
-    limit = run_log["limit"]
-    overrides = load_overrides()
-
-    playlist_mappings = []
-    for m in all_mappings:
-        if (m.get("video_id") or m.get("pending_retry")) and len(playlist_mappings) < limit:
-            key = f"{m['artist'].lower()}|{m['title'].lower()}"
-            m["is_blacklisted"] = key in overrides._cache.get("_blacklist", {})
-            m["is_overridden"] = key in overrides._cache.get("_overrides", {})
-            if m.get("video_id"):
-                m["ytm_url"] = f"https://music.youtube.com/watch?v={m['video_id']}"
-            else:
-                m["ytm_url"] = None
-            playlist_mappings.append(m)
+    playlist_mappings, run_log = get_playlist_mappings()
 
     override_list, blacklist = get_overrides_data()
     cache_stats = get_cache_stats()
@@ -140,18 +119,12 @@ def index():
     last_sync = get_last_sync_time()
     playlist_links = get_playlist_links()
 
-    env_exists = ENV_FILE.exists()
-    env_empty = env_exists and ENV_FILE.stat().st_size == 0
-    needs_setup = not env_exists or env_empty
-
-    browser_exists = BROWSER_JSON_FILE.exists()
-    browser_valid = browser_exists and BROWSER_JSON_FILE.stat().st_size > 3
-    needs_auth = env_exists and not env_empty and not browser_valid
+    setup = get_setup_status()
 
     return render_template(
         "dashboard.html",
         mappings=playlist_mappings,
-        limit=limit,
+        limit=run_log["limit"],
         timestamp=run_log["timestamp"],
         total=run_log["total"],
         resolved=len(playlist_mappings),
@@ -163,16 +136,14 @@ def index():
         sync_running=sync_state["running"],
         last_sync=last_sync,
         playlist_links=playlist_links,
-        needs_setup=needs_setup,
-        needs_auth=needs_auth,
+        needs_setup=setup["needs_setup"],
+        needs_auth=setup["needs_auth"],
     )
 
 
 def main():
     """Run the Flask development server."""
     logger.info("Starting web dashboard at http://127.0.0.1:2002")
-    logger.info("Run log: %s", RUN_LOG_FILE)
-    logger.info("Overrides: %s", OVERRIDES_FILE)
     try:
         init_scheduler_from_env()
     except Exception as e:

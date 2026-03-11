@@ -2,24 +2,12 @@ import { closeModal, showModal } from "./modals.js"
 import {
   formatDateTime,
   getUse24HourClock,
-  invalidateClockFormatCache,
-  invalidateNowPlayingSettingsCache,
+  insertBanner,
+  invalidateSettingsCache,
+  removeBanner,
   showToast,
   updateAutoSyncIndicator,
 } from "./utils.js"
-
-const _BOOL_SETTINGS = [
-  "MAKE_PUBLIC",
-  "DEDUPLICATE",
-  "USE_ANON_SEARCH",
-  "USE_RECENCY_WEIGHTING",
-  "WEEKLY_ENABLED",
-  "WEEKLY_MAKE_PUBLIC",
-  "LASTFM_FORCE_IPV4",
-  "AUTO_SYNC_ENABLED",
-  "USE_24_HOUR_CLOCK",
-  "NOW_PLAYING_ENABLED",
-]
 
 const NO_RESTART_SETTINGS = [
   "USE_24_HOUR_CLOCK",
@@ -108,8 +96,7 @@ export async function saveSettings(event) {
       throw new Error(data.error || "Failed to save settings")
     }
 
-    invalidateClockFormatCache()
-    invalidateNowPlayingSettingsCache()
+    invalidateSettingsCache()
 
     if (window.restartNowPlaying) {
       window.restartNowPlaying()
@@ -138,12 +125,10 @@ export function closeSettingsModal() {
 }
 
 function showRestartBanner() {
-  if (document.getElementById("restartBanner")) return
-
-  const banner = document.createElement("div")
-  banner.id = "restartBanner"
-  banner.className = "auth-required-banner"
-  banner.innerHTML = `
+  insertBanner(
+    "restartBanner",
+    "auth-required-banner",
+    `
     <div class="auth-banner-content">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
@@ -155,19 +140,12 @@ function showRestartBanner() {
       <button class="btn btn-sm btn-primary" data-action="restartServer">Restart Now</button>
       <button class="auth-banner-close" data-action="dismissRestartBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
-  `
-
-  const container = document.querySelector(".container")
-  if (container) {
-    container.insertBefore(banner, container.firstChild)
-  }
+  `,
+  )
 }
 
 export function dismissRestartBanner() {
-  const banner = document.getElementById("restartBanner")
-  if (banner) {
-    banner.remove()
-  }
+  removeBanner("restartBanner")
 }
 
 export async function restartServer() {

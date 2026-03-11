@@ -212,6 +212,29 @@ def stop_scheduler():
     logger.info("Scheduler stopped")
 
 
+def _parse_scheduler_settings() -> dict:
+    """Parse AUTO_SYNC_* settings from the .env file.
+
+    Returns dict with keys: enabled, schedule_type, interval_hours,
+    start_time, cron_expression.
+    """
+    from .env import parse_env_file
+
+    settings = parse_env_file()
+    try:
+        interval_hours = float(settings.get("AUTO_SYNC_INTERVAL_HOURS", "6"))
+    except ValueError:
+        interval_hours = 6.0
+
+    return {
+        "enabled": settings.get("AUTO_SYNC_ENABLED", "").lower() in ("true", "1", "yes", "on"),
+        "schedule_type": settings.get("AUTO_SYNC_TYPE", "interval").lower(),
+        "interval_hours": interval_hours,
+        "start_time": settings.get("AUTO_SYNC_START_TIME", ""),
+        "cron_expression": settings.get("AUTO_SYNC_CRON", "0 */6 * * *"),
+    }
+
+
 def get_scheduler_status() -> dict:
     """Get current scheduler status for the API.
 
@@ -222,29 +245,17 @@ def get_scheduler_status() -> dict:
     worker that handles the request — they will be ``None`` on non-scheduler
     workers, which is acceptable.
     """
-    from .env import parse_env_file
-
-    settings = parse_env_file()
-    enabled = settings.get("AUTO_SYNC_ENABLED", "").lower() in (
-        "true", "1", "yes", "on",
-    )
-    schedule_type = settings.get("AUTO_SYNC_TYPE", "interval").lower()
-    try:
-        interval_hours = float(settings.get("AUTO_SYNC_INTERVAL_HOURS", "6"))
-    except ValueError:
-        interval_hours = 6.0
-    start_time = settings.get("AUTO_SYNC_START_TIME", "")
-    cron_expression = settings.get("AUTO_SYNC_CRON", "0 */6 * * *")
+    cfg = _parse_scheduler_settings()
 
     _update_next_run()
 
     return {
         "available": HAS_APSCHEDULER,
-        "enabled": enabled and HAS_APSCHEDULER,
-        "schedule_type": schedule_type,
-        "interval_hours": interval_hours,
-        "start_time": start_time,
-        "cron_expression": cron_expression,
+        "enabled": cfg["enabled"] and HAS_APSCHEDULER,
+        "schedule_type": cfg["schedule_type"],
+        "interval_hours": cfg["interval_hours"],
+        "start_time": cfg["start_time"],
+        "cron_expression": cfg["cron_expression"],
         "next_run": scheduler_state["next_run"],
         "last_run": scheduler_state["last_run"],
         "last_run_success": scheduler_state["last_run_success"],
@@ -253,29 +264,21 @@ def get_scheduler_status() -> dict:
 
 def init_scheduler_from_env():
     """Initialize scheduler from environment variables on app startup."""
-    from .env import parse_env_file
+    cfg = _parse_scheduler_settings()
 
-    settings = parse_env_file()
-
-    enabled = settings.get("AUTO_SYNC_ENABLED", "").lower() in ("true", "1", "yes", "on")
-    schedule_type = settings.get("AUTO_SYNC_TYPE", "interval").lower()
-
-    try:
-        interval_hours = float(settings.get("AUTO_SYNC_INTERVAL_HOURS", "6"))
-    except ValueError:
-        interval_hours = 6.0
-
-    start_time = settings.get("AUTO_SYNC_START_TIME", "")
-    cron_expression = settings.get("AUTO_SYNC_CRON", "0 */6 * * *")
-
-    if enabled:
-        logger.info(f"Initializing scheduler from env: type={schedule_type}, interval={interval_hours}h, start={start_time}")
+    if cfg["enabled"]:
+        logger.info(
+            "Initializing scheduler from env: type=%s, interval=%sh, start=%s",
+            cfg["schedule_type"],
+            cfg["interval_hours"],
+            cfg["start_time"],
+        )
         start_scheduler(
             enabled=True,
-            schedule_type=schedule_type,
-            interval_hours=interval_hours,
-            start_time=start_time,
-            cron_expression=cron_expression,
+            schedule_type=cfg["schedule_type"],
+            interval_hours=cfg["interval_hours"],
+            start_time=cfg["start_time"],
+            cron_expression=cfg["cron_expression"],
         )
     else:
         logger.info("Scheduler disabled in settings")

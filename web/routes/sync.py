@@ -2,18 +2,18 @@
 
 from __future__ import annotations
 
-import json
+import contextlib
 import logging
 import subprocess
 import sys
 import threading
-import time
 from datetime import UTC, datetime
 from pathlib import Path
 
 from flask import Blueprint, Response, jsonify, stream_with_context
 
 from ..services import sync_lock, sync_state
+from ..services.state import stream_state_output
 
 sync_bp = Blueprint("sync", __name__)
 
@@ -22,13 +22,10 @@ logger = logging.getLogger(__name__)
 
 def _run_sync_process():
     """Run the sync process in background."""
-    from collections import deque
+    from ..services.state import reset_output
 
-    from ..services.state import MAX_OUTPUT_LINES
-
+    reset_output(sync_state, sync_lock)
     with sync_lock:
-        sync_state["output"] = deque(maxlen=MAX_OUTPUT_LINES)
-        sync_state["exit_code"] = None
         sync_state["started_at"] = datetime.now(UTC).isoformat()
         sync_state["finished_at"] = None
 
@@ -93,44 +90,25 @@ def stop_sync():
     """Stop the running sync process."""
     with sync_lock:
         process = sync_state.get("process")
+        running = sync_state["running"]
 
-    if process:
-        try:
+    if not running:
+        return jsonify({"error": "No sync running"}), 400
+
+    if process is not None:
+        with contextlib.suppress(OSError):
             process.terminate()
-            with sync_lock:
-                sync_state["output"].append("--- Sync stopped by user ---")
-            return jsonify({"status": "stopped"})
-        except OSError:
-            pass
+        with sync_lock:
+            sync_state["output"].append("--- Sync stopped by user ---")
 
-    return jsonify({"error": "No sync running"}), 400
+    return jsonify({"status": "stopped"})
 
 
 @sync_bp.route("/sync_output")
 def sync_output():
     """Stream sync output via Server-Sent Events."""
-
-    def generate():
-        last_idx = 0
-        while True:
-            with sync_lock:
-                output_list = list(sync_state["output"])
-                running = sync_state["running"]
-                exit_code = sync_state["exit_code"]
-
-            if last_idx < len(output_list):
-                for line in output_list[last_idx:]:
-                    yield f"data: {json.dumps({'line': line})}\n\n"
-                last_idx = len(output_list)
-
-            if not running and last_idx >= len(output_list):
-                yield f"data: {json.dumps({'finished': True, 'exit_code': exit_code})}\n\n"
-                break
-
-            time.sleep(0.1)
-
     return Response(
-        stream_with_context(generate()),
+        stream_with_context(stream_state_output(sync_state, sync_lock)),
         mimetype="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

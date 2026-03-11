@@ -1,14 +1,9 @@
 {# j2lint: disable=S7 #}
+{% from "macros/_track_actions.html" import search_bar, track_actions %}
 <div class="tab-panel" id="panel-cache">
   {% if cached_tracks %}
   <div class="filter-bar">
-    <div class="search-wrapper">
-      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <path d="m21 21-4.3-4.3"></path>
-      </svg>
-      <input type="text" class="search-input" placeholder="Search cached tracks..." id="cacheSearch">
-    </div>
+    {{ search_bar("Search cached tracks...", "cacheSearch") }}
     <div class="filter-chips">
       <button class="filter-chip active" data-filter="all" data-panel="cache">All ({{ cached_tracks | length }})</button>
       <button class="filter-chip" data-filter="has-override" data-panel="cache">Has Override</button>
@@ -43,33 +38,7 @@
       </div>
 
       <div class="track-actions">
-        {% if t.has_override %}
-        <form method="POST" action="/remove_override" style="display:inline">
-          <input type="hidden" name="artist" value="{{ t.artist }}">
-          <input type="hidden" name="title" value="{{ t.title }}">
-          <input type="hidden" name="redirect_tab" value="cache">
-          <button type="submit" class="btn btn-secondary btn-sm">Remove Override</button>
-        </form>
-        {% else %}
-        <button class="btn btn-success btn-sm" data-action="showOverrideModal" data-artist="{{ t.artist }}" data-title="{{ t.title }}" data-tab="cache">
-          Override
-        </button>
-        {% endif %} {% if t.is_blacklisted %}
-        <button class="btn btn-secondary btn-sm" data-action="unblacklistTrack" data-artist="{{ t.artist }}" data-title="{{ t.title }}" data-tab="cache">
-          Restore
-        </button>
-        {% else %}
-        <button class="btn btn-danger btn-sm" data-action="showBlacklistModal" data-artist="{{ t.artist }}" data-title="{{ t.title }}" data-tab="cache">
-          Blacklist
-        </button>
-        {% endif %}
-        <button
-          class="btn btn-secondary btn-sm"
-          data-action="clearCacheEntry" data-artist="{{ t.artist }}" data-title="{{ t.title }}" data-tab="cache"
-          title="Clear from cache & retry on next sync"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 21h5v-5"></path></svg>
-        </button>
+        {{ track_actions(t.artist, t.title, "cache", is_overridden=t.has_override, is_blacklisted=t.is_blacklisted) }}
       </div>
     </div>
     {% endfor %}

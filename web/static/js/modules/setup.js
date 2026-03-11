@@ -1,5 +1,6 @@
+import { checkAuthStatus } from "./auth.js"
 import { closeModal, showModal } from "./modals.js"
-import { formatDateTime, getUse24HourClock, showToast } from "./utils.js"
+import { escapeHtml, formatDateTime, formatRelativeTime, getUse24HourClock, insertBanner, removeBanner, showToast } from "./utils.js"
 
 let currentSetupStep = 1
 const totalSetupSteps = 2
@@ -154,16 +155,6 @@ function startAuthPolling() {
   }, 1000)
 }
 
-async function checkAuthStatus() {
-  try {
-    const response = await fetch("/api/auth/status")
-    const data = await response.json()
-    return data.browser_json_exists && data.valid
-  } catch (_e) {
-    return false
-  }
-}
-
 async function updateAuthStatusDisplay() {
   const statusBox = document.getElementById("setup-auth-status-box")
   if (!statusBox) return
@@ -201,12 +192,11 @@ export function onAuthModalClose() {
 
 export function showAuthRequiredBanner() {
   if (sessionStorage.getItem("authBannerDismissed")) return
-  if (document.getElementById("authRequiredBanner")) return
 
-  const banner = document.createElement("div")
-  banner.id = "authRequiredBanner"
-  banner.className = "auth-required-banner"
-  banner.innerHTML = `
+  insertBanner(
+    "authRequiredBanner",
+    "auth-required-banner",
+    `
     <div class="auth-banner-content">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"></circle>
@@ -217,18 +207,12 @@ export function showAuthRequiredBanner() {
       <button class="btn btn-sm btn-primary" data-action="showModal" data-modal="authModal">Set Up Auth</button>
       <button class="auth-banner-close" data-action="dismissAuthBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
-  `
-
-  const container = document.querySelector(".container")
-  if (container) {
-    container.insertBefore(banner, container.firstChild)
-  }
+  `,
+  )
 }
 
 export function dismissAuthBanner() {
-  const banner = document.getElementById("authRequiredBanner")
-  if (banner) {
-    banner.remove()
+  if (removeBanner("authRequiredBanner")) {
     sessionStorage.setItem("authBannerDismissed", "true")
   }
 }
@@ -274,32 +258,17 @@ export async function checkFailureLog() {
 }
 
 export function showSyncFailureBanner(data) {
-  if (document.getElementById("syncFailureBanner")) return
-
-  const banner = document.createElement("div")
-  banner.id = "syncFailureBanner"
-  banner.className = "sync-failure-banner"
-
-  let timeAgo = ""
-  if (data.timestamp) {
-    const date = new Date(data.timestamp)
-    const diff = Date.now() - date.getTime()
-    const mins = Math.floor(diff / 60000)
-    const hours = Math.floor(mins / 60)
-    const days = Math.floor(hours / 24)
-
-    if (days > 0) timeAgo = `${days}d ago`
-    else if (hours > 0) timeAgo = `${hours}h ago`
-    else if (mins > 0) timeAgo = `${mins}m ago`
-    else timeAgo = "just now"
-  }
+  const timeAgo = data.timestamp ? formatRelativeTime(data.timestamp) : ""
 
   let hintHtml = ""
   if (data.hint) {
     hintHtml = `<div class="failure-banner-hint">${escapeHtml(data.hint)}</div>`
   }
 
-  banner.innerHTML = `
+  insertBanner(
+    "syncFailureBanner",
+    "sync-failure-banner",
+    `
     <div class="failure-banner-content">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"></circle>
@@ -313,25 +282,12 @@ export function showSyncFailureBanner(data) {
       <button class="btn btn-sm btn-secondary" data-action="showFailureLogModal">View Details</button>
       <button class="failure-banner-close" data-action="dismissSyncFailureBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
-  `
-
-  const container = document.querySelector(".container")
-  if (container) {
-    container.insertBefore(banner, container.firstChild)
-  }
-}
-
-function escapeHtml(text) {
-  const div = document.createElement("div")
-  div.textContent = text
-  return div.innerHTML
+  `,
+  )
 }
 
 export function removeSyncFailureBanner() {
-  const banner = document.getElementById("syncFailureBanner")
-  if (banner) {
-    banner.remove()
-  }
+  removeBanner("syncFailureBanner")
 }
 
 export async function dismissSyncFailureBanner() {

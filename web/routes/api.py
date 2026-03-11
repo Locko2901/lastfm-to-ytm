@@ -4,18 +4,26 @@ from __future__ import annotations
 
 import logging
 import socket
+import threading
 
 import requests
 from flask import Blueprint, jsonify, render_template, request
 from requests.adapters import HTTPAdapter
 
-from src.config import PROJECT_ROOT
-
 from ..services import (
     ALL_SETTINGS,
     BOOL_SETTINGS,
+    ENV_EXAMPLE_FILE,
+    ENV_FILE,
+    clear_failure_log,
     get_cache_stats,
+    get_cached_tracks,
+    get_last_sync_time,
+    get_not_found_tracks,
     get_overrides_data,
+    get_playlist_mappings,
+    get_setup_status,
+    load_failure_log,
     load_run_log,
     parse_env_file,
     sync_lock,
@@ -28,10 +36,6 @@ from ..services.scheduler import (
 )
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
-
-ENV_FILE = PROJECT_ROOT / ".env"
-ENV_EXAMPLE_FILE = PROJECT_ROOT / ".env.example"
-BROWSER_JSON_FILE = PROJECT_ROOT / "browser.json"
 
 logger = logging.getLogger(__name__)
 
@@ -59,13 +63,16 @@ def get_ipv4_session():
 
 
 _ipv4_session = None
+_ipv4_session_lock = threading.Lock()
 
 
 def ipv4_session():
     """Return the shared IPv4-only requests session, creating it if needed."""
     global _ipv4_session
     if _ipv4_session is None:
-        _ipv4_session = get_ipv4_session()
+        with _ipv4_session_lock:
+            if _ipv4_session is None:
+                _ipv4_session = get_ipv4_session()
     return _ipv4_session
 
 
@@ -87,18 +94,12 @@ def status():
 @api_bp.route("/setup/status")
 def setup_status():
     """Check if first-time setup is needed."""
-    env_exists = ENV_FILE.exists()
-    env_empty = env_exists and ENV_FILE.stat().st_size == 0
-    needs_setup = not env_exists or env_empty
-
-    browser_exists = BROWSER_JSON_FILE.exists()
-    browser_valid = browser_exists and BROWSER_JSON_FILE.stat().st_size > 3  # {} is 2-3 bytes
-
+    setup = get_setup_status()
     return jsonify(
         {
-            "needs_setup": needs_setup,
-            "has_env": env_exists and not env_empty,
-            "has_browser_json": browser_valid,
+            "needs_setup": setup["needs_setup"],
+            "has_env": setup["has_env"],
+            "has_browser_json": setup["has_browser_json"],
         }
     )
 
@@ -211,8 +212,6 @@ def settings_update():
 @api_bp.route("/stats")
 def stats():
     """Get all stats for updating the UI dynamically."""
-    from ..services import get_last_sync_time, get_not_found_tracks
-
     run_log = load_run_log()
     override_list, blacklist = get_overrides_data()
     cache_stats = get_cache_stats()
@@ -238,26 +237,8 @@ def stats():
 @api_bp.route("/panel/<panel_name>")
 def panel_html(panel_name):
     """Get rendered HTML for a specific panel."""
-    from ..services import get_cached_tracks, get_not_found_tracks, load_overrides
-
     if panel_name == "playlist":
-        run_log = load_run_log()
-        all_mappings = run_log["mappings"]
-        limit = run_log["limit"]
-        overrides = load_overrides()
-
-        playlist_mappings = []
-        for m in all_mappings:
-            if (m.get("video_id") or m.get("pending_retry")) and len(playlist_mappings) < limit:
-                key = f"{m['artist'].lower()}|{m['title'].lower()}"
-                m["is_blacklisted"] = key in overrides._cache.get("_blacklist", {})
-                m["is_overridden"] = key in overrides._cache.get("_overrides", {})
-                if m.get("video_id"):
-                    m["ytm_url"] = f"https://music.youtube.com/watch?v={m['video_id']}"
-                else:
-                    m["ytm_url"] = None
-                playlist_mappings.append(m)
-
+        playlist_mappings, _ = get_playlist_mappings()
         return render_template("partials/_panel_playlist.html", mappings=playlist_mappings)
     if panel_name == "blacklist":
         _, blacklist = get_overrides_data()
@@ -277,8 +258,6 @@ def panel_html(panel_name):
 @api_bp.route("/failure_log")
 def failure_log():
     """Get the last failure log if one exists."""
-    from ..services import load_failure_log
-
     log = load_failure_log()
     if log:
         return jsonify({"has_failure": True, **log})
@@ -288,8 +267,6 @@ def failure_log():
 @api_bp.route("/failure_log", methods=["DELETE"])
 def clear_failure():
     """Clear/dismiss the failure log."""
-    from ..services import clear_failure_log
-
     if clear_failure_log():
         return jsonify({"status": "cleared"})
     return jsonify({"status": "no_log"})
@@ -414,6 +391,7 @@ def now_playing():
 
 
 _image_cache = {}
+_image_cache_lock = threading.Lock()
 _IMAGE_CACHE_MAX_SIZE = 50
 _IMAGE_CACHE_TTL = 3600
 
@@ -441,19 +419,20 @@ def image_proxy():
         return Response("Invalid URL", status=400)
 
     now = time.time()
-    if url in _image_cache:
-        cached = _image_cache[url]
-        if now - cached["time"] < _IMAGE_CACHE_TTL:
-            return Response(
-                cached["data"],
-                content_type=cached["content_type"],
-                headers={
-                    "Cache-Control": "public, max-age=86400",
-                    "Access-Control-Allow-Origin": "*",
-                    "X-Cache": "HIT",
-                },
-            )
-        del _image_cache[url]
+    with _image_cache_lock:
+        if url in _image_cache:
+            cached = _image_cache[url]
+            if now - cached["time"] < _IMAGE_CACHE_TTL:
+                return Response(
+                    cached["data"],
+                    content_type=cached["content_type"],
+                    headers={
+                        "Cache-Control": "public, max-age=86400",
+                        "Access-Control-Allow-Origin": "*",
+                        "X-Cache": "HIT",
+                    },
+                )
+            del _image_cache[url]
 
     try:
         resp = ipv4_session().get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0 (compatible; LastFM-YTM-Sync/1.0)"})
@@ -462,15 +441,16 @@ def image_proxy():
         content_type = resp.headers.get("Content-Type", "image/jpeg")
         data = resp.content
 
-        if len(_image_cache) >= _IMAGE_CACHE_MAX_SIZE:
-            oldest_key = min(_image_cache.keys(), key=lambda k: _image_cache[k]["time"])
-            del _image_cache[oldest_key]
+        with _image_cache_lock:
+            if len(_image_cache) >= _IMAGE_CACHE_MAX_SIZE:
+                oldest_key = min(_image_cache.keys(), key=lambda k: _image_cache[k]["time"])
+                del _image_cache[oldest_key]
 
-        _image_cache[url] = {
-            "data": data,
-            "content_type": content_type,
-            "time": now,
-        }
+            _image_cache[url] = {
+                "data": data,
+                "content_type": content_type,
+                "time": now,
+            }
 
         return Response(
             data,

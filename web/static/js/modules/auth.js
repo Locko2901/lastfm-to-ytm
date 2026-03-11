@@ -1,14 +1,21 @@
 import { closeModal } from "./modals.js"
-import { showToast } from "./utils.js"
+import { removeBanner, showToast } from "./utils.js"
 
 let authEventSource = null
 let _isAuthRunning = false
 let authPollInterval = null
 
 function removeAuthBanner() {
-  const banner = document.getElementById("authRequiredBanner")
-  if (banner) {
-    banner.remove()
+  removeBanner("authRequiredBanner")
+}
+
+export async function checkAuthStatus() {
+  try {
+    const response = await fetch("/api/auth/status")
+    const data = await response.json()
+    return data.browser_json_exists && data.valid
+  } catch (_e) {
+    return false
   }
 }
 
@@ -173,10 +180,7 @@ function startAuthPolling() {
 
   authPollInterval = setInterval(async () => {
     try {
-      const response = await fetch("/api/auth/status")
-      const data = await response.json()
-
-      if (data.browser_json_exists && data.valid) {
+      if (await checkAuthStatus()) {
         clearInterval(authPollInterval)
         authPollInterval = null
         showToast("YouTube Music authenticated successfully!", "success")
