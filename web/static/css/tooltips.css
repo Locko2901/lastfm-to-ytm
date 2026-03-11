@@ -1,0 +1,70 @@
+.tooltip {
+  position: fixed;
+  z-index: 10000;
+  max-width: 250px;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  box-shadow:
+    0 4px 12px var(--shadow),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+  word-wrap: break-word;
+}
+
+.tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tooltip::before {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  transform: rotate(45deg);
+}
+
+.tooltip[data-position="top"]::before {
+  bottom: -5px;
+  left: var(--arrow-offset, 50%);
+  margin-left: -4px;
+  border-top: none;
+  border-left: none;
+}
+
+.tooltip[data-position="bottom"]::before {
+  top: -5px;
+  left: var(--arrow-offset, 50%);
+  margin-left: -4px;
+  border-bottom: none;
+  border-right: none;
+}
+
+.tooltip[data-position="left"]::before {
+  right: -5px;
+  top: 50%;
+  margin-top: -4px;
+  border-bottom: none;
+  border-left: none;
+}
+
+.tooltip[data-position="right"]::before {
+  left: -5px;
+  top: 50%;
+  margin-top: -4px;
+  border-top: none;
+  border-right: none;
+}
