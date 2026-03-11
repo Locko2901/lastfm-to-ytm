@@ -360,6 +360,22 @@ def get_playlist_mappings() -> tuple[list[dict], dict]:
     return playlist_mappings, run_log
 
 
+def _env_has_user_config(path) -> bool:
+    """Return True if .env contains user-supplied config (not just auto-generated keys)."""
+    auto_keys = {"FLASK_SECRET_KEY"}
+    try:
+        for line in path.read_text().splitlines():
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
+                continue
+            key = stripped.split("=", 1)[0].strip()
+            if key not in auto_keys:
+                return True
+    except OSError:
+        return False
+    return False
+
+
 def get_setup_status() -> dict:
     """Check if first-time setup is needed.
 
@@ -367,7 +383,7 @@ def get_setup_status() -> dict:
         Dict with keys: needs_setup, has_env, has_browser_json, needs_auth.
     """
     env_exists = ENV_FILE.exists()
-    env_empty = env_exists and ENV_FILE.stat().st_size == 0
+    env_empty = not _env_has_user_config(ENV_FILE)
     needs_setup = not env_exists or env_empty
 
     browser_exists = BROWSER_JSON_FILE.exists()
