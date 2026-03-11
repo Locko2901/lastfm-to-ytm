@@ -4,6 +4,7 @@ import { removeBanner, showToast } from "./utils.js"
 let authEventSource = null
 let _isAuthRunning = false
 let authPollInterval = null
+let _authCompleting = false
 
 function removeAuthBanner() {
   removeBanner("authRequiredBanner")
@@ -40,6 +41,7 @@ export async function connectAuth() {
   output.innerHTML = ""
   statusArea.style.display = "block"
   _isAuthRunning = true
+  _authCompleting = false
 
   try {
     const startResponse = await fetch("/api/auth/start", { method: "POST" })
@@ -69,10 +71,14 @@ export async function connectAuth() {
     }
 
     authEventSource.onerror = () => {
-      authEventSource.close()
-      authEventSource = null
-      resetConnectButton()
-      _isAuthRunning = false
+      if (authEventSource) {
+        authEventSource.close()
+        authEventSource = null
+      }
+      if (!_authCompleting) {
+        resetConnectButton()
+        _isAuthRunning = false
+      }
     }
 
     setTimeout(async () => {
@@ -100,6 +106,13 @@ export async function connectAuth() {
 }
 
 function handleAuthComplete(exitCode) {
+  if (_authCompleting) return
+  _authCompleting = true
+
+  if (authPollInterval) {
+    clearInterval(authPollInterval)
+    authPollInterval = null
+  }
   if (authEventSource) {
     authEventSource.close()
     authEventSource = null
@@ -149,8 +162,6 @@ export async function stopAuthProcess() {
 }
 
 export function closeAuthModal() {
-  stopAuthProcess()
-
   if (authPollInterval) {
     clearInterval(authPollInterval)
     authPollInterval = null
@@ -161,7 +172,12 @@ export function closeAuthModal() {
     authEventSource = null
   }
 
+  if (_isAuthRunning) {
+    stopAuthProcess()
+  }
+
   _isAuthRunning = false
+  _authCompleting = false
   closeModal("authModal")
 
   resetConnectButton()
@@ -180,14 +196,17 @@ function startAuthPolling() {
 
   authPollInterval = setInterval(async () => {
     try {
+      if (_authCompleting) {
+        clearInterval(authPollInterval)
+        authPollInterval = null
+        return
+      }
       if (await checkAuthStatus()) {
         clearInterval(authPollInterval)
         authPollInterval = null
-        showToast("YouTube Music authenticated successfully!", "success")
-
-        removeAuthBanner()
-
-        closeAuthModal()
+        if (!_authCompleting) {
+          handleAuthComplete(0)
+        }
       }
     } catch (_e) {}
   }, 1000)
