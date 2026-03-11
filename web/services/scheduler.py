@@ -92,9 +92,8 @@ def _get_sync_function() -> Callable | None:
 
 def _update_next_run():
     """Update the next_run field in scheduler_state."""
-    scheduler = get_scheduler()
-    if scheduler and scheduler.running:
-        job = scheduler.get_job("auto_sync")
+    if _scheduler is not None and _scheduler.running:
+        job = _scheduler.get_job("auto_sync")
         if job:
             next_run = job.next_run_time
             scheduler_state["next_run"] = next_run.isoformat() if next_run else None
@@ -214,16 +213,38 @@ def stop_scheduler():
 
 
 def get_scheduler_status() -> dict:
-    """Get current scheduler status for the API."""
+    """Get current scheduler status for the API.
+
+    Reads the enabled/config state from the .env file so that all Gunicorn
+    workers return consistent results, even if only worker-1 actually owns
+    the running APScheduler instance.  Runtime-only fields (next_run,
+    last_run, last_run_success) still come from the in-memory state of the
+    worker that handles the request — they will be ``None`` on non-scheduler
+    workers, which is acceptable.
+    """
+    from .env import parse_env_file
+
+    settings = parse_env_file()
+    enabled = settings.get("AUTO_SYNC_ENABLED", "").lower() in (
+        "true", "1", "yes", "on",
+    )
+    schedule_type = settings.get("AUTO_SYNC_TYPE", "interval").lower()
+    try:
+        interval_hours = float(settings.get("AUTO_SYNC_INTERVAL_HOURS", "6"))
+    except ValueError:
+        interval_hours = 6.0
+    start_time = settings.get("AUTO_SYNC_START_TIME", "")
+    cron_expression = settings.get("AUTO_SYNC_CRON", "0 */6 * * *")
+
     _update_next_run()
 
     return {
         "available": HAS_APSCHEDULER,
-        "enabled": scheduler_state["enabled"],
-        "schedule_type": scheduler_state["schedule_type"],
-        "interval_hours": scheduler_state["interval_hours"],
-        "start_time": scheduler_state["start_time"],
-        "cron_expression": scheduler_state["cron_expression"],
+        "enabled": enabled and HAS_APSCHEDULER,
+        "schedule_type": schedule_type,
+        "interval_hours": interval_hours,
+        "start_time": start_time,
+        "cron_expression": cron_expression,
         "next_run": scheduler_state["next_run"],
         "last_run": scheduler_state["last_run"],
         "last_run_success": scheduler_state["last_run_success"],
