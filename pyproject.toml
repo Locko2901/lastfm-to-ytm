@@ -22,20 +22,12 @@ web = ["flask>=3.0.0", "apscheduler>=3.10.0", "gunicorn>=21.0.0"]
 lastfm-ytm-sync = "run:run"
 lastfm-ytm-web = "web.app:main"
 
+[tool.setuptools]
+py-modules = ["run"]
+
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["src*"]
-
-[tool.j2lint]
-# Biome does not read pyproject.toml - its config lives in biome.jsonc.
-# Rule ignore rationale lives inline in biome.jsonc comments.
-ignore = [
-  "S3",  # {%- -%} whitespace control is used intentionally throughout templates
-  "S4",  # false positives on Jinja expressions indented inside HTML blocks
-  "S6",  # inline {% if %}...{% endif %} is the deliberate style for short branches
-  "V1",  # variable naming follows Python conventions, not AVD-style UPPER_SNAKE
-  "V2",  # same rationale as V1
-]
+include = ["src*", "web*"]
 
 [tool.ruff]
 line-length = 150  # 150 matches Biome's lineWidth; longer lines reduce forced wraps in deeply nested code

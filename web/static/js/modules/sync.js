@@ -306,8 +306,8 @@ function showDataUpdateBanner() {
         <path d="M16 21h5v-5"></path>
       </svg>
       <span>Scheduled sync completed! New data available.</span>
-      <button class="btn btn-sm btn-primary" onclick="window.location.reload()">Refresh</button>
-      <button class="data-update-close" onclick="dismissDataUpdateBanner()" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <button class="btn btn-sm btn-primary" data-action="reloadPage">Refresh</button>
+      <button class="data-update-close" data-action="dismissDataUpdateBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
   `
 

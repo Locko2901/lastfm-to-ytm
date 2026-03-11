@@ -25,7 +25,6 @@ const NO_RESTART_SETTINGS = [
   "USE_24_HOUR_CLOCK",
   "NOW_PLAYING_ENABLED",
   "NOW_PLAYING_INTERVAL",
-  "AUTO_SYNC_ENABLED",
   "AUTO_SYNC_TYPE",
   "AUTO_SYNC_INTERVAL_HOURS",
   "AUTO_SYNC_START_TIME",
@@ -153,8 +152,8 @@ function showRestartBanner() {
         <path d="M16 21h5v-5"></path>
       </svg>
       <span>Settings saved. Restart the server to apply changes.</span>
-      <button class="btn btn-sm btn-primary" onclick="restartServer()">Restart Now</button>
-      <button class="auth-banner-close" onclick="dismissRestartBanner()" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <button class="btn btn-sm btn-primary" data-action="restartServer">Restart Now</button>
+      <button class="auth-banner-close" data-action="dismissRestartBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
   `
 
