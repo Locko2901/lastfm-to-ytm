@@ -100,11 +100,13 @@ export async function clearCacheEntry(artist, title, buttonEl, tabContext = "pla
 
         const actionsDiv = trackItem.querySelector(".track-actions")
         if (actionsDiv) {
+          const safeArtist = artist.replace(/"/g, "&quot;")
+          const safeTitle = title.replace(/"/g, "&quot;")
           actionsDiv.innerHTML = `
             <button class="btn btn-success btn-sm"
-              onclick='showOverrideModal(${JSON.stringify(artist)}, ${JSON.stringify(title)}, "playlist")'>Override</button>
+              data-action="showOverrideModal" data-artist="${safeArtist}" data-title="${safeTitle}" data-tab="playlist">Override</button>
             <button class="btn btn-danger btn-sm"
-              onclick='showBlacklistModal(${JSON.stringify(artist)}, ${JSON.stringify(title)}, "playlist")'>Blacklist</button>
+              data-action="showBlacklistModal" data-artist="${safeArtist}" data-title="${safeTitle}" data-tab="playlist">Blacklist</button>
           `
         }
       }

@@ -214,8 +214,8 @@ export function showAuthRequiredBanner() {
         <line x1="12" y1="16" x2="12.01" y2="16"></line>
       </svg>
       <span>YouTube Music authentication is missing.</span>
-      <button class="btn btn-sm btn-primary" onclick="window.showModal('authModal');">Set Up Auth</button>
-      <button class="auth-banner-close" onclick="dismissAuthBanner()" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <button class="btn btn-sm btn-primary" data-action="showModal" data-modal="authModal">Set Up Auth</button>
+      <button class="auth-banner-close" data-action="dismissAuthBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
   `
 
@@ -310,8 +310,8 @@ export function showSyncFailureBanner(data) {
         <span><strong>Last sync failed</strong>${timeAgo ? ` (${timeAgo})` : ""}: ${escapeHtml(data.error || "Unknown error")}</span>
         ${hintHtml}
       </div>
-      <button class="btn btn-sm btn-secondary" onclick="showFailureLogModal()">View Details</button>
-      <button class="failure-banner-close" onclick="dismissSyncFailureBanner()" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <button class="btn btn-sm btn-secondary" data-action="showFailureLogModal">View Details</button>
+      <button class="failure-banner-close" data-action="dismissSyncFailureBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
   `
 
@@ -361,7 +361,7 @@ export async function showFailureLogModal() {
             </svg>
             Sync Failure Details
           </h2>
-          <button class="modal-close" onclick="closeModal('failureLogModal')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+          <button class="modal-close" data-action="closeModal" data-modal="failureLogModal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
         <div class="modal-body">
           <div class="failure-details">
@@ -375,8 +375,8 @@ export async function showFailureLogModal() {
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('failureLogModal')">Close</button>
-          <button type="button" class="btn btn-primary" onclick="dismissAndCloseFailureModal()">Dismiss & Close</button>
+          <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="failureLogModal">Close</button>
+          <button type="button" class="btn btn-primary" data-action="dismissAndCloseFailureModal">Dismiss & Close</button>
         </div>
       </div>
     `
