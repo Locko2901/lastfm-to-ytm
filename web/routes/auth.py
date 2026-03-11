@@ -142,10 +142,19 @@ def start():
 @auth_bp.route("/send", methods=["POST"])
 def send_input():
     """Send input to the running ytmusicapi browser process."""
-    with auth_lock:
-        if not auth_state["running"] or auth_state["master_fd"] is None:
-            return jsonify({"error": "No auth process running"}), 400
-        master_fd = auth_state["master_fd"]
+    import time
+
+    deadline = time.monotonic() + 3.0
+    while time.monotonic() < deadline:
+        with auth_lock:
+            if not auth_state["running"]:
+                return jsonify({"error": "No auth process running"}), 400
+            if auth_state["master_fd"] is not None:
+                master_fd = auth_state["master_fd"]
+                break
+        time.sleep(0.05)
+    else:
+        return jsonify({"error": "Auth process not ready (timeout)"}), 503
 
     data = request.get_json()
     if not data:
