@@ -54,21 +54,18 @@ def _resolve_tracks_to_video_ids(
             run_log_mappings.append({"artist": artist, "title": title, "source": "blacklisted"})
             continue
 
-        # Priority: overrides -> cache -> YTM search
         vid = search_overrides.get(artist, title)
         yt_title = None
         source = "override" if vid else None
         if vid is None:
             cached = search_cache.get(artist, title)
             if cached == NOT_FOUND:
-                # Previously searched and not found - skip without re-searching
                 misses += 1
                 log.info("%d/%d %s [not found, cached]", index, total_tracks, title)
                 run_log_mappings.append({"artist": artist, "title": title, "source": "not_found_cached"})
                 continue
             vid = cached
             if vid:
-                # Get yt_title from cache entry if available
                 cache_entry = search_cache.get_entry(artist, title)
                 if cache_entry:
                     yt_title = cache_entry.get("yt_title")
@@ -153,7 +150,6 @@ def _save_failure_log(error_message: str, traceback_str: str | None = None) -> N
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     log_file = CACHE_DIR / ".last_failure.json"
 
-    # Generate helpful hints based on error type
     hint = None
     error_lower = error_message.lower()
     if "401" in error_message or "unauthorized" in error_lower:
@@ -191,7 +187,6 @@ def run(settings: Settings) -> None:
     ytm = build_oauth_client(settings.ytm_auth_path)
     ytm_search = ytm if not settings.use_anon_search else YTMusic()
 
-    # Create context with all dependencies
     ctx = RuntimeContext(
         settings=settings,
         ytm=ytm,
@@ -221,7 +216,6 @@ def run(settings: Settings) -> None:
         log.warning("No recent scrobbles found. Exiting.")
         return
 
-    # Process initial scrobbles into tracks
     if settings.use_recency_weighting:
         tracks: list[WeightedTrack] = collapse_recency_weighted(
             recents,
@@ -325,7 +319,6 @@ def run(settings: Settings) -> None:
         video_ids.extend(unique_new_vids)
         seen_video_ids.update(unique_new_vids)
         run_log_mappings.extend(new_run_log)
-        # Merge new mappings (don't overwrite existing - keep first resolution)
         for key, vid in new_track_to_vid.items():
             if key not in track_to_vid:
                 track_to_vid[key] = vid
@@ -393,7 +386,6 @@ def run(settings: Settings) -> None:
     if len(video_ids) > target_count:
         video_ids = video_ids[:target_count]
 
-    # Safety dedup check - should never trigger, indicates upstream logic bug
     original_count = len(video_ids)
     video_ids = list(dict.fromkeys(video_ids))
     if len(video_ids) < original_count:
@@ -490,10 +482,8 @@ def run(settings: Settings) -> None:
     if misses:
         log.info("%d tracks not found", misses)
 
-    # Clear failure log on successful sync
     _clear_failure_log()
 
-    # Save run log for web dashboard
     _save_run_log(run_log_mappings)
 
     log_search_statistics()

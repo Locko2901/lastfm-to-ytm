@@ -112,7 +112,6 @@ def find_on_ytm(
 
     log.debug("Searching for: %s - %s%s", artist, title, f" ({album})" if album else "")
 
-    # Try exact query first before building variants
     exact_query = f"{artist} - {title}"
     exact_result = _try_exact_query(ytm, exact_query, artist, title, album, max_retries, early_termination_score)
     if exact_result:
@@ -129,7 +128,6 @@ def find_on_ytm(
 
     song_query_count += 3
 
-    # yes this is kinda ugly but oh well
     already_tried = {exact_query}
     queries = build_queries(artist, title, album, already_tried=already_tried)
     filters = ["songs", "videos", None]

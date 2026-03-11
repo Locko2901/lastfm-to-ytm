@@ -16,16 +16,23 @@ build/
 .env
 browser.json
 
-# YTMusic cache directory
-yt_cache/
+# Cache directory
+cache/
 
 # IDE specific files
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
 
 # Logs
 *.log
 
+# JS tooling
+node_modules/
+
 # misc
-.github
+.github/*
+!.github/workflows/
+!.github/workflows/**
 search_overrides.json

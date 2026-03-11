@@ -1,0 +1,336 @@
+<div class="modal-overlay setup-modal-overlay" id="setupModal">
+  <div class="modal setup-modal">
+    <div class="modal-header">
+      <h2>
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          style="margin-right: 8px; vertical-align: middle;"
+        >
+          <path
+            d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
+          ></path>
+        </svg>
+        First-Time Setup
+      </h2>
+      <button class="modal-close" data-action="closeSetupWizard" title="Skip setup"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="setup-steps">
+        <div class="setup-step active" data-step="1">
+          <span class="step-number">
+            <span class="step-num">1</span>
+            <svg
+              class="step-check"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </span>
+          <span class="step-label">Last.fm</span>
+        </div>
+        <div class="setup-step" data-step="2">
+          <span class="step-number">
+            <span class="step-num">2</span>
+            <svg
+              class="step-check"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </span>
+          <span class="step-label">YouTube Music</span>
+        </div>
+      </div>
+
+      <div class="setup-content" id="setup-step-1">
+        <div class="setup-intro">
+          <p>Let's get you set up! First, enter your Last.fm credentials.</p>
+        </div>
+        <div class="form-group">
+          <label for="setup-lastfm-user">Last.fm Username</label>
+          <input type="text" id="setup-lastfm-user" placeholder="Your Last.fm username" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="setup-lastfm-key">Last.fm API Key</label>
+          <input type="text" id="setup-lastfm-key" placeholder="Your API key" autocomplete="off">
+          <span class="form-hint">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              style="vertical-align: middle; margin-right: 4px;"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            Don't have one? <a href="https://www.last.fm/api/account/create" target="_blank">Create an API key</a> (it's free)
+          </span>
+        </div>
+      </div>
+
+      <div class="setup-content" id="setup-step-2" style="display: none;">
+        <div class="setup-intro">
+          <p>Now let's connect to YouTube Music.</p>
+        </div>
+
+        <div class="setup-auth-status-box" id="setup-auth-status-box"></div>
+
+        <div class="setup-auth-actions">
+          <button type="button" class="btn btn-success" id="setupAuthBtn" data-action="openAuthFromSetup">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"
+              ></path>
+            </svg>
+            Connect YouTube Music
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="setup-back-btn" data-action="setupPrevStep" style="display: none;">Back</button>
+      <button type="button" class="btn btn-success" id="setup-next-btn" data-action="setupNextStep">Next</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="blacklistModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Blacklist Track</h2>
+      <button class="modal-close" data-action="closeModal" data-modal="blacklistModal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <form id="blacklistForm" method="POST" action="/blacklist">
+      <div class="modal-body">
+        <input type="hidden" name="artist" id="blacklist-artist">
+        <input type="hidden" name="title" id="blacklist-title">
+        <input type="hidden" name="redirect_tab" id="blacklist-redirect">
+        <div class="form-group">
+          <label>Track</label>
+          <input type="text" id="blacklist-display" disabled>
+        </div>
+        <div class="form-group">
+          <label>Reason (optional)</label>
+          <input type="text" name="reason" id="blacklist-reason" placeholder="Why blacklist this track?">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="blacklistModal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Blacklist</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addBlacklistModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Add to Blacklist</h2>
+      <button class="modal-close" data-action="closeModal" data-modal="addBlacklistModal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <form method="POST" action="/blacklist" id="addBlacklistForm">
+      <div class="modal-body">
+        <input type="hidden" name="redirect_tab" value="blacklist">
+        <div class="form-group">
+          <label>Artist</label>
+          <input type="text" name="artist" id="add-blacklist-artist" placeholder="Artist name" required>
+        </div>
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" name="title" id="add-blacklist-title" placeholder="Track title" required>
+        </div>
+        <div class="form-group">
+          <label>Reason (optional)</label>
+          <input type="text" name="reason" id="add-blacklist-reason" placeholder="Why blacklist this track?">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="addBlacklistModal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Blacklist</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="overrideModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Override Track</h2>
+      <button class="modal-close" data-action="closeModal" data-modal="overrideModal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <form method="POST" action="/override" id="overrideForm">
+      <div class="modal-body">
+        <input type="hidden" name="artist" id="override-artist">
+        <input type="hidden" name="title" id="override-title">
+        <input type="hidden" name="redirect_tab" id="override-redirect">
+        <div class="form-group">
+          <label>Track</label>
+          <input type="text" id="override-display" disabled>
+        </div>
+        <div class="form-group">
+          <label>YouTube Video ID or URL</label>
+          <input type="text" name="video_id" id="override-video-id" placeholder="Id or full URL" required>
+        </div>
+        <div class="form-group">
+          <label>Reason (optional)</label>
+          <input type="text" name="reason" id="override-reason" placeholder="Why override this?">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="overrideModal">Cancel</button>
+        <button type="submit" class="btn btn-success">Save Override</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addOverrideModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Add Override</h2>
+      <button class="modal-close" data-action="closeModal" data-modal="addOverrideModal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <form method="POST" action="/override" id="addOverrideForm">
+      <div class="modal-body">
+        <input type="hidden" name="redirect_tab" value="overrides">
+        <div class="form-group">
+          <label>Artist</label>
+          <input type="text" name="artist" id="add-override-artist" placeholder="Artist name" required>
+        </div>
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" name="title" id="add-override-title" placeholder="Track title" required>
+        </div>
+        <div class="form-group">
+          <label>YouTube Video ID or URL</label>
+          <input type="text" name="video_id" id="add-override-video-id" placeholder="Id or full URL" required>
+        </div>
+        <div class="form-group">
+          <label>Reason (optional)</label>
+          <input type="text" name="reason" id="add-override-reason" placeholder="Why add this override?">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="addOverrideModal">Cancel</button>
+        <button type="submit" class="btn btn-success">Save Override</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay auth-modal-overlay" id="authModal">
+  <div class="modal auth-modal">
+    <div class="modal-header">
+      <h2>
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          style="margin-right: 8px; vertical-align: middle;"
+        >
+          <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+        </svg>
+        Connect YouTube Music
+      </h2>
+      <button class="modal-close" data-action="closeAuthModal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-steps" id="authSteps">
+        <div class="auth-step">
+          <span class="auth-step-num">1</span>
+          <div class="auth-step-content">
+            <span class="auth-step-title">Open YouTube Music</span>
+            <span class="auth-step-desc"
+              >Go to <a href="https://music.youtube.com" target="_blank" rel="noopener noreferrer">music.youtube.com</a>
+              and make sure you're logged in</span
+            >
+          </div>
+        </div>
+        <div class="auth-step">
+          <span class="auth-step-num">2</span>
+          <div class="auth-step-content">
+            <span class="auth-step-title">Open DevTools Network tab</span>
+            <span class="auth-step-desc">Press <kbd>F12</kbd> or <kbd>Ctrl+Shift+I</kbd>, go to<strong>Network</strong></span>
+          </div>
+        </div>
+        <div class="auth-step">
+          <span class="auth-step-num">3</span>
+          <div class="auth-step-content">
+            <span class="auth-step-title">Copy request headers</span>
+            <span class="auth-step-desc"
+              >Filter by <code>/browse</code>, right-click a request &rarr; Copy as cURL (Chrome) or Copy Request Headers (Firefox)</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-paste-section">
+        <label class="auth-paste-label">Paste headers below and click Connect</label>
+        <textarea id="authInput" class="auth-paste-input" placeholder="Paste request headers or cURL command here..." rows="4"></textarea>
+      </div>
+
+      <div class="auth-status-area" id="authStatusArea" style="display: none;">
+        <div class="auth-output" id="authOutput"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-action="closeAuthModal">Cancel</button>
+      <button type="button" class="btn btn-success" id="authConnectBtn" data-action="connectAuth">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="auth-btn-icon"
+        >
+          <path d="M5 12h14"></path>
+          <path d="m12 5 7 7-7 7"></path>
+        </svg>
+        <span class="auth-btn-text">Connect</span>
+      </button>
+    </div>
+  </div>
+</div>

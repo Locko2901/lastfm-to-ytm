@@ -215,7 +215,6 @@ def score_candidate(r: dict, artist: str, title: str, album: str | None) -> floa
     score -= style_mismatch_penalty(title, candidate_title, rt)
     score -= video_mismatch_penalty(r)
 
-    # Note: could probably be improved, works for now
     if rt == "song":
         score += 0.06
     elif rt == "video":

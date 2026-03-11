@@ -49,18 +49,15 @@ class SearchCache(JSONCache):
 
             video_id = entry.get("video_id")
             if video_id:
-                # Successful lookup - use main TTL
                 if self.ttl_days > 0:
                     cutoff = now - timedelta(days=self.ttl_days)
                     if timestamp < cutoff:
                         expired_keys.append(key)
-            # Not-found entry - use shorter TTL
             elif self.notfound_ttl_days > 0:
                 cutoff = now - timedelta(days=self.notfound_ttl_days)
                 if timestamp < cutoff:
                     expired_keys.append(key)
             elif self.notfound_ttl_days == 0:
-                # Don't cache not-found at all
                 expired_keys.append(key)
 
         if expired_keys:
@@ -98,7 +95,6 @@ class SearchCache(JSONCache):
 
             video_id = entry.get("video_id")
             if video_id:
-                # Check main TTL for successful lookups
                 if self.ttl_days > 0:
                     cutoff = now - timedelta(days=self.ttl_days)
                     if timestamp < cutoff:
@@ -106,7 +102,6 @@ class SearchCache(JSONCache):
                         return None
                 self._metrics.record_hit()
                 return video_id
-            # Check not-found TTL
             if self.notfound_ttl_days > 0:
                 cutoff = now - timedelta(days=self.notfound_ttl_days)
                 if timestamp < cutoff:
@@ -114,7 +109,6 @@ class SearchCache(JSONCache):
                     return None
                 self._metrics.record_hit()
                 return NOT_FOUND
-            # Not caching not-found
             self._metrics.record_miss()
             return None
 

@@ -1,0 +1,57 @@
+{# j2lint: disable=S7 #}
+<div class="tab-panel" id="panel-notfound">
+  {% if not_found_tracks %}
+  <div class="filter-bar">
+    <div class="search-wrapper">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+      </svg>
+      <input type="text" class="search-input" placeholder="Search not found tracks..." id="notfoundSearch">
+    </div>
+  </div>
+
+  <div class="track-list" id="notfoundTracks">
+    {% for t in not_found_tracks %}
+    <div class="track-item notfound-item not-found" data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}">
+      <div class="track-info">
+        <span class="track-artist">{{ t.artist }}</span>
+        <span class="track-title">{{ t.title }}</span>
+      </div>
+
+      <div class="track-ytm">
+        <span class="badge badge-notfound">Not Found</span>
+        {% if t.timestamp %}<span class="track-ytm-id">Cached: {{ t.timestamp[:10] }}</span>{% endif %}
+      </div>
+
+      <div class="track-actions">
+        <button class="btn btn-success btn-sm" data-action="showOverrideModal" data-artist="{{ t.artist }}" data-title="{{ t.title }}" data-tab="notfound">
+          Override
+        </button>
+        <button class="btn btn-danger btn-sm" data-action="showBlacklistModal" data-artist="{{ t.artist }}" data-title="{{ t.title }}" data-tab="notfound">
+          Blacklist
+        </button>
+        <button
+          class="btn btn-secondary btn-sm"
+          data-action="clearCacheEntry" data-artist="{{ t.artist }}" data-title="{{ t.title }}" data-tab="notfound"
+          title="Clear from cache & retry on next sync"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 21h5v-5"></path></svg>
+        </button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    </div>
+    <h3>No Missing Tracks</h3>
+    <p>All tracks in the cache have been successfully matched to YouTube Music videos.</p>
+  </div>
+  {% endif %}
+</div>

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.6/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    // Only process JS/CSS under web/static - never touch Python, HTML, or config files.
+    "includes": ["web/static/**"],
+    "ignoreUnknown": true
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 150 // Matches Ruff's line-length; editor word-wrap handles readability.
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "correctness": {
+        "noUnusedVariables": "error",
+        "noUnusedImports": "error",
+        "noUnusedFunctionParameters": "warn" // warn not error - common in event handlers
+      },
+      "suspicious": {
+        "noDoubleEquals": "error",
+        "noDebugger": "error",
+        "noConsole": "warn", // warn not error - some intentional logging exists
+        "noVar": "error",
+        "noAlert": "warn" // warn not error - no UI context to replace with at the moment
+      },
+      "style": {
+        "useConst": "error",
+        "useTemplate": "error", // prefer template literals over string concatenation
+        "useDefaultParameterLast": "error",
+        "noNestedTernary": "warn",
+        "useCollapsedIf": "warn",
+        "noUselessElse": "warn"
+      },
+      "complexity": {
+        "noExtraBooleanCast": "error",
+        "useLiteralKeys": "error",
+        "useOptionalChain": "error",
+        "noForEach": "warn" // prefer for...of for performance; warn not error to allow migration
+      },
+      "performance": {
+        "noAwaitInLoops": "warn",
+        "noAccumulatingSpread": "warn"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "asNeeded",
+      "trailingCommas": "all",
+      "arrowParentheses": "asNeeded"
+    }
+  },
+  "css": {
+    "linter": {
+      "enabled": true
+    },
+    "formatter": {
+      "enabled": true
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
+}
