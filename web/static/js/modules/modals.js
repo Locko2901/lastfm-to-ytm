@@ -1,5 +1,12 @@
-import { filterCache, filterNotFound, filterTracks } from "./filters.js"
-import { refreshPanel, refreshStats, showToast } from "./utils.js"
+import { filterByTab } from "./filters.js"
+import { isSuccessRedirect, postFormData, refreshPanel, refreshStats, showToast, withButtonLoading } from "./utils.js"
+
+const ITEM_SELECTORS = {
+  playlist: ".track-item",
+  cache: ".cache-item",
+  notfound: ".notfound-item",
+  overrides: ".override-item",
+}
 
 let scrollPosition = 0
 
@@ -46,30 +53,19 @@ export function showAddBlacklistModal() {
 }
 
 export async function clearCacheEntry(artist, title, buttonEl, tabContext = "playlist") {
-  const itemSelectors = {
-    playlist: ".track-item",
-    cache: ".cache-item",
-    notfound: ".notfound-item",
-  }
-  const itemSelector = itemSelectors[tabContext] || ".track-item"
+  const itemSelector = ITEM_SELECTORS[tabContext] || ".track-item"
   const trackItem = buttonEl.closest(itemSelector)
-  const originalText = buttonEl.textContent
-  buttonEl.textContent = "..."
-  buttonEl.disabled = true
 
   try {
-    const formData = new FormData()
-    formData.append("artist", artist)
-    formData.append("title", title)
-    formData.append("redirect_tab", tabContext)
+    await withButtonLoading(buttonEl, "...", async () => {
+      const response = await postFormData("/clear_cache_entry", {
+        artist,
+        title,
+        redirect_tab: tabContext,
+      })
 
-    const response = await fetch("/clear_cache_entry", {
-      method: "POST",
-      body: formData,
-      redirect: "manual",
-    })
+      if (!isSuccessRedirect(response)) throw new Error("Failed to clear cache")
 
-    if (response.ok || response.type === "opaqueredirect" || response.status === 302) {
       if (tabContext === "cache") {
         trackItem.remove()
 
@@ -111,52 +107,29 @@ export async function clearCacheEntry(artist, title, buttonEl, tabContext = "pla
         }
       }
 
-      if (tabContext === "cache") {
-        filterCache()
-      } else if (tabContext === "notfound") {
-        filterNotFound()
-      } else {
-        filterTracks()
-      }
-
+      filterByTab(tabContext)
       showToast("Cache cleared - will retry on next sync", "success")
-
       refreshStats()
-    } else {
-      throw new Error("Failed to clear cache")
-    }
+    })
   } catch (_error) {
-    buttonEl.textContent = originalText
-    buttonEl.disabled = false
     showToast("Failed to clear cache entry", "error")
   }
 }
 
 export async function unblacklistTrack(artist, title, buttonEl, tabContext = "playlist") {
-  const itemSelectors = {
-    playlist: ".track-item",
-    cache: ".cache-item",
-    notfound: ".notfound-item",
-  }
-  const itemSelector = itemSelectors[tabContext] || ".track-item"
+  const itemSelector = ITEM_SELECTORS[tabContext] || ".track-item"
   const trackItem = buttonEl.closest(itemSelector)
-  const originalText = buttonEl.textContent
-  buttonEl.textContent = "..."
-  buttonEl.disabled = true
 
   try {
-    const formData = new FormData()
-    formData.append("artist", artist)
-    formData.append("title", title)
-    formData.append("redirect_tab", tabContext)
+    await withButtonLoading(buttonEl, "...", async () => {
+      const response = await postFormData("/unblacklist", {
+        artist,
+        title,
+        redirect_tab: tabContext,
+      })
 
-    const response = await fetch("/unblacklist", {
-      method: "POST",
-      body: formData,
-      redirect: "manual",
-    })
+      if (!isSuccessRedirect(response)) throw new Error("Failed to unblacklist")
 
-    if (response.ok || response.type === "opaqueredirect" || response.status === 302) {
       trackItem.classList.remove("blacklisted")
       trackItem.dataset.blacklisted = "no"
 
@@ -168,24 +141,11 @@ export async function unblacklistTrack(artist, title, buttonEl, tabContext = "pl
       buttonEl.onclick = () => showBlacklistModal(artist, title, tabContext)
       buttonEl.disabled = false
 
-      if (tabContext === "cache") {
-        filterCache()
-      } else if (tabContext === "notfound") {
-        filterNotFound()
-      } else {
-        filterTracks()
-      }
-
+      filterByTab(tabContext)
       refreshPanel("blacklist")
-
       refreshStats()
-    } else {
-      throw new Error("Failed to unblacklist")
-    }
-  } catch (_error) {
-    buttonEl.textContent = originalText
-    buttonEl.disabled = false
-  }
+    })
+  } catch (_error) {}
 }
 
 function initBlacklistForm() {
@@ -204,30 +164,19 @@ function initBlacklistForm() {
     const reason = document.getElementById("blacklist-reason").value || "Blacklisted via web dashboard"
 
     const submitBtn = this.querySelector('button[type="submit"]')
-    const originalText = submitBtn.textContent
-    submitBtn.textContent = "..."
-    submitBtn.disabled = true
 
     try {
-      const formData = new FormData()
-      formData.append("artist", artist)
-      formData.append("title", title)
-      formData.append("reason", reason)
-      formData.append("redirect_tab", redirectTab)
+      await withButtonLoading(submitBtn, "...", async () => {
+        const response = await postFormData("/blacklist", {
+          artist,
+          title,
+          reason,
+          redirect_tab: redirectTab,
+        })
 
-      const response = await fetch("/blacklist", {
-        method: "POST",
-        body: formData,
-        redirect: "manual",
-      })
+        if (!isSuccessRedirect(response)) throw new Error("Failed to blacklist")
 
-      if (response.ok || response.type === "opaqueredirect" || response.status === 302) {
-        const itemSelectors = {
-          playlist: ".track-item",
-          cache: ".cache-item",
-          notfound: ".notfound-item",
-        }
-        const itemSelector = itemSelectors[redirectTab] || ".track-item"
+        const itemSelector = ITEM_SELECTORS[redirectTab] || ".track-item"
         const items = document.querySelectorAll(itemSelector)
         for (const item of items) {
           if (item.dataset.artist === artist.toLowerCase() && item.dataset.title === title.toLowerCase()) {
@@ -252,26 +201,12 @@ function initBlacklistForm() {
         }
 
         closeModal("blacklistModal")
-
-        if (redirectTab === "cache") {
-          filterCache()
-        } else if (redirectTab === "notfound") {
-          filterNotFound()
-        } else {
-          filterTracks()
-        }
-
+        filterByTab(redirectTab)
         refreshPanel("blacklist")
-
         refreshStats()
-      } else {
-        throw new Error("Failed to blacklist")
-      }
+      })
     } catch (_error) {
       showToast("Failed to blacklist track. Please try again.", "error")
-    } finally {
-      submitBtn.textContent = originalText
-      submitBtn.disabled = false
     }
   })
 }
@@ -287,37 +222,25 @@ function initOverrideForms() {
     const redirectTab = document.getElementById("override-redirect").value
 
     const submitBtn = this.querySelector('button[type="submit"]')
-    const originalText = submitBtn.textContent
-    submitBtn.textContent = "Saving..."
-    submitBtn.disabled = true
 
     try {
-      const formData = new FormData()
-      formData.append("artist", artist)
-      formData.append("title", title)
-      formData.append("video_id", videoId)
-      formData.append("reason", reason)
-      formData.append("redirect_tab", redirectTab)
+      await withButtonLoading(submitBtn, "Saving...", async () => {
+        const response = await postFormData("/override", {
+          artist,
+          title,
+          video_id: videoId,
+          reason,
+          redirect_tab: redirectTab,
+        })
 
-      const response = await fetch("/override", {
-        method: "POST",
-        body: formData,
-        redirect: "manual",
-      })
-
-      if (response.status === 400) {
-        const data = await response.json()
-        throw new Error(data.error || "Invalid input")
-      }
-
-      if (response.ok || response.type === "opaqueredirect" || response.status === 302) {
-        const itemSelectors = {
-          playlist: ".track-item",
-          cache: ".cache-item",
-          notfound: ".notfound-item",
-          overrides: ".override-item",
+        if (response.status === 400) {
+          const data = await response.json()
+          throw new Error(data.error || "Invalid input")
         }
-        const itemSelector = itemSelectors[redirectTab] || ".track-item"
+
+        if (!isSuccessRedirect(response)) throw new Error("Failed to save override")
+
+        const itemSelector = ITEM_SELECTORS[redirectTab] || ".track-item"
         const items = document.querySelectorAll(itemSelector)
         for (const item of items) {
           if (item.dataset.artist === artist.toLowerCase() && item.dataset.title === title.toLowerCase()) {
@@ -358,26 +281,12 @@ function initOverrideForms() {
 
         closeModal("overrideModal")
         showToast("Override saved!", "success")
-
-        if (redirectTab === "cache") {
-          filterCache()
-        } else if (redirectTab === "notfound") {
-          filterNotFound()
-        } else if (redirectTab === "playlist") {
-          filterTracks()
-        }
-
+        filterByTab(redirectTab)
         refreshPanel("overrides")
-
         refreshStats()
-      } else {
-        throw new Error("Failed to save override")
-      }
+      })
     } catch (error) {
       showToast(error.message || "Failed to save override", "error")
-    } finally {
-      submitBtn.textContent = originalText
-      submitBtn.disabled = false
     }
   })
 
@@ -395,41 +304,27 @@ function initOverrideForms() {
     }
 
     const submitBtn = this.querySelector('button[type="submit"]')
-    const originalText = submitBtn.textContent
-    submitBtn.textContent = "Saving..."
-    submitBtn.disabled = true
 
     try {
-      const formData = new FormData()
-      formData.append("artist", artist)
-      formData.append("title", title)
-      formData.append("video_id", videoId)
-      formData.append("reason", reason)
-      formData.append("redirect_tab", "overrides")
+      await withButtonLoading(submitBtn, "Saving...", async () => {
+        const response = await postFormData("/override", {
+          artist,
+          title,
+          video_id: videoId,
+          reason,
+          redirect_tab: "overrides",
+        })
 
-      const response = await fetch("/override", {
-        method: "POST",
-        body: formData,
-        redirect: "manual",
-      })
+        if (!isSuccessRedirect(response)) throw new Error("Failed to add override")
 
-      if (response.ok || response.type === "opaqueredirect" || response.status === 302) {
         closeModal("addOverrideModal")
         showToast("Override added!", "success")
-
         this.reset()
-
         refreshPanel("overrides")
-
         refreshStats()
-      } else {
-        throw new Error("Failed to add override")
-      }
+      })
     } catch (_error) {
       showToast("Failed to add override", "error")
-    } finally {
-      submitBtn.textContent = originalText
-      submitBtn.disabled = false
     }
   })
 }
@@ -448,40 +343,26 @@ function initAddBlacklistForm() {
     }
 
     const submitBtn = this.querySelector('button[type="submit"]')
-    const originalText = submitBtn.textContent
-    submitBtn.textContent = "Saving..."
-    submitBtn.disabled = true
 
     try {
-      const formData = new FormData()
-      formData.append("artist", artist)
-      formData.append("title", title)
-      formData.append("reason", reason)
-      formData.append("redirect_tab", "blacklist")
+      await withButtonLoading(submitBtn, "Saving...", async () => {
+        const response = await postFormData("/blacklist", {
+          artist,
+          title,
+          reason,
+          redirect_tab: "blacklist",
+        })
 
-      const response = await fetch("/blacklist", {
-        method: "POST",
-        body: formData,
-        redirect: "manual",
-      })
+        if (!isSuccessRedirect(response)) throw new Error("Failed to blacklist track")
 
-      if (response.ok || response.type === "opaqueredirect" || response.status === 302) {
         closeModal("addBlacklistModal")
         showToast("Track blacklisted!", "success")
-
         this.reset()
-
         refreshPanel("blacklist")
-
         refreshStats()
-      } else {
-        throw new Error("Failed to blacklist track")
-      }
+      })
     } catch (_error) {
       showToast("Failed to blacklist track", "error")
-    } finally {
-      submitBtn.textContent = originalText
-      submitBtn.disabled = false
     }
   })
 }

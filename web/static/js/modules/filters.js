@@ -60,6 +60,12 @@ export function filterCache() {
   }
 }
 
+export function filterByTab(tabContext) {
+  if (tabContext === "cache") filterCache()
+  else if (tabContext === "notfound") filterNotFound()
+  else filterTracks()
+}
+
 export function goToFilter(tabId, filter = null) {
   switchTab(tabId)
   if (filter && tabId === "playlist") {

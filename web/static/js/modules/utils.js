@@ -1,26 +1,25 @@
 import { registerPoller, unregisterPoller } from "./visibility.js"
 
-let _use24HourClock = null
+let _cachedSettings = null
 
-export async function getUse24HourClock() {
-  if (_use24HourClock !== null) return _use24HourClock
-
+async function getCachedSettings() {
+  if (_cachedSettings !== null) return _cachedSettings
   try {
     const response = await fetch("/api/settings")
     if (response.ok) {
-      const settings = await response.json()
-      _use24HourClock = Boolean(settings.USE_24_HOUR_CLOCK)
-    } else {
-      _use24HourClock = true
+      _cachedSettings = await response.json()
     }
-  } catch (_e) {
-    _use24HourClock = true
-  }
-  return _use24HourClock
+  } catch (_e) {}
+  return _cachedSettings
 }
 
-export function invalidateClockFormatCache() {
-  _use24HourClock = null
+export function invalidateSettingsCache() {
+  _cachedSettings = null
+}
+
+export async function getUse24HourClock() {
+  const settings = await getCachedSettings()
+  return settings ? Boolean(settings.USE_24_HOUR_CLOCK) : true
 }
 
 export function formatClockTime(date, use24Hour = true) {
@@ -190,27 +189,17 @@ function resetNowPlayingColors(widget) {
 
 async function getNowPlayingSettings() {
   if (_nowPlayingSettings !== null) return _nowPlayingSettings
-
-  try {
-    const response = await fetch("/api/settings")
-    if (response.ok) {
-      const settings = await response.json()
-      const enabled = settings.NOW_PLAYING_ENABLED === undefined ? true : Boolean(settings.NOW_PLAYING_ENABLED)
-      _nowPlayingSettings = {
-        enabled: enabled,
-        interval: parseInt(settings.NOW_PLAYING_INTERVAL, 10) || 15,
-      }
-    } else {
-      _nowPlayingSettings = { enabled: true, interval: 15 }
+  const settings = await getCachedSettings()
+  if (settings) {
+    const enabled = settings.NOW_PLAYING_ENABLED === undefined ? true : Boolean(settings.NOW_PLAYING_ENABLED)
+    _nowPlayingSettings = {
+      enabled: enabled,
+      interval: parseInt(settings.NOW_PLAYING_INTERVAL, 10) || 15,
     }
-  } catch (_e) {
+  } else {
     _nowPlayingSettings = { enabled: true, interval: 15 }
   }
   return _nowPlayingSettings
-}
-
-export function invalidateNowPlayingSettingsCache() {
-  _nowPlayingSettings = null
 }
 
 async function updateNowPlaying() {
@@ -375,7 +364,8 @@ export async function initNowPlaying() {
 }
 
 export async function restartNowPlaying() {
-  invalidateNowPlayingSettingsCache()
+  invalidateSettingsCache()
+  _nowPlayingSettings = null
   await initNowPlaying()
 }
 
@@ -471,15 +461,14 @@ export async function hideNowPlaying() {
     })
 
     if (response.ok) {
-      invalidateNowPlayingSettingsCache()
+      invalidateSettingsCache()
+      _nowPlayingSettings = null
       if (window.showToast) {
         window.showToast("Now Playing disabled. Re-enable in Settings &rarr; Display", "success")
       }
     }
   } catch (_error) {}
 }
-
-export function clearNowPlayingHidden() {}
 
 export function formatRelativeTime(isoString) {
   if (!isoString) return "Never"
@@ -656,4 +645,53 @@ export async function refreshPanel(panelName) {
   } catch (_error) {
     return false
   }
+}
+
+export function isSuccessRedirect(response) {
+  return response.ok || response.type === "opaqueredirect" || response.status === 302
+}
+
+export function removeBanner(id) {
+  const el = document.getElementById(id)
+  if (el) el.remove()
+  return el
+}
+
+export function insertBanner(id, className, innerHTML) {
+  if (document.getElementById(id)) return null
+  const banner = document.createElement("div")
+  banner.id = id
+  banner.className = className
+  banner.innerHTML = innerHTML
+  const container = document.querySelector(".container")
+  if (container) {
+    container.insertBefore(banner, container.firstChild)
+  }
+  return banner
+}
+
+export function escapeHtml(text) {
+  const div = document.createElement("div")
+  div.textContent = text
+  return div.innerHTML
+}
+
+export async function withButtonLoading(btn, loadingText, fn) {
+  const originalText = btn.textContent
+  btn.textContent = loadingText
+  btn.disabled = true
+  try {
+    return await fn()
+  } finally {
+    btn.textContent = originalText
+    btn.disabled = false
+  }
+}
+
+export async function postFormData(url, fields) {
+  const formData = new FormData()
+  for (const [key, value] of fields instanceof Map ? fields : Object.entries(fields)) {
+    formData.append(key, value)
+  }
+  return fetch(url, { method: "POST", body: formData, redirect: "manual" })
 }

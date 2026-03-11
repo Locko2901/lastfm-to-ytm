@@ -5,6 +5,8 @@ from __future__ import annotations
 from src.config import PROJECT_ROOT
 
 ENV_FILE = PROJECT_ROOT / ".env"
+ENV_EXAMPLE_FILE = PROJECT_ROOT / ".env.example"
+BROWSER_JSON_FILE = PROJECT_ROOT / "browser.json"
 
 BOOL_SETTINGS = {
     "MAKE_PUBLIC",

@@ -11,37 +11,39 @@ import select
 import subprocess
 import sys
 import threading
-import time
 from pathlib import Path
 
 from flask import Blueprint, Response, jsonify, request
 
-from src.config import PROJECT_ROOT
-
-from ..services import auth_lock, auth_state
+from ..services import BROWSER_JSON_FILE, auth_lock, auth_state
+from ..services.state import stream_state_output
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
-
-BROWSER_JSON_FILE = PROJECT_ROOT / "browser.json"
 
 logger = logging.getLogger(__name__)
 
 
+_AUTH_TIMEOUT_SECONDS = 120
+
+
 def _run_auth_process():
-    """Run ytmusicapi browser in a PTY so we can interact with it."""
-    from collections import deque
+    """Run ytmusicapi browser in a PTY so we can interact with it.
 
-    from ..services.state import MAX_OUTPUT_LINES
+    Times out after _AUTH_TIMEOUT_SECONDS to prevent orphaned threads.
+    """
+    import time
 
+    from ..services.state import reset_output
+
+    reset_output(auth_state, auth_lock)
     with auth_lock:
-        auth_state["output"] = deque(maxlen=MAX_OUTPUT_LINES)
         auth_state["finished"] = False
-        auth_state["exit_code"] = None
 
     project_root = Path(__file__).parent.parent.parent
 
     master_fd = None
     process = None
+    start_time = time.monotonic()
 
     try:
         master_fd, slave_fd = pty.openpty()
@@ -65,6 +67,14 @@ def _run_auth_process():
             auth_state["process"] = process
 
         while True:
+            if time.monotonic() - start_time > _AUTH_TIMEOUT_SECONDS:
+                logger.warning("Auth process timed out after %ds", _AUTH_TIMEOUT_SECONDS)
+                with auth_lock:
+                    auth_state["output"].append(f"Timed out after {_AUTH_TIMEOUT_SECONDS}s")
+                    auth_state["exit_code"] = -1
+                process.terminate()
+                break
+
             try:
                 r, _, _ = select.select([master_fd], [], [], 0.1)
                 if r:
@@ -152,22 +162,35 @@ def send_input():
         return jsonify({"error": "Failed to send input"}), 500
 
 
+def _validate_browser_json() -> tuple[bool, bool, str | None]:
+    """Validate browser.json exists and has valid auth cookies.
+
+    Returns:
+        Tuple of (has_content, valid, error_message).
+    """
+    if not BROWSER_JSON_FILE.exists():
+        return False, False, "browser.json not found"
+    if BROWSER_JSON_FILE.stat().st_size <= 3:
+        return False, False, "browser.json is empty"
+    try:
+        with BROWSER_JSON_FILE.open() as f:
+            data = json.load(f)
+        if "cookie" not in data:
+            return True, False, "Missing cookie in auth file"
+        cookie = data.get("cookie", "")
+        if "SAPISID" not in cookie and "SID" not in cookie:
+            return True, False, "Auth cookie appears invalid"
+        return True, True, None
+    except json.JSONDecodeError:
+        return True, False, "Invalid JSON in auth file"
+    except OSError:
+        return False, False, "Cannot read auth file"
+
+
 @auth_bp.route("/status")
 def status():
     """Get current auth regeneration status and browser.json validity."""
-    browser_json_exists = BROWSER_JSON_FILE.exists()
-    browser_has_content = browser_json_exists and BROWSER_JSON_FILE.stat().st_size > 3
-    valid = False
-
-    if browser_has_content:
-        try:
-            with BROWSER_JSON_FILE.open() as f:
-                data = json.load(f)
-            cookie = data.get("cookie", "")
-            if "cookie" in data and ("SAPISID" in cookie or "SID" in cookie):
-                valid = True
-        except (json.JSONDecodeError, OSError, KeyError):
-            pass
+    browser_has_content, valid, _ = _validate_browser_json()
 
     with auth_lock:
         return jsonify(
@@ -185,28 +208,10 @@ def status():
 @auth_bp.route("/validate")
 def validate():
     """Quick check that browser.json exists and has valid structure."""
-    if not BROWSER_JSON_FILE.exists():
-        return jsonify({"valid": False, "configured": False, "error": "browser.json not found"})
-
-    if BROWSER_JSON_FILE.stat().st_size <= 3:
-        return jsonify({"valid": False, "configured": False, "error": "browser.json is empty"})
-
-    try:
-        with BROWSER_JSON_FILE.open() as f:
-            data = json.load(f)
-
-        if "cookie" not in data:
-            return jsonify({"valid": False, "configured": False, "error": "Missing cookie in auth file"})
-
-        cookie = data.get("cookie", "")
-        if "SAPISID" not in cookie and "SID" not in cookie:
-            return jsonify({"valid": False, "configured": False, "error": "Auth cookie appears invalid"})
-
+    has_content, valid, error = _validate_browser_json()
+    if valid:
         return jsonify({"valid": True, "configured": True})
-    except json.JSONDecodeError:
-        return jsonify({"valid": False, "configured": False, "error": "Invalid JSON in auth file"})
-    except OSError:
-        return jsonify({"valid": False, "configured": False, "error": "Cannot read auth file"})
+    return jsonify({"valid": False, "configured": has_content, "error": error})
 
 
 @auth_bp.route("/test")
@@ -255,24 +260,7 @@ def stop():
 @auth_bp.route("/output")
 def output():
     """Stream auth output via Server-Sent Events."""
-
-    def generate():
-        last_idx = 0
-        while True:
-            with auth_lock:
-                output_list = list(auth_state["output"])
-                finished = auth_state["finished"]
-                exit_code = auth_state["exit_code"]
-
-            if last_idx < len(output_list):
-                for line in output_list[last_idx:]:
-                    yield f"data: {json.dumps({'line': line})}\n\n"
-                last_idx = len(output_list)
-
-            if finished and last_idx >= len(output_list):
-                yield f"data: {json.dumps({'finished': True, 'exit_code': exit_code})}\n\n"
-                break
-
-            time.sleep(0.1)
-
-    return Response(generate(), mimetype="text/event-stream")
+    return Response(
+        stream_state_output(auth_state, auth_lock, finished_key="finished"),
+        mimetype="text/event-stream",
+    )

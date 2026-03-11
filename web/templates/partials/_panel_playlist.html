@@ -1,14 +1,9 @@
 {# j2lint: disable=S7 #}
+{% from "macros/_track_actions.html" import search_bar, track_actions, refresh_icon %}
 <div class="tab-panel active" id="panel-playlist">
   {% if mappings %}
   <div class="filter-bar">
-    <div class="search-wrapper">
-      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <path d="m21 21-4.3-4.3"></path>
-      </svg>
-      <input type="text" class="search-input" placeholder="Search tracks..." id="playlistSearch">
-    </div>
+    {{ search_bar("Search tracks...", "playlistSearch") }}
     <div class="filter-chips">
       <button class="filter-chip active" data-filter="all">All</button>
       <button class="filter-chip" data-filter="override">Overrides</button>
@@ -55,41 +50,7 @@
       </div>
 
       <div class="track-actions">
-        {% if m.pending_retry %}
-        <button class="btn btn-success btn-sm" data-action="showOverrideModal" data-artist="{{ m.artist }}" data-title="{{ m.title }}" data-tab="playlist">
-          Override
-        </button>
-        <button class="btn btn-danger btn-sm" data-action="showBlacklistModal" data-artist="{{ m.artist }}" data-title="{{ m.title }}" data-tab="playlist">
-          Blacklist
-        </button>
-        {% else %} {% if m.is_overridden %}
-        <form method="POST" action="/remove_override" style="display:inline">
-          <input type="hidden" name="artist" value="{{ m.artist }}">
-          <input type="hidden" name="title" value="{{ m.title }}">
-          <input type="hidden" name="redirect_tab" value="playlist">
-          <button type="submit" class="btn btn-secondary btn-sm">Remove Override</button>
-        </form>
-        {% else %}
-        <button class="btn btn-success btn-sm" data-action="showOverrideModal" data-artist="{{ m.artist }}" data-title="{{ m.title }}" data-tab="playlist">
-          Override
-        </button>
-        {% endif %} {% if m.is_blacklisted %}
-        <button class="btn btn-secondary btn-sm" data-action="unblacklistTrack" data-artist="{{ m.artist }}" data-title="{{ m.title }}">
-          Restore
-        </button>
-        {% else %}
-        <button class="btn btn-danger btn-sm" data-action="showBlacklistModal" data-artist="{{ m.artist }}" data-title="{{ m.title }}" data-tab="playlist">
-          Blacklist
-        </button>
-        {% endif %} {% if m.source == 'cache' %}
-        <button
-          class="btn btn-secondary btn-sm"
-          data-action="clearCacheEntry" data-artist="{{ m.artist }}" data-title="{{ m.title }}" data-tab="playlist"
-          title="Clear cache & re-search on next run"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 21h5v-5"></path></svg>
-        </button>
-        {% endif %} {% endif %}
+        {{ track_actions(m.artist, m.title, "playlist", is_overridden=m.is_overridden, is_blacklisted=m.is_blacklisted, source=m.source, pending_retry=m.pending_retry, show_clear_cache=(m.source == 'cache')) }}
       </div>
     </div>
     {% endfor %}

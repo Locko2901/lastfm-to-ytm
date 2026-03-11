@@ -140,6 +140,22 @@ class SearchCache(JSONCache):
         self._cache[key] = entry
         self._save()
 
+    def items(self) -> list[tuple[str, dict]]:
+        """Return all cache entries as (key, entry) pairs."""
+        return list(self._cache.items())
+
+    def delete(self, key: str) -> bool:
+        """Delete a cache entry by key. Returns True if deleted."""
+        if key in self._cache:
+            del self._cache[key]
+            self._save()
+            return True
+        return False
+
+    def delete_by_track(self, artist: str, title: str) -> bool:
+        """Delete a cache entry by artist/title. Returns True if deleted."""
+        return self.delete(self._make_key(artist, title))
+
     def stats(self) -> dict[str, int]:
         """Get cache statistics."""
         total = len(self._cache)
@@ -300,6 +316,22 @@ class SearchOverrides(JSONCache):
             self._save()
             return True
         return False
+
+    def override_keys(self) -> set[str]:
+        """Return the set of override keys (lowercase 'artist|title')."""
+        return set(self._cache.get("_overrides", {}).keys())
+
+    def blacklist_keys(self) -> set[str]:
+        """Return the set of blacklist keys (lowercase 'artist|title')."""
+        return set(self._cache.get("_blacklist", {}).keys())
+
+    def override_items(self) -> list[tuple[str, dict]]:
+        """Return all override entries as (key, data) pairs."""
+        return list(self._cache.get("_overrides", {}).items())
+
+    def blacklist_items(self) -> list[tuple[str, dict]]:
+        """Return all blacklist entries as (key, data) pairs."""
+        return list(self._cache.get("_blacklist", {}).items())
 
     def stats(self) -> dict[str, int]:
         """Get override statistics.
