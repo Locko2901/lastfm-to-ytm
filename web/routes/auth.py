@@ -125,10 +125,10 @@ def start():
 
     if BROWSER_JSON_FILE.exists():
         try:
-            BROWSER_JSON_FILE.unlink()
+            BROWSER_JSON_FILE.write_text("{}")
         except OSError as e:
-            logger.error(f"Failed to remove browser.json: {e}")
-            return jsonify({"error": "Failed to remove old auth file"}), 500
+            logger.error(f"Failed to reset browser.json: {e}")
+            return jsonify({"error": "Failed to reset old auth file"}), 500
 
     with auth_lock:
         auth_state["running"] = True
