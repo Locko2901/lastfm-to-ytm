@@ -45,5 +45,8 @@
   "biome.requireConfiguration": true,
   "files.associations": {
     "*.html": "html"
-  }
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true
 }
