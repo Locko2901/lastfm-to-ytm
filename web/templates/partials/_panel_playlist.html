@@ -16,13 +16,9 @@
     {% for m in mappings %}
     <div
       class="track-item {% if m.is_overridden %}overridden{% endif %}{% if m.is_blacklisted %} blacklisted{% endif %}{% if m.pending_retry %} pending-retry{% endif %}"
-      data-artist="{{ m.artist|lower }}"
-      data-title="{{ m.title|lower }}"
-      data-source="{{ m.source }}"
-      data-overridden="{{ 'yes' if m.is_overridden else 'no' }}"
-      data-blacklisted="{{ 'yes' if m.is_blacklisted else 'no' }}"
-      data-pending="{{ 'yes' if m.pending_retry else 'no' }}"
-    >
+      data-artist="{{ m.artist|lower }}" data-title="{{ m.title|lower }}" data-source="{{ m.source }}"
+      data-overridden="{{ 'yes' if m.is_overridden else 'no' }}" data-blacklisted="{{ 'yes' if m.is_blacklisted else 'no' }}"
+      data-pending="{{ 'yes' if m.pending_retry else 'no' }}">
       <div class="track-index">#{{ loop.index }}</div>
 
       <div class="track-info">
@@ -39,12 +35,8 @@
         <span class="track-ytm-id">
           {{ m.video_id }}
           {% if m.is_overridden %}<span class="badge badge-override">Override</span>{% endif %} {% if m.is_blacklisted %}<span
-            class="badge badge-blacklist"
-            >Blacklisted</span
-          >{% endif %} {% if m.source == 'cache' %}<span class="badge badge-cached">Cached</span>{% endif %} {% if m.source == 'search' %}<span
-            class="badge badge-search"
-            >Search</span
-          >{% endif %}
+            class="badge badge-blacklist">Blacklisted</span>{% endif %} {% if m.source == 'cache' %}<span
+            class="badge badge-cached">Cached</span>{% endif %} {% if m.source == 'search' %}<span class="badge badge-search">Search</span>{% endif %}
         </span>
         {% endif %}
       </div>

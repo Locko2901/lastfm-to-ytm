@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    // Only process JS/CSS under web/static - never touch Python, HTML, or config files.
+    // Only process JS/CSS under web/static - Biome's HTML parser panics on Jinja2 block tags.
     "includes": ["web/static/**"],
     "ignoreUnknown": true
   },
@@ -67,6 +67,7 @@
       "enabled": true
     }
   },
+  // HTML support disabled: Biome 2.x panics on Jinja2 {% block %}/{% extends %} tags.
   "assist": {
     "enabled": true,
     "actions": {

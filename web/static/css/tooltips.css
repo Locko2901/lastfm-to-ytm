@@ -40,7 +40,7 @@
 .tooltip[data-position="top"]::before {
   bottom: -5px;
   left: var(--arrow-offset, 50%);
-  margin-left: -4px;
+  translate: -50% 0;
   border-top: none;
   border-left: none;
 }
@@ -48,7 +48,7 @@
 .tooltip[data-position="bottom"]::before {
   top: -5px;
   left: var(--arrow-offset, 50%);
-  margin-left: -4px;
+  translate: -50% 0;
   border-bottom: none;
   border-right: none;
 }

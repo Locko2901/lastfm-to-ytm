@@ -1,11 +1,6 @@
 import { closeModal } from "./modals.js"
 import { removeBanner, showToast } from "./utils.js"
 
-let authEventSource = null
-let _isAuthRunning = false
-let authPollInterval = null
-let _authCompleting = false
-
 function removeAuthBanner() {
   removeBanner("authRequiredBanner")
 }
@@ -23,8 +18,7 @@ export async function checkAuthStatus() {
 export async function connectAuth() {
   const input = document.getElementById("authInput")
   const connectBtn = document.getElementById("authConnectBtn")
-  const output = document.getElementById("authOutput")
-  const statusArea = document.getElementById("authStatusArea")
+  const resultArea = document.getElementById("authResult")
   const text = input.value.trim()
 
   if (!text) {
@@ -38,111 +32,58 @@ export async function connectAuth() {
   connectBtn.querySelector(".auth-btn-text").textContent = "Connecting..."
   connectBtn.querySelector(".auth-btn-icon").innerHTML = '<circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/>'
 
-  output.innerHTML = ""
-  statusArea.style.display = "block"
-  _isAuthRunning = true
-  _authCompleting = false
+  resultArea.style.display = "none"
 
   try {
-    const startResponse = await fetch("/api/auth/start", { method: "POST" })
-    if (!startResponse.ok) {
-      const data = await startResponse.json()
-      throw new Error(data.error || "Failed to start auth process")
+    const response = await fetch("/api/auth/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ headers_raw: text }),
+    })
+
+    const data = await response.json()
+
+    if (data.success) {
+      showResult("success", data.verified ? buildSuccessMessage(data.lastLiked) : "Auth saved (could not verify live)")
+      showToast("YouTube Music connected!", "success")
+      removeAuthBanner()
+      setTimeout(() => closeAuthModal(), 1500)
+    } else {
+      showResult("error", data.error || "Connection failed")
+      showToast("Connection failed", "error")
+      resetConnectButton()
     }
-
-    startAuthPolling()
-
-    authEventSource = new EventSource("/api/auth/output")
-
-    authEventSource.onmessage = event => {
-      const data = JSON.parse(event.data)
-
-      if (data.line !== undefined) {
-        const line = document.createElement("div")
-        line.className = "auth-line"
-        line.textContent = data.line
-        output.appendChild(line)
-        output.scrollTop = output.scrollHeight
-      }
-
-      if (data.finished) {
-        handleAuthComplete(data.exit_code)
-      }
-    }
-
-    authEventSource.onerror = () => {
-      if (authEventSource) {
-        authEventSource.close()
-        authEventSource = null
-      }
-      if (!_authCompleting) {
-        resetConnectButton()
-        _isAuthRunning = false
-      }
-    }
-
-    setTimeout(async () => {
-      try {
-        const sendResponse = await fetch("/api/auth/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text }),
-        })
-
-        if (!sendResponse.ok) {
-          const data = await sendResponse.json()
-          throw new Error(data.error || "Failed to send headers")
-        }
-      } catch (error) {
-        showToast(error.message, "error")
-        resetConnectButton()
-      }
-    }, 300)
-  } catch (error) {
-    resetConnectButton()
-    _isAuthRunning = false
-    showToast(error.message, "error")
-  }
-}
-
-function handleAuthComplete(exitCode) {
-  if (_authCompleting) return
-  _authCompleting = true
-
-  if (authPollInterval) {
-    clearInterval(authPollInterval)
-    authPollInterval = null
-  }
-  if (authEventSource) {
-    authEventSource.close()
-    authEventSource = null
-  }
-  _isAuthRunning = false
-
-  const output = document.getElementById("authOutput")
-  const outputText = Array.from(output.querySelectorAll(".auth-line"))
-    .map(el => el.textContent)
-    .join(" ")
-  const success = exitCode === 0 || outputText.includes("Creating file")
-
-  if (success) {
-    const successLine = document.createElement("div")
-    successLine.className = "auth-line success"
-    successLine.textContent = "Authentication saved successfully!"
-    output.appendChild(successLine)
-    showToast("YouTube Music connected!", "success")
-
-    removeAuthBanner()
-
-    setTimeout(() => closeAuthModal(), 1500)
-  } else {
-    const errorLine = document.createElement("div")
-    errorLine.className = "auth-line error"
-    errorLine.textContent = "Authentication failed. Check your headers and try again."
-    output.appendChild(errorLine)
+  } catch (_error) {
+    showResult("error", "Network error - check your connection and try again")
     showToast("Connection failed", "error")
     resetConnectButton()
   }
+}
+
+function buildSuccessMessage(lastLiked) {
+  if (lastLiked) {
+    return `Connected! Last liked song: ${lastLiked}`
+  }
+  return "Connected and verified!"
+}
+
+function showResult(type, message) {
+  const resultArea = document.getElementById("authResult")
+  const icon = document.getElementById("authResultIcon")
+  const text = document.getElementById("authResultText")
+
+  resultArea.style.display = "flex"
+  resultArea.className = `auth-result auth-result-${type}`
+
+  if (type === "success") {
+    icon.innerHTML =
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>'
+  } else {
+    icon.innerHTML =
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>'
+  }
+
+  text.textContent = message
 }
 
 function resetConnectButton() {
@@ -155,61 +96,16 @@ function resetConnectButton() {
   }
 }
 
-export async function stopAuthProcess() {
-  try {
-    await fetch("/api/auth/stop", { method: "POST" })
-  } catch (_e) {}
-}
-
 export function closeAuthModal() {
-  if (authPollInterval) {
-    clearInterval(authPollInterval)
-    authPollInterval = null
-  }
-
-  if (authEventSource) {
-    authEventSource.close()
-    authEventSource = null
-  }
-
-  if (_isAuthRunning) {
-    stopAuthProcess()
-  }
-
-  _isAuthRunning = false
-  _authCompleting = false
   closeModal("authModal")
-
   resetConnectButton()
+
   const input = document.getElementById("authInput")
-  const statusArea = document.getElementById("authStatusArea")
+  const resultArea = document.getElementById("authResult")
   if (input) input.value = ""
-  if (statusArea) statusArea.style.display = "none"
+  if (resultArea) resultArea.style.display = "none"
 
   updateAuthStatus()
-}
-
-function startAuthPolling() {
-  if (authPollInterval) {
-    clearInterval(authPollInterval)
-  }
-
-  authPollInterval = setInterval(async () => {
-    try {
-      if (_authCompleting) {
-        clearInterval(authPollInterval)
-        authPollInterval = null
-        return
-      }
-      if (await checkAuthStatus()) {
-        clearInterval(authPollInterval)
-        authPollInterval = null
-        if (!_authCompleting) {
-          handleAuthComplete(0)
-        }
-      }
-    } catch (_e) {}
-  }, 1000)
 }
 
 export async function updateAuthStatus() {
@@ -248,10 +144,6 @@ export function initAuth() {
       }
     })
   }
-
-  window.addEventListener("beforeunload", () => {
-    navigator.sendBeacon("/api/auth/stop")
-  })
 
   updateAuthStatus()
 }

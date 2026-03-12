@@ -16,10 +16,14 @@ def _get_available_memory_mb():
 
 
 def _detect_resources():
-    """Detect system resources and return appropriate worker/thread counts.
+    """Detect system resources and return appropriate thread count.
+
+    Always 1 worker because sync_state lives in process memory; multiple
+    workers would each have isolated state.  Threads (gthread) share
+    memory within the single worker, so concurrency is handled there.
 
     Returns:
-        tuple: (workers, threads, preload) optimized for the system
+        tuple: (threads, preload) optimized for the system.
     """
     cpu_count = multiprocessing.cpu_count()
     memory_mb = _get_available_memory_mb()
@@ -27,21 +31,17 @@ def _detect_resources():
     is_toaster = cpu_count <= 1 or (memory_mb is not None and memory_mb < 1024)
 
     if is_toaster:
-        return (1, 2, False)
+        return (2, False)
 
-    workers = min(2, cpu_count)
-    threads = 4
-    preload = True
-
-    return (workers, threads, preload)
+    return (min(cpu_count, 4) + 2, True)
 
 
-_auto_workers, _auto_threads, _auto_preload = _detect_resources()
+_auto_threads, _auto_preload = _detect_resources()
 
 bind = os.getenv("GUNICORN_BIND", "0.0.0.0:2002")
 
 worker_class = "gthread"
-workers = int(os.getenv("GUNICORN_WORKERS", _auto_workers))
+workers = 1
 threads = int(os.getenv("GUNICORN_THREADS", _auto_threads))
 
 timeout = int(os.getenv("GUNICORN_TIMEOUT", "120"))
@@ -70,21 +70,15 @@ def on_starting(server):
     """Called just before the master process is initialized."""
 
 
-def post_fork(server, worker):
-    """Initialize the APScheduler in a single worker after forking.
+def post_fork(server, worker):  # noqa: ARG001
+    """Initialize the APScheduler after forking."""
+    try:
+        from web.services.scheduler import init_scheduler_from_env
 
-    Only worker 1 runs the scheduler to avoid duplicate sync jobs when
-    multiple gunicorn workers are spawned. The sync_lock inside the
-    scheduler's job wrapper guards against any remaining races.
-    """
-    if worker.age == 1:
-        try:
-            from web.services.scheduler import init_scheduler_from_env
-
-            init_scheduler_from_env()
-            server.log.info("[worker 1] Scheduler initialized")
-        except Exception as e:
-            server.log.warning(f"[worker 1] Scheduler init failed: {e}")
+        init_scheduler_from_env()
+        server.log.info("Scheduler initialized")
+    except Exception as e:
+        server.log.warning(f"Scheduler init failed: {e}")
 
 
 def on_exit(server):

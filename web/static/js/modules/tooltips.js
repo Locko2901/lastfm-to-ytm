@@ -46,12 +46,21 @@ function positionTooltip(target) {
     }
   }
 
-  left = Math.max(OFFSET, Math.min(left, viewportWidth - tooltipRect.width - OFFSET))
+  const clampedLeft = Math.max(OFFSET, Math.min(left, viewportWidth - tooltipRect.width - OFFSET))
   top = Math.max(OFFSET, Math.min(top, viewportHeight - tooltipRect.height - OFFSET))
 
-  tooltip.style.left = `${left}px`
+  tooltip.style.left = `${clampedLeft}px`
   tooltip.style.top = `${top}px`
   tooltip.setAttribute("data-position", position)
+
+  if (position === "top" || position === "bottom") {
+    const targetCenter = rect.left + rect.width / 2
+    const arrowOffset = targetCenter - clampedLeft
+    const clamped = Math.max(12, Math.min(arrowOffset, tooltipRect.width - 12))
+    tooltip.style.setProperty("--arrow-offset", `${clamped}px`)
+  } else {
+    tooltip.style.removeProperty("--arrow-offset")
+  }
 }
 
 function showTooltip(target) {

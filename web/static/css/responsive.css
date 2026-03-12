@@ -491,6 +491,17 @@
     width: 100%;
   }
 
+  .notif-panel {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 60vh;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
   .empty-state {
     padding: 2rem 1rem;
   }
