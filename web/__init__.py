@@ -1,1 +1,1 @@
-"""Web dashboard for Last.fm → YTM sync."""
+"""Web dashboard for Last.fm &rarr; YTM sync."""

@@ -23,9 +23,7 @@
     <div class="stat-value stat-value-time" data-timestamp="{{ last_sync or '' }}">
       {% if last_sync %}
       <span class="last-sync-time">--</span>
-      {% else %}
-      Never
-      {% endif %}
+      {% else %} Never {% endif %}
     </div>
     <div class="stat-label">Last Sync</div>
   </div>

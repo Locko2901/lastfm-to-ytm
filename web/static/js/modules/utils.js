@@ -1,3 +1,4 @@
+import { pushNotification } from "./notifications.js"
 import { registerPoller, unregisterPoller } from "./visibility.js"
 
 let _cachedSettings = null
@@ -577,6 +578,8 @@ export async function refreshStats() {
 }
 
 export function showToast(message, type = "success") {
+  pushNotification(message, type)
+
   const container = document.getElementById("toastContainer")
   const toast = document.createElement("div")
   toast.className = `toast ${type}`

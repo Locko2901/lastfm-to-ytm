@@ -31,8 +31,6 @@ from .scheduler import (
     stop_scheduler,
 )
 from .state import (
-    auth_lock,
-    auth_state,
     sync_lock,
     sync_state,
 )
@@ -43,8 +41,6 @@ __all__ = [
     "BROWSER_JSON_FILE",
     "ENV_EXAMPLE_FILE",
     "ENV_FILE",
-    "auth_lock",
-    "auth_state",
     "clear_failure_log",
     "get_cache_stats",
     "get_cached_tracks",

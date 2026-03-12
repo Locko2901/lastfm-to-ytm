@@ -12,6 +12,7 @@ import {
   showOverrideModal,
   unblacklistTrack,
 } from "./modules/modals.js"
+import { initNotifications } from "./modules/notifications.js"
 import {
   closeSettingsModal,
   dismissRestartBanner,
@@ -146,6 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initAuth()
   initSetup()
   initTooltips()
+  initNotifications()
   startDataWatcher()
 })
 

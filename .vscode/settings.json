@@ -22,12 +22,13 @@
       "source.fixAll.biome": "explicit"
     }
   },
-  // HTML: no auto-format — Jinja2 in <script> tags causes Biome false positives.
-  // Use j2lint via CLI for template linting. See docs/linting.md.
+  // HTML: use VS Code's built-in formatter (js-beautify). Biome panics on Jinja2 {% %} tags.
+  // CLI equivalent: npm run format:templates
   "[html]": {
     "editor.defaultFormatter": "vscode.html-language-features",
-    "editor.formatOnSave": false
+    "editor.formatOnSave": true
   },
+  "html.format.templating": true,
   // Keep Biome away from JSON/JSONC files (including biome.jsonc itself).
   // Biome's LSP crashes with a line-index error when asked for code actions on
   // its own config file — use VS Code's built-in JSON language server instead.
