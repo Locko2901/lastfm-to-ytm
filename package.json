@@ -8,7 +8,7 @@
     "lint:fix": "biome check --write",
     "lint:fix:unsafe": "biome check --write --unsafe",
     "format": "biome format --write",
-    "format:templates": "js-beautify --type html --indent-size 2 --wrap-line-length 150 --templating django --replace web/templates/*.html web/templates/**/*.html"
+    "format:templates": "js-beautify --type html --indent-size 2 --wrap-line-length 150 --end-with-newline --templating django --replace web/templates/*.html web/templates/**/*.html"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.6",
