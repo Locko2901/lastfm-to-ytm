@@ -1,3 +1,5 @@
+import { filterByTab } from "./filters.js"
+
 export function switchTab(tabId) {
   for (const t of document.querySelectorAll(".tab")) t.classList.remove("active")
   for (const p of document.querySelectorAll(".tab-panel")) p.classList.remove("active")
@@ -8,6 +10,8 @@ export function switchTab(tabId) {
   const url = new URL(window.location)
   url.searchParams.set("tab", tabId)
   history.replaceState({}, "", url)
+
+  filterByTab(tabId)
 }
 
 export function initTabs() {

@@ -6,6 +6,12 @@
     <path d="m21 21-4.3-4.3"></path>
   </svg>
   <input type="text" class="search-input" placeholder="{{ placeholder }}" id="{{ input_id }}">
+  <button type="button" class="search-clear" data-for="{{ input_id }}" aria-label="Clear search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 6 6 18"></path>
+      <path d="m6 6 12 12"></path>
+    </svg>
+  </button>
 </div>
 {% endmacro %}
 

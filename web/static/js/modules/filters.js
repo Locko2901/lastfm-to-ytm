@@ -5,7 +5,7 @@ export function filterTracks() {
   const search = searchInput?.value.toLowerCase() || ""
   const activeFilter = document.querySelector(".filter-chip:not([data-panel]).active")?.dataset.filter || "all"
 
-  const trackItems = document.querySelectorAll(".track-item")
+  const trackItems = document.querySelectorAll("#playlistTracks .track-item")
   for (const item of trackItems) {
     const artist = item.dataset.artist || ""
     const title = item.dataset.title || ""
@@ -83,6 +83,9 @@ export function goToFilter(tabId, filter = null) {
 
 export function initFilters() {
   document.addEventListener("input", e => {
+    if (e.target.classList.contains("search-input")) {
+      e.target.closest(".search-wrapper")?.classList.toggle("has-value", e.target.value.length > 0)
+    }
     if (e.target.id === "playlistSearch") {
       filterTracks()
     } else if (e.target.id === "notfoundSearch") {
@@ -90,6 +93,17 @@ export function initFilters() {
     } else if (e.target.id === "cacheSearch") {
       filterCache()
     }
+  })
+
+  document.addEventListener("click", e => {
+    const clearBtn = e.target.closest(".search-clear")
+    if (!clearBtn) return
+    const inputId = clearBtn.dataset.for
+    const input = document.getElementById(inputId)
+    if (!input) return
+    input.value = ""
+    clearBtn.closest(".search-wrapper")?.classList.remove("has-value")
+    input.dispatchEvent(new Event("input", { bubbles: true }))
   })
 
   document.addEventListener("click", e => {
