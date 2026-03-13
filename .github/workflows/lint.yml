@@ -2,7 +2,6 @@ name: Lint
 
 on:
   push:
-    branches: [main, feature/web-ui]
   pull_request:
     branches: [main]
 
