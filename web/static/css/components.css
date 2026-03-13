@@ -494,10 +494,8 @@
 }
 
 .search-input {
-  flex: 1;
-  min-width: 200px;
-  padding: 0.5rem 0.875rem;
-  padding-left: 2.25rem;
+  width: 100%;
+  padding: 0.5rem 2rem 0.5rem 2.25rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--bg-input);
@@ -514,6 +512,7 @@
   position: relative;
   flex: 1;
   min-width: 200px;
+  max-width: 320px;
 }
 
 .search-icon {
@@ -526,10 +525,41 @@
   height: 14px;
 }
 
+.search-clear {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0.125rem;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition);
+}
+
+.search-clear svg {
+  width: 14px;
+  height: 14px;
+}
+
+.search-clear:hover {
+  color: var(--text-primary);
+}
+
+.search-wrapper.has-value .search-clear {
+  display: flex;
+}
+
 .filter-chips {
   display: flex;
   gap: 0.375rem;
   flex-wrap: wrap;
+  margin-left: auto;
 }
 
 .filter-chip {
