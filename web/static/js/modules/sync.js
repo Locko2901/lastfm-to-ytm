@@ -1,3 +1,4 @@
+import { _ } from "./i18n.js"
 import { insertBanner, refreshPanel, removeBanner, showToast, updateNowPlayingPosition } from "./utils.js"
 import { registerPoller, unregisterPoller } from "./visibility.js"
 
@@ -50,7 +51,7 @@ export async function runSync() {
 
   output.innerHTML = ""
   indicator.className = "sync-indicator running"
-  statusText.textContent = "Running..."
+  statusText.textContent = _("Running...")
   runBtn.style.display = "none"
   stopBtn.style.display = ""
 
@@ -58,7 +59,7 @@ export async function runSync() {
     const response = await fetch("/run_sync", { method: "POST" })
     if (!response.ok) {
       const data = await response.json()
-      throw new Error(data.error || "Failed to start sync")
+      throw new Error(data.error || _("Failed to start sync"))
     }
 
     syncEventSource = new EventSource("/sync_output")
@@ -93,11 +94,11 @@ export async function runSync() {
 
         const success = data.exit_code === 0
         indicator.className = `sync-indicator ${success ? "success" : "error"}`
-        statusText.textContent = success ? "Completed" : "Failed"
+        statusText.textContent = success ? _("Completed") : _("Failed")
         runBtn.style.display = ""
         stopBtn.style.display = "none"
 
-        showToast(success ? "Sync completed successfully!" : "Sync failed. Check output for errors.", success ? "success" : "error")
+        showToast(success ? _("Sync completed successfully!") : _("Sync failed. Check output for errors."), success ? "success" : "error")
 
         if (window.refreshStats) window.refreshStats()
         fetch("/api/stats")
@@ -127,7 +128,7 @@ export async function runSync() {
       syncEventSource = null
       manualSyncInProgress = false
       indicator.className = "sync-indicator error"
-      statusText.textContent = "Connection lost"
+      statusText.textContent = _("Connection lost")
       runBtn.style.display = ""
       stopBtn.style.display = "none"
     }
@@ -155,11 +156,11 @@ export async function stopSync() {
   const indicator = document.getElementById("syncIndicator")
   const statusText = document.getElementById("syncStatusText")
   indicator.className = "sync-indicator"
-  statusText.textContent = "Stopped"
+  statusText.textContent = _("Stopped")
   document.getElementById("runSyncBtn").style.display = ""
   document.getElementById("stopSyncBtn").style.display = "none"
 
-  showToast("Sync stopped", "error")
+  showToast(_("Sync stopped"), "error")
 }
 
 export function goToSyncAndRun() {
@@ -303,8 +304,8 @@ function showDataUpdateBanner() {
         <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
         <path d="M16 21h5v-5"></path>
       </svg>
-      <span>Scheduled sync completed! New data available.</span>
-      <button class="btn btn-sm btn-primary" data-action="reloadPage">Refresh</button>
+      <span>${_("Scheduled sync completed! New data available.")}</span>
+      <button class="btn btn-sm btn-primary" data-action="reloadPage">${_("Refresh")}</button>
       <button class="data-update-close" data-action="dismissDataUpdateBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
   `,

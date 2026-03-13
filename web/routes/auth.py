@@ -6,6 +6,7 @@ import json
 import logging
 
 from flask import Blueprint, jsonify, request
+from flask_babel import gettext as _
 
 from ..services import BROWSER_JSON_FILE
 
@@ -23,7 +24,7 @@ def submit():
     """
     data = request.get_json()
     if not data or not data.get("headers_raw", "").strip():
-        return jsonify({"success": False, "error": "No headers provided"}), 400
+        return jsonify({"success": False, "error": _("No headers provided")}), 400
 
     headers_raw = data["headers_raw"].strip()
 
@@ -37,11 +38,11 @@ def submit():
             return jsonify(
                 {
                     "success": False,
-                    "error": "Missing required headers (cookie, x-goog-authuser). Make sure you copy from a /browse request while logged in.",
+                    "error": _("Missing required headers (cookie, x-goog-authuser). Make sure you copy from a /browse request while logged in."),
                 }
             ), 400
         logger.exception("Failed to parse auth headers")
-        return jsonify({"success": False, "error": f"Failed to parse headers: {error_msg}"}), 400
+        return jsonify({"success": False, "error": _("Failed to parse headers: %(error_msg)s", error_msg=error_msg)}), 400
 
     _has_content, valid, error = _validate_browser_json()
     if not valid:
@@ -64,7 +65,7 @@ def submit():
             return jsonify(
                 {
                     "success": False,
-                    "error": "Headers were saved but auth appears expired. Try copying fresh headers.",
+                    "error": _("Headers were saved but auth appears expired. Try copying fresh headers."),
                 }
             ), 400
         logger.warning("Auth live-test failed (file still saved): %s", e)
@@ -78,22 +79,22 @@ def _validate_browser_json() -> tuple[bool, bool, str | None]:
         Tuple of (has_content, valid, error_message).
     """
     if not BROWSER_JSON_FILE.exists():
-        return False, False, "browser.json not found"
+        return False, False, _("browser.json not found")
     if BROWSER_JSON_FILE.stat().st_size <= 3:
-        return False, False, "browser.json is empty"
+        return False, False, _("browser.json is empty")
     try:
         with BROWSER_JSON_FILE.open() as f:
             data = json.load(f)
         if "cookie" not in data:
-            return True, False, "Missing cookie in auth file"
+            return True, False, _("Missing cookie in auth file")
         cookie = data.get("cookie", "")
         if "SAPISID" not in cookie and "SID" not in cookie:
-            return True, False, "Auth cookie appears invalid"
+            return True, False, _("Auth cookie appears invalid")
         return True, True, None
     except json.JSONDecodeError:
-        return True, False, "Invalid JSON in auth file"
+        return True, False, _("Invalid JSON in auth file")
     except OSError:
-        return False, False, "Cannot read auth file"
+        return False, False, _("Cannot read auth file")
 
 
 @auth_bp.route("/status")
@@ -121,7 +122,7 @@ def validate():
 def test():
     """Actually test the auth by fetching the user's last liked song."""
     if not BROWSER_JSON_FILE.exists():
-        return jsonify({"valid": False, "error": "browser.json not found"})
+        return jsonify({"valid": False, "error": _("browser.json not found")})
 
     try:
         from ytmusicapi import YTMusic
@@ -137,6 +138,6 @@ def test():
     except Exception as e:
         error_str = str(e)
         if "Sign in" in error_str or "singleColumnBrowseResultsRenderer" in error_str:
-            return jsonify({"valid": False, "error": "Auth expired - please regenerate", "expired": True})
+            return jsonify({"valid": False, "error": _("Auth expired - please regenerate"), "expired": True})
         logger.exception("Auth test failed")
-        return jsonify({"valid": False, "error": "Auth test failed"})
+        return jsonify({"valid": False, "error": _("Auth test failed")})

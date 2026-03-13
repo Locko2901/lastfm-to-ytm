@@ -1,4 +1,4 @@
-"""Flask web dashboard for Last.fm &rarr; YouTube Music sync."""
+"""Flask web dashboard for Last.fm → YouTube Music sync."""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ import secrets as _secrets
 import sys
 from pathlib import Path
 
-from flask import Flask, g, render_template
+from babel import Locale
+from flask import Flask, g, render_template, request
+from flask_babel import Babel, get_translations
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -72,14 +74,51 @@ app = Flask(__name__, static_folder="static")
 
 app.secret_key = _ensure_secret_key(ENV_FILE)
 
+app.config["BABEL_DEFAULT_LOCALE"] = "en"
+_translations_dir = Path(__file__).parent / "translations"
+app.config["BABEL_TRANSLATION_DIRECTORIES"] = str(_translations_dir)
+
+
+def _discover_locales() -> list[str]:
+    """Return sorted locale codes found in the translations directory."""
+    locales = {"en"}
+    if _translations_dir.is_dir():
+        for child in _translations_dir.iterdir():
+            if child.is_dir() and (child / "LC_MESSAGES" / "messages.po").exists():
+                locales.add(child.name)
+    return sorted(locales)
+
+
+SUPPORTED_LOCALES = _discover_locales()
+
+
+def get_locale():
+    """Select locale from cookie, then Accept-Language header, then default."""
+    cookie_locale = request.cookies.get("ytm-locale")
+    if cookie_locale in SUPPORTED_LOCALES:
+        return cookie_locale
+    return request.accept_languages.best_match(SUPPORTED_LOCALES) or "en"
+
+
+babel = Babel(app, locale_selector=get_locale)
+
 _dist = Path(__file__).parent / "static" / "dist"
 app.jinja_env.globals["use_minified"] = (_dist / "app.min.js").exists() and (_dist / "bundle.min.css").exists()
 
 
 @app.context_processor
-def inject_csp_nonce():
-    """Make the CSP nonce available in all templates."""
-    return {"csp_nonce": getattr(g, "csp_nonce", "")}
+def inject_globals():
+    """Make CSP nonce, locales, and JS translations accessible in all templates."""
+    locale_choices = [(code, Locale(code).get_display_name(code) or code) for code in SUPPORTED_LOCALES]
+    catalog = get_translations()
+    js_translations = {}
+    if hasattr(catalog, "_catalog"):
+        js_translations = {k: v for k, v in catalog._catalog.items() if k and v and isinstance(k, str)}
+    return {
+        "csp_nonce": getattr(g, "csp_nonce", ""),
+        "available_locales": locale_choices,
+        "js_translations": js_translations,
+    }
 
 
 @app.before_request

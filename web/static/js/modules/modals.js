@@ -1,4 +1,5 @@
 import { filterByTab } from "./filters.js"
+import { _ } from "./i18n.js"
 import { isSuccessRedirect, postFormData, refreshPanel, refreshStats, showToast, withButtonLoading } from "./utils.js"
 
 const ITEM_SELECTORS = {
@@ -87,9 +88,9 @@ export async function clearCacheEntry(artist, title, buttonEl, tabContext = "pla
         const ytmDiv = trackItem.querySelector(".track-ytm")
         if (ytmDiv) {
           ytmDiv.innerHTML = `
-            <span class="text-muted">Will re-search on next sync</span>
+            <span class="text-muted">${_("Will re-search on next sync")}</span>
             <span class="track-ytm-id">
-              <span class="badge badge-pending">Pending Retry</span>
+              <span class="badge badge-pending">${_("Pending Retry")}</span>
             </span>
           `
         }
@@ -100,19 +101,19 @@ export async function clearCacheEntry(artist, title, buttonEl, tabContext = "pla
           const safeTitle = title.replace(/"/g, "&quot;")
           actionsDiv.innerHTML = `
             <button class="btn btn-success btn-sm"
-              data-action="showOverrideModal" data-artist="${safeArtist}" data-title="${safeTitle}" data-tab="playlist">Override</button>
+              data-action="showOverrideModal" data-artist="${safeArtist}" data-title="${safeTitle}" data-tab="playlist">${_("Override")}</button>
             <button class="btn btn-danger btn-sm"
-              data-action="showBlacklistModal" data-artist="${safeArtist}" data-title="${safeTitle}" data-tab="playlist">Blacklist</button>
+              data-action="showBlacklistModal" data-artist="${safeArtist}" data-title="${safeTitle}" data-tab="playlist">${_("Blacklist")}</button>
           `
         }
       }
 
       filterByTab(tabContext)
-      showToast("Cache cleared - will retry on next sync", "success")
+      showToast(_("Cache cleared - will retry on next sync"), "success")
       refreshStats()
     })
   } catch (_error) {
-    showToast("Failed to clear cache entry", "error")
+    showToast(_("Failed to clear cache entry"), "error")
   }
 }
 
@@ -128,7 +129,7 @@ export async function unblacklistTrack(artist, title, buttonEl, tabContext = "pl
         redirect_tab: tabContext,
       })
 
-      if (!isSuccessRedirect(response)) throw new Error("Failed to unblacklist")
+      if (!isSuccessRedirect(response)) throw new Error(_("Failed to unblacklist"))
 
       trackItem.classList.remove("blacklisted")
       trackItem.dataset.blacklisted = "no"
@@ -136,7 +137,7 @@ export async function unblacklistTrack(artist, title, buttonEl, tabContext = "pl
       const badge = trackItem.querySelector(".badge-blacklist")
       if (badge) badge.remove()
 
-      buttonEl.textContent = "Blacklist"
+      buttonEl.textContent = _("Blacklist")
       buttonEl.className = "btn btn-danger btn-sm"
       buttonEl.onclick = () => showBlacklistModal(artist, title, tabContext)
       buttonEl.disabled = false
@@ -161,7 +162,7 @@ function initBlacklistForm() {
 
     const artist = document.getElementById("blacklist-artist").value
     const title = document.getElementById("blacklist-title").value
-    const reason = document.getElementById("blacklist-reason").value || "Blacklisted via web dashboard"
+    const reason = document.getElementById("blacklist-reason").value || _("Blacklisted via web dashboard")
 
     const submitBtn = this.querySelector('button[type="submit"]')
 
@@ -174,7 +175,7 @@ function initBlacklistForm() {
           redirect_tab: redirectTab,
         })
 
-        if (!isSuccessRedirect(response)) throw new Error("Failed to blacklist")
+        if (!isSuccessRedirect(response)) throw new Error(_("Failed to blacklist"))
 
         const itemSelector = ITEM_SELECTORS[redirectTab] || ".track-item"
         const items = document.querySelectorAll(itemSelector)
@@ -187,13 +188,13 @@ function initBlacklistForm() {
             if (idSpan && !idSpan.querySelector(".badge-blacklist")) {
               const badge = document.createElement("span")
               badge.className = "badge badge-blacklist"
-              badge.textContent = "Blacklisted"
+              badge.textContent = _("Blacklisted")
               idSpan.appendChild(badge)
             }
 
             const blacklistBtn = item.querySelector(".btn-danger")
-            if (blacklistBtn && blacklistBtn.textContent.trim() === "Blacklist") {
-              blacklistBtn.textContent = "Restore"
+            if (blacklistBtn && blacklistBtn.textContent.trim() === _("Blacklist")) {
+              blacklistBtn.textContent = _("Restore")
               blacklistBtn.className = "btn btn-secondary btn-sm"
               blacklistBtn.onclick = () => unblacklistTrack(artist, title, blacklistBtn, redirectTab)
             }
@@ -206,7 +207,7 @@ function initBlacklistForm() {
         refreshStats()
       })
     } catch (_error) {
-      showToast("Failed to blacklist track. Please try again.", "error")
+      showToast(_("Failed to blacklist track. Please try again."), "error")
     }
   })
 }
@@ -218,13 +219,13 @@ function initOverrideForms() {
     const artist = document.getElementById("override-artist").value
     const title = document.getElementById("override-title").value
     const videoId = document.getElementById("override-video-id").value.trim()
-    const reason = document.getElementById("override-reason")?.value || "Override via web dashboard"
+    const reason = document.getElementById("override-reason")?.value || _("Override via web dashboard")
     const redirectTab = document.getElementById("override-redirect").value
 
     const submitBtn = this.querySelector('button[type="submit"]')
 
     try {
-      await withButtonLoading(submitBtn, "Saving...", async () => {
+      await withButtonLoading(submitBtn, _("Saving..."), async () => {
         const response = await postFormData("/override", {
           artist,
           title,
@@ -235,10 +236,10 @@ function initOverrideForms() {
 
         if (response.status === 400) {
           const data = await response.json()
-          throw new Error(data.error || "Invalid input")
+          throw new Error(data.error || _("Invalid input"))
         }
 
-        if (!isSuccessRedirect(response)) throw new Error("Failed to save override")
+        if (!isSuccessRedirect(response)) throw new Error(_("Failed to save override"))
 
         const itemSelector = ITEM_SELECTORS[redirectTab] || ".track-item"
         const items = document.querySelectorAll(itemSelector)
@@ -251,7 +252,7 @@ function initOverrideForms() {
 
               const badge = document.createElement("span")
               badge.className = "badge badge-override"
-              badge.textContent = "Override"
+              badge.textContent = _("Override")
               idSpan.insertBefore(badge, idSpan.firstChild)
             }
 
@@ -263,7 +264,7 @@ function initOverrideForms() {
 
             const actionsDiv = item.querySelector(".track-actions")
             const overrideBtn = actionsDiv?.querySelector(".btn-success")
-            if (overrideBtn && overrideBtn.textContent.trim() === "Override") {
+            if (overrideBtn && overrideBtn.textContent.trim() === _("Override")) {
               const form = document.createElement("form")
               form.method = "POST"
               form.action = "/remove_override"
@@ -272,7 +273,7 @@ function initOverrideForms() {
                 <input type="hidden" name="artist" value="${artist}">
                 <input type="hidden" name="title" value="${title}">
                 <input type="hidden" name="redirect_tab" value="${redirectTab}">
-                <button type="submit" class="btn btn-secondary btn-sm">Remove Override</button>
+                <button type="submit" class="btn btn-secondary btn-sm">${_("Remove Override")}</button>
               `
               overrideBtn.replaceWith(form)
             }
@@ -280,13 +281,13 @@ function initOverrideForms() {
         }
 
         closeModal("overrideModal")
-        showToast("Override saved!", "success")
+        showToast(_("Override saved!"), "success")
         filterByTab(redirectTab)
         refreshPanel("overrides")
         refreshStats()
       })
     } catch (error) {
-      showToast(error.message || "Failed to save override", "error")
+      showToast(error.message || _("Failed to save override"), "error")
     }
   })
 
@@ -299,7 +300,7 @@ function initOverrideForms() {
     const reason = document.getElementById("add-override-reason")?.value || "Override via web dashboard"
 
     if (!artist || !title || !videoId) {
-      showToast("Please fill in all required fields", "error")
+      showToast(_("Please fill in all required fields"), "error")
       return
     }
 
@@ -315,16 +316,16 @@ function initOverrideForms() {
           redirect_tab: "overrides",
         })
 
-        if (!isSuccessRedirect(response)) throw new Error("Failed to add override")
+        if (!isSuccessRedirect(response)) throw new Error(_("Failed to add override"))
 
         closeModal("addOverrideModal")
-        showToast("Override added!", "success")
+        showToast(_("Override added!"), "success")
         this.reset()
         refreshPanel("overrides")
         refreshStats()
       })
     } catch (_error) {
-      showToast("Failed to add override", "error")
+      showToast(_("Failed to add override"), "error")
     }
   })
 }
@@ -335,17 +336,17 @@ function initAddBlacklistForm() {
 
     const artist = document.getElementById("add-blacklist-artist").value.trim()
     const title = document.getElementById("add-blacklist-title").value.trim()
-    const reason = document.getElementById("add-blacklist-reason")?.value || "Blacklisted via web dashboard"
+    const reason = document.getElementById("add-blacklist-reason")?.value || _("Blacklisted via web dashboard")
 
     if (!artist || !title) {
-      showToast("Please fill in artist and title", "error")
+      showToast(_("Please fill in artist and title"), "error")
       return
     }
 
     const submitBtn = this.querySelector('button[type="submit"]')
 
     try {
-      await withButtonLoading(submitBtn, "Saving...", async () => {
+      await withButtonLoading(submitBtn, _("Saving..."), async () => {
         const response = await postFormData("/blacklist", {
           artist,
           title,
@@ -353,16 +354,16 @@ function initAddBlacklistForm() {
           redirect_tab: "blacklist",
         })
 
-        if (!isSuccessRedirect(response)) throw new Error("Failed to blacklist track")
+        if (!isSuccessRedirect(response)) throw new Error(_("Failed to blacklist track"))
 
         closeModal("addBlacklistModal")
-        showToast("Track blacklisted!", "success")
+        showToast(_("Track blacklisted!"), "success")
         this.reset()
         refreshPanel("blacklist")
         refreshStats()
       })
     } catch (_error) {
-      showToast("Failed to blacklist track", "error")
+      showToast(_("Failed to blacklist track"), "error")
     }
   })
 }

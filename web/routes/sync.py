@@ -11,6 +11,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from flask import Blueprint, Response, jsonify, stream_with_context
+from flask_babel import gettext as _
 
 from ..services import sync_lock, sync_state
 from ..services.state import stream_state_output
@@ -76,7 +77,7 @@ def run_sync():
     """Trigger a manual sync run."""
     with sync_lock:
         if sync_state["running"]:
-            return jsonify({"error": "Sync already running"}), 400
+            return jsonify({"error": _("Sync already running")}), 400
         sync_state["running"] = True
 
     thread = threading.Thread(target=_run_sync_process, daemon=True)
@@ -93,7 +94,7 @@ def stop_sync():
         running = sync_state["running"]
 
     if not running:
-        return jsonify({"error": "No sync running"}), 400
+        return jsonify({"error": _("No sync running")}), 400
 
     if process is not None:
         with contextlib.suppress(OSError):

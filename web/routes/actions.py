@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from flask import Blueprint, jsonify, redirect, request, url_for
+from flask_babel import gettext as _
 
 from ..services import load_overrides, load_search_cache
 
@@ -80,10 +81,10 @@ def override():
     video_id = extract_video_id(video_id_input)
 
     if not video_id:
-        return jsonify({"error": "Invalid video ID. Must be 11 characters (or a valid YouTube URL)."}), 400
+        return jsonify({"error": _("Invalid video ID. Must be 11 characters (or a valid YouTube URL).")}), 400
 
     if not artist or not title:
-        return jsonify({"error": "Artist and title are required."}), 400
+        return jsonify({"error": _("Artist and title are required.")}), 400
 
     overrides = load_overrides()
     overrides.set(artist, title, video_id, reason)

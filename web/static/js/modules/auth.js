@@ -1,3 +1,4 @@
+import { _ } from "./i18n.js"
 import { closeModal } from "./modals.js"
 import { removeBanner, showToast } from "./utils.js"
 
@@ -22,14 +23,14 @@ export async function connectAuth() {
   const text = input.value.trim()
 
   if (!text) {
-    showToast("Please paste request headers first", "error")
+    showToast(_("Please paste request headers first"), "error")
     input.focus()
     return
   }
 
   connectBtn.disabled = true
   connectBtn.classList.add("loading")
-  connectBtn.querySelector(".auth-btn-text").textContent = "Connecting..."
+  connectBtn.querySelector(".auth-btn-text").textContent = _("Connecting...")
   connectBtn.querySelector(".auth-btn-icon").innerHTML = '<circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/>'
 
   resultArea.style.display = "none"
@@ -44,27 +45,27 @@ export async function connectAuth() {
     const data = await response.json()
 
     if (data.success) {
-      showResult("success", data.verified ? buildSuccessMessage(data.lastLiked) : "Auth saved (could not verify live)")
-      showToast("YouTube Music connected!", "success")
+      showResult("success", data.verified ? buildSuccessMessage(data.lastLiked) : _("Auth saved (could not verify live)"))
+      showToast(_("YouTube Music connected!"), "success")
       removeAuthBanner()
       setTimeout(() => closeAuthModal(), 1500)
     } else {
-      showResult("error", data.error || "Connection failed")
-      showToast("Connection failed", "error")
+      showResult("error", data.error || _("Connection failed"))
+      showToast(_("Connection failed"), "error")
       resetConnectButton()
     }
   } catch (_error) {
-    showResult("error", "Network error - check your connection and try again")
-    showToast("Connection failed", "error")
+    showResult("error", _("Network error - check your connection and try again"))
+    showToast(_("Connection failed"), "error")
     resetConnectButton()
   }
 }
 
 function buildSuccessMessage(lastLiked) {
   if (lastLiked) {
-    return `Connected! Last liked song: ${lastLiked}`
+    return _("Connected! Last liked song: %(song)s", { song: lastLiked })
   }
-  return "Connected and verified!"
+  return _("Connected and verified!")
 }
 
 function showResult(type, message) {

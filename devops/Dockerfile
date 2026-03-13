@@ -16,7 +16,9 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir . gunicorn flask>=3.0.0 apscheduler>=3.10.0
+    pip install --no-cache-dir . gunicorn flask>=3.0.0 flask-babel>=4.0.0 apscheduler>=3.10.0
+
+RUN pybabel compile -d web/translations
 
 RUN ARCH=$(uname -m) && \
     ESBUILD_ARCH=$([ "$ARCH" = "aarch64" ] && echo "linux-arm64" || echo "linux-x64") && \
@@ -54,6 +56,7 @@ COPY pyproject.toml .
 COPY devops/gunicorn.conf.py ./gunicorn.conf.py
 
 COPY --from=builder /build/web/static/dist/ ./web/static/dist/
+COPY --from=builder /build/web/translations/ ./web/translations/
 
 COPY devops/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh

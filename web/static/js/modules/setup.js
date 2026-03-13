@@ -1,4 +1,5 @@
 import { checkAuthStatus } from "./auth.js"
+import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
 import { escapeHtml, formatDateTime, formatRelativeTime, getUse24HourClock, insertBanner, removeBanner, showToast } from "./utils.js"
 
@@ -54,17 +55,17 @@ function updateSetupUI() {
 
   if (currentSetupStep === totalSetupSteps) {
     checkAuthStatus().then(hasAuth => {
-      nextBtn.textContent = hasAuth ? "Finish Setup" : "Skip for Now"
+      nextBtn.textContent = hasAuth ? _("Finish Setup") : _("Skip for Now")
       nextBtn.classList.toggle("btn-success", hasAuth)
       nextBtn.classList.toggle("btn-secondary", !hasAuth)
 
       const authBtn = document.getElementById("setupAuthBtn")
       if (authBtn) {
-        authBtn.textContent = hasAuth ? "Reconnect YouTube Music" : "Connect YouTube Music"
+        authBtn.textContent = hasAuth ? _("Reconnect YouTube Music") : _("Connect YouTube Music")
       }
     })
   } else {
-    nextBtn.textContent = "Next"
+    nextBtn.textContent = _("Next")
     nextBtn.classList.add("btn-success")
     nextBtn.classList.remove("btn-secondary")
   }
@@ -85,7 +86,7 @@ export async function setupNextStep() {
     const apiKey = document.getElementById("setup-lastfm-key").value.trim()
 
     if (!username || !apiKey) {
-      showToast("Please enter both username and API key", "error")
+      showToast(_("Please enter both username and API key"), "error")
       if (!username) document.getElementById("setup-lastfm-user").classList.add("input-error")
       if (!apiKey) document.getElementById("setup-lastfm-key").classList.add("input-error")
       return
@@ -95,7 +96,7 @@ export async function setupNextStep() {
     document.getElementById("setup-lastfm-key").classList.remove("input-error")
 
     nextBtn.disabled = true
-    nextBtn.textContent = "Saving..."
+    nextBtn.textContent = _("Saving...")
     try {
       await fetch("/api/setup/init", { method: "POST" })
 
@@ -108,14 +109,14 @@ export async function setupNextStep() {
         const data = await response.json()
         throw new Error(data.error)
       }
-      showToast("Last.fm credentials saved!", "success")
+      showToast(_("Last.fm credentials saved!"), "success")
       currentSetupStep++
       updateSetupUI()
     } catch (error) {
       showToast(error.message, "error")
     } finally {
       nextBtn.disabled = false
-      nextBtn.textContent = "Next"
+      nextBtn.textContent = _("Next")
     }
   } else if (currentSetupStep === 2) {
     stopAuthPolling()
@@ -123,9 +124,9 @@ export async function setupNextStep() {
     closeModal("setupModal")
 
     if (hasAuth) {
-      showToast("Setup complete! You can now run a sync.", "success")
+      showToast(_("Setup complete! You can now run a sync."), "success")
     } else {
-      showToast("Setup saved. You can authenticate with YouTube Music later in Settings.", "info")
+      showToast(_("Setup saved. You can authenticate with YouTube Music later in Settings."), "info")
     }
     setTimeout(() => location.reload(), 1000)
   }
@@ -168,7 +169,7 @@ async function updateAuthStatusDisplay() {
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
           <polyline points="22 4 12 14.01 9 11.01"></polyline>
         </svg>
-        <span>YouTube Music is connected!</span>
+        <span>${_("YouTube Music is connected!")}</span>
       </div>`
   } else {
     statusBox.innerHTML = `
@@ -178,7 +179,7 @@ async function updateAuthStatusDisplay() {
           <line x1="12" y1="8" x2="12" y2="12"></line>
           <line x1="12" y1="16" x2="12.01" y2="16"></line>
         </svg>
-        <span>Not connected yet. Click the button below to authenticate.</span>
+        <span>${_("Not connected yet. Click the button below to authenticate.")}</span>
       </div>`
   }
 }
@@ -203,8 +204,8 @@ export function showAuthRequiredBanner() {
         <line x1="12" y1="8" x2="12" y2="12"></line>
         <line x1="12" y1="16" x2="12.01" y2="16"></line>
       </svg>
-      <span>YouTube Music authentication is missing.</span>
-      <button class="btn btn-sm btn-primary" data-action="showModal" data-modal="authModal">Set Up Auth</button>
+      <span>${_("YouTube Music authentication is missing.")}</span>
+      <button class="btn btn-sm btn-primary" data-action="showModal" data-modal="authModal">${_("Set Up Auth")}</button>
       <button class="auth-banner-close" data-action="dismissAuthBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
   `,
@@ -276,10 +277,10 @@ export function showSyncFailureBanner(data) {
         <line x1="9" y1="9" x2="15" y2="15"></line>
       </svg>
       <div class="failure-banner-text">
-        <span><strong>Last sync failed</strong>${timeAgo ? ` (${timeAgo})` : ""}: ${escapeHtml(data.error || "Unknown error")}</span>
+        <span><strong>${_("Last sync failed")}</strong>${timeAgo ? ` (${timeAgo})` : ""}: ${escapeHtml(data.error || _("Unknown error"))}</span>
         ${hintHtml}
       </div>
-      <button class="btn btn-sm btn-secondary" data-action="showFailureLogModal">View Details</button>
+      <button class="btn btn-sm btn-secondary" data-action="showFailureLogModal">${_("View Details")}</button>
       <button class="failure-banner-close" data-action="dismissSyncFailureBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
   `,
