@@ -237,6 +237,7 @@ function initLocale() {
   localeSelect.value = saved
 
   localeSelect.addEventListener("change", e => {
+    // biome-ignore lint/suspicious/noDocumentCookie: intended
     document.cookie = `${LOCALE_COOKIE}=${e.target.value};path=/;max-age=31536000;SameSite=Lax`
     location.reload()
   })
