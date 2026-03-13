@@ -17,8 +17,7 @@
     <div
       class="track-item {% if m.is_overridden %}overridden{% endif %}{% if m.is_blacklisted %} blacklisted{% endif %}{% if m.pending_retry %} pending-retry{% endif %}"
       data-artist="{{ m.artist|lower }}" data-title="{{ m.title|lower }}" data-source="{{ m.source }}"
-      data-overridden="{{ 'yes' if m.is_overridden else 'no' }}"
-      data-blacklisted="{{ 'yes' if m.is_blacklisted else 'no' }}"
+      data-overridden="{{ 'yes' if m.is_overridden else 'no' }}" data-blacklisted="{{ 'yes' if m.is_blacklisted else 'no' }}"
       data-pending="{{ 'yes' if m.pending_retry else 'no' }}">
       <div class="track-index">#{{ loop.index }}</div>
 
@@ -52,8 +51,7 @@
   {% else %}
   <div class="empty-state">
     <div class="empty-state-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-        stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 17H7A5 5 0 0 1 7 7h2"></path>
         <path d="M15 7h2a5 5 0 1 1 0 10h-2"></path>
         <line x1="8" x2="16" y1="12" y2="12"></line>
