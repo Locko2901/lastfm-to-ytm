@@ -3,19 +3,22 @@
 <div class="tab-panel" id="panel-cache">
   {% if cached_tracks %}
   <div class="filter-bar">
-    {{ search_bar("Search cached tracks...", "cacheSearch") }}
+    {{ search_bar(_('Search cached tracks...'), "cacheSearch") }}
     <div class="filter-chips">
-      <button class="filter-chip active" data-filter="all" data-panel="cache">All ({{ cached_tracks | length }})</button>
-      <button class="filter-chip" data-filter="has-override" data-panel="cache">Has Override</button>
-      <button class="filter-chip" data-filter="blacklisted" data-panel="cache">Blacklisted</button>
-      <button class="filter-chip" data-filter="no-override" data-panel="cache">No Override</button>
+      <button class="filter-chip active" data-filter="all" data-panel="cache">{{ _('All') }}
+        ({{ cached_tracks | length }})</button>
+      <button class="filter-chip" data-filter="has-override" data-panel="cache">{{ _('Has Override') }}</button>
+      <button class="filter-chip" data-filter="blacklisted" data-panel="cache">{{ _('Blacklisted') }}</button>
+      <button class="filter-chip" data-filter="no-override" data-panel="cache">{{ _('No Override') }}</button>
     </div>
   </div>
 
   <div class="track-list" id="cacheTracks">
     {% for t in cached_tracks %}
-    <div class="track-item cache-item{% if t.has_override %} overridden{% endif %}{% if t.is_blacklisted %} blacklisted{% endif %}"
-      data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}" data-hasoverride="{{ 'yes' if t.has_override else 'no' }}"
+    <div
+      class="track-item cache-item{% if t.has_override %} overridden{% endif %}{% if t.is_blacklisted %} blacklisted{% endif %}"
+      data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}"
+      data-hasoverride="{{ 'yes' if t.has_override else 'no' }}"
       data-blacklisted="{{ 'yes' if t.is_blacklisted else 'no' }}">
       <div class="track-info">
         <span class="track-artist">{{ t.artist }}</span>
@@ -23,11 +26,12 @@
       </div>
 
       <div class="track-ytm">
-        <a href="https://music.youtube.com/watch?v={{ t.video_id }}" target="_blank" rel="noopener"> {{ t.yt_title or t.title }} </a>
+        <a href="https://music.youtube.com/watch?v={{ t.video_id }}" target="_blank" rel="noopener">
+          {{ t.yt_title or t.title }} </a>
         <span class="track-ytm-id">
           {{ t.video_id }}
-          {% if t.has_override %}<span class="badge badge-override">Override</span>{% endif %} {% if t.is_blacklisted %}<span
-            class="badge badge-blacklist">Blacklisted</span>{% endif %}
+          {% if t.has_override %}<span class="badge badge-override">{{ _('Override') }}</span>{% endif %}
+          {% if t.is_blacklisted %}<span class="badge badge-blacklist">{{ _('Blacklisted') }}</span>{% endif %}
         </span>
       </div>
 
@@ -40,13 +44,14 @@
   {% else %}
   <div class="empty-state">
     <div class="empty-state-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+        stroke-linejoin="round">
         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
         <polyline points="22,6 12,13 2,6"></polyline>
       </svg>
     </div>
-    <h3>No Cached Searches</h3>
-    <p>Run a sync to populate the search cache with YouTube Music matches.</p>
+    <h3>{{ _('No Cached Searches') }}</h3>
+    <p>{{ _('Run a sync to populate the search cache with YouTube Music matches.') }}</p>
   </div>
   {% endif %}
 </div>

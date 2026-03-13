@@ -242,7 +242,7 @@ def get_scheduler_status() -> dict:
     workers return consistent results, even if only worker-1 actually owns
     the running APScheduler instance.  Runtime-only fields (next_run,
     last_run, last_run_success) still come from the in-memory state of the
-    worker that handles the request — they will be ``None`` on non-scheduler
+    worker that handles the request - they will be ``None`` on non-scheduler
     workers, which is acceptable.
     """
     cfg = _parse_scheduler_settings()

@@ -1,12 +1,12 @@
 <div class="tab-panel" id="panel-blacklist">
   <div class="filter-bar">
     <button class="btn btn-primary" data-action="showAddBlacklistModal">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-        stroke-linejoin="round">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <line x1="5" y1="12" x2="19" y2="12"></line>
       </svg>
-      Add to Blacklist
+      {{ _('Add to Blacklist') }}
     </button>
   </div>
   {% if blacklist %}
@@ -16,7 +16,7 @@
       <div class="management-info">
         <h3>{{ b.artist }} – {{ b.title }}</h3>
         {% if b.reason %}
-        <div class="meta">Reason: {{ b.reason }}</div>
+        <div class="meta">{{ _('Reason:') }} {{ b.reason }}</div>
         {% endif %}
       </div>
       <div class="track-actions">
@@ -24,7 +24,7 @@
           <input type="hidden" name="artist" value="{{ b.artist }}">
           <input type="hidden" name="title" value="{{ b.title }}">
           <input type="hidden" name="redirect_tab" value="blacklist">
-          <button type="submit" class="btn btn-success btn-sm">Restore</button>
+          <button type="submit" class="btn btn-success btn-sm">{{ _('Restore') }}</button>
         </form>
       </div>
     </div>
@@ -33,13 +33,14 @@
   {% else %}
   <div class="empty-state">
     <div class="empty-state-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+        stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"></circle>
         <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
       </svg>
     </div>
-    <h3>No Blacklisted Tracks</h3>
-    <p>Blacklisted tracks will be skipped during sync and won't appear in your playlist.</p>
+    <h3>{{ _('No Blacklisted Tracks') }}</h3>
+    <p>{{ _('Blacklisted tracks will be skipped during sync and won\'t appear in your playlist.') }}</p>
   </div>
   {% endif %}
 </div>

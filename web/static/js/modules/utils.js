@@ -1,3 +1,4 @@
+import { _ } from "./i18n.js"
 import { pushNotification } from "./notifications.js"
 import { registerPoller, unregisterPoller } from "./visibility.js"
 
@@ -59,11 +60,11 @@ export async function updateAutoSyncIndicator() {
     if (status.enabled) {
       indicator.classList.remove("hidden")
 
-      let tooltip = "Auto-sync enabled"
+      let tooltip = _("Auto-sync enabled")
       if (status.next_run) {
         const nextRun = new Date(status.next_run)
         const use24Hour = await getUse24HourClock()
-        tooltip += ` • Next: ${formatDateTime(nextRun, use24Hour)}`
+        tooltip += _(" • Next: %(time)s", { time: formatDateTime(nextRun, use24Hour) })
       }
       indicator.setAttribute("data-tooltip", tooltip)
     } else {
@@ -465,14 +466,14 @@ export async function hideNowPlaying() {
       invalidateSettingsCache()
       _nowPlayingSettings = null
       if (window.showToast) {
-        window.showToast("Now Playing disabled. Re-enable in Settings &rarr; Display", "success")
+        window.showToast(_("Now Playing disabled. Re-enable in Settings → Display"), "success")
       }
     }
   } catch (_error) {}
 }
 
 export function formatRelativeTime(isoString) {
-  if (!isoString) return "Never"
+  if (!isoString) return _("Never")
 
   const date = new Date(isoString)
   const now = new Date()
@@ -482,10 +483,10 @@ export function formatRelativeTime(isoString) {
   const diffHour = Math.floor(diffMin / 60)
   const diffDay = Math.floor(diffHour / 24)
 
-  if (diffSec < 60) return "Just now"
-  if (diffMin < 60) return `${diffMin}m ago`
-  if (diffHour < 24) return `${diffHour}h ago`
-  if (diffDay < 7) return `${diffDay}d ago`
+  if (diffSec < 60) return _("Just now")
+  if (diffMin < 60) return _("%(count)sm ago", { count: diffMin })
+  if (diffHour < 24) return _("%(count)sh ago", { count: diffHour })
+  if (diffDay < 7) return _("%(count)sd ago", { count: diffDay })
 
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
 }

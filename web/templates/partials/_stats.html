@@ -2,30 +2,30 @@
 <div class="stats-bar">
   <div class="stat-card" data-action="goToFilter" data-tab="playlist" data-filter="all" style="cursor: pointer;">
     <div class="stat-value">{{ resolved }}</div>
-    <div class="stat-label">Playlist Tracks</div>
+    <div class="stat-label">{{ _('Playlist Tracks') }}</div>
   </div>
   <div class="stat-card" data-action="goToFilter" data-tab="overrides" style="cursor: pointer;">
     <div class="stat-value green">{{ overrides | length }}</div>
-    <div class="stat-label">Overrides</div>
+    <div class="stat-label">{{ _('Overrides') }}</div>
   </div>
   <div class="stat-card" data-action="goToFilter" data-tab="blacklist" style="cursor: pointer;">
     <div class="stat-value red">{{ blacklist | length }}</div>
-    <div class="stat-label">Blacklisted</div>
+    <div class="stat-label">{{ _('Blacklisted') }}</div>
   </div>
   <div class="stat-card" data-action="switchTab" data-tab="notfound" style="cursor: pointer;">
     <div class="stat-value yellow">{{ not_found_tracks | length }}</div>
-    <div class="stat-label">Not Found</div>
+    <div class="stat-label">{{ _('Not Found') }}</div>
   </div>
   <div class="stat-card" data-action="switchTab" data-tab="cache" style="cursor: pointer;">
     <div class="stat-value blue">{{ cache_stats.found }}</div>
-    <div class="stat-label">Cached Searches</div>
+    <div class="stat-label">{{ _('Cached Searches') }}</div>
   </div>
   <div class="stat-card stat-card-last-sync" data-action="openSyncDrawer" style="cursor: pointer;">
     <div class="stat-value stat-value-time" data-timestamp="{{ last_sync or '' }}">
       {% if last_sync %}
       <span class="last-sync-time">--</span>
-      {% else %} Never {% endif %}
+      {% else %} {{ _('Never') }} {% endif %}
     </div>
-    <div class="stat-label">Last Sync</div>
+    <div class="stat-label">{{ _('Last Sync') }}</div>
   </div>
 </div>

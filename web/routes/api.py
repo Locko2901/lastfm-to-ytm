@@ -8,6 +8,7 @@ import threading
 
 import requests
 from flask import Blueprint, jsonify, render_template, request
+from flask_babel import gettext as _
 from requests.adapters import HTTPAdapter
 
 from ..services import (
@@ -110,10 +111,10 @@ def setup_init():
     env_exists = ENV_FILE.exists()
     env_empty = env_exists and ENV_FILE.stat().st_size == 0
     if env_exists and not env_empty:
-        return jsonify({"error": ".env already exists"}), 400
+        return jsonify({"error": _(".env already exists")}), 400
 
     if not ENV_EXAMPLE_FILE.exists():
-        return jsonify({"error": ".env.example not found"}), 500
+        return jsonify({"error": _(".env.example not found")}), 500
 
     try:
         import shutil
@@ -122,7 +123,7 @@ def setup_init():
         return jsonify({"status": "created"})
     except OSError as e:
         logger.error(f"Failed to copy .env.example: {e}")
-        return jsonify({"error": "Failed to create configuration file"}), 500
+        return jsonify({"error": _("Failed to create configuration file")}), 500
 
 
 @api_bp.route("/setup/lastfm", methods=["POST"])
@@ -130,13 +131,13 @@ def setup_lastfm():
     """Save Last.fm credentials during setup."""
     data = request.get_json()
     if not data:
-        return jsonify({"error": "No data provided"}), 400
+        return jsonify({"error": _("No data provided")}), 400
 
     username = data.get("username", "").strip()
     api_key = data.get("api_key", "").strip()
 
     if not username or not api_key:
-        return jsonify({"error": "Username and API key are required"}), 400
+        return jsonify({"error": _("Username and API key are required")}), 400
 
     try:
         update_env_file(
@@ -148,7 +149,7 @@ def setup_lastfm():
         return jsonify({"status": "saved"})
     except OSError as e:
         logger.error(f"Failed to save Last.fm credentials: {e}")
-        return jsonify({"error": "Failed to save credentials"}), 500
+        return jsonify({"error": _("Failed to save credentials")}), 500
 
 
 @api_bp.route("/mappings")
@@ -191,7 +192,7 @@ def settings_update():
     try:
         data = request.get_json()
         if not data:
-            return jsonify({"error": "No data provided"}), 400
+            return jsonify({"error": _("No data provided")}), 400
 
         updates = {}
         for key, value in data.items():
@@ -206,7 +207,7 @@ def settings_update():
         return jsonify({"status": "saved", "updated": list(updates.keys())})
     except OSError as e:
         logger.error(f"Failed to update settings: {e}")
-        return jsonify({"error": "Failed to save settings"}), 500
+        return jsonify({"error": _("Failed to save settings")}), 500
 
 
 @api_bp.route("/stats")
@@ -252,7 +253,7 @@ def panel_html(panel_name):
     if panel_name == "notfound":
         not_found = get_not_found_tracks()
         return render_template("partials/_panel_notfound.html", not_found_tracks=not_found)
-    return jsonify({"error": "Unknown panel"}), 404
+    return jsonify({"error": _("Unknown panel")}), 404
 
 
 @api_bp.route("/failure_log")
@@ -316,7 +317,7 @@ def now_playing():
     api_key = settings.get("LASTFM_API_KEY", "").strip()
 
     if not username or not api_key:
-        return jsonify({"playing": False, "error": "Last.fm credentials not configured"})
+        return jsonify({"playing": False, "error": _("Last.fm credentials not configured")})
 
     try:
         resp = ipv4_session().get(
@@ -384,10 +385,10 @@ def now_playing():
 
     except requests.exceptions.RequestException as e:
         logger.warning(f"Failed to fetch now playing: {e}")
-        return jsonify({"playing": False, "error": "Failed to fetch from Last.fm"})
+        return jsonify({"playing": False, "error": _("Failed to fetch from Last.fm")})
     except Exception as e:
         logger.error(f"Error in now-playing endpoint: {e}")
-        return jsonify({"playing": False, "error": "Internal error"})
+        return jsonify({"playing": False, "error": _("Internal error")})
 
 
 _image_cache = {}
@@ -478,7 +479,7 @@ def scheduler_configure():
     try:
         data = request.get_json()
         if not data:
-            return jsonify({"error": "No data provided"}), 400
+            return jsonify({"error": _("No data provided")}), 400
 
         enabled = data.get("enabled", False)
         schedule_type = data.get("schedule_type", "interval")
@@ -506,13 +507,13 @@ def scheduler_configure():
 
         if success:
             return jsonify({"status": "configured", **get_scheduler_status()})
-        return jsonify({"error": "Failed to configure scheduler. APScheduler may not be installed."}), 500
+        return jsonify({"error": _("Failed to configure scheduler. APScheduler may not be installed.")}), 500
 
     except ValueError as e:
-        return jsonify({"error": f"Invalid value: {e}"}), 400
+        return jsonify({"error": _("Invalid value: %(error)s", error=str(e))}), 400
     except Exception as e:
         logger.error(f"Failed to configure scheduler: {e}")
-        return jsonify({"error": "Failed to configure scheduler"}), 500
+        return jsonify({"error": _("Failed to configure scheduler")}), 500
 
 
 def _get_gunicorn_master_pid() -> int | None:

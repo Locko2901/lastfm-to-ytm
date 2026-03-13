@@ -31,7 +31,7 @@
   "html.format.templating": true,
   // Keep Biome away from JSON/JSONC files (including biome.jsonc itself).
   // Biome's LSP crashes with a line-index error when asked for code actions on
-  // its own config file — use VS Code's built-in JSON language server instead.
+  // its own config file - use VS Code's built-in JSON language server instead.
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
   },

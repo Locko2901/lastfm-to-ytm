@@ -1,3 +1,4 @@
+import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
 import {
   formatDateTime,
@@ -22,7 +23,7 @@ const NO_RESTART_SETTINGS = [
 export async function loadSettings() {
   try {
     const response = await fetch("/api/settings")
-    if (!response.ok) throw new Error("Failed to load settings")
+    if (!response.ok) throw new Error(_("Failed to load settings"))
 
     const settings = await response.json()
 
@@ -54,7 +55,7 @@ export async function loadSettings() {
       themeSelect.value = localStorage.getItem("ytm-theme") || "dark"
     }
   } catch (_error) {
-    showToast("Failed to load settings", "error")
+    showToast(_("Failed to load settings"), "error")
   }
 }
 
@@ -65,7 +66,7 @@ export async function saveSettings(event) {
   const settings = {}
 
   for (const input of form.querySelectorAll("input, select")) {
-    if (input.id === "theme-select") continue
+    if (input.id === "theme-select" || input.id === "locale-select") continue
     if (input.type === "checkbox") {
       settings[input.name] = input.checked
     } else {
@@ -93,7 +94,7 @@ export async function saveSettings(event) {
 
     if (!response.ok) {
       const data = await response.json()
-      throw new Error(data.error || "Failed to save settings")
+      throw new Error(data.error || _("Failed to save settings"))
     }
 
     invalidateSettingsCache()
@@ -102,7 +103,7 @@ export async function saveSettings(event) {
       window.restartNowPlaying()
     }
 
-    showToast("Settings saved successfully!", "success")
+    showToast(_("Settings saved successfully!"), "success")
     closeModal("settingsModal")
 
     const requiresRestart = changedSettings.some(s => !NO_RESTART_SETTINGS.includes(s))
@@ -110,7 +111,7 @@ export async function saveSettings(event) {
       showRestartBanner()
     }
   } catch (error) {
-    showToast(error.message || "Failed to save settings", "error")
+    showToast(error.message || _("Failed to save settings"), "error")
   }
 }
 
@@ -136,8 +137,8 @@ function showRestartBanner() {
         <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
         <path d="M16 21h5v-5"></path>
       </svg>
-      <span>Settings saved. Restart the server to apply changes.</span>
-      <button class="btn btn-sm btn-primary" data-action="restartServer">Restart Now</button>
+      <span>${_("Settings saved. Restart the server to apply changes.")}</span>
+      <button class="btn btn-sm btn-primary" data-action="restartServer">${_("Restart Now")}</button>
       <button class="auth-banner-close" data-action="dismissRestartBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
   `,
@@ -152,18 +153,18 @@ export async function restartServer() {
   const btn = document.querySelector("#restartBanner .btn-primary")
   if (btn) {
     btn.disabled = true
-    btn.textContent = "Restarting..."
+    btn.textContent = _("Restarting...")
   }
 
   try {
     await fetch("/api/restart", { method: "POST" })
-    showToast("Server restarting...", "info")
+    showToast(_("Server restarting..."), "info")
     pollForRestart()
   } catch (_error) {
-    showToast("Failed to restart server", "error")
+    showToast(_("Failed to restart server"), "error")
     if (btn) {
       btn.disabled = false
-      btn.textContent = "Restart Now"
+      btn.textContent = _("Restart Now")
     }
   }
 }
@@ -186,7 +187,7 @@ function pollForRestart() {
     if (attempts < maxAttempts) {
       setTimeout(poll, 500)
     } else {
-      showToast("Server may have restarted. Please refresh manually.", "warning")
+      showToast(_("Server may have restarted. Please refresh manually."), "warning")
     }
   }
 
@@ -195,6 +196,8 @@ function pollForRestart() {
 
 const THEME_STORAGE_KEY = "ytm-theme"
 const DEFAULT_THEME = "dark"
+const LOCALE_COOKIE = "ytm-locale"
+const DEFAULT_LOCALE = "en"
 
 export function initTheme() {
   const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || DEFAULT_THEME
@@ -222,6 +225,23 @@ function saveTheme(theme) {
   localStorage.setItem(THEME_STORAGE_KEY, theme)
 }
 
+function initLocale() {
+  const localeSelect = document.getElementById("locale-select")
+  if (!localeSelect) return
+
+  const saved =
+    document.cookie
+      .split("; ")
+      .find(c => c.startsWith(`${LOCALE_COOKIE}=`))
+      ?.split("=")[1] || DEFAULT_LOCALE
+  localeSelect.value = saved
+
+  localeSelect.addEventListener("change", e => {
+    document.cookie = `${LOCALE_COOKIE}=${e.target.value};path=/;max-age=31536000;SameSite=Lax`
+    location.reload()
+  })
+}
+
 export function initSettings(switchTabFn) {
   const settingsForm = document.getElementById("settingsForm")
   if (settingsForm) {
@@ -230,6 +250,7 @@ export function initSettings(switchTabFn) {
   }
 
   initTheme()
+  initLocale()
   initSchedulerTypeToggle()
   loadSchedulerStatus()
 
@@ -278,7 +299,7 @@ async function updateSchedulerUI(status) {
       statusDiv.innerHTML = `
         <div class="scheduler-status-badge scheduler-unavailable">
           <span class="scheduler-status-dot"></span>
-          <span class="scheduler-status-text">APScheduler not installed</span>
+          <span class="scheduler-status-text">${_("APScheduler not installed")}</span>
         </div>
       `
     }
@@ -291,7 +312,7 @@ async function updateSchedulerUI(status) {
     statusDiv.innerHTML = `
       <div class="scheduler-status-badge ${isEnabled ? "scheduler-active" : "scheduler-inactive"}">
         <span class="scheduler-status-dot"></span>
-        <span class="scheduler-status-text">${isEnabled ? "Automation Active" : "Automation Disabled"}</span>
+        <span class="scheduler-status-text">${isEnabled ? _("Automation Active") : _("Automation Disabled")}</span>
       </div>
     `
   }

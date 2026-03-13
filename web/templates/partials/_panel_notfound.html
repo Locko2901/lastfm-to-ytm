@@ -3,7 +3,7 @@
 <div class="tab-panel" id="panel-notfound">
   {% if not_found_tracks %}
   <div class="filter-bar">
-    {{ search_bar("Search not found tracks...", "notfoundSearch") }}
+    {{ search_bar(_('Search not found tracks...'), "notfoundSearch") }}
   </div>
 
   <div class="track-list" id="notfoundTracks">
@@ -15,8 +15,8 @@
       </div>
 
       <div class="track-ytm">
-        <span class="badge badge-notfound">Not Found</span>
-        {% if t.timestamp %}<span class="track-ytm-id">Cached: {{ t.timestamp[:10] }}</span>{% endif %}
+        <span class="badge badge-notfound">{{ _('Not Found') }}</span>
+        {% if t.timestamp %}<span class="track-ytm-id">{{ _('Cached:') }} {{ t.timestamp[:10] }}</span>{% endif %}
       </div>
 
       <div class="track-actions">
@@ -30,13 +30,14 @@
   {% else %}
   <div class="empty-state">
     <div class="empty-state-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+        stroke-linejoin="round">
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
         <polyline points="22 4 12 14.01 9 11.01"></polyline>
       </svg>
     </div>
-    <h3>No Missing Tracks</h3>
-    <p>All tracks in the cache have been successfully matched to YouTube Music videos.</p>
+    <h3>{{ _('No Missing Tracks') }}</h3>
+    <p>{{ _('All tracks in the cache have been successfully matched to YouTube Music videos.') }}</p>
   </div>
   {% endif %}
 </div>

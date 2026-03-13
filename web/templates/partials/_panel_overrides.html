@@ -1,12 +1,12 @@
 <div class="tab-panel" id="panel-overrides">
   <div class="filter-bar">
     <button class="btn btn-success" data-action="showAddOverrideModal">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-        stroke-linejoin="round">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <line x1="5" y1="12" x2="19" y2="12"></line>
       </svg>
-      Add Override
+      {{ _('Add Override') }}
     </button>
   </div>
   {% if overrides %}
@@ -16,22 +16,23 @@
       <div class="management-info">
         <h3>{{ o.artist }} – {{ o.title }}</h3>
         <div class="subtitle">
-          <a href="https://music.youtube.com/watch?v={{ o.video_id }}" class="video-link" target="_blank" rel="noopener"> {{ o.video_id }} </a>
+          <a href="https://music.youtube.com/watch?v={{ o.video_id }}" class="video-link" target="_blank"
+            rel="noopener"> {{ o.video_id }} </a>
         </div>
         {% if o.reason %}
-        <div class="meta">Reason: {{ o.reason }}</div>
+        <div class="meta">{{ _('Reason:') }} {{ o.reason }}</div>
         {% endif %}
       </div>
       <div class="track-actions">
-        <button class="btn btn-success btn-sm" data-action="showOverrideModal" data-artist="{{ o.artist }}" data-title="{{ o.title }}"
-          data-tab="overrides" data-video-id="{{ o.video_id }}">
-          Edit
+        <button class="btn btn-success btn-sm" data-action="showOverrideModal" data-artist="{{ o.artist }}"
+          data-title="{{ o.title }}" data-tab="overrides" data-video-id="{{ o.video_id }}">
+          {{ _('Edit') }}
         </button>
         <form method="POST" action="/remove_override" style="display:inline">
           <input type="hidden" name="artist" value="{{ o.artist }}">
           <input type="hidden" name="title" value="{{ o.title }}">
           <input type="hidden" name="redirect_tab" value="overrides">
-          <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+          <button type="submit" class="btn btn-danger btn-sm">{{ _('Remove') }}</button>
         </form>
       </div>
     </div>
@@ -40,13 +41,14 @@
   {% else %}
   <div class="empty-state">
     <div class="empty-state-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+        stroke-linejoin="round">
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
     </div>
-    <h3>No Overrides</h3>
-    <p>Overrides let you manually specify which YouTube video should be used for a track.</p>
-    <button class="btn btn-success" data-action="showAddOverrideModal">Add Override</button>
+    <h3>{{ _('No Overrides') }}</h3>
+    <p>{{ _('Overrides let you manually specify which YouTube video should be used for a track.') }}</p>
+    <button class="btn btn-success" data-action="showAddOverrideModal">{{ _('Add Override') }}</button>
   </div>
   {% endif %}
 </div>
