@@ -17,12 +17,11 @@ _MSG_RE = re.compile(
 )
 
 
-def extract_js(fileobj, keywords, comment_tags, options):
+def extract_js(fileobj, _keywords, _comment_tags, options):
     """Yield (lineno, funcname, message, comments) from a JS file."""
     encoding = options.get("encoding", "utf-8")
-    for lineno, line in enumerate(fileobj, 1):
-        if isinstance(line, bytes):
-            line = line.decode(encoding)
+    for lineno, raw_line in enumerate(fileobj, 1):
+        line = raw_line.decode(encoding) if isinstance(raw_line, bytes) else raw_line
         for match in _MSG_RE.finditer(line):
             msg = match.group(1) or match.group(2)
             if msg:
