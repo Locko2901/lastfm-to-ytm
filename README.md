@@ -20,7 +20,7 @@ There are two ways to run it:
 
 ## Preview
 
-![Dashboard Preview](https://github.com/Locko2901/lastfm-to-ytm/blob/main/docs/screenshots/dashboard.png)
+![Dashboard Preview](docs/screenshots/dashboard.png)
 
 ## Table of Contents
 
@@ -158,22 +158,22 @@ The web dashboard is always included with the Docker setup. It provides a full m
 - **Blacklist tab** - Manage blacklisted tracks from the UI. Blacklisted tracks are excluded entirely from playlist generation.
 - **Not Found tab** - See all tracks where the search couldn't find a match. One-click to add an override or blacklist entry for any of them.
 
-![Not Found](https://github.com/Locko2901/lastfm-to-ytm/blob/main/docs/screenshots/notfound.png)
+![Not Found](docs/screenshots/notfound.png)
 
 - **Cache tab** - Browse all cached search results, see which video each track resolved to, and clear individual entries or the full cache.
 - **Settings modal** - Edit all configuration (Last.fm credentials, playlist options, search tuning, weekly settings, etc.) without touching `.env`. Changes take effect on the next sync.
 
-![Settings Modal](https://github.com/Locko2901/lastfm-to-ytm/blob/main/docs/screenshots/settings_modal.png)
+![Settings Modal](docs/screenshots/settings_modal.png)
 
 - **Sync console** - Trigger a sync manually and watch real-time output in a resizable terminal drawer. Stop a running sync at any time.
 
-![Sync Console](https://github.com/Locko2901/lastfm-to-ytm/blob/main/docs/screenshots/sync_console.png)
+![Sync Console](docs/screenshots/sync_console.png)
 
 - **Stats bar** - At-a-glance counts: playlist tracks, overrides, blacklisted, not found, cached searches, and last sync time.
 - **YTM authentication** - Run `ytmusicapi browser` authentication interactively through the web UI - no terminal access needed.
 - **First-time setup wizard** - Guides you through `.env` creation, Last.fm credentials, and YouTube Music auth on first launch.
 
-![Setup Wizard](https://github.com/Locko2901/lastfm-to-ytm/blob/main/docs/screenshots/setup_wizard.png)
+![Setup Wizard](docs/screenshots/setup_wizard.png)
 
 ### Integrated Scheduler
 
