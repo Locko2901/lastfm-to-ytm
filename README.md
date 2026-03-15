@@ -9,14 +9,9 @@ Create and maintain a YouTube Music playlist from your Last.fm listening history
 
 There are two ways to run it:
 
-| | **Docker (recommended)** | **CLI-only** |
-|---|---|---|
-| **What you get** | Web dashboard + sync engine | Sync engine only |
-| **Scheduling** | Built-in scheduler (UI or env vars) | Manual (cron, systemd, Task Scheduler) |
-| **Configuration** | Edit settings in the web UI | Edit `.env` by hand |
-| **Overrides & blacklist** | Manage via the web UI | Edit `config/search_overrides.json` |
-| **Cache inspection** | Browse cached searches in the UI | Read JSON files directly |
-| **Setup** | `./run-docker.sh` | `pip install . && python run.py` |
+**Docker (recommended)** - web dashboard + sync engine, built-in scheduler, configure everything from the UI. Get started with `./run-docker.sh`.
+
+**CLI-only** - sync engine only, configure via `.env`, schedule with cron/systemd. Get started with `pip install . && python run.py`.
 
 ## Preview
 
@@ -158,22 +153,42 @@ The web dashboard is always included with the Docker setup. It provides a full m
 - **Blacklist tab** - Manage blacklisted tracks from the UI. Blacklisted tracks are excluded entirely from playlist generation.
 - **Not Found tab** - See all tracks where the search couldn't find a match. One-click to add an override or blacklist entry for any of them.
 
+<details>
+<summary>Screenshot: Not Found tab</summary>
+
 ![Not Found](docs/screenshots/notfound.png)
+
+</details>
 
 - **Cache tab** - Browse all cached search results, see which video each track resolved to, and clear individual entries or the full cache.
 - **Settings modal** - Edit all configuration (Last.fm credentials, playlist options, search tuning, weekly settings, etc.) without touching `.env`. Changes take effect on the next sync.
 
+<details>
+<summary>Screenshot: Settings modal</summary>
+
 ![Settings Modal](docs/screenshots/settings_modal.png)
+
+</details>
 
 - **Sync console** - Trigger a sync manually and watch real-time output in a resizable terminal drawer. Stop a running sync at any time.
 
+<details>
+<summary>Screenshot: Sync console</summary>
+
 ![Sync Console](docs/screenshots/sync_console.png)
+
+</details>
 
 - **Stats bar** - At-a-glance counts: playlist tracks, overrides, blacklisted, not found, cached searches, and last sync time.
 - **YTM authentication** - Run `ytmusicapi browser` authentication interactively through the web UI - no terminal access needed.
 - **First-time setup wizard** - Guides you through `.env` creation, Last.fm credentials, and YouTube Music auth on first launch.
 
+<details>
+<summary>Screenshot: Setup wizard</summary>
+
 ![Setup Wizard](docs/screenshots/setup_wizard.png)
+
+</details>
 
 ### Integrated Scheduler
 
