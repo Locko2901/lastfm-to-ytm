@@ -1,0 +1,7 @@
+<div class="tabs">
+  <button class="tab active" data-tab="playlist">{{ _('Playlist') }} <span class="tab-badge">{{ mappings | length }}</span></button>
+  <button class="tab" data-tab="overrides">{{ _('Overrides') }} <span class="tab-badge">{{ overrides | length }}</span></button>
+  <button class="tab" data-tab="blacklist">{{ _('Blacklist') }} <span class="tab-badge">{{ blacklist | length }}</span></button>
+  <button class="tab" data-tab="notfound">{{ _('Not Found') }} <span class="tab-badge">{{ not_found_tracks | length }}</span></button>
+  <button class="tab" data-tab="cache">{{ _('Cache') }} <span class="tab-badge">{{ cached_tracks | length }}</span></button>
+</div>

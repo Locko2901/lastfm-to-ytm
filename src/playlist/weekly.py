@@ -199,9 +199,20 @@ def update_weekly_playlist(
             try:
                 log.info("Pruning old weekly: %s (%s)", title, pid)
                 ytm.delete_playlist(pid)
+                if cache:
+                    cache.remove(title)
             except Exception as e:
                 log.warning("Failed to delete %s: %s", title, e)
     except Exception as e:
         log.warning("Pruning old weeklies failed: %s", e)
+
+    if cache:
+        try:
+            cache.prune_old_weeklies(base_prefix)
+        except Exception as e:
+            log.warning("Failed to prune old weeklies from cache: %s", e)
+
+    if weekly_id and cache:
+        cache.set_template(weekly_name, weekly_id, valid_video_ids)
 
     return weekly_id

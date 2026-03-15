@@ -1,0 +1,294 @@
+.settings-form {
+  max-width: 900px;
+}
+
+.settings-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.settings-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-section-title svg {
+  color: var(--accent);
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.settings-form .form-group {
+  margin-bottom: 0;
+}
+
+.settings-form .form-group-checkbox {
+  padding-top: calc(0.875rem * 1.4 + 0.375rem);
+}
+
+.settings-form .form-group-checkbox > label {
+  min-height: calc(0.5rem + 0.875rem + 0.5rem + 2px);
+}
+
+.settings-form .form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.375rem;
+}
+
+.settings-form input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.settings-form input[type="number"]::-webkit-outer-spin-button,
+.settings-form input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.settings-form .form-group input[type="text"],
+.settings-form .form-group input[type="number"],
+.settings-form .form-group input[type="password"],
+.settings-form .form-group select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.settings-form input[data-secret="true"] {
+  -webkit-text-security: disc;
+  font-family: text-security-disc, monospace;
+}
+
+.settings-form input[data-secret="true"]:focus {
+  -webkit-text-security: none;
+  font-family: inherit;
+}
+
+.settings-form .form-group input:focus,
+.settings-form .form-group select:focus {
+  outline: none;
+  border-color: var(--border-light);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.3);
+}
+
+.settings-form .form-group select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}
+
+.settings-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.settings-actions .btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ytm-auth-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ytm-auth-row .btn {
+  min-width: 100px;
+  justify-content: center;
+}
+
+.auth-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.auth-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.auth-status.checking .auth-status-dot {
+  background: var(--warning);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.auth-status.checking .auth-status-text {
+  color: var(--warning);
+}
+
+.auth-status.valid .auth-status-dot {
+  background: var(--success);
+}
+
+.auth-status.valid .auth-status-text {
+  color: var(--success);
+}
+
+.auth-status.invalid .auth-status-dot {
+  background: var(--danger);
+}
+
+.auth-status.invalid .auth-status-text {
+  color: var(--danger);
+}
+
+.auth-status.missing .auth-status-dot {
+  background: var(--text-muted);
+}
+
+.auth-status.missing .auth-status-text {
+  color: var(--text-muted);
+}
+
+.settings-modal-overlay {
+  padding: 2rem;
+}
+
+.settings-modal {
+  max-width: 720px;
+  max-height: 85vh;
+}
+
+.settings-modal .modal-body {
+  padding: 0;
+}
+
+.settings-modal .settings-form {
+  max-width: none;
+  padding: 1.25rem;
+}
+
+.settings-modal .settings-section:first-child {
+  margin-top: 0;
+}
+
+.settings-modal .settings-actions {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-secondary);
+  margin: 0 -1.25rem -1.25rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.scheduler-status {
+  margin-bottom: 1rem;
+}
+
+.scheduler-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.scheduler-status-badge .scheduler-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.scheduler-active {
+  background: rgba(var(--success-rgb), 0.12);
+  color: var(--success);
+}
+
+.scheduler-active .scheduler-status-dot {
+  background: var(--success);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.scheduler-inactive {
+  background: rgba(var(--accent-rgb), 0.1);
+  color: var(--text-muted);
+}
+
+.scheduler-inactive .scheduler-status-dot {
+  background: var(--text-muted);
+}
+
+.scheduler-unavailable {
+  background: rgba(var(--danger-rgb), 0.12);
+  color: var(--danger);
+}
+
+.scheduler-unavailable .scheduler-status-dot {
+  background: var(--danger);
+}
+
+.scheduler-next-run {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.scheduler-next-run svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.scheduler-next-run strong {
+  color: var(--text-primary);
+}
+
+.auto-sync-cron {
+  display: none;
+}
+
+.schedule-type-cron .auto-sync-interval {
+  display: none;
+}
+
+.schedule-type-cron .auto-sync-cron {
+  display: block;
+}

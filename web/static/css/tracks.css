@@ -1,0 +1,120 @@
+.track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.track-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition:
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.track-item:has(.track-index) {
+  grid-template-columns: 40px 1fr 1fr auto;
+}
+
+.track-item:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-light);
+}
+
+.track-item.overridden {
+  border-left: 2px solid var(--success);
+}
+
+.track-item.blacklisted {
+  border-left: 2px solid var(--danger);
+  opacity: 0.6;
+}
+
+.track-item.not-found {
+  border-left: 2px solid var(--warning);
+}
+
+.track-item.pending-retry {
+  border-left: 2px solid var(--warning);
+  opacity: 0.7;
+}
+
+.track-index {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0.125rem;
+}
+
+.track-artist {
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-title {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-album {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-top: 0.125rem;
+}
+
+.track-ytm {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0.25rem;
+}
+
+.track-ytm a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color var(--transition);
+}
+
+.track-ytm a:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.track-ytm-id {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.track-actions {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}

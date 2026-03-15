@@ -1,0 +1,172 @@
+.sync-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 20px var(--shadow);
+  z-index: 100;
+}
+
+.sync-drawer-body {
+  overflow: hidden;
+}
+
+.sync-drawer-resize {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  cursor: ns-resize;
+  background: transparent;
+  transition: background 0.15s ease;
+}
+
+.sync-drawer-resize:hover,
+.sync-drawer-resize.dragging {
+  background: var(--accent);
+}
+
+.sync-drawer-resize::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background: var(--text-muted);
+  border-radius: 2px;
+  opacity: 0.5;
+}
+
+.sync-drawer-resize:hover::before {
+  opacity: 1;
+}
+
+.sync-drawer.collapsed .sync-drawer-body {
+  display: none;
+}
+
+.sync-drawer.collapsed .sync-drawer-resize {
+  display: none;
+}
+
+.sync-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.625rem max(1rem, calc((100vw - 1600px) / 2 + 1rem));
+  cursor: pointer;
+  user-select: none;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.sync-drawer.collapsed .sync-drawer-header {
+  border-bottom: none;
+}
+
+.sync-drawer-header:hover {
+  background: var(--bg-hover);
+}
+
+.sync-drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.sync-drawer-title svg {
+  color: var(--text-muted);
+}
+
+.sync-status-text {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.sync-drawer-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sync-drawer-toggle {
+  padding: 0.25rem;
+}
+
+.chevron-icon {
+  transition: transform 0.2s ease;
+}
+
+.sync-drawer.collapsed .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.sync-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.sync-indicator.running {
+  background: var(--success);
+  animation: pulse 1.5s infinite;
+}
+
+.sync-indicator.success {
+  background: var(--success);
+}
+
+.sync-indicator.error {
+  background: var(--danger);
+}
+
+.sync-output {
+  background: var(--bg-input);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  padding: 1rem max(1rem, calc((100vw - 1600px) / 2 + 1rem));
+  height: var(--drawer-height, 250px);
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overscroll-behavior: contain;
+  isolation: isolate;
+  touch-action: pan-y;
+}
+
+.sync-output:empty::before {
+  content: 'Click "Run" to start sync...';
+  color: var(--text-muted);
+}
+
+.sync-line {
+  color: var(--text-secondary);
+}
+
+.sync-line.info {
+  color: var(--accent);
+}
+
+.sync-line.warning {
+  color: var(--warning);
+}
+
+.sync-line.error {
+  color: var(--danger);
+}
+
+.sync-line.success {
+  color: var(--success);
+}
