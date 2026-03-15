@@ -49,18 +49,15 @@ class SearchCache(JSONCache):
 
             video_id = entry.get("video_id")
             if video_id:
-                # Successful lookup - use main TTL
                 if self.ttl_days > 0:
                     cutoff = now - timedelta(days=self.ttl_days)
                     if timestamp < cutoff:
                         expired_keys.append(key)
-            # Not-found entry - use shorter TTL
             elif self.notfound_ttl_days > 0:
                 cutoff = now - timedelta(days=self.notfound_ttl_days)
                 if timestamp < cutoff:
                     expired_keys.append(key)
             elif self.notfound_ttl_days == 0:
-                # Don't cache not-found at all
                 expired_keys.append(key)
 
         if expired_keys:
@@ -98,7 +95,6 @@ class SearchCache(JSONCache):
 
             video_id = entry.get("video_id")
             if video_id:
-                # Check main TTL for successful lookups
                 if self.ttl_days > 0:
                     cutoff = now - timedelta(days=self.ttl_days)
                     if timestamp < cutoff:
@@ -106,7 +102,6 @@ class SearchCache(JSONCache):
                         return None
                 self._metrics.record_hit()
                 return video_id
-            # Check not-found TTL
             if self.notfound_ttl_days > 0:
                 cutoff = now - timedelta(days=self.notfound_ttl_days)
                 if timestamp < cutoff:
@@ -114,27 +109,52 @@ class SearchCache(JSONCache):
                     return None
                 self._metrics.record_hit()
                 return NOT_FOUND
-            # Not caching not-found
             self._metrics.record_miss()
             return None
 
         self._metrics.record_miss()
         return None
 
-    def set(self, artist: str, title: str, video_id: str | None) -> None:
-        """Cache a video ID for artist/title."""
-        # Don't cache not-found if notfound_ttl is 0
+    def get_entry(self, artist: str, title: str) -> dict | None:
+        """Get full cache entry for artist/title (includes yt_title if available)."""
+        key = self._make_key(artist, title)
+        entry = self._cache.get(key)
+        if not entry:
+            return None
+        return entry
+
+    def set(self, artist: str, title: str, video_id: str | None, yt_title: str | None = None) -> None:
+        """Cache a video ID (and optionally YouTube title) for artist/title."""
         if video_id is None and self.notfound_ttl_days == 0:
             return
 
         key = self._make_key(artist, title)
-        self._cache[key] = {
+        entry = {
             "artist": artist,
             "title": title,
             "video_id": video_id,
             "timestamp": datetime.now(UTC).isoformat(),
         }
+        if yt_title:
+            entry["yt_title"] = yt_title
+        self._cache[key] = entry
         self._save()
+
+    def items(self) -> list[tuple[str, dict]]:
+        """Return all cache entries as (key, entry) pairs."""
+        return list(self._cache.items())
+
+    def delete(self, key: str) -> bool:
+        """Delete a cache entry by key. Returns True if deleted."""
+        if key in self._cache:
+            del self._cache[key]
+            self._save()
+            return True
+        return False
+
+    def delete_by_track(self, artist: str, title: str) -> bool:
+        """Delete a cache entry by artist/title. Returns True if deleted."""
+        return self.delete(self._make_key(artist, title))
 
     def stats(self) -> dict[str, int]:
         """Get cache statistics."""
@@ -296,6 +316,22 @@ class SearchOverrides(JSONCache):
             self._save()
             return True
         return False
+
+    def override_keys(self) -> set[str]:
+        """Return the set of override keys (lowercase 'artist|title')."""
+        return set(self._cache.get("_overrides", {}).keys())
+
+    def blacklist_keys(self) -> set[str]:
+        """Return the set of blacklist keys (lowercase 'artist|title')."""
+        return set(self._cache.get("_blacklist", {}).keys())
+
+    def override_items(self) -> list[tuple[str, dict]]:
+        """Return all override entries as (key, data) pairs."""
+        return list(self._cache.get("_overrides", {}).items())
+
+    def blacklist_items(self) -> list[tuple[str, dict]]:
+        """Return all blacklist entries as (key, data) pairs."""
+        return list(self._cache.get("_blacklist", {}).items())
 
     def stats(self) -> dict[str, int]:
         """Get override statistics.

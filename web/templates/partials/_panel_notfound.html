@@ -1,0 +1,42 @@
+{# j2lint: disable=S7 #}
+{% from "macros/_track_actions.html" import search_bar, override_btn, blacklist_btn, clear_cache_btn %}
+<div class="tab-panel" id="panel-notfound">
+  {% if not_found_tracks %}
+  <div class="filter-bar">
+    {{ search_bar(_('Search not found tracks...'), "notfoundSearch") }}
+  </div>
+
+  <div class="track-list" id="notfoundTracks">
+    {% for t in not_found_tracks %}
+    <div class="track-item notfound-item not-found" data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}">
+      <div class="track-info">
+        <span class="track-artist">{{ t.artist }}</span>
+        <span class="track-title">{{ t.title }}</span>
+      </div>
+
+      <div class="track-ytm">
+        <span class="badge badge-notfound">{{ _('Not Found') }}</span>
+        {% if t.timestamp %}<span class="track-ytm-id">{{ _('Cached:') }} {{ t.timestamp[:10] }}</span>{% endif %}
+      </div>
+
+      <div class="track-actions">
+        {{ override_btn(t.artist, t.title, "notfound") }}
+        {{ blacklist_btn(t.artist, t.title, "notfound") }}
+        {{ clear_cache_btn(t.artist, t.title, "notfound") }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    </div>
+    <h3>{{ _('No Missing Tracks') }}</h3>
+    <p>{{ _('All tracks in the cache have been successfully matched to YouTube Music videos.') }}</p>
+  </div>
+  {% endif %}
+</div>

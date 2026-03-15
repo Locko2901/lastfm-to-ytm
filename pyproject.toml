@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ytmt-rpmp"
+name = "lastfm-to-ytm"
 version = "0.1.0"
 description = "Sync Last.fm listening history to YouTube Music playlists"
 requires-python = ">=3.11"
@@ -15,17 +15,25 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["ruff>=0.8.0"]
+dev = ["ruff>=0.8.0", "j2lint>=1.2.0"]
+web = ["flask>=3.0.0", "flask-babel>=4.0.0", "apscheduler>=3.10.0", "gunicorn>=21.0.0"]
 
 [project.scripts]
-ytmt-sync = "run:run"
+lastfm-ytm-sync = "run:run"
+lastfm-ytm-web = "web.app:main"
+
+[project.entry-points."babel.extractors"]
+js = "babel_js_extractor:extract_js"
+
+[tool.setuptools]
+py-modules = ["run", "babel_js_extractor"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["src*"]
+include = ["src*", "web*"]
 
 [tool.ruff]
-line-length = 150
+line-length = 150  # 150 matches Biome's lineWidth; longer lines reduce forced wraps in deeply nested code
 target-version = "py311"
 
 [tool.ruff.lint]

@@ -256,7 +256,6 @@ def sync_playlist(
         log.warning("No valid video IDs provided")
         return
 
-    # Check for duplicates and warn (should not happen, but defensive check)
     unique_count = len(set(desired_video_ids))
     if unique_count < len(desired_video_ids):
         dup_count = len(desired_video_ids) - unique_count
@@ -264,7 +263,6 @@ def sync_playlist(
             "Detected %d duplicate video IDs in desired list (deduplicating before sync)",
             dup_count,
         )
-        # Deduplicate while preserving order
         desired_video_ids = list(dict.fromkeys(desired_video_ids))
 
     log.debug("Syncing playlist with %d desired videos", len(desired_video_ids))

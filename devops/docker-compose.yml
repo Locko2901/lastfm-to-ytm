@@ -1,0 +1,32 @@
+services:
+  lastfm-web:
+    build:
+      context: ..
+      dockerfile: devops/Dockerfile
+      target: production
+    container_name: lastfm-to-ytm
+    restart: unless-stopped
+    ports:
+      - "${YTMT_PORT:-2002}:2002"
+    volumes:
+      - ../cache:/app/cache
+      - ../config:/app/config
+      - ../browser.json:/app/browser.json
+      - ../.env:/app/.env
+      - ../.env.example:/app/.env.example:ro
+      - /etc/localtime:/etc/localtime:ro  # host timezone
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=${TZ:-UTC}  # Fallback if /etc/localtime unavailable
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2002/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M

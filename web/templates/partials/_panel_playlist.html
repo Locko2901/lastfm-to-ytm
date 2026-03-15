@@ -1,0 +1,65 @@
+{# j2lint: disable=S7 #}
+{% from "macros/_track_actions.html" import search_bar, track_actions, refresh_icon %}
+<div class="tab-panel active" id="panel-playlist">
+  {% if mappings %}
+  <div class="filter-bar">
+    {{ search_bar(_('Search tracks...'), "playlistSearch") }}
+    <div class="filter-chips">
+      <button class="filter-chip active" data-filter="all">{{ _('All') }}</button>
+      <button class="filter-chip" data-filter="override">{{ _('Overrides') }}</button>
+      <button class="filter-chip" data-filter="blacklisted">{{ _('Blacklisted') }}</button>
+      <button class="filter-chip" data-filter="pending">{{ _('Pending Retry') }}</button>
+    </div>
+  </div>
+
+  <div class="track-list" id="playlistTracks">
+    {% for m in mappings %}
+    <div
+      class="track-item {% if m.is_overridden %}overridden{% endif %}{% if m.is_blacklisted %} blacklisted{% endif %}{% if m.pending_retry %} pending-retry{% endif %}"
+      data-artist="{{ m.artist|lower }}" data-title="{{ m.title|lower }}" data-source="{{ m.source }}"
+      data-overridden="{{ 'yes' if m.is_overridden else 'no' }}" data-blacklisted="{{ 'yes' if m.is_blacklisted else 'no' }}"
+      data-pending="{{ 'yes' if m.pending_retry else 'no' }}">
+      <div class="track-index">#{{ loop.index }}</div>
+
+      <div class="track-info">
+        <span class="track-artist">{{ m.artist }}</span>
+        <span class="track-title">{{ m.title }}</span>
+      </div>
+
+      <div class="track-ytm">
+        {% if m.pending_retry %}
+        <span class="text-muted">{{ _('Will re-search on next sync') }}</span>
+        <span class="track-ytm-id"> <span class="badge badge-pending">{{ _('Pending Retry') }}</span> </span>
+        {% else %}
+        <a href="{{ m.ytm_url }}" target="_blank" rel="noopener">{{ m.yt_title or m.title }}</a>
+        <span class="track-ytm-id">
+          {{ m.video_id }}
+          {% if m.is_overridden %}<span class="badge badge-override">{{ _('Override') }}</span>{% endif %}
+          {% if m.is_blacklisted %}<span class="badge badge-blacklist">{{ _('Blacklisted') }}</span>{% endif %}
+          {% if m.source == 'cache' %}<span class="badge badge-cached">{{ _('Cached') }}</span>{% endif %}
+          {% if m.source == 'search' %}<span class="badge badge-search">{{ _('Search') }}</span>{% endif %}
+        </span>
+        {% endif %}
+      </div>
+
+      <div class="track-actions">
+        {{ track_actions(m.artist, m.title, "playlist", is_overridden=m.is_overridden, is_blacklisted=m.is_blacklisted, source=m.source, pending_retry=m.pending_retry, show_clear_cache=(m.source == 'cache')) }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 17H7A5 5 0 0 1 7 7h2"></path>
+        <path d="M15 7h2a5 5 0 1 1 0 10h-2"></path>
+        <line x1="8" x2="16" y1="12" y2="12"></line>
+      </svg>
+    </div>
+    <h3>{{ _('No Playlist Data') }}</h3>
+    <p>{{ _('Run a sync to generate playlist mappings and see them here.') }}</p>
+    <button class="btn btn-primary btn-lg" data-action="goToSyncAndRun">{{ _('Run Sync') }}</button>
+  </div>
+  {% endif %}
+</div>
