@@ -23,10 +23,10 @@ lastfm-ytm-sync = "run:run"
 lastfm-ytm-web = "web.app:main"
 
 [project.entry-points."babel.extractors"]
-js = "babel_js_extractor:extract_js"
+js = "web.i18n.extractor:extract_js"
 
 [tool.setuptools]
-py-modules = ["run", "babel_js_extractor"]
+py-modules = ["run"]
 
 [tool.setuptools.packages.find]
 where = ["."]
