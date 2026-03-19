@@ -2,8 +2,7 @@
 {% from "macros/_track_actions.html" import search_bar %}
 <div class="tab-panel" id="panel-tags">
   <div class="panel-description">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-      stroke-linecap="round" stroke-linejoin="round">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
       <line x1="7" y1="7" x2="7.01" y2="7"></line>
     </svg>
@@ -22,10 +21,8 @@
           class="chip-count">({{ tag_cache_tracks | selectattr('tags') | list | length }})</span></button>
       <button class="filter-chip" data-filter="no-tags" data-panel="tags">{{ _('No Tags') }} <span
           class="chip-count">({{ tag_cache_tracks | rejectattr('tags') | list | length }})</span></button>
-      <button class="filter-chip" data-filter="track-tags" data-panel="tags">{{ _('Track Tags') }} <span
-          class="chip-count"></span></button>
-      <button class="filter-chip" data-filter="artist-tags" data-panel="tags">{{ _('Artist Tags') }} <span
-          class="chip-count"></span></button>
+      <button class="filter-chip" data-filter="track-tags" data-panel="tags">{{ _('Track Tags') }} <span class="chip-count"></span></button>
+      <button class="filter-chip" data-filter="artist-tags" data-panel="tags">{{ _('Artist Tags') }} <span class="chip-count"></span></button>
     </div>
   </div>
 
@@ -34,9 +31,9 @@
     {% for t in tag_cache_tracks %}
     {% set _sources = t.tags | map(attribute='source') | select('defined') | unique | list %}
     <div class="track-item tag-item{% if t.has_override %} overridden{% endif %}{% if not t.tags %} no-tags{% endif %}"
-      data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}"
-      data-hasoverride="{{ 'yes' if t.has_override else 'no' }}" data-hastags="{{ 'yes' if t.tags else 'no' }}"
-      data-tags="{{ t.tags|map(attribute='name')|join(',')|lower }}" data-tagsource="{{ _sources|join(',') }}">
+      data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}" data-hasoverride="{{ 'yes' if t.has_override else 'no' }}"
+      data-hastags="{{ 'yes' if t.tags else 'no' }}" data-tags="{{ t.tags|map(attribute='name')|join(',')|lower }}"
+      data-tagsource="{{ _sources|join(',') }}">
       <div class="track-info">
         <span class="track-artist">{{ t.artist }}</span>
         <span class="track-title">{{ t.title }}</span>
@@ -65,16 +62,15 @@
       </div>
 
       <div class="track-actions">
-        <button class="btn btn-tags btn-sm" data-action="showTagOverrideModal" data-artist="{{ t.artist }}"
-          data-title="{{ t.title }}" data-tab="tags" data-tags="{{ t.tags | map(attribute='name') | join(', ') }}"
-          data-lastfm-tags="{{ t.lastfm_tags | join(', ') if t.lastfm_tags else '' }}"
+        <button class="btn btn-tags btn-sm" data-action="showTagOverrideModal" data-artist="{{ t.artist }}" data-title="{{ t.title }}" data-tab="tags"
+          data-tags="{{ t.tags | map(attribute='name') | join(', ') }}" data-lastfm-tags="{{ t.lastfm_tags | join(', ') if t.lastfm_tags else '' }}"
           data-has-override="{{ 'yes' if t.has_override else '' }}">
           {{ _('Edit Tags') }}
         </button>
-        <button class="btn btn-secondary btn-sm" data-action="clearTagCacheEntry" data-artist="{{ t.artist }}"
-          data-title="{{ t.title }}" data-tab="tags" title="{{ _('Clear from tag cache & re-fetch on next sync') }}">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
+        <button class="btn btn-secondary btn-sm" data-action="clearTagCacheEntry" data-artist="{{ t.artist }}" data-title="{{ t.title }}"
+          data-tab="tags" title="{{ _('Clear from tag cache & re-fetch on next sync') }}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
             <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
             <path d="M3 3v5h5"></path>
             <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
@@ -88,8 +84,7 @@
   {% else %}
   <div class="empty-state">
     <div class="empty-state-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-        stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
         <line x1="7" y1="7" x2="7.01" y2="7"></line>
       </svg>
