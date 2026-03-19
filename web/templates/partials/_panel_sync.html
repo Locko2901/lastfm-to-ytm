@@ -12,12 +12,26 @@
       <span class="sync-status-text" id="syncStatusText">{{ _('Ready') }}</span>
     </div>
     <div class="sync-drawer-actions">
-      <button class="btn btn-sm btn-primary" id="runSyncBtn" data-action="runSync" data-stop-propagation>
-        <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="currentColor">
-          <polygon points="5 3 19 12 5 21 5 3"></polygon>
-        </svg>
-        {{ _('Run') }}
-      </button>
+      <div class="sync-run-wrapper" id="runSyncBtn">
+        <button class="btn btn-sm btn-primary sync-run-main" data-action="runSyncDefault" data-stop-propagation>
+          <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          {{ _('Run') }}
+        </button>
+        <button class="btn btn-sm btn-primary sync-run-caret" data-action="toggleRunMenu" data-stop-propagation title="{{ _('More sync options') }}">
+          <svg class="btn-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="sync-run-menu" id="syncRunMenu">
+          <button class="sync-run-option" data-action="runSyncTags" data-stop-propagation>
+            <strong>{{ _('Tag Playlist Sync') }}</strong>
+            <small>{{ _('Build tag-based playlists') }}</small>
+          </button>
+        </div>
+      </div>
       <button class="btn btn-sm btn-danger" id="stopSyncBtn" data-action="stopSync" data-stop-propagation style="display:none">
         <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="currentColor">
           <rect x="6" y="6" width="12" height="12"></rect>

@@ -33,11 +33,7 @@ class CacheMetrics:
         self.writes += 1
 
     def get_stats(self) -> dict[str, Any]:
-        """Get cache statistics.
-
-        Returns:
-            Dictionary with hit/miss rates and counts
-        """
+        """Get cache statistics."""
         total_reads = self.hits + self.misses
         hit_rate = (self.hits / total_reads * 100) if total_reads > 0 else 0.0
 
@@ -50,11 +46,7 @@ class CacheMetrics:
         }
 
     def log_stats(self, cache_name: str) -> None:
-        """Log cache statistics.
-
-        Args:
-            cache_name: Name of the cache for logging
-        """
+        """Log cache statistics."""
         stats = self.get_stats()
         if stats["total_reads"] > 0:
             log.info(
@@ -67,7 +59,7 @@ class CacheMetrics:
             )
 
     def reset(self) -> None:
-        """Reset all counters to zero."""
+        """Reset counters."""
         self.hits = 0
         self.misses = 0
         self.writes = 0
@@ -77,12 +69,6 @@ class JSONCache(Generic[T]):
     """Base class for JSON-based persistent caches with atomic writes and file locking."""
 
     def __init__(self, cache_file: str, enable_locking: bool = True):
-        """Initialize cache with a file path.
-
-        Args:
-            cache_file: Path to cache file relative to project root
-            enable_locking: Enable file locking for multi-process safety
-        """
         self.cache_file = Path(cache_file)
         self.enable_locking = enable_locking
         self._cache: dict[str, Any] = {}
@@ -90,14 +76,6 @@ class JSONCache(Generic[T]):
 
     @contextmanager
     def _file_lock(self, mode: str = "r"):
-        """Context manager for file locking to prevent concurrent access.
-
-        Args:
-            mode: File open mode ('r' for read, 'w' for write)
-
-        Yields:
-            File handle with acquired lock
-        """
         if not self.enable_locking:
             if (mode == "r" and self.cache_file.exists()) or mode == "w":
                 with self.cache_file.open(mode) as f:
@@ -126,7 +104,7 @@ class JSONCache(Generic[T]):
             yield None
 
     def _load(self) -> None:
-        """Load cache from disk with file locking."""
+        """Load cache from disk."""
         with self._file_lock("r") as f:
             if f is None:
                 log.debug(
@@ -151,7 +129,6 @@ class JSONCache(Generic[T]):
                 self._cache = {}
 
     def _save(self) -> None:
-        """Save cache to disk atomically with file locking."""
         try:
             self.cache_file.parent.mkdir(parents=True, exist_ok=True)
             temp_file = self.cache_file.with_suffix(".tmp")
@@ -193,9 +170,5 @@ class JSONCache(Generic[T]):
         return self._metrics
 
     def log_metrics(self, cache_name: str) -> None:
-        """Log cache performance metrics.
-
-        Args:
-            cache_name: Name of the cache for logging
-        """
+        """Log cache performance metrics."""
         self._metrics.log_stats(cache_name)

@@ -39,4 +39,7 @@ node_modules/
 .github/*
 !.github/workflows/
 !.github/workflows/**
-search_overrides.json
+# Config files
+config/search_overrides.json
+config/custom_playlists.json
+config/tag_overrides.json

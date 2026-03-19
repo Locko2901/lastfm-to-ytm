@@ -24,7 +24,7 @@ sync_state: dict = {
 
 
 def reset_output(state: dict, lock: Lock) -> None:
-    """Reset output deque and exit code for a fresh process run."""
+    """Reset output for new process."""
     with lock:
         state["output"] = deque(maxlen=MAX_OUTPUT_LINES)
         state["exit_code"] = None
@@ -64,7 +64,7 @@ def stream_state_output(
 
 
 def cleanup_processes() -> None:
-    """Clean up any running child processes on exit."""
+    """Clean up child processes."""
     if sync_state.get("process"):
         try:
             sync_state["process"].terminate()

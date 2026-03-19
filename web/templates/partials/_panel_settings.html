@@ -237,6 +237,36 @@
           <h3 class="settings-section-title">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+              <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+            {{ _('Custom Playlists') }}
+          </h3>
+          <div class="settings-grid">
+            <div class="form-group form-group-checkbox">
+              <label>
+                <input type="checkbox" id="CUSTOM_PLAYLISTS_PRIVACY" name="CUSTOM_PLAYLISTS_PRIVACY">
+                <span>{{ _('Make custom playlists public') }}</span>
+              </label>
+              <span class="form-hint">{{ _('Unchecked = inherit from main playlist') }}</span>
+            </div>
+            <div class="form-group">
+              <label for="TAG_MIN_COUNT">{{ _('Minimum Tag Count') }}</label>
+              <input type="number" id="TAG_MIN_COUNT" name="TAG_MIN_COUNT" min="1" placeholder="10">
+              <span class="form-hint">{{ _('Minimum Last.fm tag vote count to include') }}</span>
+            </div>
+            <div class="form-group">
+              <label for="TAG_SLEEP_BETWEEN">{{ _('Sleep Between Tag Fetches (seconds)') }}</label>
+              <input type="text" id="TAG_SLEEP_BETWEEN" name="TAG_SLEEP_BETWEEN" inputmode="decimal" placeholder="0.25">
+              <span class="form-hint">{{ _('Delay between tag API calls to avoid rate limiting') }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="settings-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.3-4.3"></path>
             </svg>
@@ -313,6 +343,11 @@
               <label for="CACHE_NOTFOUND_TTL_DAYS">{{ _('Not-Found Cache TTL (days)') }}</label>
               <input type="number" id="CACHE_NOTFOUND_TTL_DAYS" name="CACHE_NOTFOUND_TTL_DAYS" min="0" placeholder="7">
               <span class="form-hint">{{ _('Days before "not found" results are retried') }}</span>
+            </div>
+            <div class="form-group">
+              <label for="TAG_CACHE_TTL_DAYS">{{ _('Tag Cache TTL (days)') }}</label>
+              <input type="number" id="TAG_CACHE_TTL_DAYS" name="TAG_CACHE_TTL_DAYS" min="0" placeholder="90">
+              <span class="form-hint">{{ _('Days before cached tags expire (0 = never)') }}</span>
             </div>
           </div>
         </div>

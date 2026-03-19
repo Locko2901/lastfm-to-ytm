@@ -23,7 +23,7 @@ class PlaylistCache(JSONCache):
         self._load()
 
     def get_id(self, playlist_name: str) -> str | None:
-        """Get cached playlist ID by name."""
+        """Get cached playlist ID."""
         entry = self._cache.get(playlist_name)
         if entry and isinstance(entry, dict):
             playlist_id = entry.get("id")
@@ -37,7 +37,7 @@ class PlaylistCache(JSONCache):
         return None
 
     def get_template(self, playlist_name: str) -> list[str] | None:
-        """Get cached video IDs template for playlist."""
+        """Get cached video IDs template."""
         entry = self._cache.get(playlist_name)
         if entry and isinstance(entry, dict):
             video_ids = entry.get("video_ids")
@@ -51,7 +51,7 @@ class PlaylistCache(JSONCache):
         return None
 
     def set_template(self, playlist_name: str, playlist_id: str, video_ids: list[str]) -> None:
-        """Cache playlist ID and video IDs template."""
+        """Cache playlist ID and template."""
         log.info(
             "Caching template: '%s' -> %s (%d videos)",
             playlist_name,
@@ -66,7 +66,7 @@ class PlaylistCache(JSONCache):
         self._save()
 
     def template_changed(self, playlist_name: str, new_video_ids: list[str]) -> bool:
-        """Check if video IDs differ from cached template."""
+        """Check if template changed."""
         cached_ids = self.get_template(playlist_name)
         if not cached_ids:
             return True
@@ -91,55 +91,47 @@ class PlaylistCache(JSONCache):
             self._save()
 
     def prune_old_weeklies(self, base_prefix: str, keep_count: int = 1) -> list[str]:
-        """Remove old weekly playlist entries from cache."""
+        """Remove old weekly playlists."""
         import re
         from datetime import date
-        
+
         if keep_count <= 0:
             keep_count = 1
-        
+
         marker = f"{base_prefix} week of "
         date_pattern = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-        
+
         weekly_entries: list[tuple[date, str]] = []
         for name in list(self._cache.keys()):
             if not name.startswith(marker):
                 continue
-            tail = name[len(marker):].strip()
+            tail = name[len(marker) :].strip()
             if date_pattern.match(tail):
                 try:
                     d = date.fromisoformat(tail)
                     weekly_entries.append((d, name))
                 except Exception:
                     continue
-        
+
         if len(weekly_entries) <= keep_count:
             return []
-        
+
         weekly_entries.sort(key=lambda x: x[0], reverse=True)
         to_remove = weekly_entries[keep_count:]
-        
+
         removed = []
         for _, name in to_remove:
             log.info("Pruning old weekly from cache: '%s'", name)
             del self._cache[name]
             removed.append(name)
-        
+
         if removed:
             self._save()
-        
+
         return removed
 
     def verify_exists(self, ytm: YTMusic, playlist_name: str) -> bool:
-        """Verify cached playlist still exists on YouTube Music.
-
-        Args:
-            ytm: YTMusic client instance
-            playlist_name: Name of the playlist to verify
-
-        Returns:
-            True if playlist exists, False if it was removed from cache
-        """
+        """Verify playlist still exists on YTM."""
         playlist_id = self.get_id(playlist_name)
         if not playlist_id:
             return False

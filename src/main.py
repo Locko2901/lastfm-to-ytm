@@ -7,7 +7,8 @@ from datetime import UTC, datetime
 from ytmusicapi import YTMusic
 
 from .cache.playlist import PlaylistCache
-from .cache.search import NOT_FOUND, SearchCache, SearchOverrides
+from .cache.search import SearchCache, SearchOverrides
+from .cache.tags import TagCache, TagOverrides
 from .config import CACHE_DIR, Settings
 from .context import RuntimeContext
 from .lastfm import Scrobble, enable_ipv4_only, fetch_recent_with_diversity
@@ -15,121 +16,14 @@ from .playlist import log_playlist_statistics, sync_playlist
 from .playlist import reset_query_counter as reset_playlist_counter
 from .playlist.weekly import update_weekly_playlist
 from .recency import WeightedTrack, collapse_recency_weighted, dedupe_keep_latest
-from .search import find_on_ytm, log_search_statistics, reset_search_statistics
+from .search import log_search_statistics, reset_search_statistics, resolve_tracks_to_video_ids
 from .ytm import build_oauth_client, create_playlist_with_items, get_existing_playlist_by_name
 
 log = logging.getLogger(__name__)
 
 
-def _resolve_tracks_to_video_ids(
-    ytm_search: YTMusic,
-    tracks: list[Scrobble | WeightedTrack],
-    sleep_between: float,
-    early_termination_score: float,
-    search_cache,
-    search_overrides,
-    max_retries: int = 3,
-    max_workers: int = 2,
-) -> tuple[list[str], int, dict[tuple[str, str], str], list[dict]]:
-    """Resolve tracks to video IDs, deduplicating by video ID.
-
-    Returns:
-        Tuple of (video_ids, misses, track_to_vid, run_log_mappings)
-    """
-    track_metadata: list[tuple[str, Scrobble | WeightedTrack]] = []
-    track_to_vid: dict[tuple[str, str], str] = {}
-    run_log_mappings: list[dict] = []
-    misses = 0
-    total_tracks = len(tracks)
-    seen_vids: set[str] = set()
-    unique_count = 0
-
-    for index, t in enumerate(tracks, start=1):
-        artist = t.artist
-        title = t.track
-        album = getattr(t, "album", None)
-
-        if search_overrides.is_blacklisted(artist, title):
-            misses += 1
-            run_log_mappings.append({"artist": artist, "title": title, "source": "blacklisted"})
-            continue
-
-        vid = search_overrides.get(artist, title)
-        yt_title = None
-        source = "override" if vid else None
-        if vid is None:
-            cached = search_cache.get(artist, title)
-            if cached == NOT_FOUND:
-                misses += 1
-                log.info("%d/%d %s [not found, cached]", index, total_tracks, title)
-                run_log_mappings.append({"artist": artist, "title": title, "source": "not_found_cached"})
-                continue
-            vid = cached
-            if vid:
-                cache_entry = search_cache.get_entry(artist, title)
-                if cache_entry:
-                    yt_title = cache_entry.get("yt_title")
-            source = "cache" if vid else None
-        if vid is None:
-            search_result = find_on_ytm(
-                ytm_search,
-                artist,
-                title,
-                album,
-                early_termination_score,
-                max_workers=max_workers,
-                max_retries=max_retries,
-            )
-            if search_result:
-                vid, yt_title = search_result
-            else:
-                vid, yt_title = None, None
-            search_cache.set(artist, title, vid, yt_title)
-            time.sleep(max(0.0, sleep_between))
-            source = "search"
-
-        if vid:
-            is_duplicate = vid in seen_vids
-            if not is_duplicate:
-                seen_vids.add(vid)
-                track_metadata.append((vid, t))
-                track_key = (artist.lower(), title.lower())
-                track_to_vid[track_key] = vid
-                unique_count += 1
-                run_log_mappings.append({"artist": artist, "title": title, "source": source})
-
-            dup_marker = " [DUP]" if is_duplicate else ""
-            cache_marker = f" [{source}]" if source != "search" else ""
-            if isinstance(t, WeightedTrack):
-                log.info(
-                    "%d/%d %s (plays=%d, score=%.3f)%s%s",
-                    index,
-                    total_tracks,
-                    t.track,
-                    t.plays,
-                    t.score,
-                    dup_marker,
-                    cache_marker,
-                )
-            else:
-                log.info("%d/%d %s%s%s", index, total_tracks, t.track, dup_marker, cache_marker)
-        else:
-            misses += 1
-            log.warning("%d/%d Not found: %s - %s", index, total_tracks, artist, title)
-            run_log_mappings.append({"artist": artist, "title": title, "source": "not_found"})
-
-    if (total_tracks - misses) - unique_count > 0:
-        log.info("Skipped %d duplicates", (total_tracks - misses) - unique_count)
-
-    return [vid for vid, _ in track_metadata], misses, track_to_vid, run_log_mappings
-
-
 def _save_run_log(mappings: list[dict]) -> None:
-    """Save the run log for the web dashboard.
-
-    Only stores minimal data (artist, title, source) - the web dashboard
-    enriches with video_id/yt_title from the search cache.
-    """
+    """Save the run log for the web dashboard."""
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     log_file = CACHE_DIR / ".last_run_log.json"
     data = {
@@ -143,10 +37,7 @@ def _save_run_log(mappings: list[dict]) -> None:
 
 
 def _save_failure_log(error_message: str, traceback_str: str | None = None) -> None:
-    """Save a failure log when sync fails.
-
-    This is preserved across runs until a successful sync clears it.
-    """
+    """Save a failure log."""
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     log_file = CACHE_DIR / ".last_failure.json"
 
@@ -171,15 +62,15 @@ def _save_failure_log(error_message: str, traceback_str: str | None = None) -> N
 
 
 def _clear_failure_log() -> None:
-    """Clear the failure log on successful sync."""
+    """Clear the failure log."""
     log_file = CACHE_DIR / ".last_failure.json"
     if log_file.exists():
         log_file.unlink()
         log.debug("Cleared failure log")
 
 
-def run(settings: Settings) -> None:
-    """Run the main playlist sync workflow."""
+def _build_context(settings: Settings) -> RuntimeContext:
+    """Build the shared RuntimeContext (auth, caches, overrides)."""
     if settings.lastfm_force_ipv4:
         enable_ipv4_only()
 
@@ -187,7 +78,7 @@ def run(settings: Settings) -> None:
     ytm = build_oauth_client(settings.ytm_auth_path)
     ytm_search = ytm if not settings.use_anon_search else YTMusic()
 
-    ctx = RuntimeContext(
+    return RuntimeContext(
         settings=settings,
         ytm=ytm,
         ytm_search=ytm_search,
@@ -198,13 +89,15 @@ def run(settings: Settings) -> None:
         ),
         search_overrides=SearchOverrides(settings.cache_overrides_file),
         playlist_cache=PlaylistCache(settings.cache_playlist_file),
+        tag_cache=TagCache(settings.tag_cache_file, settings.tag_cache_ttl_days),
+        tag_overrides=TagOverrides(settings.tag_overrides_file),
     )
 
-    reset_search_statistics()
-    reset_playlist_counter()
 
+def _fetch_scrobbles(settings: Settings) -> list[Scrobble]:
+    """Fetch recent scrobbles."""
     log.info("Fetching scrobbles for '%s'...", settings.lastfm_user)
-    recents: list[Scrobble] = fetch_recent_with_diversity(
+    return fetch_recent_with_diversity(
         settings.lastfm_user,
         settings.lastfm_api_key,
         settings.limit,
@@ -212,6 +105,16 @@ def run(settings: Settings) -> None:
         max_retries=settings.lastfm_max_retries,
         max_consecutive_empty=settings.lastfm_max_consecutive_empty,
     )
+
+
+def run(settings: Settings) -> None:
+    """Run the main playlist sync workflow."""
+    ctx = _build_context(settings)
+
+    reset_search_statistics()
+    reset_playlist_counter()
+
+    recents = _fetch_scrobbles(settings)
     if not recents:
         log.warning("No recent scrobbles found. Exiting.")
         return
@@ -240,7 +143,7 @@ def run(settings: Settings) -> None:
 
     seen_track_keys = {(t.artist.lower(), t.track.lower()) for t in tracks}
 
-    video_ids, misses, track_to_vid, run_log_mappings = _resolve_tracks_to_video_ids(
+    video_ids, misses, track_to_vid, run_log_mappings = resolve_tracks_to_video_ids(
         ctx.ytm_search,
         tracks,
         settings.sleep_between_searches,
@@ -304,7 +207,7 @@ def run(settings: Settings) -> None:
         log.info("Processing %d new tracks...", len(new_tracks))
         tracks.extend(new_tracks)  # type: ignore[arg-type]
 
-        new_video_ids, new_misses, new_track_to_vid, new_run_log = _resolve_tracks_to_video_ids(
+        new_video_ids, new_misses, new_track_to_vid, new_run_log = resolve_tracks_to_video_ids(
             ctx.ytm_search,
             new_tracks,
             settings.sleep_between_searches,
@@ -431,21 +334,20 @@ def run(settings: Settings) -> None:
             except Exception as e:
                 error_msg = str(e)
                 if "401" in error_msg or "Unauthorized" in error_msg:
-                    log.error("Sync failed: HTTP 401 - authentication expired")
+                    log.exception("Sync failed: HTTP 401 - authentication expired")
                     _save_failure_log("HTTP 401 - Unauthorized", traceback.format_exc())
                 elif "403" in error_msg or "Forbidden" in error_msg:
-                    log.error("Sync failed: HTTP 403 - rate limit or auth expired")
+                    log.exception("Sync failed: HTTP 403 - rate limit or auth expired")
                     _save_failure_log("HTTP 403 - rate limit or auth expired", traceback.format_exc())
                 elif "Expecting value" in error_msg:
-                    log.error("Sync failed: Invalid API response (likely rate limited)")
+                    log.exception("Sync failed: Invalid API response (likely rate limited)")
                     _save_failure_log("Invalid API response (likely rate limited)", traceback.format_exc())
                 else:
-                    log.error("Sync failed: %s", e)
+                    log.exception("Sync failed: %s", e)
                     _save_failure_log(str(e), traceback.format_exc())
-                return
+                raise
         else:
             log.info("Playlist already up to date")
-            ctx.playlist_cache.set_template(settings.playlist_name, existing_id, valid_video_ids)
 
         pl_id = existing_id
     else:
@@ -461,9 +363,9 @@ def run(settings: Settings) -> None:
             )
             log.info("Created playlist with %d tracks", len(valid_video_ids))
         except Exception as e:
-            log.error("Create failed: %s", e)
+            log.exception("Create failed: %s", e)
             _save_failure_log(f"Create failed: {e}", traceback.format_exc())
-            return
+            raise
 
     weekly_id = update_weekly_playlist(
         ctx.ytm,
@@ -495,3 +397,39 @@ def run(settings: Settings) -> None:
     override_stats = ctx.search_overrides.stats()
     if override_stats["total_overrides"] > 0 or override_stats["total_blacklisted"] > 0:
         log.info("Overrides: %d, Blacklisted: %d", override_stats["total_overrides"], override_stats["total_blacklisted"])
+
+
+def run_tags(settings: Settings) -> None:
+    """Run only the custom tag-based playlist sync."""
+    from .tags.sync import sync_custom_playlists
+
+    ctx = _build_context(settings)
+
+    reset_search_statistics()
+    reset_playlist_counter()
+
+    recents = _fetch_scrobbles(settings)
+    if not recents:
+        log.warning("No recent scrobbles found. Exiting.")
+        return
+
+    log.info("Running tag-based custom playlist sync only...")
+
+    try:
+        sync_custom_playlists(ctx, recents, track_to_vid={})
+    except Exception as e:
+        log.exception("Custom playlist sync failed: %s", e)
+        _save_failure_log(f"Custom playlist sync failed: {e}", traceback.format_exc())
+        raise
+
+    _clear_failure_log()
+
+    log_search_statistics()
+    log_playlist_statistics()
+
+    ctx.search_cache.log_metrics("Search")
+    ctx.playlist_cache.log_metrics("Playlist")
+
+    tag_override_stats = ctx.tag_overrides.stats()
+    if tag_override_stats["total"] > 0:
+        log.info("Tag overrides: %d (add: %d, replace: %d)", tag_override_stats["total"], tag_override_stats["add"], tag_override_stats["replace"])

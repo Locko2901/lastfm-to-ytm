@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from dataclasses import dataclass, field
@@ -85,6 +86,13 @@ class Settings:
     cache_overrides_file: str = str(CONFIG_DIR / "search_overrides.json")
     cache_search_ttl_days: int = 30
     cache_notfound_ttl_days: int = 7
+    custom_playlists_file: str = str(CONFIG_DIR / "custom_playlists.json")
+    custom_playlists_privacy_status: str | None = None
+    tag_cache_file: str = str(CACHE_DIR / ".tag_cache.json")
+    tag_cache_ttl_days: int = 90
+    tag_min_count: int = 10
+    tag_sleep_between: float = 0.25
+    tag_overrides_file: str = str(CONFIG_DIR / "tag_overrides.json")
 
     @property
     def privacy_status(self) -> str:
@@ -148,6 +156,17 @@ class Settings:
         cache_search_ttl_days = _str_to_int(os.getenv("CACHE_SEARCH_TTL_DAYS"), 30)
         cache_notfound_ttl_days = _str_to_int(os.getenv("CACHE_NOTFOUND_TTL_DAYS"), 7)
 
+        custom_playlists_file = os.getenv("CUSTOM_PLAYLISTS_FILE", str(CONFIG_DIR / "custom_playlists.json"))
+        custom_playlists_privacy_env = _strip_inline_comment(os.getenv("CUSTOM_PLAYLISTS_PRIVACY"))
+        custom_playlists_privacy_status: str | None = None
+        if custom_playlists_privacy_env is not None:
+            custom_playlists_privacy_status = "PUBLIC" if _str_to_bool(custom_playlists_privacy_env, False) else "PRIVATE"
+        tag_cache_file = os.getenv("TAG_CACHE_FILE", str(CACHE_DIR / ".tag_cache.json"))
+        tag_cache_ttl_days = _str_to_int(os.getenv("TAG_CACHE_TTL_DAYS"), 90)
+        tag_min_count = _str_to_int(os.getenv("TAG_MIN_COUNT"), 10)
+        tag_sleep_between = _str_to_float(os.getenv("TAG_SLEEP_BETWEEN"), 0.25)
+        tag_overrides_file = os.getenv("TAG_OVERRIDES_FILE", str(CONFIG_DIR / "tag_overrides.json"))
+
         return Settings(
             lastfm_user=lastfm_user,
             lastfm_api_key=lastfm_api_key,
@@ -181,11 +200,78 @@ class Settings:
             cache_overrides_file=cache_overrides_file,
             cache_search_ttl_days=cache_search_ttl_days,
             cache_notfound_ttl_days=cache_notfound_ttl_days,
+            custom_playlists_file=custom_playlists_file,
+            custom_playlists_privacy_status=custom_playlists_privacy_status,
+            tag_cache_file=tag_cache_file,
+            tag_cache_ttl_days=tag_cache_ttl_days,
+            tag_min_count=tag_min_count,
+            tag_sleep_between=tag_sleep_between,
+            tag_overrides_file=tag_overrides_file,
         )
 
 
+@dataclass(frozen=True)
+class CustomPlaylistConfig:
+    """Configuration for a single tag-based custom playlist."""
+
+    name: str
+    tags: tuple[str, ...]
+    match: str = "any"
+    limit: int = 50
+    blacklist: frozenset[str] = frozenset()
+    backfill: bool = True
+
+
+def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
+    """Load custom playlist configurations."""
+    config_path = Path(path)
+    if not config_path.exists():
+        return []
+
+    try:
+        with config_path.open() as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, OSError) as e:
+        log = logging.getLogger(__name__)
+        log.warning("Failed to load custom playlists from %s: %s", path, e)
+        return []
+
+    playlists = data.get("playlists", [])
+    configs: list[CustomPlaylistConfig] = []
+
+    for entry in playlists:
+        name = entry.get("name")
+        tags = entry.get("tags")
+        if not name or not tags:
+            continue
+
+        match = entry.get("match", "any")
+        if match not in ("any", "all"):
+            match = "any"
+
+        raw_blacklist = entry.get("blacklist", [])
+        blacklist = frozenset(k.lower() for k in raw_blacklist if isinstance(k, str))
+
+        backfill = entry.get("backfill", True)
+        if not isinstance(backfill, bool):
+            backfill = True
+
+        configs.append(
+            CustomPlaylistConfig(
+                name=name,
+                tags=tuple(t.lower() for t in tags),
+                match=match,
+                limit=entry.get("limit", 50),
+                blacklist=blacklist,
+                backfill=backfill,
+            )
+        )
+
+    return configs
+
+
 def configure_logging(level: str) -> None:
-    """Configure logging with the specified level."""
+    """Configure logging."""
     logging.basicConfig(
         level=getattr(logging, level, logging.INFO),
         format="%(levelname)s: %(message)s",
