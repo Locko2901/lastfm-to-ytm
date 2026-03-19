@@ -3,7 +3,8 @@
 {% if tracks %}
 <div class="track-list">
   {% for t in tracks %}
-  <div class="track-item{% if t.is_overridden %} overridden{% endif %}{% if t.is_playlist_blacklisted %} blacklisted{% endif %}"
+  <div
+    class="track-item{% if t.is_overridden %} overridden{% endif %}{% if t.is_playlist_blacklisted %} blacklisted{% endif %}"
     data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}" data-tags="{{ t.tags|join(',')|lower }}"
     data-hastags="{{ 'yes' if t.tags else 'no' }}">
     <div class="track-index">#{{ loop.index }}</div>
@@ -24,17 +25,17 @@
     </div>
 
     <div class="track-actions">
-      {% set _key = t.artist|lower ~ '|' ~ t.title|lower %}
+      {% set _key = t.artist | lower ~ '|' ~ t.title | lower %}
       {% set _to = tag_overrides_map.get(_key, {}) %}
-      {{ tag_override_btn(t.artist, t.title, "custompl", all_tags=t.tags|join(', '), has_override=_to) }}
+      {{ tag_override_btn(t.artist, t.title, "custompl", all_tags=t.tags | join(', '), has_override=_to) }}
       {% if t.is_playlist_blacklisted %}
-      <button class="btn btn-secondary btn-sm" data-action="unblacklistFromPlaylist" data-artist="{{ t.artist }}" data-title="{{ t.title }}"
-        data-pl-index="{{ pl_index }}">
+      <button class="btn btn-secondary btn-sm" data-action="unblacklistFromPlaylist" data-artist="{{ t.artist }}"
+        data-title="{{ t.title }}" data-pl-index="{{ pl_index }}">
         {{ _('Restore') }}
       </button>
       {% else %}
-      <button class="btn btn-danger btn-sm" data-action="blacklistFromPlaylist" data-artist="{{ t.artist }}" data-title="{{ t.title }}"
-        data-pl-index="{{ pl_index }}">
+      <button class="btn btn-danger btn-sm" data-action="blacklistFromPlaylist" data-artist="{{ t.artist }}"
+        data-title="{{ t.title }}" data-pl-index="{{ pl_index }}">
         {{ _('Blacklist') }}
       </button>
       {% endif %}
