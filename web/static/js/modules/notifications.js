@@ -1,3 +1,5 @@
+import { getUse24HourClock } from "./utils.js"
+
 const MAX_NOTIFICATIONS = 20
 const STORAGE_KEY = "ytm-notifications"
 
@@ -38,8 +40,8 @@ function getElements() {
   }
 }
 
-function formatTime(date) {
-  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+function formatTime(date, use24Hour = true) {
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: !use24Hour })
 }
 
 function typeIcon(type) {
@@ -52,7 +54,7 @@ function typeIcon(type) {
   return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>'
 }
 
-function renderList() {
+async function renderList() {
   const { list, empty, clearBtn } = getElements()
   if (!list) return
 
@@ -66,13 +68,14 @@ function renderList() {
   empty.classList.add("hidden")
   clearBtn.classList.remove("hidden")
 
+  const use24Hour = await getUse24HourClock()
   list.innerHTML = notifications
     .map(
       n => `
     <div class="notif-item notif-${n.type}">
       <span class="notif-icon">${typeIcon(n.type)}</span>
       <span class="notif-message notif-truncated">${n.message}</span>
-      <span class="notif-time">${formatTime(n.time)}</span>
+      <span class="notif-time">${formatTime(n.time, use24Hour)}</span>
     </div>`,
     )
     .join("")

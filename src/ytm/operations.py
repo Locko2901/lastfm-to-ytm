@@ -17,17 +17,7 @@ def get_existing_playlist_by_name(
     cache: PlaylistCache | None = None,
     verify_cached: bool = True,
 ) -> str | None:
-    """Find playlist by name using cache-first approach.
-
-    Args:
-        ytm: YTMusic client
-        name: Playlist name
-        cache: PlaylistCache instance (optional)
-        verify_cached: Verify cached playlist still exists
-
-    Returns:
-        Playlist ID if found, None otherwise
-    """
+    """Find playlist by name using cache-first approach."""
     if cache:
         cached_id = cache.get_id(name)
         if cached_id:
@@ -91,19 +81,7 @@ def create_playlist_with_items(
     video_ids: list[str],
     cache: PlaylistCache | None = None,
 ) -> str:
-    """Create a playlist and cache its template (ID + video IDs).
-
-    Args:
-        ytm: YTMusic client
-        name: Playlist name
-        desc: Playlist description
-        privacy: Privacy status (PUBLIC/PRIVATE)
-        video_ids: List of video IDs to add
-        cache: PlaylistCache instance (optional)
-
-    Returns:
-        Created playlist ID
-    """
+    """Create a playlist and cache its template (ID + video IDs)."""
     try:
         pl_id = ytm.create_playlist(name, desc, privacy_status=privacy, video_ids=video_ids)
     except TypeError:

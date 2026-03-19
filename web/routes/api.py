@@ -17,16 +17,26 @@ from ..services import (
     ENV_EXAMPLE_FILE,
     ENV_FILE,
     clear_failure_log,
+    delete_custom_playlist_data,
     get_cache_stats,
     get_cached_tracks,
+    get_custom_playlist_tracks,
     get_last_sync_time,
     get_not_found_tracks,
     get_overrides_data,
     get_playlist_mappings,
     get_setup_status,
+    get_tag_cache_tracks,
+    get_tag_overrides_data,
+    get_tag_stats,
+    get_tag_suggestions,
+    get_track_tag_overrides_map,
+    get_track_tags_map,
+    load_custom_playlists_config,
     load_failure_log,
     load_run_log,
     parse_env_file,
+    save_custom_playlists_config,
     sync_lock,
     sync_state,
     update_env_file,
@@ -45,7 +55,7 @@ class IPv4Adapter(HTTPAdapter):
     """HTTP adapter that forces IPv4 connections."""
 
     def init_poolmanager(self, *args, **kwargs):
-        """Initialize pool manager with IPv4-only socket options."""
+        """Initialize pool with IPv4-only options."""
         kwargs["socket_options"] = [(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)]
         import urllib3.util.connection
 
@@ -56,7 +66,7 @@ class IPv4Adapter(HTTPAdapter):
 
 
 def get_ipv4_session():
-    """Create a requests session that only uses IPv4."""
+    """Create IPv4-only session."""
     session = requests.Session()
     session.mount("http://", IPv4Adapter())
     session.mount("https://", IPv4Adapter())
@@ -68,7 +78,7 @@ _ipv4_session_lock = threading.Lock()
 
 
 def ipv4_session():
-    """Return the shared IPv4-only requests session, creating it if needed."""
+    """Get shared IPv4-only session."""
     global _ipv4_session
     if _ipv4_session is None:
         with _ipv4_session_lock:
@@ -218,8 +228,10 @@ def stats():
     cache_stats = get_cache_stats()
     not_found = get_not_found_tracks()
     last_sync = get_last_sync_time()
+    tag_stats = get_tag_stats()
+    custom_playlists = load_custom_playlists_config()
 
-    resolved = run_log.get("resolved", 0)
+    resolved = run_log.get("in_playlist", run_log.get("resolved", 0))
     limit = run_log.get("limit", 100)
     playlist_count = min(resolved, limit)
 
@@ -231,6 +243,8 @@ def stats():
             "not_found": len(not_found),
             "cached": cache_stats.get("found", 0),
             "last_sync": last_sync,
+            "tag_cached": tag_stats.get("total", 0),
+            "custom_playlists": len(custom_playlists),
         }
     )
 
@@ -240,20 +254,135 @@ def panel_html(panel_name):
     """Get rendered HTML for a specific panel."""
     if panel_name == "playlist":
         playlist_mappings, _ = get_playlist_mappings()
-        return render_template("partials/_panel_playlist.html", mappings=playlist_mappings)
+        return render_template(
+            "partials/_panel_playlist.html",
+            mappings=playlist_mappings,
+            track_tags_map=get_track_tags_map(),
+            tag_overrides_map=get_track_tag_overrides_map(),
+        )
     if panel_name == "blacklist":
         _, blacklist = get_overrides_data()
         return render_template("partials/_panel_blacklist.html", blacklist=blacklist)
     if panel_name == "overrides":
         override_list, _ = get_overrides_data()
-        return render_template("partials/_panel_overrides.html", overrides=override_list)
+        return render_template(
+            "partials/_panel_overrides.html",
+            overrides=override_list,
+            track_tags_map=get_track_tags_map(),
+            tag_overrides_map=get_track_tag_overrides_map(),
+        )
     if panel_name == "cache":
         cached_tracks = get_cached_tracks()
-        return render_template("partials/_panel_cache.html", cached_tracks=cached_tracks)
+        return render_template(
+            "partials/_panel_cache.html",
+            cached_tracks=cached_tracks,
+            track_tags_map=get_track_tags_map(),
+            tag_overrides_map=get_track_tag_overrides_map(),
+        )
     if panel_name == "notfound":
         not_found = get_not_found_tracks()
-        return render_template("partials/_panel_notfound.html", not_found_tracks=not_found)
+        return render_template("partials/_panel_notfound.html", not_found_tracks=not_found, track_tags_map=get_track_tags_map())
+    if panel_name == "tags":
+        tag_cache_tracks = get_tag_cache_tracks()
+        tag_overrides_data = get_tag_overrides_data()
+        return render_template(
+            "partials/_panel_tags.html",
+            tag_cache_tracks=tag_cache_tracks,
+            tag_overrides=tag_overrides_data,
+        )
+    if panel_name == "custompl":
+        custom_playlists = load_custom_playlists_config()
+        return render_template("partials/_panel_custompl.html", custom_playlists=custom_playlists)
     return jsonify({"error": _("Unknown panel")}), 404
+
+
+@api_bp.route("/custom-playlists")
+def custom_playlists_get():
+    """Get custom playlist configurations."""
+    return jsonify({"playlists": load_custom_playlists_config()})
+
+
+@api_bp.route("/custom-playlists", methods=["POST"])
+def custom_playlists_save():
+    """Save custom playlist configurations."""
+    data = request.get_json()
+    if not data or "playlists" not in data:
+        return jsonify({"error": _("Invalid data: 'playlists' array required")}), 400
+
+    playlists = data["playlists"]
+    if not isinstance(playlists, list):
+        return jsonify({"error": _("'playlists' must be an array")}), 400
+
+    cleaned = []
+    for entry in playlists:
+        if not isinstance(entry, dict):
+            continue
+        name = entry.get("name", "").strip()
+        tags = entry.get("tags", [])
+        if not name or not tags:
+            continue
+        if not isinstance(tags, list) or not all(isinstance(t, str) for t in tags):
+            continue
+        match = entry.get("match", "any")
+        if match not in ("any", "all"):
+            match = "any"
+        limit = entry.get("limit", 50)
+        if not isinstance(limit, int) or limit < 0:
+            limit = 50
+        blacklist = entry.get("blacklist", [])
+        if not isinstance(blacklist, list):
+            blacklist = []
+        blacklist = [b for b in blacklist if isinstance(b, str)]
+        backfill = entry.get("backfill", True)
+        if not isinstance(backfill, bool):
+            backfill = True
+        cleaned.append(
+            {
+                "name": name,
+                "tags": [t.lower().strip() for t in tags if t.strip()],
+                "match": match,
+                "limit": limit,
+                "blacklist": [b.lower().strip() for b in blacklist if b.strip()],
+                "backfill": backfill,
+            }
+        )
+
+    try:
+        save_custom_playlists_config(cleaned)
+        return jsonify({"status": "saved", "count": len(cleaned)})
+    except OSError as e:
+        logger.error(f"Failed to save custom playlists: {e}")
+        return jsonify({"error": _("Failed to save custom playlists")}), 500
+
+
+@api_bp.route("/tag-overrides")
+def tag_overrides_get():
+    """Get tag overrides list."""
+    return jsonify({"overrides": get_tag_overrides_data()})
+
+
+@api_bp.route("/tags/suggestions")
+def tag_suggestions():
+    """Get unique tag names from the tag cache for autocomplete."""
+    return jsonify({"tags": get_tag_suggestions()})
+
+
+@api_bp.route("/custom-playlists/<int:index>", methods=["DELETE"])
+def custom_playlist_delete(index: int):
+    """Delete a custom playlist, its cache entry, and optionally from YTM."""
+    data = request.get_json(silent=True) or {}
+    delete_from_ytm = data.get("delete_from_ytm", False)
+    result = delete_custom_playlist_data(index, delete_from_ytm=delete_from_ytm)
+    if "error" in result:
+        return jsonify(result), 400
+    return jsonify(result)
+
+
+@api_bp.route("/custom-playlists/<int:index>/tracks")
+def custom_playlist_tracks(index: int):
+    """Get tracks matching a custom playlist's tag filter, rendered as HTML."""
+    tracks = get_custom_playlist_tracks(index)
+    return render_template("partials/_custompl_tracks.html", tracks=tracks, pl_index=index, tag_overrides_map=get_track_tag_overrides_map())
 
 
 @api_bp.route("/failure_log")

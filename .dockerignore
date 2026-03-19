@@ -34,7 +34,9 @@ devops/docker-compose.yml
 .env
 .env.example
 browser.json
-config/
+config/search_overrides.json
+config/custom_playlists.json
+config/tag_overrides.json
 
 # Documentation
 *.md

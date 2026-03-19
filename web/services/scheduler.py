@@ -35,7 +35,7 @@ scheduler_state: dict = {
 
 
 def get_scheduler() -> BackgroundScheduler | None:
-    """Get or create the scheduler instance."""
+    """Get scheduler instance."""
     global _scheduler
 
     if not HAS_APSCHEDULER:
@@ -56,7 +56,7 @@ def get_scheduler() -> BackgroundScheduler | None:
 
 
 def _get_sync_function() -> Callable | None:
-    """Get the sync function from the sync routes module."""
+    """Get sync function."""
     try:
         from ..routes.sync import _run_sync_process
         from ..services import sync_lock, sync_state
@@ -91,7 +91,6 @@ def _get_sync_function() -> Callable | None:
 
 
 def _update_next_run():
-    """Update the next_run field in scheduler_state."""
     if _scheduler is not None and _scheduler.running:
         job = _scheduler.get_job("auto_sync")
         if job:

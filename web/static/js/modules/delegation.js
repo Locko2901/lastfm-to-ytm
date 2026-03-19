@@ -4,7 +4,9 @@ const actionHandlers = {
   closeSettingsModal: () => window.closeSettingsModal(),
   goToSyncAndRun: () => window.goToSyncAndRun(),
   toggleSyncDrawer: () => window.toggleSyncDrawer(),
-  runSync: () => window.runSync(),
+  toggleRunMenu: () => window.toggleRunMenu(),
+  runSyncDefault: () => window.runSyncDefault(),
+  runSyncTags: () => window.runSyncTags(),
   stopSync: () => window.stopSync(),
   showAddBlacklistModal: () => window.showAddBlacklistModal(),
   showAddOverrideModal: () => window.showAddOverrideModal(),
@@ -45,6 +47,38 @@ const actionHandlers = {
   clearCacheEntry: el => {
     const { artist, title, tab } = el.dataset
     window.clearCacheEntry(artist, title, el, tab)
+  },
+  showTagOverrideModal: el => {
+    const { artist, title, tab, tags } = el.dataset
+    const lastfmTags = el.dataset.lastfmTags || ""
+    const hasOverride = el.dataset.hasOverride || ""
+    window.showTagOverrideModal(artist, title, tab, tags || "", lastfmTags, hasOverride)
+  },
+  removeTagOverride: el => {
+    const { artist, title, tab } = el.dataset
+    window.removeTagOverride(artist, title, tab)
+  },
+  clearTagCacheEntry: el => {
+    const { artist, title, tab } = el.dataset
+    window.clearTagCacheEntry(artist, title, el, tab)
+  },
+  showCustomPlaylistModal: () => window.showCustomPlaylistModal(),
+  editCustomPlaylist: el => window.editCustomPlaylist(parseInt(el.dataset.index, 10)),
+  deleteCustomPlaylist: el => window.deleteCustomPlaylist(parseInt(el.dataset.index, 10), el.dataset.name),
+  confirmDeletePlaylist: () => window.confirmDeletePlaylist(),
+  saveCustomPlaylist: () => window.saveCustomPlaylist(),
+  togglePlaylistPreview: el => window.togglePlaylistPreview(parseInt(el.dataset.index, 10)),
+  blacklistFromPlaylist: el => {
+    const { artist, title, plIndex } = el.dataset
+    window.blacklistFromPlaylist(parseInt(plIndex, 10), artist, title)
+  },
+  unblacklistFromPlaylist: el => {
+    const { artist, title, plIndex } = el.dataset
+    window.unblacklistFromPlaylist(parseInt(plIndex, 10), artist, title)
+  },
+  expandTags: el => {
+    const container = el.closest(".track-tags")
+    if (container) container.classList.toggle("expanded")
   },
 }
 

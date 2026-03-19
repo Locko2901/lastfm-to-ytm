@@ -20,6 +20,10 @@
     <div class="stat-value blue">{{ cache_stats.found }}</div>
     <div class="stat-label">{{ _('Cached Searches') }}</div>
   </div>
+  <div class="stat-card" data-action="switchTab" data-tab="tags" style="cursor: pointer;">
+    <div class="stat-value purple">{{ tag_stats.with_tags }}</div>
+    <div class="stat-label">{{ _('Track Tags') }}</div>
+  </div>
   <div class="stat-card stat-card-last-sync" data-action="openSyncDrawer" style="cursor: pointer;">
     <div class="stat-value stat-value-time" data-timestamp="{{ last_sync or '' }}">
       {% if last_sync %}

@@ -18,7 +18,7 @@ class WeightedTrack:
 
 
 def dedupe_keep_latest(tracks: list[Scrobble]) -> list[Scrobble]:
-    """Deduplicate tracks, keeping only the most recent scrobble per track."""
+    """Keep most recent scrobble per track."""
     latest: dict[tuple[str, str], Scrobble] = {}
     for tr in tracks:
         key = (tr.artist.lower(), tr.track.lower())
@@ -33,11 +33,7 @@ def collapse_recency_weighted(
     half_life_hours: float = 24.0,
     play_weight: float = 0.7,
 ) -> list[WeightedTrack]:
-    """Aggregate scrobbles to unique tracks ranked by play count + recency.
-
-    Score = play_weight * (normalized plays) + (1-play_weight) * (recency).
-    Default: 70% plays, 30% recency.
-    """
+    """Aggregate scrobbles to unique tracks ranked by play count + recency."""
     now = time.time()
     agg: dict[tuple[str, str], dict[str, Any]] = {}
 

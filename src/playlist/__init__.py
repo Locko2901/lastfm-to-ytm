@@ -4,7 +4,7 @@ from .metrics import (
     log_playlist_statistics,
     reset_query_counter,
 )
-from .sync import sync_playlist
+from .sync import sync_playlist, upsert_playlist
 from .weekly import update_weekly_playlist
 
 __all__ = [
@@ -14,4 +14,5 @@ __all__ = [
     "reset_query_counter",
     "sync_playlist",
     "update_weekly_playlist",
+    "upsert_playlist",
 ]

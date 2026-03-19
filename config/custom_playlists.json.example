@@ -1,0 +1,25 @@
+{
+  "playlists": [
+    {
+      "name": "Breakcore Mix (auto)",
+      "tags": ["breakcore", "drill and bass"],
+      "match": "any",
+      "limit": 50,
+      "backfill": true,
+      "blacklist": ["artist name|wrong song title"]
+    },
+    {
+      "name": "Chill Electronic (auto)",
+      "tags": ["ambient", "downtempo", "chillout"],
+      "match": "any",
+      "limit": 30,
+      "backfill": false
+    },
+    {
+      "name": "Rock Essentials (auto)",
+      "tags": ["rock", "alternative rock", "indie rock"],
+      "match": "any",
+      "limit": 75
+    }
+  ]
+}

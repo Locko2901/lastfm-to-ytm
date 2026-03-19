@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 
 class _QueryCounter:
-    """Track API usage and performance metrics."""
+    """Track API metrics."""
 
     def __init__(self):
         self.count = 0
@@ -43,17 +43,17 @@ _query_counter = _QueryCounter()
 
 
 def reset_query_counter():
-    """Reset the query counter for a new session."""
+    """Reset query counter."""
     _query_counter.reset()
 
 
 def get_query_count():
-    """Return total API query count."""
+    """Get total API queries."""
     return _query_counter.get_count()
 
 
 def log_playlist_statistics():
-    """Log playlist session statistics."""
+    """Log playlist statistics."""
     if _query_counter.session_start is None:
         return
 
@@ -77,7 +77,7 @@ def log_playlist_statistics():
 
 
 def get_playlist_statistics():
-    """Return playlist session statistics as a dict."""
+    """Get playlist statistics."""
     return {
         "total_queries": _query_counter.get_count(),
         "session_duration": _query_counter.get_session_duration(),

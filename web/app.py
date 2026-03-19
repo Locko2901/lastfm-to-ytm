@@ -25,6 +25,12 @@ from .services import (
     get_playlist_links,
     get_playlist_mappings,
     get_setup_status,
+    get_tag_cache_tracks,
+    get_tag_overrides_data,
+    get_tag_stats,
+    get_track_tag_overrides_map,
+    get_track_tags_map,
+    load_custom_playlists_config,
     sync_state,
 )
 from .services.scheduler import init_scheduler_from_env
@@ -34,7 +40,7 @@ logger = logging.getLogger(__name__)
 
 
 def _ensure_secret_key(env_path: Path) -> str:
-    """Return FLASK_SECRET_KEY, generating and persisting it to .env if absent."""
+    """Get or generate FLASK_SECRET_KEY."""
     key = os.environ.get("FLASK_SECRET_KEY", "").strip()
     if key:
         return key
@@ -80,7 +86,7 @@ app.config["BABEL_TRANSLATION_DIRECTORIES"] = str(_translations_dir)
 
 
 def _discover_locales() -> list[str]:
-    """Return sorted locale codes found in the translations directory."""
+    """Discover available locales."""
     locales = {"en"}
     if _translations_dir.is_dir():
         for child in _translations_dir.iterdir():
@@ -157,6 +163,12 @@ def index():
     cached_tracks = get_cached_tracks()
     last_sync = get_last_sync_time()
     playlist_links = get_playlist_links()
+    tag_cache_tracks = get_tag_cache_tracks()
+    tag_stats = get_tag_stats()
+    tag_overrides_data = get_tag_overrides_data()
+    custom_playlists = load_custom_playlists_config()
+    track_tags_map = get_track_tags_map()
+    tag_overrides_map = get_track_tag_overrides_map()
 
     setup = get_setup_status()
 
@@ -177,6 +189,12 @@ def index():
         playlist_links=playlist_links,
         needs_setup=setup["needs_setup"],
         needs_auth=setup["needs_auth"],
+        tag_cache_tracks=tag_cache_tracks,
+        tag_stats=tag_stats,
+        tag_overrides=tag_overrides_data,
+        custom_playlists=custom_playlists,
+        track_tags_map=track_tags_map,
+        tag_overrides_map=tag_overrides_map,
     )
 
 

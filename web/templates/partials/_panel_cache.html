@@ -1,26 +1,33 @@
 {# j2lint: disable=S7 #}
-{% from "macros/_track_actions.html" import search_bar, track_actions %}
+{% from "macros/_track_actions.html" import search_bar, track_actions, tag_pills %}
 <div class="tab-panel" id="panel-cache">
   {% if cached_tracks %}
   <div class="filter-bar">
     {{ search_bar(_('Search cached tracks...'), "cacheSearch") }}
     <div class="filter-chips">
-      <button class="filter-chip active" data-filter="all" data-panel="cache">{{ _('All') }}
-        ({{ cached_tracks | length }})</button>
-      <button class="filter-chip" data-filter="has-override" data-panel="cache">{{ _('Has Override') }}</button>
-      <button class="filter-chip" data-filter="blacklisted" data-panel="cache">{{ _('Blacklisted') }}</button>
-      <button class="filter-chip" data-filter="no-override" data-panel="cache">{{ _('No Override') }}</button>
+      <button class="filter-chip active" data-filter="all" data-panel="cache">{{ _('All') }} <span
+          class="chip-count">({{ cached_tracks | length }})</span></button>
+      <button class="filter-chip" data-filter="has-override" data-panel="cache">{{ _('Has Override') }} <span
+          class="chip-count">({{ cached_tracks | selectattr('has_override') | list | length }})</span></button>
+      <button class="filter-chip" data-filter="blacklisted" data-panel="cache">{{ _('Blacklisted') }} <span
+          class="chip-count">({{ cached_tracks | selectattr('is_blacklisted') | list | length }})</span></button>
+      <button class="filter-chip" data-filter="no-override" data-panel="cache">{{ _('No Override') }} <span
+          class="chip-count">({{ cached_tracks | rejectattr('has_override') | rejectattr('is_blacklisted') | list | length }})</span></button>
+      <button class="filter-chip" data-filter="has-tags" data-panel="cache">{{ _('Has Tags') }} <span class="chip-count"></span></button>
+      <button class="filter-chip" data-filter="no-tags" data-panel="cache">{{ _('No Tags') }} <span class="chip-count"></span></button>
     </div>
   </div>
 
   <div class="track-list" id="cacheTracks">
     {% for t in cached_tracks %}
     <div class="track-item cache-item{% if t.has_override %} overridden{% endif %}{% if t.is_blacklisted %} blacklisted{% endif %}"
-      data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}" data-hasoverride="{{ 'yes' if t.has_override else 'no' }}"
-      data-blacklisted="{{ 'yes' if t.is_blacklisted else 'no' }}">
+      data-artist="{{ t.artist | lower }}" data-title="{{ t.title | lower }}" data-hasoverride="{{ 'yes' if t.has_override else 'no' }}"
+      data-blacklisted="{{ 'yes' if t.is_blacklisted else 'no' }}"
+      {% set _tags = track_tags_map.get((t.artist | lower ~ '|' ~ t.title | lower), []) %} data-tags="{{ _tags | join(',') | lower }}"
+      data-hastags="{{ 'yes' if _tags else 'no' }}">
       <div class="track-info">
         <span class="track-artist">{{ t.artist }}</span>
-        <span class="track-title">{{ t.title }}</span>
+        {{ tag_pills(track_tags_map.get((t.artist | lower ~ '|' ~ t.title | lower), [])) }}
       </div>
 
       <div class="track-ytm">
@@ -34,7 +41,10 @@
       </div>
 
       <div class="track-actions">
-        {{ track_actions(t.artist, t.title, "cache", is_overridden=t.has_override, is_blacklisted=t.is_blacklisted) }}
+        {% set _key = t.artist | lower ~ '|' ~ t.title | lower %}
+        {% set _all_tags = track_tags_map.get(_key, []) %}
+        {% set _to = tag_overrides_map.get(_key, {}) %}
+        {{ track_actions(t.artist, t.title, "cache", is_overridden=t.has_override, is_blacklisted=t.is_blacklisted, all_tags=_all_tags | join(', '), has_tag_override=_to) }}
       </div>
     </div>
     {% endfor %}

@@ -26,7 +26,32 @@ export function closeSyncDrawer() {
   requestAnimationFrame(() => updateNowPlayingPosition())
 }
 
-export async function runSync() {
+export function toggleRunMenu() {
+  const menu = document.getElementById("syncRunMenu")
+  if (!menu) return
+  const isOpen = menu.classList.contains("open")
+  menu.classList.toggle("open", !isOpen)
+  if (!isOpen) {
+    const close = e => {
+      if (!e.target.closest(".sync-run-wrapper")) {
+        menu.classList.remove("open")
+        document.removeEventListener("click", close)
+      }
+    }
+    requestAnimationFrame(() => document.addEventListener("click", close))
+  }
+}
+
+export function runSyncDefault() {
+  runSync("run.py")
+}
+
+export function runSyncTags() {
+  document.getElementById("syncRunMenu")?.classList.remove("open")
+  runSync("run_tags.py")
+}
+
+export async function runSync(script = "run.py") {
   const output = document.getElementById("syncOutput")
   const indicator = document.getElementById("syncIndicator")
   const statusText = document.getElementById("syncStatusText")
@@ -56,7 +81,11 @@ export async function runSync() {
   stopBtn.style.display = ""
 
   try {
-    const response = await fetch("/run_sync", { method: "POST" })
+    const response = await fetch("/run_sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ script }),
+    })
     if (!response.ok) {
       const data = await response.json()
       throw new Error(data.error || _("Failed to start sync"))
@@ -117,6 +146,10 @@ export async function runSync() {
           refreshPanel("notfound")
           refreshPanel("overrides")
           refreshPanel("blacklist")
+          refreshPanel("tags")
+          refreshPanel("custompl")
+          if (window.loadPlaylistsData) window.loadPlaylistsData()
+          if (window.clearPreviewCache) window.clearPreviewCache()
         }
 
         if (window.checkFailureLog) window.checkFailureLog()
@@ -165,7 +198,7 @@ export async function stopSync() {
 
 export function goToSyncAndRun() {
   openSyncDrawer()
-  runSync()
+  runSyncDefault()
 }
 
 export function initSyncDrawerResize() {

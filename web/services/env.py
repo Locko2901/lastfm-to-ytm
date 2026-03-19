@@ -19,6 +19,7 @@ BOOL_SETTINGS = {
     "AUTO_SYNC_ENABLED",
     "USE_24_HOUR_CLOCK",
     "NOW_PLAYING_ENABLED",
+    "CUSTOM_PLAYLISTS_PRIVACY",
 }
 
 ALL_SETTINGS = [
@@ -58,11 +59,15 @@ ALL_SETTINGS = [
     "USE_24_HOUR_CLOCK",
     "NOW_PLAYING_ENABLED",
     "NOW_PLAYING_INTERVAL",
+    "CUSTOM_PLAYLISTS_PRIVACY",
+    "TAG_CACHE_TTL_DAYS",
+    "TAG_MIN_COUNT",
+    "TAG_SLEEP_BETWEEN",
 ]
 
 
 def parse_env_file() -> dict[str, str]:
-    """Parse the .env file and return key-value pairs."""
+    """Parse .env file into key-value pairs."""
     settings = {}
     if not ENV_FILE.exists():
         return settings
