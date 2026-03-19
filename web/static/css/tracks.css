@@ -149,6 +149,10 @@
   font-weight: 400;
 }
 
+.tag-pill.tag-source-artist {
+  border-style: dashed;
+}
+
 .tag-pill-overflow {
   background: var(--bg-card-hover);
   border: none;

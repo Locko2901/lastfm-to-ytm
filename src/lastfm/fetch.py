@@ -236,7 +236,7 @@ def fetch_recent_with_diversity(
     return all_scrobbles
 
 
-def _parse_tags(raw_tags: Any, min_count: int) -> list[dict[str, Any]]:
+def _parse_tags(raw_tags: Any, min_count: int, source: str = "track") -> list[dict[str, Any]]:
     """Parse raw Last.fm tag response into filtered tag list."""
     if isinstance(raw_tags, dict):
         raw_tags = [raw_tags]
@@ -252,7 +252,7 @@ def _parse_tags(raw_tags: Any, min_count: int) -> list[dict[str, Any]]:
             count = 0
 
         if name and count >= min_count:
-            tags.append({"name": name.lower(), "count": count})
+            tags.append({"name": name.lower(), "count": count, "source": source})
 
     return tags
 
@@ -277,7 +277,7 @@ def fetch_track_tags(
     data = _make_api_request(params, page=1, max_retries=max_retries)
     if data is not None and "error" not in data:
         raw_tags = data.get("toptags", {}).get("tag", [])
-        tags = _parse_tags(raw_tags, min_count)
+        tags = _parse_tags(raw_tags, min_count, source="track")
         if tags:
             return tags
 
@@ -295,7 +295,7 @@ def fetch_track_tags(
         return []
 
     raw_tags = data.get("toptags", {}).get("tag", [])
-    tags = _parse_tags(raw_tags, min_count)
+    tags = _parse_tags(raw_tags, min_count, source="artist")
 
     if tags:
         log.debug("Using artist-level tags for %s - %s (%d tags)", artist, track, len(tags))

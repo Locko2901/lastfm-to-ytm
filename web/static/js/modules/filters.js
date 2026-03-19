@@ -125,6 +125,7 @@ export function filterTags() {
     const tags = item.dataset.tags || ""
     const hasOverride = item.dataset.hasoverride === "yes"
     const hasTags = item.dataset.hastags === "yes"
+    const tagSource = item.dataset.tagsource || ""
 
     const matchesSearch = artist.includes(search) || title.includes(search) || tags.includes(search)
     let matchesFilter = true
@@ -132,6 +133,8 @@ export function filterTags() {
     if (activeFilter === "has-override") matchesFilter = hasOverride
     else if (activeFilter === "has-tags") matchesFilter = hasTags
     else if (activeFilter === "no-tags") matchesFilter = !hasTags
+    else if (activeFilter === "track-tags") matchesFilter = tagSource.includes("track")
+    else if (activeFilter === "artist-tags") matchesFilter = tagSource.includes("artist")
 
     item.style.display = matchesSearch && matchesFilter ? "" : "none"
   }
@@ -147,6 +150,8 @@ export function filterTags() {
     "has-override": i => i.dataset.hasoverride === "yes",
     "has-tags": i => i.dataset.hastags === "yes",
     "no-tags": i => i.dataset.hastags !== "yes",
+    "track-tags": i => (i.dataset.tagsource || "").includes("track"),
+    "artist-tags": i => (i.dataset.tagsource || "").includes("artist"),
   })
 }
 
