@@ -1,4 +1,4 @@
-"""Route blueprints for the web dashboard."""
+"""Web dashboard route blueprints."""
 
 from .actions import actions_bp
 from .api import api_bp

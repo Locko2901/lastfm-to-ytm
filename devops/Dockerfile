@@ -52,6 +52,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY src/ ./src/
 COPY web/ ./web/
 COPY run.py .
+COPY run_tags.py .
 COPY pyproject.toml .
 COPY devops/gunicorn.conf.py ./gunicorn.conf.py
 

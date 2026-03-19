@@ -18,7 +18,7 @@ def _getaddrinfo_ipv4_only(host, port, family=0, type=0, proto=0, flags=0):
 
 
 def enable_ipv4_only() -> None:
-    """Enable IPv4-only mode (helps with flaky Last.fm IPv6)."""
+    """Force IPv4-only connections."""
     global _ipv4_enabled
     if not _ipv4_enabled:
         socket.getaddrinfo = _getaddrinfo_ipv4_only
@@ -26,7 +26,7 @@ def enable_ipv4_only() -> None:
 
 
 def disable_ipv4_only() -> None:
-    """Restore dual-stack (IPv4 + IPv6) socket behavior."""
+    """Restore dual-stack socket behavior."""
     global _ipv4_enabled
     if _ipv4_enabled:
         socket.getaddrinfo = _orig_getaddrinfo
@@ -41,7 +41,7 @@ def _make_api_request(
     page: int,
     max_retries: int,
 ) -> dict[str, Any] | None:
-    """Make a Last.fm API request with retry logic."""
+    """Make API request with retries."""
     retry_delay = 1
 
     for attempt in range(max_retries):
@@ -79,7 +79,7 @@ def _make_api_request(
 
 
 def _parse_tracks(tracks: list[dict[str, Any]]) -> list[Scrobble]:
-    """Parse Last.fm API track objects into Scrobble instances."""
+    """Parse API tracks into Scrobbles."""
     scrobbles: list[Scrobble] = []
 
     for t in tracks:
@@ -124,7 +124,7 @@ def fetch_recent(
     to_timestamp: int | None = None,
     max_retries: int = 5,
 ) -> list[Scrobble]:
-    """Fetch recent scrobbles from Last.fm."""
+    """Fetch recent scrobbles."""
     per_page = min(200, limit)
     all_scrobbles: list[Scrobble] = []
     page = 1
@@ -234,3 +234,70 @@ def fetch_recent_with_diversity(
         page += 1
 
     return all_scrobbles
+
+
+def _parse_tags(raw_tags: Any, min_count: int) -> list[dict[str, Any]]:
+    """Parse raw Last.fm tag response into filtered tag list."""
+    if isinstance(raw_tags, dict):
+        raw_tags = [raw_tags]
+    if not isinstance(raw_tags, list):
+        return []
+
+    tags: list[dict[str, Any]] = []
+    for tag in raw_tags:
+        name = tag.get("name", "").strip()
+        try:
+            count = int(tag.get("count", 0))
+        except (ValueError, TypeError):
+            count = 0
+
+        if name and count >= min_count:
+            tags.append({"name": name.lower(), "count": count})
+
+    return tags
+
+
+def fetch_track_tags(
+    api_key: str,
+    artist: str,
+    track: str,
+    min_count: int = 10,
+    max_retries: int = 3,
+) -> list[dict[str, Any]]:
+    """Fetch top tags for a track from Last.fm, falling back to artist tags."""
+    params: dict[str, Any] = {
+        "method": "track.getTopTags",
+        "artist": artist,
+        "track": track,
+        "api_key": api_key,
+        "format": "json",
+        "autocorrect": 1,
+    }
+
+    data = _make_api_request(params, page=1, max_retries=max_retries)
+    if data is not None and "error" not in data:
+        raw_tags = data.get("toptags", {}).get("tag", [])
+        tags = _parse_tags(raw_tags, min_count)
+        if tags:
+            return tags
+
+    artist_params: dict[str, Any] = {
+        "method": "artist.getTopTags",
+        "artist": artist,
+        "api_key": api_key,
+        "format": "json",
+        "autocorrect": 1,
+    }
+
+    data = _make_api_request(artist_params, page=1, max_retries=max_retries)
+    if data is None or "error" in data:
+        log.debug("No tags found for %s - %s (track and artist)", artist, track)
+        return []
+
+    raw_tags = data.get("toptags", {}).get("tag", [])
+    tags = _parse_tags(raw_tags, min_count)
+
+    if tags:
+        log.debug("Using artist-level tags for %s - %s (%d tags)", artist, track, len(tags))
+
+    return tags

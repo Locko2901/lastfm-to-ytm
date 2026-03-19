@@ -3,6 +3,7 @@ from .fetch import (
     enable_ipv4_only,
     fetch_recent,
     fetch_recent_with_diversity,
+    fetch_track_tags,
 )
 from .scrobble import Scrobble
 
@@ -12,4 +13,5 @@ __all__ = [
     "enable_ipv4_only",
     "fetch_recent",
     "fetch_recent_with_diversity",
+    "fetch_track_tags",
 ]

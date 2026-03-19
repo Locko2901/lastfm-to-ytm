@@ -1,14 +1,19 @@
 {# j2lint: disable=S7 #}
-{% from "macros/_track_actions.html" import search_bar, track_actions, refresh_icon %}
+{% from "macros/_track_actions.html" import search_bar, track_actions, refresh_icon, tag_pills %}
 <div class="tab-panel active" id="panel-playlist">
   {% if mappings %}
   <div class="filter-bar">
     {{ search_bar(_('Search tracks...'), "playlistSearch") }}
     <div class="filter-chips">
-      <button class="filter-chip active" data-filter="all">{{ _('All') }}</button>
-      <button class="filter-chip" data-filter="override">{{ _('Overrides') }}</button>
-      <button class="filter-chip" data-filter="blacklisted">{{ _('Blacklisted') }}</button>
-      <button class="filter-chip" data-filter="pending">{{ _('Pending Retry') }}</button>
+      <button class="filter-chip active" data-filter="all">{{ _('All') }} <span class="chip-count">({{ mappings | length }})</span></button>
+      <button class="filter-chip" data-filter="override">{{ _('Overrides') }} <span
+          class="chip-count">({{ mappings | selectattr('is_overridden') | list | length }})</span></button>
+      <button class="filter-chip" data-filter="blacklisted">{{ _('Blacklisted') }} <span
+          class="chip-count">({{ mappings | selectattr('is_blacklisted') | list | length }})</span></button>
+      <button class="filter-chip" data-filter="pending">{{ _('Pending Retry') }} <span
+          class="chip-count">({{ mappings | selectattr('pending_retry') | list | length }})</span></button>
+      <button class="filter-chip" data-filter="has-tags">{{ _('Has Tags') }} <span class="chip-count"></span></button>
+      <button class="filter-chip" data-filter="no-tags">{{ _('No Tags') }} <span class="chip-count"></span></button>
     </div>
   </div>
 
@@ -18,12 +23,14 @@
       class="track-item {% if m.is_overridden %}overridden{% endif %}{% if m.is_blacklisted %} blacklisted{% endif %}{% if m.pending_retry %} pending-retry{% endif %}"
       data-artist="{{ m.artist|lower }}" data-title="{{ m.title|lower }}" data-source="{{ m.source }}"
       data-overridden="{{ 'yes' if m.is_overridden else 'no' }}" data-blacklisted="{{ 'yes' if m.is_blacklisted else 'no' }}"
-      data-pending="{{ 'yes' if m.pending_retry else 'no' }}">
+      data-pending="{{ 'yes' if m.pending_retry else 'no' }}" {% set _tags = track_tags_map.get((m.artist|lower ~ '|' ~ m.title|lower), []) %}
+      {% set _key = m.artist|lower ~ '|' ~ m.title|lower %} {% set _all_tags = track_tags_map.get(_key, []) %}
+      {% set _to = tag_overrides_map.get(_key, {}) %} data-tags="{{ _tags|join(',')|lower }}" data-hastags="{{ 'yes' if _tags else 'no' }}">
       <div class="track-index">#{{ loop.index }}</div>
 
       <div class="track-info">
         <span class="track-artist">{{ m.artist }}</span>
-        <span class="track-title">{{ m.title }}</span>
+        {{ tag_pills(track_tags_map.get((m.artist|lower ~ '|' ~ m.title|lower), [])) }}
       </div>
 
       <div class="track-ytm">
@@ -35,6 +42,7 @@
         <span class="track-ytm-id">
           {{ m.video_id }}
           {% if m.is_overridden %}<span class="badge badge-override">{{ _('Override') }}</span>{% endif %}
+          {% if _to %}<span class="badge badge-tagoverride">{{ _('Tag Override') }}</span>{% endif %}
           {% if m.is_blacklisted %}<span class="badge badge-blacklist">{{ _('Blacklisted') }}</span>{% endif %}
           {% if m.source == 'cache' %}<span class="badge badge-cached">{{ _('Cached') }}</span>{% endif %}
           {% if m.source == 'search' %}<span class="badge badge-search">{{ _('Search') }}</span>{% endif %}
@@ -43,7 +51,7 @@
       </div>
 
       <div class="track-actions">
-        {{ track_actions(m.artist, m.title, "playlist", is_overridden=m.is_overridden, is_blacklisted=m.is_blacklisted, source=m.source, pending_retry=m.pending_retry, show_clear_cache=(m.source == 'cache')) }}
+        {{ track_actions(m.artist, m.title, "playlist", is_overridden=m.is_overridden, is_blacklisted=m.is_blacklisted, source=m.source, pending_retry=m.pending_retry, show_clear_cache=(m.source == 'cache'), all_tags=_all_tags|join(', '), has_tag_override=_to) }}
       </div>
     </div>
     {% endfor %}

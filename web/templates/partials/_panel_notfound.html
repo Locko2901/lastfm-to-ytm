@@ -1,5 +1,5 @@
 {# j2lint: disable=S7 #}
-{% from "macros/_track_actions.html" import search_bar, override_btn, blacklist_btn, clear_cache_btn %}
+{% from "macros/_track_actions.html" import search_bar, override_btn, blacklist_btn, clear_cache_btn, tag_pills %}
 <div class="tab-panel" id="panel-notfound">
   {% if not_found_tracks %}
   <div class="filter-bar">
@@ -8,10 +8,13 @@
 
   <div class="track-list" id="notfoundTracks">
     {% for t in not_found_tracks %}
-    <div class="track-item notfound-item not-found" data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}">
+    {% set _tags = track_tags_map.get((t.artist|lower ~ '|' ~ t.title|lower), []) %}
+    <div class="track-item notfound-item not-found" data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}"
+      data-tags="{{ _tags|join(',')|lower }}">
       <div class="track-info">
         <span class="track-artist">{{ t.artist }}</span>
         <span class="track-title">{{ t.title }}</span>
+        {{ tag_pills(track_tags_map.get((t.artist|lower ~ '|' ~ t.title|lower), [])) }}
       </div>
 
       <div class="track-ytm">

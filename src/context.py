@@ -8,16 +8,13 @@ if TYPE_CHECKING:
 
     from .cache.playlist import PlaylistCache
     from .cache.search import SearchCache, SearchOverrides
+    from .cache.tags import TagCache, TagOverrides
     from .config import Settings
 
 
 @dataclass
 class RuntimeContext:
-    """Runtime context containing all shared dependencies.
-
-    This replaces the singleton pattern, making dependencies explicit
-    and enabling easier testing and multiple configurations.
-    """
+    """Runtime context containing all shared dependencies."""
 
     settings: Settings
     ytm: YTMusic
@@ -25,3 +22,5 @@ class RuntimeContext:
     search_cache: SearchCache
     search_overrides: SearchOverrides
     playlist_cache: PlaylistCache
+    tag_cache: TagCache
+    tag_overrides: TagOverrides

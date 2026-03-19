@@ -10,7 +10,7 @@ import threading
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flask import Blueprint, Response, jsonify, stream_with_context
+from flask import Blueprint, Response, jsonify, request, stream_with_context
 from flask_babel import gettext as _
 
 from ..services import sync_lock, sync_state
@@ -21,9 +21,13 @@ sync_bp = Blueprint("sync", __name__)
 logger = logging.getLogger(__name__)
 
 
-def _run_sync_process():
-    """Run the sync process in background."""
+def _run_sync_process(script: str = "run.py"):
+    """Run sync in background."""
     from ..services.state import reset_output
+
+    ALLOWED_SCRIPTS = {"run.py", "run_tags.py"}
+    if script not in ALLOWED_SCRIPTS:
+        script = "run.py"
 
     reset_output(sync_state, sync_lock)
     with sync_lock:
@@ -32,11 +36,11 @@ def _run_sync_process():
 
     try:
         project_root = Path(__file__).parent.parent.parent
-        logger.info(f"Starting sync process in {project_root}")
+        logger.info(f"Starting sync process in {project_root} (script={script})")
         logger.info(f"Python executable: {sys.executable}")
 
         process = subprocess.Popen(
-            [sys.executable, "run.py"],
+            [sys.executable, script],
             cwd=str(project_root),
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -75,12 +79,18 @@ def _run_sync_process():
 @sync_bp.route("/run_sync", methods=["POST"])
 def run_sync():
     """Trigger a manual sync run."""
+    ALLOWED_SCRIPTS = {"run.py", "run_tags.py"}
+    data = request.get_json(silent=True) or {}
+    script = data.get("script", "run.py")
+    if script not in ALLOWED_SCRIPTS:
+        script = "run.py"
+
     with sync_lock:
         if sync_state["running"]:
             return jsonify({"error": _("Sync already running")}), 400
         sync_state["running"] = True
 
-    thread = threading.Thread(target=_run_sync_process, daemon=True)
+    thread = threading.Thread(target=_run_sync_process, args=(script,), daemon=True)
     thread.start()
 
     return jsonify({"status": "started"})

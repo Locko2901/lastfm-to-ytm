@@ -526,7 +526,7 @@ export async function refreshStats() {
       const valueEl = card.querySelector(".stat-value")
       if (!label || !valueEl) continue
 
-      if (label.includes("playlist")) {
+      if (label.includes("playlist") && !label.includes("custom")) {
         updateStat(valueEl, stats.resolved)
       } else if (label.includes("override")) {
         updateStat(valueEl, stats.overrides)
@@ -536,6 +536,8 @@ export async function refreshStats() {
         updateStat(valueEl, stats.not_found)
       } else if (label.includes("cached")) {
         updateStat(valueEl, stats.cached)
+      } else if (label.includes("tagged")) {
+        updateStat(valueEl, stats.tag_cached)
       } else if (label.includes("last sync")) {
         const timeSpan = valueEl.querySelector(".last-sync-time")
         if (stats.last_sync) {
@@ -555,6 +557,8 @@ export async function refreshStats() {
       blacklist: stats.blacklist,
       notfound: stats.not_found,
       cache: stats.cached,
+      tags: stats.tag_cached,
+      custompl: stats.custom_playlists,
     }
 
     for (const [tabId, count] of Object.entries(tabBadges)) {

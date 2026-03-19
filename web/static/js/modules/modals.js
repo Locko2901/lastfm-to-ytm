@@ -1,5 +1,6 @@
 import { filterByTab } from "./filters.js"
 import { _ } from "./i18n.js"
+import { invalidateTagSuggestions, setTagInputValue } from "./tagInput.js"
 import { isSuccessRedirect, postFormData, refreshPanel, refreshStats, showToast, withButtonLoading } from "./utils.js"
 
 const ITEM_SELECTORS = {
@@ -7,6 +8,7 @@ const ITEM_SELECTORS = {
   cache: ".cache-item",
   notfound: ".notfound-item",
   overrides: ".override-item",
+  tags: ".tag-item",
 }
 
 let scrollPosition = 0
@@ -51,6 +53,78 @@ export function showAddOverrideModal() {
 
 export function showAddBlacklistModal() {
   showModal("addBlacklistModal")
+}
+
+export function showTagOverrideModal(artist, title, redirectTab, existingTags = "", lastfmTags = "", hasOverride = "") {
+  document.getElementById("tag-override-artist").value = artist
+  document.getElementById("tag-override-title").value = title
+  document.getElementById("tag-override-display").value = `${artist} – ${title}`
+  document.getElementById("tag-override-redirect").value = redirectTab
+  document.getElementById("tag-override-lastfm-tags").value = lastfmTags
+  setTagInputValue("tag-override-tags", existingTags)
+  document.getElementById("tag-override-reason").value = ""
+
+  const removeBtn = document.getElementById("tag-override-remove-btn")
+  if (removeBtn) {
+    removeBtn.style.display = hasOverride ? "" : "none"
+    removeBtn.dataset.artist = artist
+    removeBtn.dataset.title = title
+    removeBtn.dataset.tab = redirectTab
+  }
+
+  showModal("tagOverrideModal")
+}
+
+export async function removeTagOverride(artist, title, redirectTab) {
+  try {
+    const response = await postFormData("/remove_tag_override", {
+      artist,
+      title,
+      redirect_tab: redirectTab,
+    })
+
+    if (!isSuccessRedirect(response)) throw new Error("Failed to remove tag override")
+
+    closeModal("tagOverrideModal")
+    refreshPanel("tags")
+    refreshPanel("playlist")
+    refreshPanel("overrides")
+    if (redirectTab && redirectTab !== "tags" && redirectTab !== "playlist" && redirectTab !== "overrides") refreshPanel(redirectTab)
+    invalidateTagSuggestions()
+    refreshStats()
+    showToast(_("Tag override removed"), "success")
+  } catch (_error) {
+    showToast(_("Failed to remove tag override"), "error")
+  }
+}
+
+export async function clearTagCacheEntry(artist, title, buttonEl, tabContext = "tags") {
+  const itemSelector = ITEM_SELECTORS[tabContext] || ".tag-item"
+  const trackItem = buttonEl.closest(itemSelector)
+
+  try {
+    await withButtonLoading(buttonEl, "...", async () => {
+      const response = await postFormData("/clear_tag_cache_entry", {
+        artist,
+        title,
+        redirect_tab: tabContext,
+      })
+
+      if (!isSuccessRedirect(response)) throw new Error("Failed to clear tag cache")
+
+      trackItem.remove()
+
+      const tagsList = document.getElementById("tagsTracks")
+      if (tagsList && tagsList.children.length === 0) {
+        refreshPanel("tags")
+      }
+
+      showToast(_("Tag cache cleared - will re-fetch on next sync"), "success")
+      refreshStats()
+    })
+  } catch (_error) {
+    showToast(_("Failed to clear tag cache entry"), "error")
+  }
 }
 
 export async function clearCacheEntry(artist, title, buttonEl, tabContext = "playlist") {
@@ -368,10 +442,84 @@ function initAddBlacklistForm() {
   })
 }
 
+function initTagOverrideForms() {
+  document.getElementById("tagOverrideForm")?.addEventListener("submit", async function (e) {
+    e.preventDefault()
+
+    const artist = document.getElementById("tag-override-artist").value
+    const title = document.getElementById("tag-override-title").value
+    const tags = document.getElementById("tag-override-tags").value.trim()
+    const reason = document.getElementById("tag-override-reason").value
+    const redirectTab = document.getElementById("tag-override-redirect").value
+
+    if (!tags) {
+      showToast(_("Please enter at least one tag"), "error")
+      return
+    }
+
+    const lastfmTagsRaw = document.getElementById("tag-override-lastfm-tags").value
+    const lastfmSet = new Set(
+      lastfmTagsRaw
+        .split(",")
+        .map(t => t.trim().toLowerCase())
+        .filter(Boolean),
+    )
+    const newSet = new Set(
+      tags
+        .split(",")
+        .map(t => t.trim().toLowerCase())
+        .filter(Boolean),
+    )
+    const allLastfmPresent = [...lastfmSet].every(t => newSet.has(t))
+    let mode, overrideTags
+    if (lastfmSet.size === 0 || !allLastfmPresent) {
+      mode = "replace"
+      overrideTags = tags
+    } else {
+      const extras = [...newSet].filter(t => !lastfmSet.has(t))
+      if (extras.length === 0) {
+        showToast(_("No tag changes detected"), "info")
+        return
+      }
+      mode = "add"
+      overrideTags = extras.join(", ")
+    }
+
+    const submitBtn = this.querySelector('button[type="submit"]')
+
+    try {
+      await withButtonLoading(submitBtn, _("Saving..."), async () => {
+        const response = await postFormData("/tag_override", {
+          artist,
+          title,
+          tags: overrideTags,
+          mode,
+          reason,
+          redirect_tab: redirectTab,
+        })
+
+        if (!isSuccessRedirect(response)) throw new Error(_("Failed to save tag override"))
+
+        closeModal("tagOverrideModal")
+        showToast(_("Tag override saved!"), "success")
+        invalidateTagSuggestions()
+        refreshPanel("tags")
+        refreshPanel("playlist")
+        refreshPanel("overrides")
+        if (redirectTab && redirectTab !== "tags" && redirectTab !== "playlist" && redirectTab !== "overrides") refreshPanel(redirectTab)
+        refreshStats()
+      })
+    } catch (_error) {
+      showToast(_("Failed to save tag override"), "error")
+    }
+  })
+}
+
 export function initModals(closeAuthModalFn) {
   initBlacklistForm()
   initOverrideForms()
   initAddBlacklistForm()
+  initTagOverrideForms()
 
   for (const modal of document.querySelectorAll(".modal-overlay")) {
     modal.addEventListener("click", e => {

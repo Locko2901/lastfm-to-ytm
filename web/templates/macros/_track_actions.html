@@ -59,7 +59,31 @@
 </button>
 {% endmacro %}
 
-{% macro track_actions(artist, title, tab, is_overridden=false, is_blacklisted=false, source='', pending_retry=false, show_clear_cache=true) %}
+{% macro tag_override_btn(artist, title, tab, all_tags='', has_override='') %}
+<button class="btn btn-tags btn-sm" data-action="showTagOverrideModal" data-artist="{{ artist }}" data-title="{{ title }}" data-tab="{{ tab }}"
+  data-tags="{{ all_tags }}" data-lastfm-tags="" data-has-override="{{ has_override }}">
+  {{ _('Tags') }}
+</button>
+{% endmacro %}
+
+{% macro tag_pills(track_tags, max=5) %}
+{% if track_tags %}
+<div class="track-tags">
+  {% for tag in track_tags[:max] %}
+  <span class="tag-pill">{{ tag }}</span>
+  {% endfor %}
+  {% if track_tags | length > max %}
+  {% for tag in track_tags[max:] %}
+  <span class="tag-pill tag-pill-hidden">{{ tag }}</span>
+  {% endfor %}
+  <button type="button" class="tag-pill tag-pill-overflow" data-action="expandTags"
+    title="{{ _('Show all tags') }}">+{{ track_tags | length - max }}</button>
+  {% endif %}
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro track_actions(artist, title, tab, is_overridden=false, is_blacklisted=false, source='', pending_retry=false, show_clear_cache=true, all_tags='', has_tag_override=false) %}
 {% if pending_retry %}
 {{ override_btn(artist, title, tab) }}
 {{ blacklist_btn(artist, title, tab) }}
@@ -74,6 +98,7 @@
 {% else %}
 {{ blacklist_btn(artist, title, tab) }}
 {% endif %}
+{{ tag_override_btn(artist, title, tab, all_tags=all_tags, has_override=has_tag_override) }}
 {% if show_clear_cache %}
 {{ clear_cache_btn(artist, title, tab) }}
 {% endif %}
