@@ -22,16 +22,22 @@
           class="chip-count">({{ tag_cache_tracks | selectattr('tags') | list | length }})</span></button>
       <button class="filter-chip" data-filter="no-tags" data-panel="tags">{{ _('No Tags') }} <span
           class="chip-count">({{ tag_cache_tracks | rejectattr('tags') | list | length }})</span></button>
+      <button class="filter-chip" data-filter="track-tags" data-panel="tags">{{ _('Track Tags') }} <span
+          class="chip-count"></span></button>
+      <button class="filter-chip" data-filter="artist-tags" data-panel="tags">{{ _('Artist Tags') }} <span
+          class="chip-count"></span></button>
     </div>
   </div>
 
   {% if tag_cache_tracks %}
   <div class="track-list" id="tagsTracks">
     {% for t in tag_cache_tracks %}
+    {% set _sources = t.tags|map(attribute='source')|select('defined')|unique|list %}
     <div class="track-item tag-item{% if t.has_override %} overridden{% endif %}{% if not t.tags %} no-tags{% endif %}"
       data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}"
       data-hasoverride="{{ 'yes' if t.has_override else 'no' }}" data-hastags="{{ 'yes' if t.tags else 'no' }}"
-      data-tags="{{ t.tags|map(attribute='name')|join(',')|lower }}">
+      data-tags="{{ t.tags|map(attribute='name')|join(',')|lower }}"
+      data-tagsource="{{ _sources|join(',') }}">
       <div class="track-info">
         <span class="track-artist">{{ t.artist }}</span>
         <span class="track-title">{{ t.title }}</span>
@@ -40,11 +46,11 @@
       <div class="track-tags">
         {% if t.tags %}
         {% for tag in t.tags[:5] %}
-        <span class="tag-pill">{{ tag.name }}<span class="tag-count">{{ tag.count }}</span></span>
+        <span class="tag-pill{% if tag.source == 'artist' %} tag-source-artist{% endif %}" title="{{ _('Artist tag') if tag.source == 'artist' else (_('Override') if tag.source == 'override' else _('Track tag')) }}">{{ tag.name }}<span class="tag-count">{{ tag.count }}</span></span>
         {% endfor %}
         {% if t.tags | length > 5 %}
         {% for tag in t.tags[5:] %}
-        <span class="tag-pill tag-pill-hidden">{{ tag.name }}<span class="tag-count">{{ tag.count }}</span></span>
+        <span class="tag-pill tag-pill-hidden{% if tag.source == 'artist' %} tag-source-artist{% endif %}" title="{{ _('Artist tag') if tag.source == 'artist' else (_('Override') if tag.source == 'override' else _('Track tag')) }}">{{ tag.name }}<span class="tag-count">{{ tag.count }}</span></span>
         {% endfor %}
         <button type="button" class="tag-pill tag-pill-overflow" data-action="expandTags"
           title="{{ _('Show all tags') }}">+{{ t.tags | length - 5 }}</button>
