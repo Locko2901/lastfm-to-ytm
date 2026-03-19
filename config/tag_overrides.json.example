@@ -1,0 +1,18 @@
+{
+  "_overrides": {
+    "artist name|song title": {
+      "artist": "Artist Name",
+      "title": "Song Title",
+      "tags": ["breakcore", "electronic"],
+      "mode": "add",
+      "reason": "Last.fm only has 'electronic', adding 'breakcore'"
+    },
+    "another artist|another song": {
+      "artist": "Another Artist",
+      "title": "Another Song",
+      "tags": ["ambient", "drone"],
+      "mode": "replace",
+      "reason": "Last.fm tags are completely wrong for this track"
+    }
+  }
+}

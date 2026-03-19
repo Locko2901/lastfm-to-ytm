@@ -40,7 +40,7 @@ def create_mapping_entry(
     title: str,
     source: str,
 ) -> dict:
-    """Create a mapping entry dict."""
+    """Create a mapping entry."""
     return {
         "artist": artist,
         "title": title,

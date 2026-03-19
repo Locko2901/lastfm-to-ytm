@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from ytmusicapi import YTMusic
 
+from ..ytm import create_playlist_with_items, get_existing_playlist_by_name
 from .metrics import _query_counter
+
+if TYPE_CHECKING:
+    from ..cache.playlist import PlaylistCache
 
 log = logging.getLogger(__name__)
 
@@ -105,7 +109,6 @@ def _are_same_song(ytm: YTMusic, vid1: str, vid2: str) -> bool:
                 artists2 = [author]
 
         def normalize_title(title, artists):
-            """Remove artist names, common suffixes, and extra formatting from title."""
             normalized = title
             for artist in artists:
                 if normalized.startswith(artist + " - "):
@@ -173,7 +176,7 @@ def _are_same_song(ytm: YTMusic, vid1: str, vid2: str) -> bool:
 
 
 def _replace_playlist_content(ytm: YTMusic, playlist_id: str, video_ids: list[str], max_retries: int = 3) -> None:
-    """Replace entire playlist content with new video IDs."""
+    """Replace entire playlist content."""
     _query_counter.increment("get_playlist")
     log.debug(
         "API Query #%d: get_playlist(%s) for replacement",
@@ -236,14 +239,7 @@ def sync_playlist(
     accept_substitutions: bool = True,
     max_retries: int = 3,
 ) -> None:
-    """Synchronize a playlist with desired video IDs.
-
-    Simple flow:
-    1. Replace playlist content
-    2. Verify it matches
-    3. If not, check for YouTube substitutions
-    4. Retry or accept substitutions
-    """
+    """Synchronize a playlist with desired video IDs."""
     initial_count = _query_counter.get_count()
     log.info(
         "Starting playlist sync for %s (current query count: %d)",
@@ -374,3 +370,40 @@ def sync_playlist(
         final_count - initial_count,
         final_count,
     )
+
+
+def upsert_playlist(
+    ytm: YTMusic,
+    playlist_cache: PlaylistCache,
+    name: str,
+    desc: str,
+    privacy: str,
+    video_ids: list[str],
+    max_retries: int = 3,
+) -> str | None:
+    """Create or sync a playlist, returning the playlist ID.
+
+    Skips sync when the cached template already matches.
+    Returns the playlist ID on success, None on failure.
+    """
+    existing_id = get_existing_playlist_by_name(ytm, name, cache=playlist_cache)
+    template_changed = playlist_cache.template_changed(name, video_ids)
+
+    if existing_id:
+        if template_changed:
+            log.info("Syncing playlist '%s'...", name)
+            sync_playlist(ytm, existing_id, video_ids, max_retries=max_retries)
+            playlist_cache.set_template(name, existing_id, video_ids)
+        else:
+            log.info("Playlist '%s' already up to date", name)
+        return existing_id
+
+    log.info("Creating playlist '%s'...", name)
+    pl_id = create_playlist_with_items(ytm, name, desc, privacy, video_ids, cache=playlist_cache)
+    log.info(
+        "Created playlist '%s' with %d tracks: https://music.youtube.com/playlist?list=%s",
+        name,
+        len(video_ids),
+        pl_id,
+    )
+    return pl_id

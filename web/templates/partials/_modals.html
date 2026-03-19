@@ -240,6 +240,137 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="tagOverrideModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>{{ _('Edit Tag Override') }}</h2>
+      <button class="modal-close" data-action="closeModal" data-modal="tagOverrideModal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <form method="POST" action="/tag_override" id="tagOverrideForm">
+      <div class="modal-body">
+        <input type="hidden" name="artist" id="tag-override-artist">
+        <input type="hidden" name="title" id="tag-override-title">
+        <input type="hidden" name="redirect_tab" id="tag-override-redirect">
+        <input type="hidden" id="tag-override-lastfm-tags">
+        <div class="form-group">
+          <label>{{ _('Track') }}</label>
+          <input type="text" id="tag-override-display" disabled>
+        </div>
+        <div class="form-group">
+          <label for="tag-override-tags">{{ _('Tags') }}</label>
+          <input type="text" name="tags" id="tag-override-tags" placeholder="{{ _('Add a tag...') }}" required>
+          <span class="form-hint">{{ _('Add or remove tags') }}</span>
+        </div>
+        <div class="form-group">
+          <label>{{ _('Reason (optional)') }}</label>
+          <input type="text" name="reason" id="tag-override-reason" placeholder="{{ _('Why override tags?') }}">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="tagOverrideModal">{{ _('Cancel') }}</button>
+        <button type="button" class="btn btn-danger btn-sm" id="tag-override-remove-btn" style="display:none;"
+          data-action="removeTagOverride">{{ _('Remove Override') }}</button>
+        <button type="submit" class="btn btn-success">{{ _('Save Tags') }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="customPlaylistModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="custompl-modal-title">{{ _('Add Custom Playlist') }}</h2>
+      <button class="modal-close" data-action="closeModal" data-modal="customPlaylistModal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="custompl-edit-index" value="-1">
+      <div class="form-group">
+        <label for="custompl-name">{{ _('Playlist Name') }}</label>
+        <input type="text" id="custompl-name" placeholder="{{ _('My Rock Playlist') }}" required>
+      </div>
+      <div class="form-group">
+        <label for="custompl-tags">{{ _('Tags (comma-separated)') }}</label>
+        <input type="text" id="custompl-tags" placeholder="{{ _('rock, alternative, indie') }}" required>
+        <span class="form-hint">{{ _('Tracks with these Last.fm tags will be included') }}</span>
+      </div>
+      <div class="form-group">
+        <label for="custompl-match">{{ _('Match Mode') }}</label>
+        <select id="custompl-match">
+          <option value="any">{{ _('Any (track has at least one tag)') }}</option>
+          <option value="all">{{ _('All (track has all tags)') }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="custompl-limit">{{ _('Track Limit') }}</label>
+        <input type="number" id="custompl-limit" min="1" max="5000" value="50">
+      </div>
+      <div class="form-group form-group-checkbox">
+        <label for="custompl-no-limit">
+          <input type="checkbox" id="custompl-no-limit">
+          <span>{{ _('No Limit') }}</span>
+        </label>
+        <span class="form-hint">{{ _('Include as many matching tracks as possible') }}</span>
+      </div>
+      <div class="form-group form-group-checkbox">
+        <label for="custompl-backfill">
+          <input type="checkbox" id="custompl-backfill" checked>
+          <span>{{ _('Backfill') }}</span>
+        </label>
+        <span class="form-hint">{{ _('Fetch more scrobbles if the limit is not met') }}</span>
+      </div>
+      <div class="form-group">
+        <label for="custompl-blacklist">{{ _('Blacklist (optional)') }}</label>
+        <textarea id="custompl-blacklist" rows="3" placeholder="{{ _('artist|title (one per line)') }}"></textarea>
+        <span class="form-hint">{{ _('Exclude specific tracks from this playlist') }}</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="customPlaylistModal">{{ _('Cancel') }}</button>
+      <button type="button" class="btn btn-success" data-action="saveCustomPlaylist">{{ _('Save Playlist') }}</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deletePlaylistModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>{{ _('Delete Playlist') }}</h2>
+      <button class="modal-close" data-action="closeModal" data-modal="deletePlaylistModal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>{{ _('Are you sure you want to delete') }} "<strong id="delete-pl-name"></strong>"?</p>
+      <div class="form-group form-group-checkbox" style="margin-top: 0.75rem;">
+        <label>
+          <input type="checkbox" id="delete-pl-from-ytm">
+          {{ _('Also delete from YouTube Music') }}
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="deletePlaylistModal">{{ _('Cancel') }}</button>
+      <button type="button" class="btn btn-danger" id="delete-pl-confirm-btn" data-action="confirmDeletePlaylist">{{ _('Delete') }}</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay auth-modal-overlay" id="authModal">
   <div class="modal auth-modal">
     <div class="modal-header">

@@ -7,7 +7,7 @@ import re
 from flask import Blueprint, jsonify, redirect, request, url_for
 from flask_babel import gettext as _
 
-from ..services import load_overrides, load_search_cache
+from ..services import load_overrides, load_search_cache, load_tag_cache, load_tag_overrides
 
 actions_bp = Blueprint("actions", __name__)
 
@@ -118,4 +118,61 @@ def clear_cache_entry():
         cache.delete_by_track(artist, title)
 
     redirect_tab = request.form.get("redirect_tab", "playlist")
+    return redirect(url_for("index") + f"?tab={redirect_tab}")
+
+
+@actions_bp.route("/tag_override", methods=["POST"])
+def tag_override():
+    """Add or update a tag override for a track."""
+    artist = request.form.get("artist", "").strip()
+    title = request.form.get("title", "").strip()
+    tags_raw = request.form.get("tags", "").strip()
+    mode = request.form.get("mode", "add").strip()
+    reason = request.form.get("reason", "Tag override via web dashboard")
+
+    if not artist or not title:
+        return jsonify({"error": _("Artist and title are required.")}), 400
+
+    if not tags_raw:
+        return jsonify({"error": _("At least one tag is required.")}), 400
+
+    tags = [t.strip().lower() for t in tags_raw.split(",") if t.strip()]
+    if not tags:
+        return jsonify({"error": _("At least one tag is required.")}), 400
+
+    if mode not in ("add", "replace"):
+        mode = "add"
+
+    overrides = load_tag_overrides()
+    overrides.set(artist, title, tags, mode=mode, reason=reason)
+
+    redirect_tab = request.form.get("redirect_tab", "tags")
+    return redirect(url_for("index") + f"?tab={redirect_tab}")
+
+
+@actions_bp.route("/remove_tag_override", methods=["POST"])
+def remove_tag_override():
+    """Remove a tag override."""
+    artist = request.form.get("artist", "")
+    title = request.form.get("title", "")
+
+    if artist and title:
+        overrides = load_tag_overrides()
+        overrides.remove(artist, title)
+
+    redirect_tab = request.form.get("redirect_tab", "tags")
+    return redirect(url_for("index") + f"?tab={redirect_tab}")
+
+
+@actions_bp.route("/clear_tag_cache_entry", methods=["POST"])
+def clear_tag_cache_entry():
+    """Clear a specific tag cache entry."""
+    artist = request.form.get("artist", "")
+    title = request.form.get("title", "")
+
+    if artist and title:
+        cache = load_tag_cache()
+        cache.delete_by_track(artist, title)
+
+    redirect_tab = request.form.get("redirect_tab", "tags")
     return redirect(url_for("index") + f"?tab={redirect_tab}")

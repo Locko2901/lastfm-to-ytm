@@ -16,13 +16,6 @@ class SearchCache(JSONCache):
     """Persistent cache for artist/title -> video ID mappings."""
 
     def __init__(self, cache_file: str, ttl_days: int = 30, notfound_ttl_days: int = 7):
-        """Initialize search cache.
-
-        Args:
-            cache_file: Path to cache file
-            ttl_days: TTL for successful lookups (0 = no expiry)
-            notfound_ttl_days: TTL for not-found entries (0 = don't cache not-found)
-        """
         cache_path = Path(cache_file)
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         super().__init__(cache_file)
@@ -70,13 +63,7 @@ class SearchCache(JSONCache):
         return f"{artist.lower()}|{title.lower()}"
 
     def get(self, artist: str, title: str) -> str | None:
-        """Get cached video ID for artist/title.
-
-        Returns:
-            - Video ID string if found
-            - NOT_FOUND sentinel if previously searched and not found
-            - None if not in cache (needs search)
-        """
+        """Get cached video ID, or NOT_FOUND sentinel if previously not found."""
         key = self._make_key(artist, title)
         entry = self._cache.get(key)
 
@@ -116,7 +103,7 @@ class SearchCache(JSONCache):
         return None
 
     def get_entry(self, artist: str, title: str) -> dict | None:
-        """Get full cache entry for artist/title (includes yt_title if available)."""
+        """Get full cache entry including yt_title."""
         key = self._make_key(artist, title)
         entry = self._cache.get(key)
         if not entry:
@@ -124,7 +111,7 @@ class SearchCache(JSONCache):
         return entry
 
     def set(self, artist: str, title: str, video_id: str | None, yt_title: str | None = None) -> None:
-        """Cache a video ID (and optionally YouTube title) for artist/title."""
+        """Cache video ID and optional YouTube title."""
         if video_id is None and self.notfound_ttl_days == 0:
             return
 
@@ -141,20 +128,17 @@ class SearchCache(JSONCache):
         self._save()
 
     def items(self) -> list[tuple[str, dict]]:
-        """Return all cache entries as (key, entry) pairs."""
+        """Return all cache entries."""
         return list(self._cache.items())
 
-    def delete(self, key: str) -> bool:
-        """Delete a cache entry by key. Returns True if deleted."""
+    def delete_by_track(self, artist: str, title: str) -> bool:
+        """Delete cache entry by artist/title."""
+        key = self._make_key(artist, title)
         if key in self._cache:
             del self._cache[key]
             self._save()
             return True
         return False
-
-    def delete_by_track(self, artist: str, title: str) -> bool:
-        """Delete a cache entry by artist/title. Returns True if deleted."""
-        return self.delete(self._make_key(artist, title))
 
     def stats(self) -> dict[str, int]:
         """Get cache statistics."""
@@ -175,7 +159,6 @@ class SearchOverrides(JSONCache):
         self._ensure_sections()
 
     def _ensure_sections(self) -> None:
-        """Ensure _overrides and _blacklist sections exist."""
         if not isinstance(self._cache, dict):
             self._cache = {}
 
@@ -188,15 +171,7 @@ class SearchOverrides(JSONCache):
         return f"{artist.lower()}|{title.lower()}"
 
     def get(self, artist: str, title: str) -> str | None:
-        """Get manual override video ID for artist/title.
-
-        Args:
-            artist: Artist name
-            title: Track title
-
-        Returns:
-            Video ID if override exists, None otherwise
-        """
+        """Get override video ID."""
         key = self._make_key(artist, title)
         overrides = self._cache.get("_overrides", {})
         entry = overrides.get(key)
@@ -213,35 +188,23 @@ class SearchOverrides(JSONCache):
         return None
 
     def is_blacklisted(self, artist: str, title: str) -> bool:
-        """Check if artist/title is blacklisted.
-
-        Args:
-            artist: Artist name
-            title: Track title
-
-        Returns:
-            True if track is blacklisted, False otherwise
-        """
+        """Check if track is blacklisted."""
         key = self._make_key(artist, title)
         blacklist = self._cache.get("_blacklist", {})
 
-        if key in blacklist:
-            entry = blacklist[key]
-            reason = entry.get("reason", "no reason given")
-            log.info("Blacklisted track skipped: %s - %s (reason: %s)", artist, title, reason)
-            return True
+        return key in blacklist
 
-        return False
+    def get_blacklist_reason(self, artist: str, title: str) -> str | None:
+        """Get blacklist reason, or None if not blacklisted."""
+        key = self._make_key(artist, title)
+        blacklist = self._cache.get("_blacklist", {})
+        entry = blacklist.get(key)
+        if entry:
+            return entry.get("reason", "no reason given")
+        return None
 
     def set(self, artist: str, title: str, video_id: str, reason: str = "") -> None:
-        """Add a manual override for artist/title.
-
-        Args:
-            artist: Artist name
-            title: Track title
-            video_id: YouTube video ID
-            reason: Optional reason for the override (e.g., "search found wrong song")
-        """
+        """Add a manual override for artist/title."""
         key = self._make_key(artist, title)
         overrides = self._cache.get("_overrides", {})
         overrides[key] = {
@@ -256,13 +219,7 @@ class SearchOverrides(JSONCache):
         self._save()
 
     def blacklist(self, artist: str, title: str, reason: str = "") -> None:
-        """Add a track to the blacklist.
-
-        Args:
-            artist: Artist name
-            title: Track title
-            reason: Optional reason for blacklisting (e.g., "inappropriate", "duplicate")
-        """
+        """Add a track to the blacklist."""
         key = self._make_key(artist, title)
         blacklist = self._cache.get("_blacklist", {})
         blacklist[key] = {
@@ -276,15 +233,7 @@ class SearchOverrides(JSONCache):
         self._save()
 
     def remove_blacklist(self, artist: str, title: str) -> bool:
-        """Remove a track from the blacklist.
-
-        Args:
-            artist: Artist name
-            title: Track title
-
-        Returns:
-            True if track was removed, False if it wasn't blacklisted
-        """
+        """Remove a track from the blacklist. Returns True if removed."""
         key = self._make_key(artist, title)
         blacklist = self._cache.get("_blacklist", {})
 
@@ -297,15 +246,7 @@ class SearchOverrides(JSONCache):
         return False
 
     def remove(self, artist: str, title: str) -> bool:
-        """Remove a manual override.
-
-        Args:
-            artist: Artist name
-            title: Track title
-
-        Returns:
-            True if override was removed, False if it didn't exist
-        """
+        """Remove a manual override. Returns True if removed."""
         key = self._make_key(artist, title)
         overrides = self._cache.get("_overrides", {})
 
@@ -334,11 +275,7 @@ class SearchOverrides(JSONCache):
         return list(self._cache.get("_blacklist", {}).items())
 
     def stats(self) -> dict[str, int]:
-        """Get override statistics.
-
-        Returns:
-            Dictionary with override and blacklist statistics
-        """
+        """Get override statistics."""
         overrides = self._cache.get("_overrides", {})
         blacklist = self._cache.get("_blacklist", {})
 

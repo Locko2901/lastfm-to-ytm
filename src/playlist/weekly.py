@@ -80,10 +80,6 @@ def _parse_week_date_from_title(title: str, base_prefix: str) -> date | None:
 
 
 def _prune_old_weeklies(ytm, base_prefix: str, keep_weeks: int) -> list[tuple[str, str]]:
-    """Find weekly playlists older than keep_weeks and return them for deletion.
-
-    Returns list of (title, playlist_id) tuples to delete.
-    """
     if keep_weeks is None or keep_weeks <= 0:
         return []
     found = _find_weekly_playlists(ytm, base_prefix)

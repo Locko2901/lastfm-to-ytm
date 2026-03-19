@@ -1,15 +1,31 @@
 import { closeAuthModal, connectAuth, initAuth } from "./modules/auth.js"
+import {
+  blacklistFromPlaylist,
+  clearPreviewCache,
+  confirmDeletePlaylist,
+  deleteCustomPlaylist,
+  editCustomPlaylist,
+  initCustomPlaylists,
+  loadPlaylistsData,
+  saveCustomPlaylist,
+  showCustomPlaylistModal,
+  togglePlaylistPreview,
+  unblacklistFromPlaylist,
+} from "./modules/customPlaylists.js"
 import { initDelegation } from "./modules/delegation.js"
-import { filterCache, filterNotFound, filterTracks, goToFilter, initFilters } from "./modules/filters.js"
+import { filterCache, filterNotFound, filterTags, filterTracks, goToFilter, initFilters } from "./modules/filters.js"
 import {
   clearCacheEntry,
+  clearTagCacheEntry,
   closeModal,
   initModals,
+  removeTagOverride,
   showAddBlacklistModal,
   showAddOverrideModal,
   showBlacklistModal,
   showModal,
   showOverrideModal,
+  showTagOverrideModal,
   unblacklistTrack,
 } from "./modules/modals.js"
 import { initNotifications } from "./modules/notifications.js"
@@ -43,11 +59,15 @@ import {
   initSyncDrawerResize,
   openSyncDrawer,
   runSync,
+  runSyncDefault,
+  runSyncTags,
   startDataWatcher,
   stopSync,
+  toggleRunMenu,
   toggleSyncDrawer,
 } from "./modules/sync.js"
 import { initTabs, switchTab } from "./modules/tabs.js"
+import { initTagInput } from "./modules/tagInput.js"
 import { initTooltips } from "./modules/tooltips.js"
 import {
   hideNowPlaying,
@@ -68,6 +88,7 @@ window.goToFilter = goToFilter
 window.filterTracks = filterTracks
 window.filterNotFound = filterNotFound
 window.filterCache = filterCache
+window.filterTags = filterTags
 
 window.showModal = showModal
 window.closeModal = closeModal
@@ -77,11 +98,17 @@ window.showAddOverrideModal = showAddOverrideModal
 window.showAddBlacklistModal = showAddBlacklistModal
 window.unblacklistTrack = unblacklistTrack
 window.clearCacheEntry = clearCacheEntry
+window.showTagOverrideModal = showTagOverrideModal
+window.removeTagOverride = removeTagOverride
+window.clearTagCacheEntry = clearTagCacheEntry
 
 window.toggleSyncDrawer = toggleSyncDrawer
 window.openSyncDrawer = openSyncDrawer
 window.closeSyncDrawer = closeSyncDrawer
 window.runSync = runSync
+window.toggleRunMenu = toggleRunMenu
+window.runSyncDefault = runSyncDefault
+window.runSyncTags = runSyncTags
 window.stopSync = stopSync
 window.goToSyncAndRun = goToSyncAndRun
 
@@ -109,6 +136,17 @@ window.checkFailureLog = checkFailureLog
 
 window.dismissRestartBanner = dismissRestartBanner
 window.restartServer = restartServer
+
+window.showCustomPlaylistModal = showCustomPlaylistModal
+window.editCustomPlaylist = editCustomPlaylist
+window.deleteCustomPlaylist = deleteCustomPlaylist
+window.confirmDeletePlaylist = confirmDeletePlaylist
+window.saveCustomPlaylist = saveCustomPlaylist
+window.togglePlaylistPreview = togglePlaylistPreview
+window.blacklistFromPlaylist = blacklistFromPlaylist
+window.unblacklistFromPlaylist = unblacklistFromPlaylist
+window.loadPlaylistsData = loadPlaylistsData
+window.clearPreviewCache = clearPreviewCache
 
 window.showToast = showToast
 window.refreshStats = refreshStats
@@ -149,6 +187,12 @@ document.addEventListener("DOMContentLoaded", () => {
   initTooltips()
   initNotifications()
   startDataWatcher()
+  loadPlaylistsData()
+  initCustomPlaylists()
+
+  initTagInput("tag-override-tags")
+  initTagInput("add-tag-override-tags")
+  initTagInput("custompl-tags")
 })
 
 window.dismissDataUpdateBanner = dismissDataUpdateBanner
