@@ -390,7 +390,7 @@ The date corresponds to the start of the week. Over time, you'll build a library
 
 ## Custom Tag Playlists
 
-Create automatic YouTube Music playlists based on Last.fm tags and genres. Instead of one big playlist of recent plays, you can define multiple tag-based playlists that fill themselves with matching tracks from your scrobble history.
+Create automatic YouTube Music playlists based on Last.fm tags and genres. You can define multiple tag-based playlists that fill themselves with matching tracks from your scrobble history.
 
 For example, define a "Breakcore Mix" playlist that only includes tracks tagged `breakcore` or `drill and bass` on Last.fm, or a "Chill Electronic" playlist that requires both `electronic` and `ambient` tags.
 
