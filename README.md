@@ -39,6 +39,10 @@ There are two ways to run it:
   - [Search and Matching](#search-and-matching)
   - [Recency Weighting](#recency-weighting)
   - [Weekly Playlists](#weekly-playlists)
+- [Custom Tag Playlists](#custom-tag-playlists)
+  - [Tag Playlist Configuration](#tag-playlist-configuration)
+  - [Tag Overrides](#tag-overrides)
+  - [Running Tag Sync](#running-tag-sync)
 - [Manual Search Overrides](#manual-search-overrides)
 - [Troubleshooting](#troubleshooting)
 - [Development](#development)
@@ -55,6 +59,7 @@ There are two ways to run it:
   - Avoids common mismatches (covers, remixes, live versions) where possible
   - Considers title, artist, and album similarity
 - Weekly playlist snapshots (e.g., "Your Playlist week of 2026-03-09")
+- **Custom tag playlists** - auto-generate genre/tag-based playlists from your Last.fm tags (e.g., "Breakcore Mix", "Chill Electronic")
 - **Web dashboard** (Docker) with real-time sync console, settings editor, cache browser, override/blacklist management, and built-in scheduler
 - Configurable via environment variables, `.env` file, or the web UI
 - Safe, incremental updates with batching and rate-limit-friendly delays
@@ -380,6 +385,121 @@ When `WEEKLY_ENABLED=true`, the tool creates/updates weekly playlists named:
 - `{WEEKLY_PLAYLIST_PREFIX} week of YYYY-MM-DD` if a prefix is set
 
 The date corresponds to the start of the week. Over time, you'll build a library of weekly snapshots. Old weeks are automatically deleted based on `WEEKLY_KEEP_WEEKS` (default: 2).
+
+---
+
+## Custom Tag Playlists
+
+Create automatic YouTube Music playlists based on Last.fm tags and genres. Instead of one big playlist of recent plays, you can define multiple tag-based playlists that fill themselves with matching tracks from your scrobble history.
+
+For example, define a "Breakcore Mix" playlist that only includes tracks tagged `breakcore` or `drill and bass` on Last.fm, or a "Chill Electronic" playlist that requires both `electronic` and `ambient` tags.
+
+The tag system follows the same cache-first approach as the main sync:
+1. **Tag overrides** - check `config/tag_overrides.json` (user manual fixes)
+2. **Tag cache** - check `cache/.tag_cache.json` (90-day TTL)
+3. **Last.fm API** - fetch via `track.getTopTags`, falling back to `artist.getTopTags`
+
+If backfilling is enabled and a playlist hasn't reached its target track count after filtering, the tool automatically fetches more scrobbles and repeats until the limit is met or no more data is available.
+
+### Tag Playlist Configuration
+
+**Docker**: Use the web dashboard to create and manage tag playlists. Tag sync can be triggered manually from the UI but is not yet included in the automated scheduler.
+
+**CLI**: Edit `config/custom_playlists.json` directly:
+
+1. **Create the config file** (if it doesn't exist):
+   ```bash
+   cp config/custom_playlists.json.example config/custom_playlists.json
+   ```
+
+2. **Define your playlists**:
+   ```json
+   {
+     "playlists": [
+       {
+         "name": "Breakcore Mix (auto)",
+         "tags": ["breakcore", "drill and bass"],
+         "match": "any",
+         "limit": 50,
+         "backfill": true,
+         "blacklist": []
+       },
+       {
+         "name": "Ambient Electronic (auto)",
+         "tags": ["ambient", "electronic"],
+         "match": "all",
+         "limit": 30,
+         "backfill": true,
+         "blacklist": ["artist name|unwanted track"]
+       }
+     ]
+   }
+   ```
+
+| Field | Description |
+|-------|-------------|
+| `name` | Playlist name on YouTube Music |
+| `tags` | Last.fm tags to match against |
+| `match` | `"any"` (track has at least one tag) or `"all"` (track has every tag) |
+| `limit` | Target number of tracks |
+| `backfill` | Fetch more scrobbles if filtering doesn't reach the limit |
+| `blacklist` | Per-playlist exclusions as `"artist\|title"` (lowercase) |
+
+Related environment variables:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `CUSTOM_PLAYLISTS_FILE` | `config/custom_playlists.json` | Path to playlist definitions |
+| `TAG_CACHE_TTL_DAYS` | `90` | Days before cached tags expire |
+| `TAG_MIN_COUNT` | `10` | Minimum Last.fm tag count threshold |
+| `TAG_SLEEP_BETWEEN` | `0.25` | Seconds between tag API calls |
+| `CUSTOM_PLAYLISTS_PRIVACY` | _(main setting)_ | Privacy for tag playlists (`PUBLIC` / `PRIVATE`) |
+| `BACKFILL_PASSES` | `3` | Maximum backfill iterations |
+
+### Tag Overrides
+
+When Last.fm's tag data is wrong or incomplete, you can manually fix it.
+
+**Docker**: Use the web dashboard's tag management interface.
+
+**CLI**: Edit `config/tag_overrides.json` directly:
+
+1. **Create the overrides file** (if it doesn't exist):
+   ```bash
+   cp config/tag_overrides.json.example config/tag_overrides.json
+   ```
+
+2. **Add your override**:
+   ```json
+   {
+     "_overrides": {
+       "artist name|song title": {
+         "artist": "Artist Name",
+         "title": "Song Title",
+         "tags": ["breakcore", "electronic"],
+         "mode": "add",
+         "reason": "Last.fm only has 'electronic', adding 'breakcore'"
+       }
+     }
+   }
+   ```
+
+| Field | Description |
+|-------|-------------|
+| Key | `artist\|title` in **lowercase** |
+| `tags` | List of tag names to apply |
+| `mode` | `"add"` merges with existing Last.fm tags, `"replace"` overwrites them entirely |
+| `reason` | Optional note for your reference |
+
+### Running Tag Sync
+
+Tag playlists are synced separately from the main playlist. Use the dedicated entry point:
+
+```bash
+python run_tags.py  # or: lastfm-ytm-tags
+```
+
+> `python run.py` only runs the main playlist sync. Tag playlists must be triggered separately via `run_tags.py` or from the web dashboard.
 
 ---
 
