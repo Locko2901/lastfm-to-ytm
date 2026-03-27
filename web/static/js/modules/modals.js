@@ -1,7 +1,7 @@
 import { filterByTab } from "./filters.js"
 import { _ } from "./i18n.js"
 import { invalidateTagSuggestions, setTagInputValue } from "./tagInput.js"
-import { isSuccessRedirect, postFormData, refreshPanel, refreshStats, showToast, withButtonLoading } from "./utils.js"
+import { escapeHtml, isSuccessRedirect, postFormData, refreshPanel, refreshStats, showToast, withButtonLoading } from "./utils.js"
 
 const ITEM_SELECTORS = {
   playlist: ".track-item",
@@ -520,6 +520,7 @@ export function initModals(closeAuthModalFn) {
   initOverrideForms()
   initAddBlacklistForm()
   initTagOverrideForms()
+  initImportDropzone()
 
   for (const modal of document.querySelectorAll(".modal-overlay")) {
     modal.addEventListener("click", e => {
@@ -546,4 +547,230 @@ export function initModals(closeAuthModalFn) {
       }
     }
   })
+}
+
+export function showExportImportModal() {
+  const preview = document.getElementById("import-preview")
+  if (preview) preview.style.display = "none"
+  const dropzone = document.getElementById("import-dropzone")
+  if (dropzone) dropzone.classList.remove("dragover")
+  showModal("exportImportModal")
+}
+
+export async function exportData(type = "all") {
+  try {
+    const resp = await fetch(`/export?type=${encodeURIComponent(type)}`)
+    if (!resp.ok) throw new Error(_("Export failed"))
+    const data = await resp.json()
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `ytm-${type}-export.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    showToast(_("Export downloaded"), "success")
+  } catch (error) {
+    showToast(error.message || _("Export failed"), "error")
+  }
+}
+
+let _pendingImportData = null
+
+function initImportDropzone() {
+  const dropzone = document.getElementById("import-dropzone")
+  const fileInput = document.getElementById("import-file-input")
+  if (!dropzone || !fileInput) return
+
+  dropzone.addEventListener("click", () => fileInput.click())
+  dropzone.addEventListener("dragover", e => {
+    e.preventDefault()
+    dropzone.classList.add("dragover")
+  })
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"))
+  dropzone.addEventListener("drop", e => {
+    e.preventDefault()
+    dropzone.classList.remove("dragover")
+    const file = e.dataTransfer?.files?.[0]
+    if (file) _processImportFile(file)
+  })
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files?.[0]
+    if (file) _processImportFile(file)
+    fileInput.value = ""
+  })
+}
+
+function _processImportFile(file) {
+  if (!file.name.endsWith(".json")) {
+    showToast(_("Please select a JSON file"), "error")
+    return
+  }
+  const reader = new FileReader()
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result)
+      _pendingImportData = data
+      const oCount = data.overrides ? Object.keys(data.overrides).length : 0
+      const bCount = data.blacklist ? Object.keys(data.blacklist).length : 0
+
+      const statsEl = document.getElementById("import-stats")
+      statsEl.innerHTML = `
+        <p><strong>${escapeHtml(file.name)}</strong></p>
+        <p>${_("Overrides")}: <strong>${oCount}</strong> · ${_("Blacklist")}: <strong>${bCount}</strong></p>
+      `
+      document.getElementById("import-preview").style.display = ""
+    } catch (_err) {
+      showToast(_("Invalid JSON file"), "error")
+    }
+  }
+  reader.readAsText(file)
+}
+
+export async function confirmImport() {
+  if (!_pendingImportData) return
+  const btn = document.getElementById("import-confirm-btn")
+  try {
+    await withButtonLoading(btn, _("Importing..."), async () => {
+      const resp = await fetch("/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(_pendingImportData),
+      })
+      const data = await resp.json()
+      if (!resp.ok) throw new Error(data.error || _("Import failed"))
+
+      _pendingImportData = null
+      document.getElementById("import-preview").style.display = "none"
+      showToast(
+        _("Imported %(overrides)s overrides and %(blacklist)s blacklist entries", {
+          overrides: data.imported_overrides,
+          blacklist: data.imported_blacklist,
+        }),
+        "success",
+      )
+      refreshPanel("overrides")
+      refreshPanel("blacklist")
+      refreshPanel("playlist")
+      refreshStats()
+    })
+  } catch (error) {
+    showToast(error.message || _("Import failed"), "error")
+  }
+}
+
+let _detailArtist = ""
+let _detailTitle = ""
+let _detailTab = "playlist"
+
+const _sourceLabels = {
+  cache: "Cached",
+  search: "Search",
+  override: "Override",
+  not_found: "Not Found",
+  not_found_cached: "Not Found",
+  blacklisted: "Blacklisted",
+}
+
+const _sourceBadgeClass = {
+  cache: "badge-cached",
+  search: "badge-search",
+  override: "badge-override",
+  not_found: "badge-notfound",
+  not_found_cached: "badge-notfound",
+  blacklisted: "badge-blacklist",
+}
+
+function _setDetailLoading() {
+  for (const id of ["detail-video-id", "detail-yt-title", "detail-source", "detail-tags", "detail-status"]) {
+    const el = document.getElementById(id)
+    if (el) el.innerHTML = `<span class="detail-skeleton"></span>`
+  }
+  document.getElementById("detail-links").innerHTML = ""
+  document.getElementById("detail-override-btn").style.display = "none"
+  document.getElementById("detail-blacklist-btn").style.display = "none"
+}
+
+export async function showTrackDetailModal(artist, title, tab) {
+  _detailArtist = artist
+  _detailTitle = title
+  _detailTab = tab || _detectCurrentTab() || "playlist"
+
+  document.getElementById("detail-track-name").textContent = `${artist} – ${title}`
+  document.getElementById("detail-artist").textContent = artist
+  document.getElementById("detail-title").textContent = title
+
+  _setDetailLoading()
+  showModal("trackDetailModal")
+
+  try {
+    const resp = await fetch(`/api/track-detail?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`)
+    if (!resp.ok) throw new Error(_("Failed to load details"))
+    const d = await resp.json()
+
+    document.getElementById("detail-video-id").textContent = d.video_id || "—"
+    document.getElementById("detail-yt-title").textContent = d.yt_title || "—"
+
+    const sourceEl = document.getElementById("detail-source")
+    if (d.source) {
+      const badgeClass = _sourceBadgeClass[d.source] || ""
+      const label = _sourceLabels[d.source] || d.source
+      sourceEl.innerHTML = `<span class="badge ${badgeClass}">${escapeHtml(label)}</span>`
+    } else {
+      sourceEl.textContent = "—"
+    }
+
+    const tagsEl = document.getElementById("detail-tags")
+    if (d.tags && d.tags.length > 0) {
+      tagsEl.innerHTML = d.tags.map(t => `<span class="tag-pill">${escapeHtml(t)}</span>`).join(" ")
+      if (d.has_tag_override) {
+        tagsEl.innerHTML += ` <span class="badge badge-tagoverride">${_("Override")}</span>`
+      }
+    } else {
+      tagsEl.textContent = _("No tags")
+    }
+
+    const statusEl = document.getElementById("detail-status")
+    const badges = []
+    if (d.is_overridden) badges.push(`<span class="badge badge-override">${_("Override")}</span>`)
+    if (d.is_blacklisted) badges.push(`<span class="badge badge-blacklist">${_("Blacklisted")}</span>`)
+    if (d.cache_timestamp) badges.push(`<span class="text-muted">${_("Cached:")} ${d.cache_timestamp.slice(0, 10)}</span>`)
+    statusEl.innerHTML = badges.join(" ") || "—"
+
+    const linksEl = document.getElementById("detail-links")
+    const links = []
+    if (d.video_id) {
+      links.push(
+        `<a href="https://music.youtube.com/watch?v=${encodeURIComponent(d.video_id)}" target="_blank" rel="noopener" class="detail-link">${_("Open in YouTube Music")}</a>`,
+      )
+    }
+    links.push(
+      `<a href="https://www.last.fm/music/${encodeURIComponent(artist)}/_/${encodeURIComponent(title)}" target="_blank" rel="noopener" class="detail-link">${_("View on Last.fm")}</a>`,
+    )
+    linksEl.innerHTML = links.join("")
+
+    document.getElementById("detail-override-btn").style.display = d.is_overridden ? "none" : ""
+    document.getElementById("detail-blacklist-btn").style.display = d.is_blacklisted ? "none" : ""
+  } catch (_err) {
+    document.getElementById("detail-video-id").textContent = _("Error loading details")
+    document.getElementById("detail-yt-title").textContent = "-"
+    document.getElementById("detail-source").textContent = "-"
+    document.getElementById("detail-tags").textContent = "-"
+    document.getElementById("detail-status").textContent = "-"
+  }
+}
+
+function _detectCurrentTab() {
+  const active = document.querySelector(".tab.active")
+  return active ? active.dataset.tab : null
+}
+
+export function detailOverride() {
+  closeModal("trackDetailModal")
+  showOverrideModal(_detailArtist, _detailTitle, _detailTab)
+}
+
+export function detailBlacklist() {
+  closeModal("trackDetailModal")
+  showBlacklistModal(_detailArtist, _detailTitle, _detailTab)
 }

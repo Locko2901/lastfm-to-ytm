@@ -18,14 +18,20 @@ import {
   clearCacheEntry,
   clearTagCacheEntry,
   closeModal,
+  confirmImport,
+  detailBlacklist,
+  detailOverride,
+  exportData,
   initModals,
   removeTagOverride,
   showAddBlacklistModal,
   showAddOverrideModal,
   showBlacklistModal,
+  showExportImportModal,
   showModal,
   showOverrideModal,
   showTagOverrideModal,
+  showTrackDetailModal,
   unblacklistTrack,
 } from "./modules/modals.js"
 import { initNotifications } from "./modules/notifications.js"
@@ -68,6 +74,15 @@ import {
 } from "./modules/sync.js"
 import { initTabs, switchTab } from "./modules/tabs.js"
 import { initTagInput } from "./modules/tagInput.js"
+import {
+  clearTeleporterFile,
+  initTeleporter,
+  showTeleporterModal,
+  teleporterExport,
+  teleporterImport,
+  teleporterPreview,
+  toggleTeleporterPassword,
+} from "./modules/teleporter.js"
 import { initTooltips } from "./modules/tooltips.js"
 import {
   hideNowPlaying,
@@ -101,6 +116,20 @@ window.clearCacheEntry = clearCacheEntry
 window.showTagOverrideModal = showTagOverrideModal
 window.removeTagOverride = removeTagOverride
 window.clearTagCacheEntry = clearTagCacheEntry
+
+window.showExportImportModal = showExportImportModal
+window.exportData = exportData
+window.confirmImport = confirmImport
+window.showTrackDetailModal = showTrackDetailModal
+window.detailOverride = detailOverride
+window.detailBlacklist = detailBlacklist
+
+window.showTeleporterModal = showTeleporterModal
+window.teleporterExport = teleporterExport
+window.teleporterPreview = teleporterPreview
+window.teleporterImport = teleporterImport
+window.clearTeleporterFile = clearTeleporterFile
+window.toggleTeleporterPassword = toggleTeleporterPassword
 
 window.toggleSyncDrawer = toggleSyncDrawer
 window.openSyncDrawer = openSyncDrawer
@@ -178,6 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initFilters()
   initModals(window.closeAuthModal)
   initSyncDrawerResize()
+  initTeleporter()
 
   const enhancedSwitchTab = initSettings(switchTab)
   window.switchTab = enhancedSwitchTab

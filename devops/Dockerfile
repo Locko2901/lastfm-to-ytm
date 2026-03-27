@@ -16,7 +16,7 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir . gunicorn flask>=3.0.0 flask-babel>=4.0.0 apscheduler>=3.10.0
+    pip install --no-cache-dir . gunicorn flask>=3.0.0 flask-babel>=4.0.0 apscheduler>=3.10.0 cryptography>=41.0.0 argon2-cffi>=23.1.0
 
 RUN pybabel compile -d web/translations
 

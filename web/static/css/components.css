@@ -688,6 +688,12 @@
   align-items: center;
 }
 
+.filter-bar-actions {
+  display: flex;
+  gap: 0.375rem;
+  margin-left: auto;
+}
+
 .add-item-btn {
   display: flex;
   align-items: center;
@@ -1023,6 +1029,7 @@
 }
 
 .management-card {
+  cursor: pointer;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 1rem;
