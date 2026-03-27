@@ -13,7 +13,7 @@
     {% for o in overrides %}
     {% set _tags = track_tags_map.get((o.artist | lower ~ '|' ~ o.title | lower), []) %}
     {% set _to = tag_overrides_map.get((o.artist | lower ~ '|' ~ o.title | lower), {}) %}
-    <div class="track-item overridden">
+    <div class="track-item overridden" data-original-artist="{{ o.artist }}" data-original-title="{{ o.title }}">
       <div class="track-info">
         <span class="track-artist">{{ o.artist }} – {{ o.title }}</span>
         {{ tag_pills(_tags) }}

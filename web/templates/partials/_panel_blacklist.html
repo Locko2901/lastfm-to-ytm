@@ -10,7 +10,7 @@
   {% if blacklist %}
   <div class="track-list">
     {% for b in blacklist %}
-    <div class="management-card blacklisted">
+    <div class="track-item management-card blacklisted" data-original-artist="{{ b.artist }}" data-original-title="{{ b.title }}">
       <div class="management-info">
         <h3>{{ b.artist }} – {{ b.title }}</h3>
         {% if b.reason %}

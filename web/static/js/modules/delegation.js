@@ -10,6 +10,13 @@ const actionHandlers = {
   stopSync: () => window.stopSync(),
   showAddBlacklistModal: () => window.showAddBlacklistModal(),
   showAddOverrideModal: () => window.showAddOverrideModal(),
+  showExportImportModal: () => window.showExportImportModal(),
+  showTeleporterModal: () => window.showTeleporterModal(),
+  teleporterExport: () => window.teleporterExport(),
+  teleporterPreview: () => window.teleporterPreview(),
+  teleporterImport: () => window.teleporterImport(),
+  clearTeleporterFile: () => window.clearTeleporterFile(),
+  toggleTeleporterPassword: el => window.toggleTeleporterPassword(el.dataset.target),
   closeSetupWizard: () => window.closeSetupWizard(),
   openAuthFromSetup: () => window.openAuthFromSetup(),
   setupPrevStep: () => window.setupPrevStep(),
@@ -80,6 +87,15 @@ const actionHandlers = {
     const container = el.closest(".track-tags")
     if (container) container.classList.toggle("expanded")
   },
+
+  exportData: el => window.exportData(el.dataset.type || "all"),
+  confirmImport: () => window.confirmImport(),
+  showTrackDetailModal: el => {
+    const { artist, title } = el.dataset
+    window.showTrackDetailModal(artist, title)
+  },
+  detailOverride: () => window.detailOverride(),
+  detailBlacklist: () => window.detailBlacklist(),
 }
 
 export function initDelegation() {
@@ -95,5 +111,16 @@ export function initDelegation() {
     }
 
     handler(el)
+  })
+
+  document.addEventListener("click", e => {
+    if (e.target.closest("a, button, form, input, [data-action]")) return
+    const row = e.target.closest(".track-item")
+    if (!row) return
+    const artist = row.dataset.originalArtist
+    const title = row.dataset.originalTitle
+    if (artist && title) {
+      window.showTrackDetailModal(artist, title)
+    }
   })
 }
