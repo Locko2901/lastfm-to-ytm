@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import socket
 import threading
 
 import requests
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, Response, jsonify, render_template, request
 from flask_babel import gettext as _
 from requests.adapters import HTTPAdapter
 
@@ -34,7 +35,9 @@ from ..services import (
     get_track_tags_map,
     load_custom_playlists_config,
     load_failure_log,
+    load_overrides,
     load_run_log,
+    load_search_cache,
     parse_env_file,
     save_custom_playlists_config,
     sync_lock,
@@ -45,6 +48,7 @@ from ..services.scheduler import (
     get_scheduler_status,
     start_scheduler,
 )
+from ..services.teleporter import export_config, import_config, preview_config
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -438,6 +442,81 @@ def scheduler_status():
     return jsonify(get_scheduler_status())
 
 
+def _get_run_log_source(artist: str, title: str) -> str | None:
+    """Read raw run log to find the original source for a track."""
+    from ..services.data import RUN_LOG_FILE
+
+    try:
+        if not RUN_LOG_FILE.exists():
+            return None
+        with RUN_LOG_FILE.open() as f:
+            data = json.load(f)
+        a_lower, t_lower = artist.lower(), title.lower()
+        for m in data.get("mappings", []):
+            if m.get("artist", "").lower() == a_lower and m.get("title", "").lower() == t_lower:
+                return m.get("source")
+    except Exception:
+        pass
+    return None
+
+
+@api_bp.route("/track-detail")
+def track_detail():
+    """Get full details for a specific track from all data sources."""
+    artist = request.args.get("artist", "").strip()
+    title = request.args.get("title", "").strip()
+
+    if not artist or not title:
+        return jsonify({"error": _("Artist and title are required")}), 400
+
+    cache = load_search_cache()
+    overrides_obj = load_overrides()
+    tags_map = get_track_tags_map()
+    tag_overrides_map = get_track_tag_overrides_map()
+
+    key = f"{artist.lower()}|{title.lower()}"
+
+    result = {
+        "artist": artist,
+        "title": title,
+        "video_id": None,
+        "yt_title": None,
+        "source": None,
+        "tags": tags_map.get(key, []),
+        "has_tag_override": key in tag_overrides_map,
+        "is_overridden": False,
+        "is_blacklisted": False,
+        "cache_timestamp": None,
+    }
+
+    override_vid = overrides_obj.get(artist, title)
+    if override_vid:
+        result["video_id"] = override_vid
+        result["source"] = "override"
+        result["is_overridden"] = True
+
+    override_keys = overrides_obj.override_keys()
+    blacklist_keys = overrides_obj.blacklist_keys()
+    result["is_overridden"] = key in override_keys
+    result["is_blacklisted"] = key in blacklist_keys
+
+    entry = cache.get_entry(artist, title)
+    if entry:
+        result["cache_timestamp"] = entry.get("timestamp")
+        if not result["video_id"]:
+            result["video_id"] = entry.get("video_id")
+            result["yt_title"] = entry.get("yt_title")
+            result["source"] = "cache" if entry.get("video_id") else "not_found"
+
+    if result["source"] in ("cache", None):
+        result["source"] = _get_run_log_source(artist, title) or result["source"]
+
+    if result["is_blacklisted"] and result["source"] not in ("blacklisted",):
+        result["source"] = "blacklisted"
+
+    return jsonify(result)
+
+
 @api_bp.route("/now-playing")
 def now_playing():
     """Get currently playing track from Last.fm."""
@@ -643,6 +722,77 @@ def scheduler_configure():
     except Exception as e:
         logger.error(f"Failed to configure scheduler: {e}")
         return jsonify({"error": _("Failed to configure scheduler")}), 500
+
+
+@api_bp.route("/teleporter/export", methods=["POST"])
+def teleporter_export():
+    """Export all config as an encrypted binary file."""
+    data = request.get_json()
+    if not data or not data.get("password"):
+        return jsonify({"error": _("Password is required")}), 400
+
+    password = data["password"]
+    if len(password) < 4:
+        return jsonify({"error": _("Password must be at least 4 characters")}), 400
+
+    cache_keys = data.get("cache_keys") or []
+    if not isinstance(cache_keys, list):
+        cache_keys = []
+
+    try:
+        encrypted = export_config(password, cache_keys=cache_keys)
+        return Response(
+            encrypted,
+            mimetype="application/octet-stream",
+            headers={"Content-Disposition": "attachment; filename=teleporter-backup.bin"},
+        )
+    except Exception as e:
+        logger.error(f"Teleporter export failed: {e}")
+        return jsonify({"error": _("Export failed")}), 500
+
+
+@api_bp.route("/teleporter/preview", methods=["POST"])
+def teleporter_preview():
+    """Decrypt and preview contents of a teleporter file without applying."""
+    password = request.form.get("password", "")
+    file = request.files.get("file")
+
+    if not password:
+        return jsonify({"error": _("Password is required")}), 400
+    if not file:
+        return jsonify({"error": _("No file provided")}), 400
+
+    try:
+        file_data = file.read()
+        summary = preview_config(file_data, password)
+        return jsonify(summary)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Teleporter preview failed: {e}")
+        return jsonify({"error": _("Preview failed")}), 500
+
+
+@api_bp.route("/teleporter/import", methods=["POST"])
+def teleporter_import():
+    """Decrypt and restore config from a teleporter file."""
+    password = request.form.get("password", "")
+    file = request.files.get("file")
+
+    if not password:
+        return jsonify({"error": _("Password is required")}), 400
+    if not file:
+        return jsonify({"error": _("No file provided")}), 400
+
+    try:
+        file_data = file.read()
+        result = import_config(file_data, password)
+        return jsonify({"status": "ok", **result})
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Teleporter import failed: {e}")
+        return jsonify({"error": _("Import failed")}), 500
 
 
 def _get_gunicorn_master_pid() -> int | None:

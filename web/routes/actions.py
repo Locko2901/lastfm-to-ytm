@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import re
 
 from flask import Blueprint, jsonify, redirect, request, url_for
@@ -10,6 +11,8 @@ from flask_babel import gettext as _
 from ..services import load_overrides, load_search_cache, load_tag_cache, load_tag_overrides
 
 actions_bp = Blueprint("actions", __name__)
+
+logger = logging.getLogger(__name__)
 
 VIDEO_ID_PATTERN = re.compile(r"^[a-zA-Z0-9_-]{11}$")
 
@@ -176,3 +179,66 @@ def clear_tag_cache_entry():
 
     redirect_tab = request.form.get("redirect_tab", "tags")
     return redirect(url_for("index") + f"?tab={redirect_tab}")
+
+
+@actions_bp.route("/export", methods=["GET"])
+def export_data():
+    """Export overrides and/or blacklist as JSON."""
+    export_type = request.args.get("type", "all")
+    overrides = load_overrides()
+
+    result = {}
+    if export_type in ("all", "overrides"):
+        result["overrides"] = dict(overrides.override_items())
+    if export_type in ("all", "blacklist"):
+        result["blacklist"] = dict(overrides.blacklist_items())
+
+    result["_export_meta"] = {
+        "type": export_type,
+        "version": 1,
+    }
+
+    return jsonify(result)
+
+
+@actions_bp.route("/import", methods=["POST"])
+def import_data():
+    """Import overrides and/or blacklist from JSON."""
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": _("No data provided")}), 400
+
+    overrides_obj = load_overrides()
+    imported_overrides = 0
+    imported_blacklist = 0
+
+    if "overrides" in data and isinstance(data["overrides"], dict):
+        for entry in data["overrides"].values():
+            if not isinstance(entry, dict):
+                continue
+            artist = entry.get("artist", "").strip()
+            title = entry.get("title", "").strip()
+            video_id = entry.get("video_id", "").strip()
+            reason = entry.get("reason", _("Imported"))
+            if artist and title and video_id and VIDEO_ID_PATTERN.match(video_id):
+                overrides_obj.set(artist, title, video_id, reason)
+                imported_overrides += 1
+
+    if "blacklist" in data and isinstance(data["blacklist"], dict):
+        for entry in data["blacklist"].values():
+            if not isinstance(entry, dict):
+                continue
+            artist = entry.get("artist", "").strip()
+            title = entry.get("title", "").strip()
+            reason = entry.get("reason", _("Imported"))
+            if artist and title:
+                overrides_obj.blacklist(artist, title, reason)
+                imported_blacklist += 1
+
+    return jsonify(
+        {
+            "status": "ok",
+            "imported_overrides": imported_overrides,
+            "imported_blacklist": imported_blacklist,
+        }
+    )

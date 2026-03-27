@@ -16,12 +16,14 @@
       <button class="filter-chip" data-filter="has-tags" data-panel="cache">{{ _('Has Tags') }} <span class="chip-count"></span></button>
       <button class="filter-chip" data-filter="no-tags" data-panel="cache">{{ _('No Tags') }} <span class="chip-count"></span></button>
     </div>
+
   </div>
 
   <div class="track-list" id="cacheTracks">
     {% for t in cached_tracks %}
     <div class="track-item cache-item{% if t.has_override %} overridden{% endif %}{% if t.is_blacklisted %} blacklisted{% endif %}"
-      data-artist="{{ t.artist | lower }}" data-title="{{ t.title | lower }}" data-hasoverride="{{ 'yes' if t.has_override else 'no' }}"
+      data-artist="{{ t.artist | lower }}" data-title="{{ t.title | lower }}" data-original-artist="{{ t.artist }}"
+      data-original-title="{{ t.title }}" data-hasoverride="{{ 'yes' if t.has_override else 'no' }}"
       data-blacklisted="{{ 'yes' if t.is_blacklisted else 'no' }}"
       {% set _tags = track_tags_map.get((t.artist | lower ~ '|' ~ t.title | lower), []) %} data-tags="{{ _tags | join(',') | lower }}"
       data-hastags="{{ 'yes' if _tags else 'no' }}">
