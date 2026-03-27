@@ -16,7 +16,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["ruff>=0.8.0", "j2lint>=1.2.0"]
-web = ["flask>=3.0.0", "flask-babel>=4.0.0", "apscheduler>=3.10.0", "gunicorn>=21.0.0"]
+web = ["flask>=3.0.0", "flask-babel>=4.0.0", "apscheduler>=3.10.0", "gunicorn>=21.0.0", "cryptography>=41.0.0", "argon2-cffi>=23.1.0"]
 
 [project.scripts]
 lastfm-ytm-sync = "run:run"

@@ -729,6 +729,7 @@ def get_custom_playlist_tracks(index: int) -> list[dict]:
             }
 
     tag_cache = load_tag_cache()
+    tag_overrides = load_tag_overrides()
     min_count = settings.tag_min_count if settings else 10
 
     results = []
@@ -741,7 +742,8 @@ def get_custom_playlist_tracks(index: int) -> list[dict]:
         title = info["title"]
 
         raw_tags = tag_cache.get(artist, title) or []
-        display_tags = [t["name"] for t in raw_tags if isinstance(t, dict) and t.get("count", 0) >= min_count]
+        final_tags = tag_overrides.apply(artist, title, raw_tags)
+        display_tags = [t["name"] for t in final_tags if isinstance(t, dict) and t.get("count", 0) >= min_count]
 
         override_key = _track_key(artist, title)
         is_overridden = override_key in override_keys

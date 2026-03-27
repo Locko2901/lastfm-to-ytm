@@ -22,6 +22,10 @@
   grid-template-columns: 40px 1fr 1fr auto;
 }
 
+.track-item {
+  cursor: pointer;
+}
+
 .track-item:hover {
   background: var(--bg-card-hover);
   border-color: var(--border-light);
@@ -95,6 +99,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: fit-content;
+  max-width: 100%;
   transition: color var(--transition);
 }
 

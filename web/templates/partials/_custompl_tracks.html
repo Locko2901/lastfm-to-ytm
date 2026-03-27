@@ -4,8 +4,8 @@
 <div class="track-list">
   {% for t in tracks %}
   <div class="track-item{% if t.is_overridden %} overridden{% endif %}{% if t.is_playlist_blacklisted %} blacklisted{% endif %}"
-    data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}" data-tags="{{ t.tags|join(',')|lower }}"
-    data-hastags="{{ 'yes' if t.tags else 'no' }}">
+    data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}" data-original-artist="{{ t.artist }}" data-original-title="{{ t.title }}"
+    data-tags="{{ t.tags|join(',')|lower }}" data-hastags="{{ 'yes' if t.tags else 'no' }}">
     <div class="track-index">#{{ loop.index }}</div>
 
     <div class="track-info">

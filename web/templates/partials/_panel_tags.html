@@ -31,9 +31,9 @@
     {% for t in tag_cache_tracks %}
     {% set _sources = t.tags | map(attribute='source') | select('defined') | unique | list %}
     <div class="track-item tag-item{% if t.has_override %} overridden{% endif %}{% if not t.tags %} no-tags{% endif %}"
-      data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}" data-hasoverride="{{ 'yes' if t.has_override else 'no' }}"
-      data-hastags="{{ 'yes' if t.tags else 'no' }}" data-tags="{{ t.tags|map(attribute='name')|join(',')|lower }}"
-      data-tagsource="{{ _sources|join(',') }}">
+      data-artist="{{ t.artist|lower }}" data-title="{{ t.title|lower }}" data-original-artist="{{ t.artist }}" data-original-title="{{ t.title }}"
+      data-hasoverride="{{ 'yes' if t.has_override else 'no' }}" data-hastags="{{ 'yes' if t.tags else 'no' }}"
+      data-tags="{{ t.tags|map(attribute='name')|join(',')|lower }}" data-tagsource="{{ _sources|join(',') }}">
       <div class="track-info">
         <span class="track-artist">{{ t.artist }}</span>
         <span class="track-title">{{ t.title }}</span>
