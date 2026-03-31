@@ -24,7 +24,7 @@ ENV/
 *.swo
 
 # Cache and runtime files
-cache/
+/cache/
 *.log
 
 # Docker
