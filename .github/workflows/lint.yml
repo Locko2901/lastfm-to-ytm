@@ -4,6 +4,7 @@ on:
   push:
   pull_request:
     branches: [main]
+  workflow_call:
 
 jobs:
   python:
@@ -74,3 +75,28 @@ jobs:
 
       - name: Format check
         run: npm run format:templates && git diff --exit-code -- 'web/templates/**/*.html'
+
+  translations:
+    name: Translation catalog check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e ".[web]"
+
+      - name: Re-extract and update catalog
+        run: |
+          pybabel extract -F babel.cfg -o web/translations/messages.pot .
+          pybabel update -i web/translations/messages.pot -d web/translations
+
+      - name: Check for uncommitted changes
+        run: |
+          git diff --exit-code -I 'POT-Creation-Date' -- 'web/translations/**' || {
+            echo "::error::Translation catalog is out of date. Run: pybabel extract -F babel.cfg -o web/translations/messages.pot . && pybabel update -i web/translations/messages.pot -d web/translations"
+            exit 1
+          }

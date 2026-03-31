@@ -10,8 +10,13 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  lint:
+    name: Lint
+    uses: ./.github/workflows/lint.yml
+
   build-and-push:
     name: Build & Push
+    needs: [lint]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -40,6 +45,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha
