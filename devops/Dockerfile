@@ -54,6 +54,7 @@ COPY web/ ./web/
 COPY run.py .
 COPY run_tags.py .
 COPY pyproject.toml .
+COPY .env.example .
 COPY devops/gunicorn.conf.py ./gunicorn.conf.py
 
 COPY --from=builder /build/web/static/dist/ ./web/static/dist/
