@@ -26,7 +26,7 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEVOPS_DIR="$SCRIPT_DIR/devops"
-CONTAINER_NAME="lastfm-to-ytm"
+DEFAULT_CONTAINER_NAME="lastfm-to-ytm"
 PORT="${YTMT_PORT:-2002}"
 HEALTH_TIMEOUT="${YTMT_HEALTH_TIMEOUT:-30}"
 
@@ -39,6 +39,20 @@ else
     COMPOSE_FILE="$SCRIPT_DIR/compose.standalone.yml"
     IMAGE_NAME="ghcr.io/locko2901/lastfm-to-ytm"
 fi
+
+resolve_container_name() {
+    if [[ -f "$COMPOSE_FILE" ]]; then
+        local name
+        name=$(grep -m1 'container_name:' "$COMPOSE_FILE" 2>/dev/null | sed 's/.*container_name: *//;s/ *$//')
+        if [[ -n "$name" ]]; then
+            echo "$name"
+            return
+        fi
+    fi
+    echo "$DEFAULT_CONTAINER_NAME"
+}
+
+CONTAINER_NAME="$(resolve_container_name)"
 
 compose_is_custom() {
     if [[ ! -f "$COMPOSE_FILE" ]]; then
@@ -289,6 +303,7 @@ if [[ "$MODE" == "standalone" ]]; then
     if ensure_compose_file; then
         echo -e "${YELLOW}→ Generated compose.standalone.yml${NC}"
     fi
+    CONTAINER_NAME="$(resolve_container_name)"
 fi
 
 if [[ -d "$SCRIPT_DIR/.env" ]]; then
@@ -379,11 +394,19 @@ fi
 echo -e "${BLUE}[5/5]${NC} Starting container..."
 
 if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
-    echo -e "${YELLOW}→ Container already running, restarting...${NC}"
-    docker compose -f "$COMPOSE_FILE" restart || {
-        echo -e "${RED}✗ Failed to restart container${NC}"
-        exit 1
-    }
+    if [[ "$REBUILD" == true ]]; then
+        echo -e "${YELLOW}→ Recreating container with updated image...${NC}"
+        docker compose -f "$COMPOSE_FILE" up -d --force-recreate || {
+            echo -e "${RED}✗ Failed to recreate container${NC}"
+            exit 1
+        }
+    else
+        echo -e "${YELLOW}→ Container already running, restarting...${NC}"
+        docker compose -f "$COMPOSE_FILE" restart || {
+            echo -e "${RED}✗ Failed to restart container${NC}"
+            exit 1
+        }
+    fi
 else
     docker compose -f "$COMPOSE_FILE" up -d || {
         echo -e "${RED}✗ Failed to start container${NC}"
