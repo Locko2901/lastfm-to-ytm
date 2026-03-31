@@ -103,6 +103,8 @@ export function initDelegation() {
     const el = e.target.closest("[data-action]")
     if (!el) return
 
+    if (e.target.closest("a") && e.target.closest("a") !== el) return
+
     const handler = actionHandlers[el.dataset.action]
     if (!handler) return
 

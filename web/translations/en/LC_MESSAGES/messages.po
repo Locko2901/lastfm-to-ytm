@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-27 09:07+0100\n"
+"POT-Creation-Date: 2026-03-31 10:32+0200\n"
 "PO-Revision-Date: 2026-03-13 15:44+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -236,7 +236,7 @@ msgid "Edit Custom Playlist"
 msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:30
-#: web/templates/partials/_modals.html:298
+#: web/templates/partials/_modals.html:288
 msgid "Add Custom Playlist"
 msgstr ""
 
@@ -327,7 +327,7 @@ msgstr ""
 #: web/static/js/modules/modals.js:735
 #: web/templates/macros/_track_actions.html:30
 #: web/templates/partials/_custompl_tracks.html:20
-#: web/templates/partials/_modals.html:772
+#: web/templates/partials/_modals.html:744
 #: web/templates/partials/_panel_cache.html:40
 #: web/templates/partials/_panel_playlist.html:46
 #: web/templates/partials/_panel_tags.html:46
@@ -340,9 +340,9 @@ msgstr ""
 #: web/static/js/modules/modals.js:270 web/static/js/modules/modals.js:620
 #: web/templates/macros/_track_actions.html:45
 #: web/templates/partials/_custompl_tracks.html:38
-#: web/templates/partials/_modals.html:128
-#: web/templates/partials/_modals.html:165
-#: web/templates/partials/_modals.html:774 web/templates/partials/_tabs.html:4
+#: web/templates/partials/_modals.html:123
+#: web/templates/partials/_modals.html:159
+#: web/templates/partials/_modals.html:745 web/templates/partials/_tabs.html:4
 msgid "Blacklist"
 msgstr ""
 
@@ -406,7 +406,7 @@ msgstr ""
 
 #: web/static/js/modules/modals.js:350
 #: web/templates/macros/_track_actions.html:39
-#: web/templates/partials/_modals.html:288
+#: web/templates/partials/_modals.html:278
 msgid "Remove Override"
 msgstr ""
 
@@ -555,13 +555,13 @@ msgstr ""
 msgid "Reconnect YouTube Music"
 msgstr ""
 
-#: web/static/js/modules/setup.js:64 web/templates/partials/_modals.html:85
-#: web/templates/partials/_modals.html:397
+#: web/static/js/modules/setup.js:64 web/templates/partials/_modals.html:83
+#: web/templates/partials/_modals.html:383
 msgid "Connect YouTube Music"
 msgstr ""
 
 #: web/static/js/modules/setup.js:68 web/static/js/modules/setup.js:119
-#: web/templates/partials/_modals.html:94
+#: web/templates/partials/_modals.html:90
 msgid "Next"
 msgstr ""
 
@@ -653,7 +653,7 @@ msgstr ""
 msgid "Refresh"
 msgstr ""
 
-#: web/static/js/modules/tagInput.js:43 web/templates/partials/_modals.html:276
+#: web/static/js/modules/tagInput.js:43 web/templates/partials/_modals.html:267
 msgid "Add a tag..."
 msgstr ""
 
@@ -808,8 +808,8 @@ msgid "Clear from cache & retry on next sync"
 msgstr ""
 
 #: web/templates/macros/_track_actions.html:65
-#: web/templates/partials/_modals.html:275
-#: web/templates/partials/_modals.html:758
+#: web/templates/partials/_modals.html:266
+#: web/templates/partials/_modals.html:732
 msgid "Tags"
 msgstr ""
 
@@ -870,463 +870,463 @@ msgstr ""
 msgid "Your API key"
 msgstr ""
 
-#: web/templates/partials/_modals.html:65
+#: web/templates/partials/_modals.html:64
 msgid "Create an API key"
 msgstr ""
 
-#: web/templates/partials/_modals.html:65
+#: web/templates/partials/_modals.html:64
 msgid "(it's free)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:72
+#: web/templates/partials/_modals.html:71
 msgid "Now let's connect to YouTube Music."
 msgstr ""
 
-#: web/templates/partials/_modals.html:92
+#: web/templates/partials/_modals.html:89
 msgid "Back"
 msgstr ""
 
-#: web/templates/partials/_modals.html:102
+#: web/templates/partials/_modals.html:98
 msgid "Blacklist Track"
 msgstr ""
 
-#: web/templates/partials/_modals.html:117
-#: web/templates/partials/_modals.html:189
-#: web/templates/partials/_modals.html:271
+#: web/templates/partials/_modals.html:113
+#: web/templates/partials/_modals.html:183
+#: web/templates/partials/_modals.html:262
 msgid "Track"
 msgstr ""
 
-#: web/templates/partials/_modals.html:121
-#: web/templates/partials/_modals.html:158
-#: web/templates/partials/_modals.html:197
-#: web/templates/partials/_modals.html:239
-#: web/templates/partials/_modals.html:280
+#: web/templates/partials/_modals.html:117
+#: web/templates/partials/_modals.html:153
+#: web/templates/partials/_modals.html:191
+#: web/templates/partials/_modals.html:231
+#: web/templates/partials/_modals.html:271
 msgid "Reason (optional)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:122
-#: web/templates/partials/_modals.html:159
+#: web/templates/partials/_modals.html:118
+#: web/templates/partials/_modals.html:154
 msgid "Why blacklist this track?"
 msgstr ""
 
-#: web/templates/partials/_modals.html:127
-#: web/templates/partials/_modals.html:164
-#: web/templates/partials/_modals.html:203
-#: web/templates/partials/_modals.html:245
-#: web/templates/partials/_modals.html:286
-#: web/templates/partials/_modals.html:351
-#: web/templates/partials/_modals.html:380
-#: web/templates/partials/_modals.html:450
+#: web/templates/partials/_modals.html:122
+#: web/templates/partials/_modals.html:158
+#: web/templates/partials/_modals.html:196
+#: web/templates/partials/_modals.html:236
+#: web/templates/partials/_modals.html:276
+#: web/templates/partials/_modals.html:340
+#: web/templates/partials/_modals.html:368
+#: web/templates/partials/_modals.html:434
 msgid "Cancel"
 msgstr ""
 
-#: web/templates/partials/_modals.html:137
+#: web/templates/partials/_modals.html:132
 #: web/templates/partials/_panel_blacklist.html:8
 msgid "Add to Blacklist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:150
-#: web/templates/partials/_modals.html:226
-#: web/templates/partials/_modals.html:738
+#: web/templates/partials/_modals.html:145
+#: web/templates/partials/_modals.html:219
+#: web/templates/partials/_modals.html:712
 msgid "Artist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:151
-#: web/templates/partials/_modals.html:227
+#: web/templates/partials/_modals.html:146
+#: web/templates/partials/_modals.html:220
 msgid "Artist name"
 msgstr ""
 
-#: web/templates/partials/_modals.html:154
-#: web/templates/partials/_modals.html:230
-#: web/templates/partials/_modals.html:742
+#: web/templates/partials/_modals.html:149
+#: web/templates/partials/_modals.html:223
+#: web/templates/partials/_modals.html:716
 msgid "Title"
 msgstr ""
 
-#: web/templates/partials/_modals.html:155
-#: web/templates/partials/_modals.html:231
+#: web/templates/partials/_modals.html:150
+#: web/templates/partials/_modals.html:224
 msgid "Track title"
 msgstr ""
 
-#: web/templates/partials/_modals.html:174
+#: web/templates/partials/_modals.html:168
 msgid "Override Track"
 msgstr ""
 
-#: web/templates/partials/_modals.html:193
-#: web/templates/partials/_modals.html:234
+#: web/templates/partials/_modals.html:187
+#: web/templates/partials/_modals.html:227
 msgid "YouTube Video ID or URL"
 msgstr ""
 
-#: web/templates/partials/_modals.html:194
-#: web/templates/partials/_modals.html:235
+#: web/templates/partials/_modals.html:188
+#: web/templates/partials/_modals.html:228
 msgid "Id or full URL"
 msgstr ""
 
-#: web/templates/partials/_modals.html:198
+#: web/templates/partials/_modals.html:192
 msgid "Why override this?"
 msgstr ""
 
-#: web/templates/partials/_modals.html:204
-#: web/templates/partials/_modals.html:246
+#: web/templates/partials/_modals.html:197
+#: web/templates/partials/_modals.html:237
 msgid "Save Override"
 msgstr ""
 
-#: web/templates/partials/_modals.html:213
+#: web/templates/partials/_modals.html:206
 #: web/templates/partials/_panel_overrides.html:9
 #: web/templates/partials/_panel_overrides.html:57
 msgid "Add Override"
 msgstr ""
 
-#: web/templates/partials/_modals.html:240
+#: web/templates/partials/_modals.html:232
 msgid "Why add this override?"
 msgstr ""
 
-#: web/templates/partials/_modals.html:255
+#: web/templates/partials/_modals.html:246
 msgid "Edit Tag Override"
 msgstr ""
 
-#: web/templates/partials/_modals.html:277
+#: web/templates/partials/_modals.html:268
 msgid "Add or remove tags"
 msgstr ""
 
-#: web/templates/partials/_modals.html:281
+#: web/templates/partials/_modals.html:272
 msgid "Why override tags?"
 msgstr ""
 
-#: web/templates/partials/_modals.html:289
+#: web/templates/partials/_modals.html:279
 msgid "Save Tags"
 msgstr ""
 
-#: web/templates/partials/_modals.html:310
+#: web/templates/partials/_modals.html:300
 #: web/templates/partials/_panel_settings.html:127
 msgid "Playlist Name"
 msgstr ""
 
-#: web/templates/partials/_modals.html:311
+#: web/templates/partials/_modals.html:301
 msgid "My Rock Playlist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:314
+#: web/templates/partials/_modals.html:304
 msgid "Tags (comma-separated)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:315
+#: web/templates/partials/_modals.html:305
 msgid "rock, alternative, indie"
 msgstr ""
 
-#: web/templates/partials/_modals.html:316
+#: web/templates/partials/_modals.html:306
 msgid "Tracks with these Last.fm tags will be included"
 msgstr ""
 
-#: web/templates/partials/_modals.html:319
+#: web/templates/partials/_modals.html:309
 msgid "Match Mode"
 msgstr ""
 
-#: web/templates/partials/_modals.html:321
+#: web/templates/partials/_modals.html:311
 msgid "Any (track has at least one tag)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:322
+#: web/templates/partials/_modals.html:312
 msgid "All (track has all tags)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:326
+#: web/templates/partials/_modals.html:316
 #: web/templates/partials/_panel_settings.html:131
 msgid "Track Limit"
 msgstr ""
 
-#: web/templates/partials/_modals.html:332
+#: web/templates/partials/_modals.html:322
 msgid "No Limit"
 msgstr ""
 
-#: web/templates/partials/_modals.html:334
+#: web/templates/partials/_modals.html:324
 msgid "Include as many matching tracks as possible"
 msgstr ""
 
-#: web/templates/partials/_modals.html:339
+#: web/templates/partials/_modals.html:329
 #: web/templates/partials/_panel_settings.html:310
 msgid "Backfill"
 msgstr ""
 
-#: web/templates/partials/_modals.html:341
+#: web/templates/partials/_modals.html:331
 msgid "Fetch more scrobbles if the limit is not met"
 msgstr ""
 
-#: web/templates/partials/_modals.html:344
+#: web/templates/partials/_modals.html:334
 msgid "Blacklist (optional)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:345
+#: web/templates/partials/_modals.html:335
 msgid "artist|title (one per line)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:346
+#: web/templates/partials/_modals.html:336
 msgid "Exclude specific tracks from this playlist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:352
+#: web/templates/partials/_modals.html:341
 msgid "Save Playlist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:360
+#: web/templates/partials/_modals.html:349
 msgid "Delete Playlist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:370
+#: web/templates/partials/_modals.html:359
 msgid "Are you sure you want to delete"
 msgstr ""
 
-#: web/templates/partials/_modals.html:374
+#: web/templates/partials/_modals.html:363
 msgid "Also delete from YouTube Music"
 msgstr ""
 
-#: web/templates/partials/_modals.html:382
+#: web/templates/partials/_modals.html:369
 #: web/templates/partials/_panel_custompl.html:62
 msgid "Delete"
 msgstr ""
 
-#: web/templates/partials/_modals.html:411
+#: web/templates/partials/_modals.html:397
 msgid "Open"
 msgstr ""
 
-#: web/templates/partials/_modals.html:413
+#: web/templates/partials/_modals.html:398
 msgid "and make sure you're logged in"
 msgstr ""
 
-#: web/templates/partials/_modals.html:416
+#: web/templates/partials/_modals.html:401
 msgid "Open DevTools"
 msgstr ""
 
-#: web/templates/partials/_modals.html:416
+#: web/templates/partials/_modals.html:401
 msgid "or"
 msgstr ""
 
-#: web/templates/partials/_modals.html:416
+#: web/templates/partials/_modals.html:401
 msgid "on Mac"
 msgstr ""
 
-#: web/templates/partials/_modals.html:417
+#: web/templates/partials/_modals.html:402
 msgid "Network"
 msgstr ""
 
-#: web/templates/partials/_modals.html:418
-#: web/templates/partials/_modals.html:431
+#: web/templates/partials/_modals.html:403
+#: web/templates/partials/_modals.html:416
 msgid "tab"
 msgstr ""
 
-#: web/templates/partials/_modals.html:421
+#: web/templates/partials/_modals.html:406
 msgid "Filter by"
 msgstr ""
 
-#: web/templates/partials/_modals.html:422
+#: web/templates/partials/_modals.html:407
 msgid "in the search bar. If nothing appears, scroll down or click"
 msgstr ""
 
-#: web/templates/partials/_modals.html:423
+#: web/templates/partials/_modals.html:408
 msgid "Library"
 msgstr ""
 
-#: web/templates/partials/_modals.html:424
+#: web/templates/partials/_modals.html:409
 msgid "in the top bar."
 msgstr ""
 
-#: web/templates/partials/_modals.html:428
+#: web/templates/partials/_modals.html:413
 msgid "right-click the request"
 msgstr ""
 
-#: web/templates/partials/_modals.html:428
+#: web/templates/partials/_modals.html:413
 msgid "Copy"
 msgstr ""
 
-#: web/templates/partials/_modals.html:429
+#: web/templates/partials/_modals.html:414
 msgid "Copy Request Headers"
 msgstr ""
 
-#: web/templates/partials/_modals.html:431
+#: web/templates/partials/_modals.html:416
 msgid "click the request name"
 msgstr ""
 
-#: web/templates/partials/_modals.html:431
+#: web/templates/partials/_modals.html:416
 msgid "Headers"
 msgstr ""
 
-#: web/templates/partials/_modals.html:432
+#: web/templates/partials/_modals.html:417
 msgid "copy everything from"
 msgstr ""
 
-#: web/templates/partials/_modals.html:434
+#: web/templates/partials/_modals.html:419
 msgid "to the end of \"Request headers\", or right-click"
 msgstr ""
 
-#: web/templates/partials/_modals.html:434
+#: web/templates/partials/_modals.html:419
 msgid "Copy as cURL"
 msgstr ""
 
-#: web/templates/partials/_modals.html:441
+#: web/templates/partials/_modals.html:425
 msgid "Paste request headers or cURL command here..."
 msgstr ""
 
-#: web/templates/partials/_modals.html:457
+#: web/templates/partials/_modals.html:441
 msgid "Connect"
 msgstr ""
 
-#: web/templates/partials/_modals.html:473
+#: web/templates/partials/_modals.html:457
 #: web/templates/partials/_panel_settings.html:487
 msgid "Export / Import"
 msgstr ""
 
-#: web/templates/partials/_modals.html:485
-#: web/templates/partials/_modals.html:566
+#: web/templates/partials/_modals.html:469
+#: web/templates/partials/_modals.html:545
 msgid "Export"
 msgstr ""
 
-#: web/templates/partials/_modals.html:486
+#: web/templates/partials/_modals.html:470
 msgid "Download overrides and blacklist as a JSON file for backup or sharing."
 msgstr ""
 
-#: web/templates/partials/_modals.html:495
+#: web/templates/partials/_modals.html:479
 msgid "Export All"
 msgstr ""
 
-#: web/templates/partials/_modals.html:498
+#: web/templates/partials/_modals.html:481
 msgid "Overrides Only"
 msgstr ""
 
-#: web/templates/partials/_modals.html:500
+#: web/templates/partials/_modals.html:482
 msgid "Blacklist Only"
 msgstr ""
 
-#: web/templates/partials/_modals.html:505
-#: web/templates/partials/_modals.html:522
-#: web/templates/partials/_modals.html:641
+#: web/templates/partials/_modals.html:487
+#: web/templates/partials/_modals.html:503
+#: web/templates/partials/_modals.html:619
 msgid "Import"
 msgstr ""
 
-#: web/templates/partials/_modals.html:507
+#: web/templates/partials/_modals.html:489
 msgid ""
 "Import overrides and blacklist from a previously exported JSON file. "
 "Existing entries will be preserved."
 msgstr ""
 
-#: web/templates/partials/_modals.html:516
+#: web/templates/partials/_modals.html:498
 msgid "Drop a JSON file here or click to browse"
 msgstr ""
 
-#: web/templates/partials/_modals.html:528
-#: web/templates/partials/_modals.html:707
-#: web/templates/partials/_modals.html:770
+#: web/templates/partials/_modals.html:508
+#: web/templates/partials/_modals.html:681
+#: web/templates/partials/_modals.html:743
 #: web/templates/partials/_panel_settings.html:508
 msgid "Close"
 msgstr ""
 
-#: web/templates/partials/_modals.html:544
+#: web/templates/partials/_modals.html:523
 #: web/templates/partials/_panel_settings.html:497
 msgid "Teleporter"
 msgstr ""
 
-#: web/templates/partials/_modals.html:562
+#: web/templates/partials/_modals.html:541
 msgid ""
 "This backup contains sensitive data (API keys, auth tokens). Keep it "
 "secure."
 msgstr ""
 
-#: web/templates/partials/_modals.html:567
+#: web/templates/partials/_modals.html:546
 msgid "Bundle all config files into an encrypted backup."
 msgstr ""
 
-#: web/templates/partials/_modals.html:569
+#: web/templates/partials/_modals.html:548
 msgid "Encryption Password"
 msgstr ""
 
-#: web/templates/partials/_modals.html:572
+#: web/templates/partials/_modals.html:550
 msgid "Enter a password (min. 8 characters)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:574
-#: web/templates/partials/_modals.html:670
+#: web/templates/partials/_modals.html:553
+#: web/templates/partials/_modals.html:646
 msgid "Show password"
 msgstr ""
 
-#: web/templates/partials/_modals.html:593
+#: web/templates/partials/_modals.html:572
 msgid "Include cache files"
 msgstr ""
 
-#: web/templates/partials/_modals.html:604
+#: web/templates/partials/_modals.html:583
 msgid "Search cache"
 msgstr ""
 
-#: web/templates/partials/_modals.html:606
+#: web/templates/partials/_modals.html:585
 msgid ""
 "Cached YouTube Music search results. Avoids re-searching tracks on a new "
 "instance."
 msgstr ""
 
-#: web/templates/partials/_modals.html:612
+#: web/templates/partials/_modals.html:591
 msgid "Playlist cache"
 msgstr ""
 
-#: web/templates/partials/_modals.html:614
+#: web/templates/partials/_modals.html:593
 msgid ""
 "Stores playlist IDs and desired track state. Needed to resume syncing "
 "without recreating playlists."
 msgstr ""
 
-#: web/templates/partials/_modals.html:620
+#: web/templates/partials/_modals.html:599
 msgid "Tag cache"
 msgstr ""
 
-#: web/templates/partials/_modals.html:622
+#: web/templates/partials/_modals.html:600
 msgid "Cached Last.fm tag lookups. Avoids re-fetching tags for every track."
 msgstr ""
 
-#: web/templates/partials/_modals.html:634
+#: web/templates/partials/_modals.html:612
 msgid "Export Encrypted Backup"
 msgstr ""
 
-#: web/templates/partials/_modals.html:642
+#: web/templates/partials/_modals.html:620
 msgid "Restore config from an encrypted backup file."
 msgstr ""
 
-#: web/templates/partials/_modals.html:650
+#: web/templates/partials/_modals.html:628
 msgid "Drop a .bin backup file here or click to browse"
 msgstr ""
 
-#: web/templates/partials/_modals.html:656
+#: web/templates/partials/_modals.html:633
 msgid "Remove file"
 msgstr ""
 
-#: web/templates/partials/_modals.html:665
+#: web/templates/partials/_modals.html:642
 msgid "Decryption Password"
 msgstr ""
 
-#: web/templates/partials/_modals.html:668
+#: web/templates/partials/_modals.html:644
 msgid "Enter the password used during export"
 msgstr ""
 
-#: web/templates/partials/_modals.html:692
+#: web/templates/partials/_modals.html:667
 msgid "Preview"
 msgstr ""
 
-#: web/templates/partials/_modals.html:700
+#: web/templates/partials/_modals.html:675
 msgid "Restore Backup"
 msgstr ""
 
-#: web/templates/partials/_modals.html:722
+#: web/templates/partials/_modals.html:696
 msgid "Track Details"
 msgstr ""
 
-#: web/templates/partials/_modals.html:746
+#: web/templates/partials/_modals.html:720
 msgid "Video ID"
 msgstr ""
 
-#: web/templates/partials/_modals.html:750
+#: web/templates/partials/_modals.html:724
 msgid "YouTube Title"
 msgstr ""
 
-#: web/templates/partials/_modals.html:754
+#: web/templates/partials/_modals.html:728
 msgid "Source"
 msgstr ""
 
-#: web/templates/partials/_modals.html:762
+#: web/templates/partials/_modals.html:736
 msgid "Status"
 msgstr ""
 
