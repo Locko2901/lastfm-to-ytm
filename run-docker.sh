@@ -26,11 +26,19 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEVOPS_DIR="$SCRIPT_DIR/devops"
-COMPOSE_FILE="$DEVOPS_DIR/docker-compose.yml"
-IMAGE_NAME="lastfm-to-ytm-web"
 CONTAINER_NAME="lastfm-to-ytm"
 PORT="${YTMT_PORT:-2002}"
 HEALTH_TIMEOUT="${YTMT_HEALTH_TIMEOUT:-30}"
+
+if [[ -f "$DEVOPS_DIR/Dockerfile" ]]; then
+    MODE="source"
+    COMPOSE_FILE="$DEVOPS_DIR/docker-compose.yml"
+    IMAGE_NAME="lastfm-to-ytm-web"
+else
+    MODE="standalone"
+    COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
+    IMAGE_NAME="ghcr.io/locko2901/lastfm-to-ytm"
+fi
 
 REBUILD=false
 NO_CACHE=false
@@ -66,8 +74,8 @@ for arg in "$@"; do
             echo "Usage: ./run-docker.sh [OPTIONS]"
             echo
             echo "Options:"
-            echo "  --rebuild, -r    Force rebuild the Docker image"
-            echo "  --no-cache       Rebuild without using Docker cache (implies --rebuild)"
+            echo "  --rebuild, -r    Force rebuild (source) or pull latest (standalone)"
+            echo "  --no-cache       Rebuild without using Docker cache (source mode only, implies --rebuild)"
             echo "  --stop           Stop the running container"
             echo "  --logs, -l       Follow container logs"
             echo "  --status         Show container status"
@@ -95,7 +103,7 @@ do_prune() {
     else
         echo -e "${CYAN}Pruning Docker resources...${NC}"
     fi
-    
+
     DANGLING=$(docker images -f "dangling=true" -q 2>/dev/null)
     if [[ -n "$DANGLING" ]]; then
         echo -e "${YELLOW}→ Removing dangling images...${NC}"
@@ -104,7 +112,7 @@ do_prune() {
     else
         echo -e "${GREEN}✓ No dangling images${NC}"
     fi
-    
+
     OLD_IMAGES=$(docker images "$IMAGE_NAME" --format '{{.ID}}' | tail -n +2)
     if [[ -n "$OLD_IMAGES" ]]; then
         echo -e "${YELLOW}→ Removing old $IMAGE_NAME images...${NC}"
@@ -113,7 +121,7 @@ do_prune() {
     else
         echo -e "${GREEN}✓ No old project images${NC}"
     fi
-    
+
     if [[ "$PRUNE_ALL" == true ]]; then
         BUILD_CACHE=$(docker builder du --format '{{.Size}}' 2>/dev/null | head -1)
         if [[ -n "$BUILD_CACHE" ]] && [[ "$BUILD_CACHE" != "0B" ]]; then
@@ -123,12 +131,12 @@ do_prune() {
         else
             echo -e "${GREEN}✓ No build cache to clear${NC}"
         fi
-        
+
         echo -e "${YELLOW}→ Removing unused images...${NC}"
         docker image prune -a -f 2>/dev/null || true
         echo -e "${GREEN}✓ Unused images removed${NC}"
     fi
-    
+
     echo
     echo -e "${CYAN}Current disk usage:${NC}"
     docker system df
@@ -213,41 +221,68 @@ echo -e "${GREEN}✓ Required files exist${NC}"
 
 echo -e "${BLUE}[4/5]${NC} Checking Docker image..."
 
-IMAGE_EXISTS=$(docker images -q "$IMAGE_NAME" 2>/dev/null)
-
-if [[ -z "$IMAGE_EXISTS" ]] || [[ "$REBUILD" == true ]]; then
+if [[ "$MODE" == "standalone" ]]; then
+    # Standalone: pull prebuilt image
     if [[ "$REBUILD" == true ]]; then
-        if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
-            echo -e "${YELLOW}→ Stopping and removing old container...${NC}"
-            docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null || true
+        echo -e "${YELLOW}→ Pulling latest image...${NC}"
+        docker compose -f "$COMPOSE_FILE" pull || {
+            echo -e "${RED}✗ Image pull failed${NC}"
+            exit 1
+        }
+        echo -e "${GREEN}✓ Image pulled successfully${NC}"
+    else
+        # Check if image exists locally
+        IMAGE_EXISTS=$(docker images -q "$IMAGE_NAME" 2>/dev/null)
+        if [[ -z "$IMAGE_EXISTS" ]]; then
+            echo -e "${YELLOW}→ Pulling image for the first time...${NC}"
+            docker compose -f "$COMPOSE_FILE" pull || {
+                echo -e "${RED}✗ Image pull failed${NC}"
+                exit 1
+            }
+            echo -e "${GREEN}✓ Image pulled successfully${NC}"
+        else
+            echo -e "${GREEN}✓ Image already exists${NC}"
+            echo -e "  ${CYAN}(use --rebuild to pull the latest version)${NC}"
         fi
     fi
-    
-    if [[ "$NO_CACHE" == true ]]; then
-        echo -e "${YELLOW}→ Rebuilding image (--no-cache, full rebuild)...${NC}"
-        docker compose -f "$COMPOSE_FILE" build --no-cache --pull || {
-            echo -e "${RED}✗ Image build failed${NC}"
-            exit 1
-        }
-    elif [[ "$REBUILD" == true ]]; then
-        echo -e "${YELLOW}→ Rebuilding image (--rebuild flag)...${NC}"
-        docker compose -f "$COMPOSE_FILE" build --pull || {
-            echo -e "${RED}✗ Image build failed${NC}"
-            exit 1
-        }
-    else
-        echo -e "${YELLOW}→ Building image for the first time...${NC}"
-        docker compose -f "$COMPOSE_FILE" build || {
-            echo -e "${RED}✗ Image build failed${NC}"
-            exit 1
-        }
-    fi
-    echo -e "${GREEN}✓ Image built successfully${NC}"
-    
-    docker builder prune --keep-storage 1GB -f >/dev/null 2>&1 || true
 else
-    echo -e "${GREEN}✓ Image already exists${NC}"
-    echo -e "  ${CYAN}(use --rebuild to force rebuild, --no-cache for fresh build)${NC}"
+    # Source: build from Dockerfile
+    IMAGE_EXISTS=$(docker images -q "$IMAGE_NAME" 2>/dev/null)
+
+    if [[ -z "$IMAGE_EXISTS" ]] || [[ "$REBUILD" == true ]]; then
+        if [[ "$REBUILD" == true ]]; then
+            if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+                echo -e "${YELLOW}→ Stopping and removing old container...${NC}"
+                docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null || true
+            fi
+        fi
+
+        if [[ "$NO_CACHE" == true ]]; then
+            echo -e "${YELLOW}→ Rebuilding image (--no-cache, full rebuild)...${NC}"
+            docker compose -f "$COMPOSE_FILE" build --no-cache --pull || {
+                echo -e "${RED}✗ Image build failed${NC}"
+                exit 1
+            }
+        elif [[ "$REBUILD" == true ]]; then
+            echo -e "${YELLOW}→ Rebuilding image (--rebuild flag)...${NC}"
+            docker compose -f "$COMPOSE_FILE" build --pull || {
+                echo -e "${RED}✗ Image build failed${NC}"
+                exit 1
+            }
+        else
+            echo -e "${YELLOW}→ Building image for the first time...${NC}"
+            docker compose -f "$COMPOSE_FILE" build || {
+                echo -e "${RED}✗ Image build failed${NC}"
+                exit 1
+            }
+        fi
+        echo -e "${GREEN}✓ Image built successfully${NC}"
+
+        docker builder prune --keep-storage 1GB -f >/dev/null 2>&1 || true
+    else
+        echo -e "${GREEN}✓ Image already exists${NC}"
+        echo -e "  ${CYAN}(use --rebuild to force rebuild, --no-cache for fresh build)${NC}"
+    fi
 fi
 
 echo -e "${BLUE}[5/5]${NC} Starting container..."
