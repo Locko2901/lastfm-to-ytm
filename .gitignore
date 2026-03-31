@@ -17,7 +17,7 @@ build/
 browser.json
 
 # Cache directory
-cache/
+/cache/
 
 # IDE specific files
 .vscode/*
