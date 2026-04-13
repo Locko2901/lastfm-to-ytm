@@ -14,6 +14,7 @@ from .context import RuntimeContext
 from .lastfm import Scrobble, enable_ipv4_only, fetch_recent_with_diversity
 from .playlist import log_playlist_statistics, sync_playlist
 from .playlist import reset_query_counter as reset_playlist_counter
+from .playlist.sync import InvalidVideoIDsError, _evict_from_cache
 from .playlist.weekly import update_weekly_playlist
 from .recency import WeightedTrack, collapse_recency_weighted, dedupe_keep_latest
 from .search import log_search_statistics, reset_search_statistics, resolve_tracks_to_video_ids
@@ -329,6 +330,25 @@ def run(settings: Settings) -> None:
         if template_changed:
             log.info("Syncing playlist...")
             try:
+                sync_playlist(ctx.ytm, existing_id, valid_video_ids, max_retries=settings.api_max_retries)
+                ctx.playlist_cache.set_template(settings.playlist_name, existing_id, valid_video_ids)
+            except InvalidVideoIDsError as e:
+                _evict_from_cache(ctx.search_cache, e.invalid_ids)
+                log.info("Re-resolving tracks after evicting %d invalid video IDs...", len(e.invalid_ids))
+                video_ids, misses, track_to_vid, run_log_mappings = resolve_tracks_to_video_ids(
+                    ctx.ytm_search,
+                    tracks,
+                    settings.sleep_between_searches,
+                    settings.early_termination_score,
+                    ctx.search_cache,
+                    ctx.search_overrides,
+                    settings.api_max_retries,
+                    settings.search_max_workers,
+                )
+                valid_video_ids = list(dict.fromkeys(video_ids))
+                if len(valid_video_ids) > target_count:
+                    valid_video_ids = valid_video_ids[:target_count]
+                log.info("Retrying sync with %d tracks...", len(valid_video_ids))
                 sync_playlist(ctx.ytm, existing_id, valid_video_ids, max_retries=settings.api_max_retries)
                 ctx.playlist_cache.set_template(settings.playlist_name, existing_id, valid_video_ids)
             except Exception as e:
