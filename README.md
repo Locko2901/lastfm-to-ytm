@@ -45,6 +45,8 @@ There are two ways to run it:
   - [Running Tag Sync](#running-tag-sync)
 - [Manual Search Overrides](#manual-search-overrides)
 - [Teleporter (Encrypted Config Backup)](#teleporter-encrypted-config-backup)
+- [Webhooks](#webhooks)
+- [Known Issues](#known-issues)
 - [Troubleshooting](#troubleshooting)
 - [Development](#development)
 - [Credits](#credits)
@@ -601,6 +603,82 @@ The magic bytes (`TPRT`) identify the file format before any crypto work begins.
 > **Security note**: The backup contains sensitive data (API keys, auth tokens). Store it securely and use a strong password.
 
 ---
+
+## Webhooks
+
+Get notified when a sync completes or fails. The webhook sends a POST request with sync results to any URL you configure.
+
+**Discord** is the only tested provider, but any endpoint that accepts JSON POST requests should work (Slack, ntfy, custom servers, etc.).
+
+### Configuration
+
+**Docker**: Open **Settings** and scroll to the **Webhooks** section. Enter your webhook URL, choose when to send notifications, and use the **Test** button to verify.
+
+**CLI**: Add to your `.env`:
+
+```bash
+WEBHOOK_URL=https://discord.com/api/webhooks/123456/abcdef
+WEBHOOK_EVENTS=all    # "all" = success + error, "error" = failures only
+```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `WEBHOOK_URL` | _(empty)_ | Webhook endpoint URL. Leave empty to disable. |
+| `WEBHOOK_EVENTS` | `error` | When to send: `all` (every sync) or `error` (failures only) |
+
+### What's Included
+
+Each webhook payload includes:
+- **Status** - success or error
+- **Sync type** - `main` or `tags`
+- **Tracks resolved / missed / total**
+- **Duration** - wall-clock sync time
+- **Cache hits** - with hit rate percentage
+- **API searches** - number of YouTube Music queries made
+- **Playlist link** (on success)
+- **Error details** (on failure)
+
+### Discord Format
+
+Discord webhooks are auto-detected by URL and formatted as rich embeds with color-coded status (green for success, red for error). Other endpoints receive a plain JSON object with the same fields.
+
+---
+
+## History Database
+
+An optional local SQLite database that tracks all synced songs, actions, and sync runs for audit and visibility.
+
+**Docker**: Toggle via **Settings → History Database**.
+
+**CLI**: Add to your `.env`:
+
+```bash
+HISTORY_DB_ENABLED=false               # Enable/disable the history database
+HISTORY_DB_FILE=cache/history.db       # Path to the database file
+HISTORY_MAX_SIZE_MB=0                  # Auto-prune oldest records when exceeded (0 = unlimited)
+```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HISTORY_DB_ENABLED` | `false` | Track all songs, syncs, and actions in a local SQLite DB |
+| `HISTORY_DB_FILE` | `cache/history.db` | Path to the history database file |
+| `HISTORY_MAX_SIZE_MB` | `0` | Auto-prune oldest records when exceeded (0 = unlimited) |
+
+---
+
+## Known Issues
+
+### Copyright-deleted videos linger in the playlist
+
+When YouTube removes a video for copyright reasons, it stays in the playlist as a hidden `[Deleted video]` entry. The YouTube Music API does not expose these ghost entries, so the sync engine cannot detect or remove them. Because we try to keep a single playlist ID, the deleted video remains and the sync simply works around it - emptying what it can and re-adding the current tracks while the orphaned entry stays behind.
+
+**Workaround:** The only fix is to manually delete the playlist and let the next sync create a fresh one.
+
+### Sync leaves behind an empty playlist
+
+Occasionally the sync can fail mid-run (rate limits, transient API errors, etc.) and leave the playlist in an empty or partially-filled state.
+
+**Workaround:** Simply run the sync again. If the playlist is still empty after a retry, delete `cache/.playlist_cache.json` (or the relevant entry in it) and run the sync once more so it rebuilds from scratch.
 
 ## Troubleshooting
 - **YouTube Music auth errors**:
