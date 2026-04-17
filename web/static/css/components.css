@@ -906,6 +906,29 @@
   color: var(--text-primary);
 }
 
+.notif-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.notif-close-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition);
+}
+
+.notif-close-btn:hover {
+  color: var(--text-primary);
+}
+
 .notif-clear-btn {
   background: none;
   border: none;
@@ -1169,4 +1192,143 @@
 
 .management-info .video-link:hover {
   text-decoration: underline;
+}
+
+/* ── History panel ── */
+
+.history-subtabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.date-range-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.date-range-filter label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.date-input {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius, 6px);
+  background: var(--bg-secondary, var(--surface));
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+}
+
+.history-subpanel {
+  display: none;
+}
+
+.history-subpanel.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+.history-stats {
+  margin-bottom: 1rem;
+}
+
+.history-pagination {
+  margin-top: 1rem;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.history-backfill-section {
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}
+
+/* ---- Trend chart ---- */
+.history-trend-chart {
+  min-height: 200px;
+  margin-top: 0.5rem;
+}
+
+.trend-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 260px;
+}
+
+.trend-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.trend-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.65rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  z-index: 10;
+  box-shadow: 0 4px 12px var(--shadow);
+  white-space: nowrap;
+}
+
+.trend-tooltip.visible {
+  opacity: 1;
+}
+
+.trend-tip-date {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--text-secondary);
+}
+
+.trend-tip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.trend-tip-row span:first-child {
+  font-weight: 500;
+}
+
+.history-trend-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.trend-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.trend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
 }

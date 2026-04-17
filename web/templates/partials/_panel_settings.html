@@ -128,15 +128,23 @@
               <input type="text" id="PLAYLIST_NAME" name="PLAYLIST_NAME" placeholder="{{ _('Last.fm Recents (auto)') }}">
             </div>
             <div class="form-group">
+              <label for="PLAYLIST_DESCRIPTION">{{ _('Playlist Description') }}</label>
+              <input type="text" id="PLAYLIST_DESCRIPTION" name="PLAYLIST_DESCRIPTION"
+                placeholder="{{ _('Custom description (leave empty for auto-generated)') }}">
+              <span class="form-hint">{{ _('Leave empty to auto-generate based on Last.fm username and ranking mode') }}</span>
+            </div>
+            <div class="form-group">
               <label for="LIMIT">{{ _('Track Limit') }}</label>
               <input type="number" id="LIMIT" name="LIMIT" min="1" max="5000" placeholder="100">
               <span class="form-hint">{{ _('Target number of tracks in playlist') }}</span>
             </div>
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="MAKE_PUBLIC" name="MAKE_PUBLIC">
-                <span>{{ _('Make playlist public') }}</span>
-              </label>
+            <div class="form-group">
+              <label for="MAKE_PUBLIC">{{ _('Playlist Visibility') }}</label>
+              <select id="MAKE_PUBLIC" name="MAKE_PUBLIC">
+                <option value="PRIVATE">{{ _('Private') }}</option>
+                <option value="UNLISTED">{{ _('Unlisted') }}</option>
+                <option value="PUBLIC">{{ _('Public') }}</option>
+              </select>
             </div>
             <div class="form-group form-group-checkbox">
               <label>
@@ -196,12 +204,14 @@
                 <span>{{ _('Enable weekly playlists') }}</span>
               </label>
             </div>
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="WEEKLY_MAKE_PUBLIC" name="WEEKLY_MAKE_PUBLIC">
-                <span>{{ _('Make weekly playlists public') }}</span>
-              </label>
-              <span class="form-hint">{{ _('Unchecked = inherit from main playlist') }}</span>
+            <div class="form-group">
+              <label for="WEEKLY_MAKE_PUBLIC">{{ _('Weekly Playlist Visibility') }}</label>
+              <select id="WEEKLY_MAKE_PUBLIC" name="WEEKLY_MAKE_PUBLIC">
+                <option value="">{{ _('Inherit from main') }}</option>
+                <option value="PRIVATE">{{ _('Private') }}</option>
+                <option value="UNLISTED">{{ _('Unlisted') }}</option>
+                <option value="PUBLIC">{{ _('Public') }}</option>
+              </select>
             </div>
             <div class="form-group">
               <label for="WEEKLY_WEEK_START">{{ _('Week Start Day') }}</label>
@@ -243,12 +253,14 @@
             {{ _('Custom Playlists') }}
           </h3>
           <div class="settings-grid">
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="CUSTOM_PLAYLISTS_PRIVACY" name="CUSTOM_PLAYLISTS_PRIVACY">
-                <span>{{ _('Make custom playlists public') }}</span>
-              </label>
-              <span class="form-hint">{{ _('Unchecked = inherit from main playlist') }}</span>
+            <div class="form-group">
+              <label for="CUSTOM_PLAYLISTS_PRIVACY">{{ _('Custom Playlist Visibility') }}</label>
+              <select id="CUSTOM_PLAYLISTS_PRIVACY" name="CUSTOM_PLAYLISTS_PRIVACY">
+                <option value="">{{ _('Inherit from main') }}</option>
+                <option value="PRIVATE">{{ _('Private') }}</option>
+                <option value="UNLISTED">{{ _('Unlisted') }}</option>
+                <option value="PUBLIC">{{ _('Public') }}</option>
+              </select>
             </div>
             <div class="form-group">
               <label for="TAG_MIN_COUNT">{{ _('Minimum Tag Count') }}</label>
@@ -356,6 +368,94 @@
           <h3 class="settings-section-title">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            {{ _('History Database') }}
+          </h3>
+          <div class="settings-grid">
+            <div class="form-group form-group-checkbox">
+              <label>
+                <input type="checkbox" id="HISTORY_DB_ENABLED" name="HISTORY_DB_ENABLED">
+                <span>{{ _('Enable history database') }}</span>
+              </label>
+              <span class="form-hint">{{ _('Store track lookups, sync runs, and actions in a local SQLite database for analytics') }}</span>
+            </div>
+          </div>
+          <div id="historyBackfillSection" class="history-backfill-section" style="display: none; margin-top: 1rem;">
+            <div class="settings-grid" style="margin-bottom: 1rem;">
+              <div class="form-group">
+                <label for="HISTORY_MAX_SIZE_MB">{{ _('Max DB Size (MB)') }}</label>
+                <input type="number" id="HISTORY_MAX_SIZE_MB" name="HISTORY_MAX_SIZE_MB" min="0" step="1" placeholder="0">
+                <span class="form-hint">{{ _('Auto-prune oldest records when exceeded. 0 = unlimited.') }}</span>
+              </div>
+            </div>
+            <p class="settings-help">
+              {{ _('Import existing data from your search cache and overrides into the history database.') }}
+            </p>
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+              <button type="button" class="btn btn-secondary" data-action="historyBackfill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                {{ _('Backfill from Cache') }}
+              </button>
+              <button type="button" class="btn btn-danger" data-action="clearHistory">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                {{ _('Clear All History') }}
+              </button>
+              <span id="historyDbSize" class="form-hint"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="settings-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            {{ _('Webhooks') }}
+          </h3>
+          <div class="settings-grid">
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label for="WEBHOOK_URL">{{ _('Webhook URL') }}</label>
+              <input type="url" id="WEBHOOK_URL" name="WEBHOOK_URL" placeholder="https://ntfy.sh/mytopic">
+              <span class="form-hint">{{ _('Receives a JSON POST with sync results. Works with ntfy, Discord, Slack, or any HTTP endpoint.') }}</span>
+            </div>
+            <div class="form-group">
+              <label for="WEBHOOK_EVENTS">{{ _('Send notifications for') }}</label>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <select id="WEBHOOK_EVENTS" name="WEBHOOK_EVENTS" style="flex: 1;">
+                  <option value="error">{{ _('Errors only') }}</option>
+                  <option value="all">{{ _('All syncs') }}</option>
+                </select>
+                <button type="button" class="btn btn-secondary" data-action="testWebhook">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                  {{ _('Test') }}
+                </button>
+              </div>
+              <span class="form-hint">{{ _('Choose when to send webhook notifications') }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="settings-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             </svg>
             {{ _('Reliability & Retries') }}
@@ -406,6 +506,18 @@
                 <span>{{ _('Enable automated sync') }}</span>
               </label>
               <span class="form-hint">{{ _('Automatically run sync at scheduled intervals') }}</span>
+            </div>
+            <div class="form-group form-group-checkbox">
+              <label>
+                <input type="checkbox" id="AUTO_TAG_SYNC_ENABLED" name="AUTO_TAG_SYNC_ENABLED">
+                <span>{{ _('Include tag playlists') }}</span>
+              </label>
+              <span class="form-hint">{{ _('Also sync custom tag-based playlists after each scheduled run') }}</span>
+            </div>
+            <div class="form-group" id="tagSyncFrequencyGroup">
+              <label for="AUTO_TAG_SYNC_FREQUENCY">{{ _('Tag sync frequency') }}</label>
+              <input type="number" id="AUTO_TAG_SYNC_FREQUENCY" name="AUTO_TAG_SYNC_FREQUENCY" min="1" max="100" placeholder="1" value="1">
+              <span class="form-hint">{{ _('Run tag sync every N main syncs (1 = every time, 3 = every 3rd sync)') }}</span>
             </div>
             <div class="form-group">
               <label for="AUTO_SYNC_TYPE">{{ _('Schedule Type') }}</label>

@@ -53,7 +53,16 @@ data-needs-auth="{{ 'true' if needs_auth else 'false' }}"
   <div id="notifPanel" class="notif-panel hidden">
     <div class="notif-header">
       <span class="notif-header-title">{{ _('Notifications') }}</span>
-      <button id="notifClear" class="notif-clear-btn hidden">{{ _('Clear all') }}</button>
+      <div class="notif-header-actions">
+        <button id="notifClear" class="notif-clear-btn hidden">{{ _('Clear all') }}</button>
+        <button id="notifClose" class="notif-close-btn" aria-label="{{ _('Close') }}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
     </div>
     <div id="notifList" class="notif-list"></div>
     <div id="notifEmpty" class="notif-empty">{{ _('No notifications yet') }}</div>
@@ -78,6 +87,7 @@ data-needs-auth="{{ 'true' if needs_auth else 'false' }}"
 {% include "partials/_panel_notfound.html" %}
 {% include "partials/_panel_tags.html" %}
 {% include "partials/_panel_custompl.html" %}
+{% include "partials/_panel_history.html" %}
 {% include "partials/_panel_sync.html" %}
 {% include "partials/_panel_settings.html" %}
 {% include "partials/_modals.html" %}

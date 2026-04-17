@@ -1,11 +1,22 @@
 import { filterByTab } from "./filters.js"
 import { _ } from "./i18n.js"
 import { invalidateTagSuggestions, setTagInputValue } from "./tagInput.js"
-import { escapeHtml, isSuccessRedirect, postFormData, refreshPanel, refreshStats, showToast, withButtonLoading } from "./utils.js"
+import {
+  escapeHtml,
+  formatDateTime,
+  getUse24HourClock,
+  isSuccessRedirect,
+  postFormData,
+  refreshPanel,
+  refreshStats,
+  showToast,
+  withButtonLoading,
+} from "./utils.js"
 
 const ITEM_SELECTORS = {
   playlist: ".track-item",
   cache: ".cache-item",
+  history: ".track-item",
   notfound: ".notfound-item",
   overrides: ".override-item",
   tags: ".tag-item",
@@ -227,7 +238,7 @@ function initBlacklistForm() {
   document.getElementById("blacklistForm")?.addEventListener("submit", async function (e) {
     const redirectTab = document.getElementById("blacklist-redirect").value
 
-    const ajaxTabs = ["playlist", "cache", "notfound"]
+    const ajaxTabs = ["playlist", "cache", "history", "notfound"]
     if (!ajaxTabs.includes(redirectTab)) {
       return
     }
@@ -613,11 +624,12 @@ function _processImportFile(file) {
       _pendingImportData = data
       const oCount = data.overrides ? Object.keys(data.overrides).length : 0
       const bCount = data.blacklist ? Object.keys(data.blacklist).length : 0
+      const tCount = data.tag_overrides ? Object.keys(data.tag_overrides).length : 0
 
       const statsEl = document.getElementById("import-stats")
       statsEl.innerHTML = `
         <p><strong>${escapeHtml(file.name)}</strong></p>
-        <p>${_("Overrides")}: <strong>${oCount}</strong> · ${_("Blacklist")}: <strong>${bCount}</strong></p>
+        <p>${_("Overrides")}: <strong>${oCount}</strong> · ${_("Blacklist")}: <strong>${bCount}</strong> · ${_("Tag Overrides")}: <strong>${tCount}</strong></p>
       `
       document.getElementById("import-preview").style.display = ""
     } catch (_err) {
@@ -643,15 +655,17 @@ export async function confirmImport() {
       _pendingImportData = null
       document.getElementById("import-preview").style.display = "none"
       showToast(
-        _("Imported %(overrides)s overrides and %(blacklist)s blacklist entries", {
+        _("Imported %(overrides)s overrides, %(blacklist)s blacklist, and %(tag_overrides)s tag override entries", {
           overrides: data.imported_overrides,
           blacklist: data.imported_blacklist,
+          tag_overrides: data.imported_tag_overrides || 0,
         }),
         "success",
       )
       refreshPanel("overrides")
       refreshPanel("blacklist")
       refreshPanel("playlist")
+      refreshPanel("tags")
       refreshStats()
     })
   } catch (error) {
@@ -667,28 +681,69 @@ const _sourceLabels = {
   cache: "Cached",
   search: "Search",
   override: "Override",
+  cache_backfill: "Cache Backfill",
   not_found: "Not Found",
   not_found_cached: "Not Found",
   blacklisted: "Blacklisted",
+  override_backfill: "Override Backfill",
 }
 
 const _sourceBadgeClass = {
   cache: "badge-cached",
   search: "badge-search",
   override: "badge-override",
+  cache_backfill: "badge-muted",
   not_found: "badge-notfound",
   not_found_cached: "badge-notfound",
   blacklisted: "badge-blacklist",
+  override_backfill: "badge-muted",
 }
 
 function _setDetailLoading() {
-  for (const id of ["detail-video-id", "detail-yt-title", "detail-source", "detail-tags", "detail-status"]) {
+  for (const id of [
+    "detail-video-id",
+    "detail-yt-title",
+    "detail-source",
+    "detail-tags",
+    "detail-status",
+    "detail-history-seen",
+    "detail-history-first",
+    "detail-history-last",
+    "detail-history-actions",
+  ]) {
     const el = document.getElementById(id)
     if (el) el.innerHTML = `<span class="detail-skeleton"></span>`
   }
   document.getElementById("detail-links").innerHTML = ""
   document.getElementById("detail-override-btn").style.display = "none"
   document.getElementById("detail-blacklist-btn").style.display = "none"
+}
+
+function _setHistoryDetailRowsVisible(visible) {
+  for (const id of ["detail-history-seen-row", "detail-history-first-row", "detail-history-last-row", "detail-history-actions-row"]) {
+    const el = document.getElementById(id)
+    if (el) el.style.display = visible ? "flex" : "none"
+  }
+}
+
+function _setStandardDetailRowsVisible(visible) {
+  for (const id of [
+    "detail-artist-row",
+    "detail-title-row",
+    "detail-video-row",
+    "detail-yt-title-row",
+    "detail-source-row",
+    "detail-tags-row",
+    "detail-status-row",
+  ]) {
+    const el = document.getElementById(id)
+    if (el) el.style.display = visible ? "flex" : "none"
+  }
+}
+
+function _setTrackDetailMode(isHistoryMode) {
+  _setHistoryDetailRowsVisible(isHistoryMode)
+  _setStandardDetailRowsVisible(!isHistoryMode)
 }
 
 export async function showTrackDetailModal(artist, title, tab) {
@@ -700,6 +755,7 @@ export async function showTrackDetailModal(artist, title, tab) {
   document.getElementById("detail-artist").textContent = artist
   document.getElementById("detail-title").textContent = title
 
+  _setTrackDetailMode(_detailTab === "history")
   _setDetailLoading()
   showModal("trackDetailModal")
 
@@ -707,9 +763,10 @@ export async function showTrackDetailModal(artist, title, tab) {
     const resp = await fetch(`/api/track-detail?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`)
     if (!resp.ok) throw new Error(_("Failed to load details"))
     const d = await resp.json()
+    const use24Hour = await getUse24HourClock()
 
-    document.getElementById("detail-video-id").textContent = d.video_id || "—"
-    document.getElementById("detail-yt-title").textContent = d.yt_title || "—"
+    document.getElementById("detail-video-id").textContent = d.video_id || "-"
+    document.getElementById("detail-yt-title").textContent = d.yt_title || "-"
 
     const sourceEl = document.getElementById("detail-source")
     if (d.source) {
@@ -717,7 +774,7 @@ export async function showTrackDetailModal(artist, title, tab) {
       const label = _sourceLabels[d.source] || d.source
       sourceEl.innerHTML = `<span class="badge ${badgeClass}">${escapeHtml(label)}</span>`
     } else {
-      sourceEl.textContent = "—"
+      sourceEl.textContent = "-"
     }
 
     const tagsEl = document.getElementById("detail-tags")
@@ -735,7 +792,12 @@ export async function showTrackDetailModal(artist, title, tab) {
     if (d.is_overridden) badges.push(`<span class="badge badge-override">${_("Override")}</span>`)
     if (d.is_blacklisted) badges.push(`<span class="badge badge-blacklist">${_("Blacklisted")}</span>`)
     if (d.cache_timestamp) badges.push(`<span class="text-muted">${_("Cached:")} ${d.cache_timestamp.slice(0, 10)}</span>`)
-    statusEl.innerHTML = badges.join(" ") || "—"
+    statusEl.innerHTML = badges.join(" ") || "-"
+
+    document.getElementById("detail-history-seen").textContent = d.history_times_found != null ? `${d.history_times_found}×` : "-"
+    document.getElementById("detail-history-first").textContent = _formatDetailTimestamp(d.history_first_seen, use24Hour)
+    document.getElementById("detail-history-last").textContent = _formatDetailTimestamp(d.history_last_seen, use24Hour)
+    document.getElementById("detail-history-actions").textContent = d.history_action_count != null ? String(d.history_action_count) : "-"
 
     const linksEl = document.getElementById("detail-links")
     const links = []
@@ -749,14 +811,104 @@ export async function showTrackDetailModal(artist, title, tab) {
     )
     linksEl.innerHTML = links.join("")
 
-    document.getElementById("detail-override-btn").style.display = d.is_overridden ? "none" : ""
-    document.getElementById("detail-blacklist-btn").style.display = d.is_blacklisted ? "none" : ""
+    if (_detailTab !== "history") {
+      document.getElementById("detail-override-btn").style.display = d.is_overridden ? "none" : ""
+      document.getElementById("detail-blacklist-btn").style.display = d.is_blacklisted ? "none" : ""
+    }
   } catch (_err) {
     document.getElementById("detail-video-id").textContent = _("Error loading details")
     document.getElementById("detail-yt-title").textContent = "-"
     document.getElementById("detail-source").textContent = "-"
     document.getElementById("detail-tags").textContent = "-"
     document.getElementById("detail-status").textContent = "-"
+    document.getElementById("detail-history-seen").textContent = "-"
+    document.getElementById("detail-history-first").textContent = "-"
+    document.getElementById("detail-history-last").textContent = "-"
+    document.getElementById("detail-history-actions").textContent = "-"
+  }
+}
+
+function _formatDetailTimestamp(isoStr, use24Hour) {
+  if (!isoStr) return "-"
+  try {
+    return formatDateTime(new Date(isoStr), use24Hour)
+  } catch (_e) {
+    return isoStr
+  }
+}
+
+function _setHistorySyncLoading() {
+  for (const id of [
+    "history-sync-status",
+    "history-sync-started",
+    "history-sync-finished",
+    "history-sync-duration",
+    "history-sync-resolved",
+    "history-sync-missed",
+    "history-sync-cache",
+    "history-sync-overrides",
+    "history-sync-api-searches",
+    "history-sync-api-playlist",
+    "history-sync-error",
+  ]) {
+    const el = document.getElementById(id)
+    if (el) el.innerHTML = `<span class="detail-skeleton"></span>`
+  }
+}
+
+export async function showHistorySyncModal(syncId) {
+  const titleEl = document.getElementById("history-sync-title")
+  if (titleEl) {
+    titleEl.textContent = _("Loading sync details...")
+  }
+
+  _setHistorySyncLoading()
+  showModal("historySyncModal")
+
+  try {
+    const resp = await fetch(`/api/history/syncs/${encodeURIComponent(syncId)}`)
+    if (!resp.ok) throw new Error(_("Failed to load sync details"))
+    const sync = await resp.json()
+    const use24Hour = await getUse24HourClock()
+    const statusMap = { success: "success", error: "danger" }
+    const statusBadge = statusMap[sync.status] ?? "warning"
+    const cacheTotal = (sync.cache_hits || 0) + (sync.cache_misses || 0)
+    const cacheRate = cacheTotal > 0 ? `${((sync.cache_hits / cacheTotal) * 100).toFixed(1)}%` : "0.0%"
+
+    document.getElementById("history-sync-title").textContent = `${sync.sync_type} · ${sync.trigger}`
+    document.getElementById("history-sync-status").innerHTML = `<span class="badge badge-${statusBadge}">${escapeHtml(sync.status || "-")}</span>`
+    document.getElementById("history-sync-started").textContent = _formatDetailTimestamp(sync.started_at, use24Hour)
+    document.getElementById("history-sync-finished").textContent = _formatDetailTimestamp(sync.finished_at, use24Hour)
+    document.getElementById("history-sync-duration").textContent = sync.duration_secs != null ? `${sync.duration_secs.toFixed(1)}s` : "-"
+    document.getElementById("history-sync-resolved").textContent = `${sync.tracks_resolved}/${sync.tracks_total}`
+    document.getElementById("history-sync-missed").textContent = String(sync.tracks_missed ?? 0)
+    document.getElementById("history-sync-cache").textContent = `${sync.cache_hits}/${cacheTotal} (${cacheRate})`
+    document.getElementById("history-sync-overrides").textContent = String(sync.override_hits ?? 0)
+    document.getElementById("history-sync-api-searches").textContent = String(sync.api_searches ?? 0)
+    document.getElementById("history-sync-api-playlist").textContent = String(sync.api_playlist_ops ?? 0)
+
+    const errorRow = document.getElementById("history-sync-error-row")
+    const errorEl = document.getElementById("history-sync-error")
+    if (sync.error_message) {
+      errorEl.textContent = sync.error_message
+      errorRow.style.display = "flex"
+    } else {
+      errorEl.textContent = "-"
+      errorRow.style.display = "none"
+    }
+  } catch (_err) {
+    document.getElementById("history-sync-title").textContent = _("Sync details")
+    document.getElementById("history-sync-status").textContent = _("Error loading sync details")
+    document.getElementById("history-sync-started").textContent = "-"
+    document.getElementById("history-sync-finished").textContent = "-"
+    document.getElementById("history-sync-duration").textContent = "-"
+    document.getElementById("history-sync-resolved").textContent = "-"
+    document.getElementById("history-sync-missed").textContent = "-"
+    document.getElementById("history-sync-cache").textContent = "-"
+    document.getElementById("history-sync-overrides").textContent = "-"
+    document.getElementById("history-sync-api-searches").textContent = "-"
+    document.getElementById("history-sync-api-playlist").textContent = "-"
+    document.getElementById("history-sync-error").textContent = "-"
   }
 }
 
