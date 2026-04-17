@@ -215,7 +215,7 @@ def _validate_video_ids(ytm: YTMusic, video_ids: list[str]) -> list[str]:
     invalid = []
     for vid in video_ids:
         try:
-            _query_counter.increment("add_playlist_items")
+            _query_counter.increment("get_song")
             ytm.get_song(vid)
         except Exception:
             invalid.append(vid)
@@ -322,8 +322,11 @@ def sync_playlist(
     verify_attempts: int = 2,
     accept_substitutions: bool = True,
     max_retries: int = 3,
-) -> None:
-    """Synchronize a playlist with desired video IDs."""
+) -> dict[str, str]:
+    """Synchronize a playlist with desired video IDs.
+
+    Returns a dict of detected YouTube substitutions {original_vid: replacement_vid}.
+    """
     initial_count = _query_counter.get_count()
     log.info(
         "Starting playlist sync for %s (current query count: %d)",
@@ -334,7 +337,7 @@ def sync_playlist(
     desired_video_ids = [vid for vid in desired_video_ids if isinstance(vid, str) and len(vid) == 11]
     if not desired_video_ids:
         log.warning("No valid video IDs provided")
-        return
+        return {}
 
     unique_count = len(set(desired_video_ids))
     if unique_count < len(desired_video_ids):
@@ -362,7 +365,7 @@ def sync_playlist(
                 final_count - initial_count,
                 final_count,
             )
-            return
+            return substitutions
 
         desired_set = set(desired_video_ids)
         current_set = set(current_video_ids)
@@ -376,7 +379,7 @@ def sync_playlist(
                 final_count - initial_count,
                 final_count,
             )
-            return
+            return substitutions
 
         missing = desired_set - current_set
         extra = current_set - desired_set
@@ -389,7 +392,7 @@ def sync_playlist(
                 final_count - initial_count,
                 final_count,
             )
-            return
+            return substitutions
 
         log.debug(
             "Playlist mismatch - missing: %d, extra: %d (attempt %d/%d)",
@@ -426,7 +429,7 @@ def sync_playlist(
                         final_count - initial_count,
                         final_count,
                     )
-                    return
+                    return substitutions
 
                 desired_video_ids = adjusted_desired
                 desired_set = set(desired_video_ids)
@@ -454,6 +457,7 @@ def sync_playlist(
         final_count - initial_count,
         final_count,
     )
+    return substitutions
 
 
 def upsert_playlist(

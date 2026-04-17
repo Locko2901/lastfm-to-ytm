@@ -50,6 +50,25 @@ def _str_to_int(val: str | None, default: int) -> int:
         return default
 
 
+_VALID_PRIVACY = {"PUBLIC", "UNLISTED", "PRIVATE"}
+
+
+def _parse_privacy(val: str | None, default: str = "PRIVATE") -> str:
+    """Parse a privacy value, with backward compat for true/false booleans."""
+    if val is None:
+        return default
+    val = _strip_inline_comment(val) or ""
+    upper = val.upper()
+    if upper in _VALID_PRIVACY:
+        return upper
+    # Backward compatibility: treat boolean-truthy as PUBLIC
+    if val.lower() in {"1", "true", "t", "yes", "y", "on"}:
+        return "PUBLIC"
+    if val.lower() in {"0", "false", "f", "no", "n", "off"}:
+        return "PRIVATE"
+    return default
+
+
 @dataclass(frozen=True)
 class Settings:
     """Application configuration loaded from environment variables."""
@@ -58,7 +77,8 @@ class Settings:
     lastfm_api_key: str = field(repr=False)  # Exclude from repr
     ytm_auth_path: str = str(PROJECT_ROOT / "browser.json")
     playlist_name: str = "Last.fm Recents (auto)"
-    make_public: bool = False
+    playlist_description: str = ""
+    privacy: str = "PRIVATE"
     limit: int = 100
     deduplicate: bool = True
     sleep_between_searches: float = 0.25
@@ -93,11 +113,16 @@ class Settings:
     tag_min_count: int = 10
     tag_sleep_between: float = 0.25
     tag_overrides_file: str = str(CONFIG_DIR / "tag_overrides.json")
+    history_db_enabled: bool = False
+    history_db_file: str = str(CACHE_DIR / "history.db")
+    history_max_size_mb: float = 0
+    webhook_url: str = ""
+    webhook_events: str = "error"
 
     @property
     def privacy_status(self) -> str:
         """Return YouTube privacy status string."""
-        return "PUBLIC" if self.make_public else "PRIVATE"
+        return self.privacy
 
     @staticmethod
     def from_env() -> "Settings":
@@ -109,7 +134,8 @@ class Settings:
 
         ytm_auth_path = os.getenv("YTM_AUTH_PATH", str(PROJECT_ROOT / "browser.json"))
         playlist_name = os.getenv("PLAYLIST_NAME", "Last.fm Recents (auto)")
-        make_public = _str_to_bool(os.getenv("MAKE_PUBLIC"), False)
+        playlist_description = (_strip_inline_comment(os.getenv("PLAYLIST_DESCRIPTION")) or "").strip()
+        privacy = _parse_privacy(os.getenv("MAKE_PUBLIC"), "PRIVATE")
 
         limit = _str_to_int(os.getenv("LIMIT"), 100)
         deduplicate = _str_to_bool(os.getenv("DEDUPLICATE"), True)
@@ -138,7 +164,7 @@ class Settings:
         weekly_make_public_env = _strip_inline_comment(os.getenv("WEEKLY_MAKE_PUBLIC"))
         weekly_privacy_status: str | None = None
         if weekly_make_public_env is not None:
-            weekly_privacy_status = "PUBLIC" if _str_to_bool(weekly_make_public_env, False) else "PRIVATE"
+            weekly_privacy_status = _parse_privacy(weekly_make_public_env, "PRIVATE")
 
         weekly_week_start = _strip_inline_comment(os.getenv("WEEKLY_WEEK_START")) or "MON"
         weekly_timezone = _strip_inline_comment(os.getenv("WEEKLY_TIMEZONE")) or "UTC"
@@ -160,19 +186,27 @@ class Settings:
         custom_playlists_privacy_env = _strip_inline_comment(os.getenv("CUSTOM_PLAYLISTS_PRIVACY"))
         custom_playlists_privacy_status: str | None = None
         if custom_playlists_privacy_env is not None:
-            custom_playlists_privacy_status = "PUBLIC" if _str_to_bool(custom_playlists_privacy_env, False) else "PRIVATE"
+            custom_playlists_privacy_status = _parse_privacy(custom_playlists_privacy_env, "PRIVATE")
         tag_cache_file = os.getenv("TAG_CACHE_FILE", str(CACHE_DIR / ".tag_cache.json"))
         tag_cache_ttl_days = _str_to_int(os.getenv("TAG_CACHE_TTL_DAYS"), 90)
         tag_min_count = _str_to_int(os.getenv("TAG_MIN_COUNT"), 10)
         tag_sleep_between = _str_to_float(os.getenv("TAG_SLEEP_BETWEEN"), 0.25)
         tag_overrides_file = os.getenv("TAG_OVERRIDES_FILE", str(CONFIG_DIR / "tag_overrides.json"))
+        history_db_enabled = _str_to_bool(os.getenv("HISTORY_DB_ENABLED"), False)
+        history_db_file = os.getenv("HISTORY_DB_FILE", str(CACHE_DIR / "history.db"))
+        history_max_size_mb = _str_to_float(os.getenv("HISTORY_MAX_SIZE_MB"), 0)
+        webhook_url = (_strip_inline_comment(os.getenv("WEBHOOK_URL")) or "").strip()
+        webhook_events = (_strip_inline_comment(os.getenv("WEBHOOK_EVENTS")) or "error").strip().lower()
+        if webhook_events not in {"all", "error"}:
+            webhook_events = "error"
 
         return Settings(
             lastfm_user=lastfm_user,
             lastfm_api_key=lastfm_api_key,
             ytm_auth_path=ytm_auth_path,
             playlist_name=playlist_name,
-            make_public=make_public,
+            playlist_description=playlist_description,
+            privacy=privacy,
             limit=limit,
             deduplicate=deduplicate,
             sleep_between_searches=sleep_between_searches,
@@ -207,6 +241,11 @@ class Settings:
             tag_min_count=tag_min_count,
             tag_sleep_between=tag_sleep_between,
             tag_overrides_file=tag_overrides_file,
+            history_db_enabled=history_db_enabled,
+            history_db_file=history_db_file,
+            history_max_size_mb=history_max_size_mb,
+            webhook_url=webhook_url,
+            webhook_events=webhook_events,
         )
 
 
@@ -220,6 +259,8 @@ class CustomPlaylistConfig:
     limit: int = 50
     blacklist: frozenset[str] = frozenset()
     backfill: bool = True
+    auto_sync: bool = True
+    description: str = ""
 
 
 def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
@@ -256,6 +297,14 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
         if not isinstance(backfill, bool):
             backfill = True
 
+        auto_sync = entry.get("auto_sync", True)
+        if not isinstance(auto_sync, bool):
+            auto_sync = True
+
+        description = entry.get("description", "")
+        if not isinstance(description, str):
+            description = ""
+
         configs.append(
             CustomPlaylistConfig(
                 name=name,
@@ -264,6 +313,8 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
                 limit=entry.get("limit", 50),
                 blacklist=blacklist,
                 backfill=backfill,
+                auto_sync=auto_sync,
+                description=description,
             )
         )
 
