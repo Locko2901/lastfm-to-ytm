@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# run-docker.sh - Start the lastfm-to-ytm web dashboard in Docker
+# run-docker.sh - Build and run the lastfm-to-ytm web dashboard in Docker
 #
 # Usage: ./run-docker.sh [OPTIONS]
 #   --rebuild, -r    Force rebuild the Docker image
@@ -95,7 +95,7 @@ do_prune() {
     else
         echo -e "${CYAN}Pruning Docker resources...${NC}"
     fi
-    
+
     DANGLING=$(docker images -f "dangling=true" -q 2>/dev/null)
     if [[ -n "$DANGLING" ]]; then
         echo -e "${YELLOW}→ Removing dangling images...${NC}"
@@ -104,7 +104,7 @@ do_prune() {
     else
         echo -e "${GREEN}✓ No dangling images${NC}"
     fi
-    
+
     OLD_IMAGES=$(docker images "$IMAGE_NAME" --format '{{.ID}}' | tail -n +2)
     if [[ -n "$OLD_IMAGES" ]]; then
         echo -e "${YELLOW}→ Removing old $IMAGE_NAME images...${NC}"
@@ -113,7 +113,7 @@ do_prune() {
     else
         echo -e "${GREEN}✓ No old project images${NC}"
     fi
-    
+
     if [[ "$PRUNE_ALL" == true ]]; then
         BUILD_CACHE=$(docker builder du --format '{{.Size}}' 2>/dev/null | head -1)
         if [[ -n "$BUILD_CACHE" ]] && [[ "$BUILD_CACHE" != "0B" ]]; then
@@ -123,12 +123,12 @@ do_prune() {
         else
             echo -e "${GREEN}✓ No build cache to clear${NC}"
         fi
-        
+
         echo -e "${YELLOW}→ Removing unused images...${NC}"
         docker image prune -a -f 2>/dev/null || true
         echo -e "${GREEN}✓ Unused images removed${NC}"
     fi
-    
+
     echo
     echo -e "${CYAN}Current disk usage:${NC}"
     docker system df
@@ -222,7 +222,7 @@ if [[ -z "$IMAGE_EXISTS" ]] || [[ "$REBUILD" == true ]]; then
             docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null || true
         fi
     fi
-    
+
     if [[ "$NO_CACHE" == true ]]; then
         echo -e "${YELLOW}→ Rebuilding image (--no-cache, full rebuild)...${NC}"
         docker compose -f "$COMPOSE_FILE" build --no-cache --pull || {
@@ -243,7 +243,7 @@ if [[ -z "$IMAGE_EXISTS" ]] || [[ "$REBUILD" == true ]]; then
         }
     fi
     echo -e "${GREEN}✓ Image built successfully${NC}"
-    
+
     docker builder prune --keep-storage 1GB -f >/dev/null 2>&1 || true
 else
     echo -e "${GREEN}✓ Image already exists${NC}"
