@@ -266,6 +266,12 @@ export function showSyncFailureBanner(data) {
     hintHtml = `<div class="failure-banner-hint">${escapeHtml(data.hint)}</div>`
   }
 
+  let syncLabel = _("Sync")
+  if (data.sync_type === "tags") {
+    syncLabel = data.playlist_name ? `${_("Tag playlist")} '${escapeHtml(data.playlist_name)}'` : _("Tag sync")
+  }
+  const failedLabel = `${syncLabel} ${_("failed")}`
+
   insertBanner(
     "syncFailureBanner",
     "sync-failure-banner",
@@ -277,7 +283,7 @@ export function showSyncFailureBanner(data) {
         <line x1="9" y1="9" x2="15" y2="15"></line>
       </svg>
       <div class="failure-banner-text">
-        <span><strong>${_("Last sync failed")}</strong>${timeAgo ? ` (${timeAgo})` : ""}: ${escapeHtml(data.error || _("Unknown error"))}</span>
+        <span><strong>${failedLabel}</strong>${timeAgo ? ` (${timeAgo})` : ""}: ${escapeHtml(data.error || _("Unknown error"))}</span>
         ${hintHtml}
       </div>
       <button class="btn btn-sm btn-secondary" data-action="showFailureLogModal">${_("View Details")}</button>
@@ -302,6 +308,11 @@ export async function dismissSyncFailureBanner() {
 export async function showFailureLogModal() {
   if (!lastFailureData) return
 
+  let modalTitle = "Sync Failure Details"
+  if (lastFailureData.sync_type === "tags") {
+    modalTitle = lastFailureData.playlist_name ? `Tag Playlist '${lastFailureData.playlist_name}' Failure Details` : "Tag Sync Failure Details"
+  }
+
   let modal = document.getElementById("failureLogModal")
   if (!modal) {
     modal = document.createElement("div")
@@ -316,7 +327,7 @@ export async function showFailureLogModal() {
               <line x1="15" y1="9" x2="9" y2="15"></line>
               <line x1="9" y1="9" x2="15" y2="15"></line>
             </svg>
-            Sync Failure Details
+            <span class="failure-modal-title">${escapeHtml(modalTitle)}</span>
           </h2>
           <button class="modal-close" data-action="closeModal" data-modal="failureLogModal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
@@ -339,6 +350,9 @@ export async function showFailureLogModal() {
     `
     document.body.appendChild(modal)
   }
+
+  const titleEl = modal.querySelector(".failure-modal-title")
+  if (titleEl) titleEl.textContent = modalTitle
 
   const timeEl = modal.querySelector(".failure-time")
   const errorEl = modal.querySelector(".failure-error")

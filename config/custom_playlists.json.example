@@ -2,6 +2,7 @@
   "playlists": [
     {
       "name": "Breakcore Mix (auto)",
+      "description": "",
       "tags": ["breakcore", "drill and bass"],
       "match": "any",
       "limit": 50,

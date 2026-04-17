@@ -18,6 +18,7 @@ export function showCustomPlaylistModal(editIndex = -1) {
     const pl = playlistsData[editIndex]
     document.getElementById("custompl-modal-title").textContent = _("Edit Custom Playlist")
     document.getElementById("custompl-name").value = pl.name || ""
+    document.getElementById("custompl-description").value = pl.description || ""
     setTagInputValue("custompl-tags", (pl.tags || []).join(", "))
     document.getElementById("custompl-match").value = pl.match || "any"
     const isNoLimit = pl.limit === 0
@@ -25,16 +26,19 @@ export function showCustomPlaylistModal(editIndex = -1) {
     limitInput.value = isNoLimit ? 50 : pl.limit || 50
     limitInput.disabled = isNoLimit
     document.getElementById("custompl-backfill").checked = pl.backfill !== false
+    document.getElementById("custompl-auto-sync").checked = pl.auto_sync !== false
     document.getElementById("custompl-blacklist").value = (pl.blacklist || []).join("\n")
   } else {
     document.getElementById("custompl-modal-title").textContent = _("Add Custom Playlist")
     document.getElementById("custompl-name").value = ""
+    document.getElementById("custompl-description").value = ""
     setTagInputValue("custompl-tags", "")
     document.getElementById("custompl-match").value = "any"
     noLimitCheckbox.checked = false
     limitInput.value = "50"
     limitInput.disabled = false
     document.getElementById("custompl-backfill").checked = true
+    document.getElementById("custompl-auto-sync").checked = true
     document.getElementById("custompl-blacklist").value = ""
   }
   showModal("customPlaylistModal")
@@ -47,11 +51,13 @@ export function editCustomPlaylist(index) {
 export async function saveCustomPlaylist() {
   const editIndex = parseInt(document.getElementById("custompl-edit-index").value, 10)
   const name = document.getElementById("custompl-name").value.trim()
+  const description = document.getElementById("custompl-description").value.trim()
   const tagsRaw = document.getElementById("custompl-tags").value.trim()
   const match = document.getElementById("custompl-match").value
   const noLimit = document.getElementById("custompl-no-limit").checked
   const limit = noLimit ? 0 : parseInt(document.getElementById("custompl-limit").value, 10) || 50
   const backfill = document.getElementById("custompl-backfill").checked
+  const autoSync = document.getElementById("custompl-auto-sync").checked
   const blacklistRaw = document.getElementById("custompl-blacklist").value.trim()
 
   if (!name) {
@@ -76,7 +82,7 @@ export async function saveCustomPlaylist() {
         .filter(Boolean)
     : []
 
-  const playlist = { name, tags, match, limit, backfill, blacklist }
+  const playlist = { name, description, tags, match, limit, backfill, auto_sync: autoSync, blacklist }
 
   const updated = [...playlistsData]
   if (editIndex >= 0 && editIndex < updated.length) {

@@ -14,6 +14,7 @@ import {
 } from "./modules/customPlaylists.js"
 import { initDelegation } from "./modules/delegation.js"
 import { filterCache, filterNotFound, filterTags, filterTracks, goToFilter, initFilters } from "./modules/filters.js"
+import { clearHistory, confirmClearHistory, historyBackfill, initHistory, loadHistoryData, switchHistoryView } from "./modules/history.js"
 import {
   clearCacheEntry,
   clearTagCacheEntry,
@@ -28,6 +29,7 @@ import {
   showAddOverrideModal,
   showBlacklistModal,
   showExportImportModal,
+  showHistorySyncModal,
   showModal,
   showOverrideModal,
   showTagOverrideModal,
@@ -37,12 +39,14 @@ import {
 import { initNotifications } from "./modules/notifications.js"
 import {
   closeSettingsModal,
+  dismissReloadBanner,
   dismissRestartBanner,
   initSettings,
   loadSettings,
   restartServer,
   saveSettings,
   showSettingsModal,
+  testWebhook,
 } from "./modules/settings.js"
 import {
   checkFailureLog,
@@ -120,6 +124,7 @@ window.clearTagCacheEntry = clearTagCacheEntry
 window.showExportImportModal = showExportImportModal
 window.exportData = exportData
 window.confirmImport = confirmImport
+window.showHistorySyncModal = showHistorySyncModal
 window.showTrackDetailModal = showTrackDetailModal
 window.detailOverride = detailOverride
 window.detailBlacklist = detailBlacklist
@@ -164,7 +169,9 @@ window.dismissAndCloseFailureModal = dismissAndCloseFailureModal
 window.checkFailureLog = checkFailureLog
 
 window.dismissRestartBanner = dismissRestartBanner
+window.dismissReloadBanner = dismissReloadBanner
 window.restartServer = restartServer
+window.testWebhook = testWebhook
 
 window.showCustomPlaylistModal = showCustomPlaylistModal
 window.editCustomPlaylist = editCustomPlaylist
@@ -182,6 +189,12 @@ window.refreshStats = refreshStats
 window.updateAutoSyncIndicator = updateAutoSyncIndicator
 window.restartNowPlaying = restartNowPlaying
 window.hideNowPlaying = hideNowPlaying
+
+window.historyBackfill = historyBackfill
+window.clearHistory = clearHistory
+window.confirmClearHistory = confirmClearHistory
+window.loadHistoryData = loadHistoryData
+window.switchHistoryView = switchHistoryView
 
 initDelegation()
 
@@ -219,6 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
   startDataWatcher()
   loadPlaylistsData()
   initCustomPlaylists()
+  initHistory()
 
   initTagInput("tag-override-tags")
   initTagInput("add-tag-override-tags")

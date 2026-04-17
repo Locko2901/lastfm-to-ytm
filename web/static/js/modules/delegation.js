@@ -24,14 +24,20 @@ const actionHandlers = {
   closeAuthModal: () => window.closeAuthModal(),
   connectAuth: () => window.connectAuth(),
   openSyncDrawer: () => window.openSyncDrawer(),
+  historyBackfill: () => window.historyBackfill(),
+  clearHistory: () => window.clearHistory(),
+  confirmClearHistory: () => window.confirmClearHistory(),
   restartServer: () => window.restartServer(),
   dismissRestartBanner: () => window.dismissRestartBanner(),
+  dismissReloadBanner: () => window.dismissReloadBanner(),
+  testWebhook: () => window.testWebhook(),
   dismissAuthBanner: () => window.dismissAuthBanner(),
   showFailureLogModal: () => window.showFailureLogModal(),
   dismissSyncFailureBanner: () => window.dismissSyncFailureBanner(),
   dismissAndCloseFailureModal: () => window.dismissAndCloseFailureModal(),
   reloadPage: () => window.location.reload(),
   dismissDataUpdateBanner: () => window.dismissDataUpdateBanner(),
+  switchHistoryView: el => window.switchHistoryView(el.dataset.historyViewTab || "tracks", el.dataset.historyViewFilter || "all"),
 
   closeModal: el => window.closeModal(el.dataset.modal),
   showModal: el => window.showModal(el.dataset.modal),
@@ -90,6 +96,7 @@ const actionHandlers = {
 
   exportData: el => window.exportData(el.dataset.type || "all"),
   confirmImport: () => window.confirmImport(),
+  showHistorySyncModal: el => window.showHistorySyncModal(parseInt(el.dataset.syncId, 10)),
   showTrackDetailModal: el => {
     const { artist, title } = el.dataset
     window.showTrackDetailModal(artist, title)

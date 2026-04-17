@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import contextlib
+import json
 import logging
 import threading
 from collections.abc import Callable
 from datetime import UTC, datetime
+from pathlib import Path
 
 try:
     from apscheduler.schedulers.background import BackgroundScheduler
@@ -19,6 +21,8 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+_TAG_SYNC_COUNTER_FILE = Path(__file__).parent.parent.parent / "cache" / ".tag_sync_counter.json"
+
 _scheduler: BackgroundScheduler | None = None
 _scheduler_lock = threading.Lock()
 
@@ -28,6 +32,7 @@ scheduler_state: dict = {
     "interval_hours": 6,
     "start_time": "",  # HH:MM format for interval start (e.g., "00:00" for midnight)
     "cron_expression": "0 */6 * * *",  # Default: every 6 hours
+    "tag_sync_enabled": False,
     "next_run": None,
     "last_run": None,
     "last_run_success": None,
@@ -60,6 +65,31 @@ def _get_sync_function() -> Callable | None:
     try:
         from ..routes.sync import _run_sync_process
         from ..services import sync_lock, sync_state
+        from ..services.data import get_history_db
+
+        def _should_run_tag_sync(frequency: int) -> bool:
+            """Check if tag sync should run based on frequency counter."""
+            if frequency <= 1:
+                return True
+            try:
+                _TAG_SYNC_COUNTER_FILE.parent.mkdir(parents=True, exist_ok=True)
+                count = 0
+                if _TAG_SYNC_COUNTER_FILE.exists():
+                    with _TAG_SYNC_COUNTER_FILE.open() as f:
+                        data = json.load(f)
+                        count = data.get("count", 0)
+                count += 1
+                should_run = count >= frequency
+                if should_run:
+                    count = 0
+                with _TAG_SYNC_COUNTER_FILE.open("w") as f:
+                    json.dump({"count": count}, f)
+                if not should_run:
+                    logger.info("Tag sync skipped (%d/%d syncs until next tag sync)", count, frequency)
+                return should_run
+            except Exception as e:
+                logger.warning("Tag sync counter error, running anyway: %s", e)
+                return True
 
         def scheduled_sync():
             """Wrapper to run sync and track it in scheduler state."""
@@ -75,8 +105,21 @@ def _get_sync_function() -> Callable | None:
 
             try:
                 logger.info("Starting sync process...")
-                _run_sync_process()
-                logger.info(f"Sync completed with exit code: {sync_state.get('exit_code')}")
+                db = get_history_db()
+                _run_sync_process(db=db, trigger="scheduled")
+                main_exit = sync_state.get("exit_code")
+                logger.info(f"Sync completed with exit code: {main_exit}")
+
+                tag_cfg = _parse_scheduler_settings()
+                tag_sync_on = tag_cfg.get("tag_sync_enabled", False)
+                tag_frequency = tag_cfg.get("tag_sync_frequency", 1)
+                if tag_sync_on and main_exit == 0 and _should_run_tag_sync(tag_frequency):
+                    logger.info("Running scheduled tag sync...")
+                    with sync_lock:
+                        sync_state["running"] = True
+                    _run_sync_process(script="run_tags.py", db=db, trigger="scheduled")
+                    logger.info(f"Tag sync completed with exit code: {sync_state.get('exit_code')}")
+
                 scheduler_state["last_run_success"] = sync_state.get("exit_code") == 0
             except Exception as e:
                 logger.exception(f"Scheduled sync failed: {e}")
@@ -108,6 +151,7 @@ def start_scheduler(
     interval_hours: float = 6,
     start_time: str = "",
     cron_expression: str = "0 */6 * * *",
+    tag_sync_enabled: bool = False,
 ) -> bool:
     """Start or reconfigure the scheduler.
 
@@ -117,6 +161,7 @@ def start_scheduler(
         interval_hours: Hours between runs (for interval type)
         start_time: HH:MM format for when interval should start (e.g., "00:00")
         cron_expression: Cron expression (for cron type)
+        tag_sync_enabled: Also run tag sync after each scheduled main sync
 
     Returns:
         True if scheduler started successfully, False otherwise
@@ -134,6 +179,7 @@ def start_scheduler(
     scheduler_state["interval_hours"] = interval_hours
     scheduler_state["start_time"] = start_time
     scheduler_state["cron_expression"] = cron_expression
+    scheduler_state["tag_sync_enabled"] = tag_sync_enabled
 
     with contextlib.suppress(Exception):
         scheduler.remove_job("auto_sync")
@@ -225,12 +271,19 @@ def _parse_scheduler_settings() -> dict:
     except ValueError:
         interval_hours = 6.0
 
+    try:
+        tag_sync_frequency = max(1, int(settings.get("AUTO_TAG_SYNC_FREQUENCY", "1")))
+    except (ValueError, TypeError):
+        tag_sync_frequency = 1
+
     return {
         "enabled": settings.get("AUTO_SYNC_ENABLED", "").lower() in ("true", "1", "yes", "on"),
         "schedule_type": settings.get("AUTO_SYNC_TYPE", "interval").lower(),
         "interval_hours": interval_hours,
         "start_time": settings.get("AUTO_SYNC_START_TIME", ""),
         "cron_expression": settings.get("AUTO_SYNC_CRON", "0 */6 * * *"),
+        "tag_sync_enabled": settings.get("AUTO_TAG_SYNC_ENABLED", "").lower() in ("true", "1", "yes", "on"),
+        "tag_sync_frequency": tag_sync_frequency,
     }
 
 
@@ -255,6 +308,8 @@ def get_scheduler_status() -> dict:
         "interval_hours": cfg["interval_hours"],
         "start_time": cfg["start_time"],
         "cron_expression": cfg["cron_expression"],
+        "tag_sync_enabled": cfg["tag_sync_enabled"],
+        "tag_sync_frequency": cfg["tag_sync_frequency"],
         "next_run": scheduler_state["next_run"],
         "last_run": scheduler_state["last_run"],
         "last_run_success": scheduler_state["last_run_success"],
@@ -278,6 +333,7 @@ def init_scheduler_from_env():
             interval_hours=cfg["interval_hours"],
             start_time=cfg["start_time"],
             cron_expression=cfg["cron_expression"],
+            tag_sync_enabled=cfg["tag_sync_enabled"],
         )
     else:
         logger.info("Scheduler disabled in settings")

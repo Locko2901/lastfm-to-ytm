@@ -30,6 +30,7 @@ from .services import (
     get_tag_stats,
     get_track_tag_overrides_map,
     get_track_tags_map,
+    is_history_enabled,
     load_custom_playlists_config,
     sync_state,
 )
@@ -153,6 +154,12 @@ app.register_blueprint(sync_bp)
 app.register_blueprint(actions_bp)
 
 
+@app.route("/manifest.json")
+def manifest():
+    """Serve PWA manifest from site root."""
+    return app.send_static_file("manifest.json")
+
+
 @app.route("/")
 def index():
     """Main dashboard page."""
@@ -195,6 +202,7 @@ def index():
         custom_playlists=custom_playlists,
         track_tags_map=track_tags_map,
         tag_overrides_map=tag_overrides_map,
+        history_enabled=is_history_enabled(),
     )
 
 

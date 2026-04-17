@@ -24,13 +24,14 @@ export function filterTracks() {
     const artist = item.dataset.artist || ""
     const title = item.dataset.title || ""
     const tags = item.dataset.tags || ""
+    const videoid = item.dataset.videoid || ""
     const source = item.dataset.source || ""
     const isOverridden = item.dataset.overridden === "yes"
     const isBlacklisted = item.dataset.blacklisted === "yes"
     const isPending = item.dataset.pending === "yes"
     const hasTags = item.dataset.hastags === "yes"
 
-    const matchesSearch = artist.includes(search) || title.includes(search) || tags.includes(search)
+    const matchesSearch = artist.includes(search) || title.includes(search) || tags.includes(search) || videoid.includes(search)
     let matchesFilter = true
 
     if (activeFilter === "override") matchesFilter = isOverridden || source === "override"
@@ -45,8 +46,9 @@ export function filterTracks() {
   const searched = Array.from(trackItems).filter(i => {
     const a = i.dataset.artist || "",
       t = i.dataset.title || "",
-      tg = i.dataset.tags || ""
-    return a.includes(search) || t.includes(search) || tg.includes(search)
+      tg = i.dataset.tags || "",
+      v = i.dataset.videoid || ""
+    return a.includes(search) || t.includes(search) || tg.includes(search) || v.includes(search)
   })
   updateChipCounts(".filter-chip:not([data-panel])", searched, {
     all: () => true,
@@ -81,11 +83,12 @@ export function filterCache() {
     const artist = item.dataset.artist || ""
     const title = item.dataset.title || ""
     const tags = item.dataset.tags || ""
+    const videoid = item.dataset.videoid || ""
     const hasOverride = item.dataset.hasoverride === "yes"
     const isBlacklisted = item.dataset.blacklisted === "yes"
     const hasTags = item.dataset.hastags === "yes"
 
-    const matchesSearch = artist.includes(search) || title.includes(search) || tags.includes(search)
+    const matchesSearch = artist.includes(search) || title.includes(search) || tags.includes(search) || videoid.includes(search)
     let matchesFilter = true
 
     if (activeFilter === "has-override") matchesFilter = hasOverride
@@ -100,8 +103,9 @@ export function filterCache() {
   const searched = Array.from(cacheItems).filter(i => {
     const a = i.dataset.artist || "",
       t = i.dataset.title || "",
-      tg = i.dataset.tags || ""
-    return a.includes(search) || t.includes(search) || tg.includes(search)
+      tg = i.dataset.tags || "",
+      v = i.dataset.videoid || ""
+    return a.includes(search) || t.includes(search) || tg.includes(search) || v.includes(search)
   })
   updateChipCounts('.filter-chip[data-panel="cache"]', searched, {
     all: () => true,
@@ -159,6 +163,7 @@ export function filterByTab(tabContext) {
   if (tabContext === "cache") filterCache()
   else if (tabContext === "notfound") filterNotFound()
   else if (tabContext === "tags") filterTags()
+  else if (tabContext === "history" && window.loadHistoryData) window.loadHistoryData()
   else filterTracks()
 }
 

@@ -5,14 +5,24 @@ import time
 from typing import TYPE_CHECKING, Any
 
 from ytmusicapi import YTMusic
+from ytmusicapi.exceptions import YTMusicServerError
 
 from ..ytm import create_playlist_with_items, get_existing_playlist_by_name
 from .metrics import _query_counter
 
 if TYPE_CHECKING:
     from ..cache.playlist import PlaylistCache
+    from ..cache.search import SearchCache
 
 log = logging.getLogger(__name__)
+
+
+class InvalidVideoIDsError(Exception):
+    """Raised when invalid video IDs are detected during sync."""
+
+    def __init__(self, invalid_ids: list[str]):
+        self.invalid_ids = invalid_ids
+        super().__init__(f"{len(invalid_ids)} invalid video ID(s) detected: {invalid_ids}")
 
 
 def _retry_with_backoff(func, *args, max_retries: int = 3, initial_delay: float = 1.0, operation: str = "operation", **kwargs) -> Any:
@@ -23,13 +33,21 @@ def _retry_with_backoff(func, *args, max_retries: int = 3, initial_delay: float 
     for attempt in range(max_retries):
         try:
             return func(*args, **kwargs)
-        except (RuntimeError, ValueError, OSError) as e:
+        except (RuntimeError, ValueError, OSError, YTMusicServerError) as e:
             last_exception = e
             error_msg = str(e)
 
-            is_rate_limit = "403" in error_msg or "Forbidden" in error_msg or ("Expecting value" in error_msg and attempt < max_retries - 1)
+            is_precondition = "400" in error_msg and "Precondition" in error_msg
+            if is_precondition:
+                raise
 
-            if is_rate_limit and attempt < max_retries - 1:
+            is_conflict = "409" in error_msg
+            if is_conflict:
+                raise
+
+            is_retryable = "403" in error_msg or "Forbidden" in error_msg or ("Expecting value" in error_msg and attempt < max_retries - 1)
+
+            if is_retryable and attempt < max_retries - 1:
                 log.warning(
                     "%s: rate limit (retry %d/%d in %.1fs)",
                     operation,
@@ -175,8 +193,62 @@ def _are_same_song(ytm: YTMusic, vid1: str, vid2: str) -> bool:
         return False
 
 
+def _evict_from_cache(search_cache: SearchCache | None, skipped_ids: list[str]) -> None:
+    """Evict failed video IDs from the search cache so they get re-resolved next run."""
+    if not search_cache or not skipped_ids:
+        return
+    skipped_set = set(skipped_ids)
+    to_evict = [
+        (entry.get("artist", ""), entry.get("title", ""), entry.get("video_id"))
+        for entry in search_cache.values()
+        if entry.get("video_id") in skipped_set
+    ]
+    for artist, title, vid in to_evict:
+        if search_cache.delete_by_track(artist, title):
+            log.info("Evicted stale cache entry: %s - %s (video_id=%s)", artist, title, vid)
+    if to_evict:
+        log.info("Evicted %d stale video IDs from search cache", len(to_evict))
+
+
+def _validate_video_ids(ytm: YTMusic, video_ids: list[str]) -> list[str]:
+    """Validate video IDs by checking them individually. Returns list of invalid IDs."""
+    invalid = []
+    for vid in video_ids:
+        try:
+            _query_counter.increment("get_song")
+            ytm.get_song(vid)
+        except Exception:
+            invalid.append(vid)
+            log.warning("Invalid video ID detected: %s", vid)
+    log.info("Validation complete: %d valid, %d invalid out of %d", len(video_ids) - len(invalid), len(invalid), len(video_ids))
+    return invalid
+
+
 def _replace_playlist_content(ytm: YTMusic, playlist_id: str, video_ids: list[str], max_retries: int = 3) -> None:
     """Replace entire playlist content."""
+    precondition_retries = 2
+    for precondition_attempt in range(precondition_retries + 1):
+        try:
+            _do_replace_playlist_content(ytm, playlist_id, video_ids, max_retries)
+            return
+        except YTMusicServerError as e:
+            error_msg = str(e)
+            is_retriable = ("Precondition" in error_msg or "409" in error_msg) and precondition_attempt < precondition_retries
+            if is_retriable:
+                delay = 3 * (2**precondition_attempt)
+                log.warning(
+                    "Precondition check failed (stale playlist state), re-fetching and retrying (%d/%d in %.1fs)",
+                    precondition_attempt + 1,
+                    precondition_retries,
+                    delay,
+                )
+                time.sleep(delay)
+            else:
+                raise
+
+
+def _do_replace_playlist_content(ytm: YTMusic, playlist_id: str, video_ids: list[str], max_retries: int = 3) -> None:
+    """Fetch current playlist state, remove all tracks, then add desired tracks."""
     _query_counter.increment("get_playlist")
     log.debug(
         "API Query #%d: get_playlist(%s) for replacement",
@@ -212,22 +284,34 @@ def _replace_playlist_content(ytm: YTMusic, playlist_id: str, video_ids: list[st
             log.debug("Removed %d tracks from playlist", len(videos_to_remove))
 
     if video_ids:
-        _query_counter.increment("add_playlist_items")
-        log.debug(
-            "API Query #%d: add_playlist_items(%s, %d items)",
-            _query_counter.get_count(),
-            playlist_id,
-            len(video_ids),
-        )
-        _retry_with_backoff(
-            ytm.add_playlist_items,
-            playlist_id,
-            video_ids,
-            duplicates=False,
-            max_retries=max_retries,
-            operation="add_items",
-        )
-        log.debug("Added %d tracks to playlist", len(video_ids))
+        try:
+            _query_counter.increment("add_playlist_items")
+            log.debug(
+                "API Query #%d: add_playlist_items(%s, %d items)",
+                _query_counter.get_count(),
+                playlist_id,
+                len(video_ids),
+            )
+            _retry_with_backoff(
+                ytm.add_playlist_items,
+                playlist_id,
+                video_ids,
+                duplicates=False,
+                max_retries=max_retries,
+                operation="add_items",
+            )
+            log.debug("Added %d tracks to playlist", len(video_ids))
+        except YTMusicServerError as e:
+            error_msg = str(e)
+            if "400" in error_msg or "409" in error_msg:
+                log.warning(
+                    "Bulk add failed (%s), validating video IDs...",
+                    error_msg.partition(".")[0],
+                )
+                invalid_ids = _validate_video_ids(ytm, video_ids)
+                if invalid_ids:
+                    raise InvalidVideoIDsError(invalid_ids) from e
+                raise
 
 
 def sync_playlist(
@@ -238,8 +322,11 @@ def sync_playlist(
     verify_attempts: int = 2,
     accept_substitutions: bool = True,
     max_retries: int = 3,
-) -> None:
-    """Synchronize a playlist with desired video IDs."""
+) -> dict[str, str]:
+    """Synchronize a playlist with desired video IDs.
+
+    Returns a dict of detected YouTube substitutions {original_vid: replacement_vid}.
+    """
     initial_count = _query_counter.get_count()
     log.info(
         "Starting playlist sync for %s (current query count: %d)",
@@ -250,7 +337,7 @@ def sync_playlist(
     desired_video_ids = [vid for vid in desired_video_ids if isinstance(vid, str) and len(vid) == 11]
     if not desired_video_ids:
         log.warning("No valid video IDs provided")
-        return
+        return {}
 
     unique_count = len(set(desired_video_ids))
     if unique_count < len(desired_video_ids):
@@ -278,7 +365,7 @@ def sync_playlist(
                 final_count - initial_count,
                 final_count,
             )
-            return
+            return substitutions
 
         desired_set = set(desired_video_ids)
         current_set = set(current_video_ids)
@@ -292,7 +379,7 @@ def sync_playlist(
                 final_count - initial_count,
                 final_count,
             )
-            return
+            return substitutions
 
         missing = desired_set - current_set
         extra = current_set - desired_set
@@ -305,7 +392,7 @@ def sync_playlist(
                 final_count - initial_count,
                 final_count,
             )
-            return
+            return substitutions
 
         log.debug(
             "Playlist mismatch - missing: %d, extra: %d (attempt %d/%d)",
@@ -342,7 +429,7 @@ def sync_playlist(
                         final_count - initial_count,
                         final_count,
                     )
-                    return
+                    return substitutions
 
                 desired_video_ids = adjusted_desired
                 desired_set = set(desired_video_ids)
@@ -370,6 +457,7 @@ def sync_playlist(
         final_count - initial_count,
         final_count,
     )
+    return substitutions
 
 
 def upsert_playlist(

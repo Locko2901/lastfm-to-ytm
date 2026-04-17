@@ -24,7 +24,7 @@
     <div class="track-item cache-item{% if t.has_override %} overridden{% endif %}{% if t.is_blacklisted %} blacklisted{% endif %}"
       data-artist="{{ t.artist | lower }}" data-title="{{ t.title | lower }}" data-original-artist="{{ t.artist }}"
       data-original-title="{{ t.title }}" data-hasoverride="{{ 'yes' if t.has_override else 'no' }}"
-      data-blacklisted="{{ 'yes' if t.is_blacklisted else 'no' }}"
+      data-blacklisted="{{ 'yes' if t.is_blacklisted else 'no' }}" data-videoid="{{ t.video_id | lower }}"
       {% set _tags = track_tags_map.get((t.artist | lower ~ '|' ~ t.title | lower), []) %} data-tags="{{ _tags | join(',') | lower }}"
       data-hastags="{{ 'yes' if _tags else 'no' }}">
       <div class="track-info">
