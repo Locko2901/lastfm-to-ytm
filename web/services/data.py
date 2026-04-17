@@ -5,11 +5,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from flask import g
+from flask import g, has_request_context
 
 from src.cache.search import SearchCache, SearchOverrides
 from src.cache.tags import TagCache, TagOverrides
 from src.config import CACHE_DIR, CONFIG_DIR, Settings, load_custom_playlists
+from src.history import HistoryDB
 from src.playlist.weekly import _derive_weekly_prefix
 
 from .env import BROWSER_JSON_FILE, ENV_FILE
@@ -599,11 +600,13 @@ def load_custom_playlists_config() -> list[dict]:
     return [
         {
             "name": c.name,
+            "description": c.description,
             "tags": list(c.tags),
             "match": c.match,
             "limit": c.limit,
             "blacklist": sorted(c.blacklist),
             "backfill": c.backfill,
+            "auto_sync": c.auto_sync,
             "track_count": len(cache_data.get(c.name, {}).get("video_ids", [])),
             "playlist_id": cache_data.get(c.name, {}).get("id"),
         }
@@ -768,3 +771,59 @@ def get_custom_playlist_tracks(index: int) -> list[dict]:
         )
 
     return results
+
+
+_history_db: HistoryDB | None = None
+
+
+def get_history_db() -> HistoryDB | None:
+    """Return the shared HistoryDB instance, or None if disabled.
+
+    Works both inside Flask request context and from background threads
+    (e.g. scheduler).
+    """
+    global _history_db
+    if _history_db is not None:
+        return _history_db
+
+    if has_request_context():
+        settings = _get_settings()
+    else:
+        try:
+            settings = Settings.from_env()
+        except Exception:
+            return None
+
+    if not settings or not settings.history_db_enabled:
+        return None
+
+    _history_db = HistoryDB(settings.history_db_file)
+    return _history_db
+
+
+def reset_history_db() -> None:
+    """Reset the cached HistoryDB instance (e.g. after settings change)."""
+    global _history_db
+    if _history_db is not None:
+        _history_db.close()
+    _history_db = None
+
+
+def is_history_enabled() -> bool:
+    """Check if history DB is enabled in settings."""
+    settings = _get_settings()
+    return bool(settings and settings.history_db_enabled)
+
+
+def history_record_action(
+    action_type: str,
+    artist: str | None = None,
+    title: str | None = None,
+    video_id: str | None = None,
+    detail: str | None = None,
+    source: str = "web",
+) -> None:
+    """Record an action in the history DB if enabled."""
+    db = get_history_db()
+    if db:
+        db.record_action(action_type, artist, title, video_id, detail, source)

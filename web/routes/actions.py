@@ -8,7 +8,7 @@ import re
 from flask import Blueprint, jsonify, redirect, request, url_for
 from flask_babel import gettext as _
 
-from ..services import load_overrides, load_search_cache, load_tag_cache, load_tag_overrides
+from ..services import history_record_action, load_overrides, load_search_cache, load_tag_cache, load_tag_overrides
 
 actions_bp = Blueprint("actions", __name__)
 
@@ -54,6 +54,7 @@ def blacklist():
     if artist and title:
         overrides = load_overrides()
         overrides.blacklist(artist, title, reason)
+        history_record_action("blacklist_add", artist, title, detail=reason)
 
     redirect_tab = request.form.get("redirect_tab", "playlist")
     return redirect(url_for("index") + f"?tab={redirect_tab}")
@@ -68,6 +69,7 @@ def unblacklist():
     if artist and title:
         overrides = load_overrides()
         overrides.remove_blacklist(artist, title)
+        history_record_action("blacklist_remove", artist, title)
 
     redirect_tab = request.form.get("redirect_tab", "blacklist")
     return redirect(url_for("index") + f"?tab={redirect_tab}")
@@ -91,6 +93,7 @@ def override():
 
     overrides = load_overrides()
     overrides.set(artist, title, video_id, reason)
+    history_record_action("override_add", artist, title, video_id=video_id, detail=reason)
 
     redirect_tab = request.form.get("redirect_tab", "playlist")
     return redirect(url_for("index") + f"?tab={redirect_tab}")
@@ -105,6 +108,7 @@ def remove_override():
     if artist and title:
         overrides = load_overrides()
         overrides.remove(artist, title)
+        history_record_action("override_remove", artist, title)
 
     redirect_tab = request.form.get("redirect_tab", "overrides")
     return redirect(url_for("index") + f"?tab={redirect_tab}")
@@ -119,6 +123,7 @@ def clear_cache_entry():
     if artist and title:
         cache = load_search_cache()
         cache.delete_by_track(artist, title)
+        history_record_action("cache_clear", artist, title)
 
     redirect_tab = request.form.get("redirect_tab", "playlist")
     return redirect(url_for("index") + f"?tab={redirect_tab}")
@@ -148,6 +153,7 @@ def tag_override():
 
     overrides = load_tag_overrides()
     overrides.set(artist, title, tags, mode=mode, reason=reason)
+    history_record_action("tag_override_add", artist, title, detail=f"mode={mode}, tags={','.join(tags)}")
 
     redirect_tab = request.form.get("redirect_tab", "tags")
     return redirect(url_for("index") + f"?tab={redirect_tab}")
@@ -162,6 +168,7 @@ def remove_tag_override():
     if artist and title:
         overrides = load_tag_overrides()
         overrides.remove(artist, title)
+        history_record_action("tag_override_remove", artist, title)
 
     redirect_tab = request.form.get("redirect_tab", "tags")
     return redirect(url_for("index") + f"?tab={redirect_tab}")
@@ -176,6 +183,7 @@ def clear_tag_cache_entry():
     if artist and title:
         cache = load_tag_cache()
         cache.delete_by_track(artist, title)
+        history_record_action("tag_cache_clear", artist, title)
 
     redirect_tab = request.form.get("redirect_tab", "tags")
     return redirect(url_for("index") + f"?tab={redirect_tab}")
@@ -183,7 +191,7 @@ def clear_tag_cache_entry():
 
 @actions_bp.route("/export", methods=["GET"])
 def export_data():
-    """Export overrides and/or blacklist as JSON."""
+    """Export overrides, blacklist, and/or tag overrides as JSON."""
     export_type = request.args.get("type", "all")
     overrides = load_overrides()
 
@@ -192,6 +200,9 @@ def export_data():
         result["overrides"] = dict(overrides.override_items())
     if export_type in ("all", "blacklist"):
         result["blacklist"] = dict(overrides.blacklist_items())
+    if export_type in ("all", "tag_overrides"):
+        tag_ov = load_tag_overrides()
+        result["tag_overrides"] = dict(tag_ov.items())
 
     result["_export_meta"] = {
         "type": export_type,
@@ -235,10 +246,28 @@ def import_data():
                 overrides_obj.blacklist(artist, title, reason)
                 imported_blacklist += 1
 
+    imported_tag_overrides = 0
+    if "tag_overrides" in data and isinstance(data["tag_overrides"], dict):
+        tag_ov = load_tag_overrides()
+        for entry in data["tag_overrides"].values():
+            if not isinstance(entry, dict):
+                continue
+            artist = entry.get("artist", "").strip()
+            title = entry.get("title", "").strip()
+            tags = entry.get("tags", [])
+            mode = entry.get("mode", "add")
+            reason = entry.get("reason", _("Imported"))
+            if artist and title and tags and isinstance(tags, list):
+                clean_tags = [t.strip().lower() for t in tags if isinstance(t, str) and t.strip()]
+                if clean_tags:
+                    tag_ov.set(artist, title, clean_tags, mode=mode, reason=reason)
+                    imported_tag_overrides += 1
+
     return jsonify(
         {
             "status": "ok",
             "imported_overrides": imported_overrides,
             "imported_blacklist": imported_blacklist,
+            "imported_tag_overrides": imported_tag_overrides,
         }
     )

@@ -17,11 +17,13 @@ from ..services import (
     BOOL_SETTINGS,
     ENV_EXAMPLE_FILE,
     ENV_FILE,
+    PRIVACY_SETTINGS,
     clear_failure_log,
     delete_custom_playlist_data,
     get_cache_stats,
     get_cached_tracks,
     get_custom_playlist_tracks,
+    get_history_db,
     get_last_sync_time,
     get_not_found_tracks,
     get_overrides_data,
@@ -33,12 +35,14 @@ from ..services import (
     get_tag_suggestions,
     get_track_tag_overrides_map,
     get_track_tags_map,
+    is_history_enabled,
     load_custom_playlists_config,
     load_failure_log,
     load_overrides,
     load_run_log,
     load_search_cache,
     parse_env_file,
+    reset_history_db,
     save_custom_playlists_config,
     sync_lock,
     sync_state,
@@ -195,6 +199,16 @@ def settings_get():
         value = settings.get(key, "")
         if key in BOOL_SETTINGS:
             result[key] = value.lower() in ("true", "1", "yes", "on", "t", "y")
+        elif key in PRIVACY_SETTINGS:
+            upper = value.upper()
+            if upper in ("PUBLIC", "UNLISTED", "PRIVATE"):
+                result[key] = upper
+            elif value.lower() in ("true", "1", "yes", "on", "t", "y"):
+                result[key] = "PUBLIC"
+            elif value.lower() in ("false", "0", "no", "off", "f", "n"):
+                result[key] = "PRIVATE"
+            else:
+                result[key] = value
         else:
             result[key] = value
     return jsonify(result)
@@ -214,14 +228,68 @@ def settings_update():
                 continue
             if key in BOOL_SETTINGS:
                 updates[key] = "true" if value else "false"
+            elif key in PRIVACY_SETTINGS:
+                upper = str(value).upper() if value else ""
+                if upper in ("PUBLIC", "UNLISTED", "PRIVATE"):
+                    updates[key] = upper
+                else:
+                    updates[key] = ""
             else:
                 updates[key] = str(value) if value is not None else ""
 
+        cron_val = updates.get("AUTO_SYNC_CRON") or data.get("AUTO_SYNC_CRON", "")
+        sync_type = updates.get("AUTO_SYNC_TYPE") or data.get("AUTO_SYNC_TYPE", "")
+        sync_enabled = updates.get("AUTO_SYNC_ENABLED", "false").lower() in ("true", "1")
+        if sync_enabled and sync_type == "cron" and cron_val:
+            try:
+                from apscheduler.triggers.cron import CronTrigger
+
+                CronTrigger.from_crontab(cron_val)
+            except (ValueError, TypeError) as e:
+                return jsonify({"error": _("Invalid cron expression: %(error)s", error=str(e))}), 400
+            except ImportError:
+                pass
+
+        start_time_val = updates.get("AUTO_SYNC_START_TIME", "")
+        if start_time_val:
+            try:
+                hour, minute = map(int, start_time_val.split(":"))
+                if not (0 <= hour <= 23 and 0 <= minute <= 59):
+                    return jsonify({"error": _("Invalid start time: hour must be 0-23, minute 0-59")}), 400
+            except (ValueError, AttributeError):
+                pass  # Non-strict: empty or partial values are allowed in general settings
+
         update_env_file(updates)
+
+        if "HISTORY_DB_ENABLED" in updates or "HISTORY_DB_FILE" in updates:
+            reset_history_db()
+
         return jsonify({"status": "saved", "updated": list(updates.keys())})
     except OSError as e:
         logger.error(f"Failed to update settings: {e}")
         return jsonify({"error": _("Failed to save settings")}), 500
+
+
+@api_bp.route("/webhook/test", methods=["POST"])
+def webhook_test():
+    """Send a test webhook to verify the URL works."""
+    data = request.get_json() or {}
+    url = (data.get("url") or "").strip()
+    if not url:
+        return jsonify({"error": _("No webhook URL provided")}), 400
+
+    from src.webhook import send_webhook
+
+    ok = send_webhook(
+        url,
+        status="test",
+        sync_type="test",
+        tracks_resolved=42,
+        tracks_missed=3,
+    )
+    if ok:
+        return jsonify({"status": "ok"})
+    return jsonify({"error": _("Webhook request failed. Check the URL and try again.")}), 502
 
 
 @api_bp.route("/stats")
@@ -297,6 +365,8 @@ def panel_html(panel_name):
     if panel_name == "custompl":
         custom_playlists = load_custom_playlists_config()
         return render_template("partials/_panel_custompl.html", custom_playlists=custom_playlists)
+    if panel_name == "history":
+        return render_template("partials/_panel_history.html", history_enabled=is_history_enabled())
     return jsonify({"error": _("Unknown panel")}), 404
 
 
@@ -340,14 +410,22 @@ def custom_playlists_save():
         backfill = entry.get("backfill", True)
         if not isinstance(backfill, bool):
             backfill = True
+        auto_sync = entry.get("auto_sync", True)
+        if not isinstance(auto_sync, bool):
+            auto_sync = True
+        description = entry.get("description", "")
+        if not isinstance(description, str):
+            description = ""
         cleaned.append(
             {
                 "name": name,
+                "description": description.strip(),
                 "tags": [t.lower().strip() for t in tags if t.strip()],
                 "match": match,
                 "limit": limit,
                 "blacklist": [b.lower().strip() for b in blacklist if b.strip()],
                 "backfill": backfill,
+                "auto_sync": auto_sync,
             }
         )
 
@@ -487,6 +565,10 @@ def track_detail():
         "is_overridden": False,
         "is_blacklisted": False,
         "cache_timestamp": None,
+        "history_times_found": None,
+        "history_first_seen": None,
+        "history_last_seen": None,
+        "history_action_count": None,
     }
 
     override_vid = overrides_obj.get(artist, title)
@@ -513,6 +595,22 @@ def track_detail():
 
     if result["is_blacklisted"] and result["source"] not in ("blacklisted",):
         result["source"] = "blacklisted"
+
+    history_db = get_history_db()
+    if history_db:
+        history_entry = history_db.get_track_history(artist, title)
+        if history_entry:
+            result["history_times_found"] = history_entry.get("times_found")
+            result["history_first_seen"] = history_entry.get("first_seen")
+            result["history_last_seen"] = history_entry.get("last_seen")
+            result["history_action_count"] = history_entry.get("action_count")
+
+            if not result["video_id"]:
+                result["video_id"] = history_entry.get("video_id")
+            if not result["yt_title"]:
+                result["yt_title"] = history_entry.get("yt_title")
+            if not result["source"]:
+                result["source"] = history_entry.get("source")
 
     return jsonify(result)
 
@@ -694,6 +792,26 @@ def scheduler_configure():
         interval_hours = float(data.get("interval_hours", 6))
         start_time = data.get("start_time", "")
         cron_expression = data.get("cron_expression", "0 */6 * * *")
+        tag_sync_enabled = data.get("tag_sync_enabled", False)
+        tag_sync_frequency = max(1, int(data.get("tag_sync_frequency", 1)))
+
+        if schedule_type == "cron" and enabled:
+            try:
+                from apscheduler.triggers.cron import CronTrigger
+
+                CronTrigger.from_crontab(cron_expression)
+            except (ValueError, TypeError) as e:
+                return jsonify({"error": _("Invalid cron expression: %(error)s", error=str(e))}), 400
+            except ImportError:
+                pass
+
+        if start_time:
+            try:
+                hour, minute = map(int, start_time.split(":"))
+                if not (0 <= hour <= 23 and 0 <= minute <= 59):
+                    return jsonify({"error": _("Invalid start time: hour must be 0-23, minute 0-59")}), 400
+            except (ValueError, AttributeError):
+                return jsonify({"error": _("Invalid start time format. Use HH:MM.")}), 400
 
         update_env_file(
             {
@@ -702,6 +820,8 @@ def scheduler_configure():
                 "AUTO_SYNC_INTERVAL_HOURS": str(interval_hours),
                 "AUTO_SYNC_START_TIME": start_time,
                 "AUTO_SYNC_CRON": cron_expression,
+                "AUTO_TAG_SYNC_ENABLED": "true" if tag_sync_enabled else "false",
+                "AUTO_TAG_SYNC_FREQUENCY": str(tag_sync_frequency),
             }
         )
 
@@ -711,6 +831,7 @@ def scheduler_configure():
             interval_hours=interval_hours,
             start_time=start_time,
             cron_expression=cron_expression,
+            tag_sync_enabled=tag_sync_enabled,
         )
 
         if success:
@@ -793,6 +914,157 @@ def teleporter_import():
     except Exception as e:
         logger.error(f"Teleporter import failed: {e}")
         return jsonify({"error": _("Import failed")}), 500
+
+
+@api_bp.route("/history/status")
+def history_status():
+    """Check if history DB is enabled and get overview stats."""
+    if not is_history_enabled():
+        return jsonify({"enabled": False})
+    db = get_history_db()
+    if not db:
+        return jsonify({"enabled": False})
+    stats = db.get_overview_stats()
+    stats["enabled"] = True
+    stats["db_size_bytes"] = db.get_db_size_bytes()
+    return jsonify(stats)
+
+
+@api_bp.route("/history/tracks")
+def history_tracks():
+    """Get paginated tracks from history DB."""
+    db = get_history_db()
+    if not db:
+        return jsonify({"error": _("History database is not enabled")}), 400
+
+    try:
+        limit = min(int(request.args.get("limit", 50)), 200)
+        offset = max(int(request.args.get("offset", 0)), 0)
+    except (ValueError, TypeError):
+        limit, offset = 50, 0
+    sort = request.args.get("sort", "last_seen")
+    order = request.args.get("order", "desc")
+    search = request.args.get("search", "").strip() or None
+    source_filter = request.args.get("source", "").strip() or None
+    found_filter = request.args.get("found", "").strip() or None
+
+    tracks = db.get_tracks(limit, offset, sort, order, search, source_filter, found_filter)
+    total = db.get_track_count(search, source_filter, found_filter)
+    return jsonify({"tracks": tracks, "total": total, "limit": limit, "offset": offset})
+
+
+@api_bp.route("/history/syncs")
+def history_syncs():
+    """Get paginated sync history."""
+    db = get_history_db()
+    if not db:
+        return jsonify({"error": _("History database is not enabled")}), 400
+
+    try:
+        limit = min(int(request.args.get("limit", 50)), 200)
+        offset = max(int(request.args.get("offset", 0)), 0)
+    except (ValueError, TypeError):
+        limit, offset = 50, 0
+    date_from = request.args.get("from", "").strip() or None
+    date_to = request.args.get("to", "").strip() or None
+    syncs = db.get_syncs(limit, offset, date_from, date_to)
+    total = db.get_sync_count(date_from, date_to)
+    return jsonify({"syncs": syncs, "total": total, "limit": limit, "offset": offset})
+
+
+@api_bp.route("/history/syncs/<int:sync_id>")
+def history_sync(sync_id: int):
+    """Get a single sync record."""
+    db = get_history_db()
+    if not db:
+        return jsonify({"error": _("History database is not enabled")}), 400
+
+    sync_record = db.get_sync(sync_id)
+    if not sync_record:
+        return jsonify({"error": _("Sync record not found")}), 404
+
+    return jsonify(sync_record)
+
+
+@api_bp.route("/history/actions")
+def history_actions():
+    """Get paginated action history."""
+    db = get_history_db()
+    if not db:
+        return jsonify({"error": _("History database is not enabled")}), 400
+
+    try:
+        limit = min(int(request.args.get("limit", 100)), 200)
+        offset = max(int(request.args.get("offset", 0)), 0)
+    except (ValueError, TypeError):
+        limit, offset = 100, 0
+    action_type = request.args.get("type", "").strip() or None
+    date_from = request.args.get("from", "").strip() or None
+    date_to = request.args.get("to", "").strip() or None
+    actions = db.get_actions(limit, offset, action_type, date_from, date_to)
+    total = db.get_action_count(action_type, date_from, date_to)
+    return jsonify({"actions": actions, "total": total, "limit": limit, "offset": offset})
+
+
+@api_bp.route("/history/top-tracks")
+def history_top_tracks():
+    """Get most frequently found tracks."""
+    db = get_history_db()
+    if not db:
+        return jsonify({"error": _("History database is not enabled")}), 400
+
+    try:
+        limit = min(int(request.args.get("limit", 20)), 100)
+    except (ValueError, TypeError):
+        limit = 20
+    return jsonify({"tracks": db.get_top_tracks(limit)})
+
+
+@api_bp.route("/history/backfill", methods=["POST"])
+def history_backfill():
+    """Backfill history DB from existing cache data."""
+    db = get_history_db()
+    if not db:
+        return jsonify({"error": _("History database is not enabled")}), 400
+
+    cache = load_search_cache()
+    cache_count = db.backfill_from_search_cache(dict(cache.items()))
+
+    overrides = load_overrides()
+    override_items = dict(overrides.override_items())
+    override_count = db.backfill_from_overrides(override_items)
+
+    return jsonify(
+        {
+            "status": "ok",
+            "cache_entries": cache_count,
+            "override_entries": override_count,
+        }
+    )
+
+
+@api_bp.route("/history/clear", methods=["POST"])
+def history_clear():
+    """Delete all history data (tracks, syncs, actions)."""
+    db = get_history_db()
+    if not db:
+        return jsonify({"error": _("History database is not enabled")}), 400
+    db.clear_all()
+    return jsonify({"status": "cleared"})
+
+
+@api_bp.route("/history/trend")
+def history_trend():
+    """Get daily sync trend data for charting."""
+    db = get_history_db()
+    if not db:
+        return jsonify({"error": _("History database is not enabled")}), 400
+
+    try:
+        days = min(int(request.args.get("days", 30)), 365)
+    except (ValueError, TypeError):
+        days = 30
+    return jsonify({"trend": db.get_sync_trend(days)})
 
 
 def _get_gunicorn_master_pid() -> int | None:

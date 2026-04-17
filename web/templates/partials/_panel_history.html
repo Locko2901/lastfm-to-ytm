@@ -1,0 +1,148 @@
+{# j2lint: disable=S7 #}
+{% from "macros/_track_actions.html" import search_bar %}
+<div class="tab-panel" id="panel-history">
+  {% if history_enabled %}
+  <div class="panel-description">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <polyline points="12 6 12 12 16 14"></polyline>
+    </svg>
+    <p>{{ _('Track history, sync metrics, and action log. All data is stored locally in a SQLite database.') }}</p>
+  </div>
+
+  <div class="history-stats" id="historyStats">
+    <div class="stats-bar">
+      <div class="stat-card" data-action="switchHistoryView" data-history-view-tab="tracks" data-history-view-filter="all" style="cursor: pointer;">
+        <div class="stat-value" id="histStatTracks">–</div>
+        <div class="stat-label">{{ _('Total Tracks') }}</div>
+      </div>
+      <div class="stat-card" data-action="switchHistoryView" data-history-view-tab="tracks" data-history-view-filter="found" style="cursor: pointer;">
+        <div class="stat-value green" id="histStatFound">–</div>
+        <div class="stat-label">{{ _('Found') }}</div>
+      </div>
+      <div class="stat-card" data-action="switchHistoryView" data-history-view-tab="tracks" data-history-view-filter="not_found"
+        style="cursor: pointer;">
+        <div class="stat-value red" id="histStatMissed">–</div>
+        <div class="stat-label">{{ _('Missed') }}</div>
+      </div>
+      <div class="stat-card" data-action="switchHistoryView" data-history-view-tab="syncs" style="cursor: pointer;">
+        <div class="stat-value blue" id="histStatSyncs">–</div>
+        <div class="stat-label">{{ _('Total Syncs') }}</div>
+      </div>
+      <div class="stat-card" data-action="switchHistoryView" data-history-view-tab="syncs" style="cursor: pointer;">
+        <div class="stat-value" id="histStatAvgDuration">–</div>
+        <div class="stat-label">{{ _('Avg Duration') }}</div>
+      </div>
+      <div class="stat-card" data-action="switchHistoryView" data-history-view-tab="syncs" style="cursor: pointer;">
+        <div class="stat-value purple" id="histStatCacheRate">–</div>
+        <div class="stat-label">{{ _('Cache Hit Rate') }}</div>
+      </div>
+      <div class="stat-card" data-action="switchHistoryView" data-history-view-tab="syncs" style="cursor: pointer;">
+        <div class="stat-value" id="histStatApiCalls">–</div>
+        <div class="stat-label">{{ _('API Searches') }}</div>
+      </div>
+      <div class="stat-card" data-action="switchHistoryView" data-history-view-tab="actions" style="cursor: pointer;">
+        <div class="stat-value yellow" id="histStatActions">–</div>
+        <div class="stat-label">{{ _('Actions') }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="history-subtabs">
+    <button class="filter-chip active" data-history-tab="tracks">{{ _('Tracks') }}</button>
+    <button class="filter-chip" data-history-tab="syncs">{{ _('Syncs') }}</button>
+    <button class="filter-chip" data-history-tab="actions">{{ _('Actions') }}</button>
+    <button class="filter-chip" data-history-tab="top">{{ _('Top Tracks') }}</button>
+    <button class="filter-chip" data-history-tab="trend">{{ _('Trend') }}</button>
+  </div>
+
+  <div class="history-subpanel active" id="history-tracks">
+    <div class="filter-bar">
+      {{ search_bar(_('Search tracks...'), "historyTrackSearch") }}
+      <div class="filter-chips">
+        <button class="filter-chip active" data-history-filter="all">{{ _('All') }}</button>
+        <button class="filter-chip" data-history-filter="found">{{ _('Found') }}</button>
+        <button class="filter-chip" data-history-filter="not_found">{{ _('Missed') }}</button>
+      </div>
+    </div>
+    <div class="track-list" id="historyTrackList">
+      <div class="empty-state">
+        <p class="text-muted">{{ _('Loading...') }}</p>
+      </div>
+    </div>
+    <div class="history-pagination" id="historyTrackPagination"></div>
+  </div>
+
+  <div class="history-subpanel" id="history-syncs">
+    <div class="filter-bar">
+      <div class="date-range-filter">
+        <label>{{ _('From') }}</label>
+        <input type="date" id="historySyncDateFrom" class="date-input">
+        <label>{{ _('To') }}</label>
+        <input type="date" id="historySyncDateTo" class="date-input">
+      </div>
+    </div>
+    <div class="track-list" id="historySyncList">
+      <div class="empty-state">
+        <p class="text-muted">{{ _('Loading...') }}</p>
+      </div>
+    </div>
+    <div class="history-pagination" id="historySyncPagination"></div>
+  </div>
+
+  <div class="history-subpanel" id="history-actions">
+    <div class="filter-bar">
+      <div class="date-range-filter">
+        <label>{{ _('From') }}</label>
+        <input type="date" id="historyActionDateFrom" class="date-input">
+        <label>{{ _('To') }}</label>
+        <input type="date" id="historyActionDateTo" class="date-input">
+      </div>
+    </div>
+    <div class="track-list" id="historyActionList">
+      <div class="empty-state">
+        <p class="text-muted">{{ _('Loading...') }}</p>
+      </div>
+    </div>
+    <div class="history-pagination" id="historyActionPagination"></div>
+  </div>
+
+  <div class="history-subpanel" id="history-top">
+    <div class="track-list" id="historyTopList">
+      <div class="empty-state">
+        <p class="text-muted">{{ _('Loading...') }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="history-subpanel" id="history-trend">
+    <div class="filter-bar">
+      <div class="filter-chips">
+        <button class="filter-chip active" data-trend-days="7">{{ _('7 days') }}</button>
+        <button class="filter-chip" data-trend-days="14">{{ _('14 days') }}</button>
+        <button class="filter-chip" data-trend-days="30">{{ _('30 days') }}</button>
+        <button class="filter-chip" data-trend-days="90">{{ _('90 days') }}</button>
+      </div>
+    </div>
+    <div id="historyTrendChart" class="history-trend-chart">
+      <div class="empty-state">
+        <p class="text-muted">{{ _('Loading...') }}</p>
+      </div>
+    </div>
+    <div id="historyTrendLegend" class="history-trend-legend"></div>
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+    </div>
+    <h3>{{ _('History Database Disabled') }}</h3>
+    <p>{{ _('Enable the history database in Settings to track songs, syncs, and actions over time.') }}</p>
+    <button class="btn btn-secondary" data-action="showSettingsModal">{{ _('Open Settings') }}</button>
+  </div>
+  {% endif %}
+</div>

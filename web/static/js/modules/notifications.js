@@ -149,6 +149,18 @@ export function initNotifications() {
     clearBtn.addEventListener("click", clearNotifications)
   }
 
+  const closeBtn = document.getElementById("notifClose")
+  if (closeBtn) {
+    closeBtn.addEventListener("click", e => {
+      e.stopPropagation()
+      if (panelOpen) {
+        panelOpen = false
+        const { panel } = getElements()
+        if (panel) panel.classList.add("hidden")
+      }
+    })
+  }
+
   document.addEventListener("click", e => {
     const { panel, bell } = getElements()
     if (panelOpen && panel && !panel.contains(e.target) && !bell.contains(e.target)) {

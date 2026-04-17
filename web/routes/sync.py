@@ -14,6 +14,7 @@ from flask import Blueprint, Response, jsonify, request, stream_with_context
 from flask_babel import gettext as _
 
 from ..services import sync_lock, sync_state
+from ..services.data import get_history_db
 from ..services.state import stream_state_output
 
 sync_bp = Blueprint("sync", __name__)
@@ -21,13 +22,16 @@ sync_bp = Blueprint("sync", __name__)
 logger = logging.getLogger(__name__)
 
 
-def _run_sync_process(script: str = "run.py"):
+def _run_sync_process(script: str = "run.py", db=None, trigger: str = "web"):
     """Run sync in background."""
     from ..services.state import reset_output
 
     ALLOWED_SCRIPTS = {"run.py", "run_tags.py"}
     if script not in ALLOWED_SCRIPTS:
         script = "run.py"
+
+    sync_type = "tags" if script == "run_tags.py" else "main"
+    sync_id = db.start_sync(sync_type=sync_type, trigger=trigger) if db else None
 
     reset_output(sync_state, sync_lock)
     with sync_lock:
@@ -39,6 +43,13 @@ def _run_sync_process(script: str = "run.py"):
         logger.info(f"Starting sync process in {project_root} (script={script})")
         logger.info(f"Python executable: {sys.executable}")
 
+        env = {**__import__("os").environ, "SYNC_TRIGGER": trigger}
+        if sync_id is not None:
+            env["HISTORY_SYNC_ID"] = str(sync_id)
+        # Remove settings that may have changed since server start so the
+        # subprocess re-reads them from .env via load_dotenv().
+        for key in ("WEBHOOK_URL", "WEBHOOK_EVENTS"):
+            env.pop(key, None)
         process = subprocess.Popen(
             [sys.executable, script],
             cwd=str(project_root),
@@ -46,6 +57,7 @@ def _run_sync_process(script: str = "run.py"):
             stderr=subprocess.STDOUT,
             text=True,
             bufsize=1,
+            env=env,
         )
 
         with sync_lock:
@@ -55,7 +67,19 @@ def _run_sync_process(script: str = "run.py"):
             with sync_lock:
                 sync_state["output"].append(line.rstrip())
 
-        process.wait()
+        try:
+            process.wait(timeout=7200)  # 2 hour hard limit
+        except subprocess.TimeoutExpired:
+            logger.warning("Sync process timed out after 2 hours, terminating...")
+            with sync_lock:
+                sync_state["output"].append("--- Sync timed out after 2 hours ---")
+            process.terminate()
+            try:
+                process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                logger.warning("Process did not terminate, sending SIGKILL")
+                process.kill()
+                process.wait(timeout=5)
         with sync_lock:
             sync_state["exit_code"] = process.returncode
         logger.info(f"Sync process finished with exit code: {process.returncode}")
@@ -74,6 +98,20 @@ def _run_sync_process(script: str = "run.py"):
             sync_state["running"] = False
             sync_state["finished_at"] = datetime.now(UTC).isoformat()
             sync_state["process"] = None
+            exit_code = sync_state.get("exit_code", -1)
+
+        if db and sync_id:
+            sync_record = db.get_sync(sync_id)
+            if sync_record and sync_record["status"] == "running":
+                status = "success" if exit_code == 0 else "error"
+                error_msg = None
+                if exit_code != 0:
+                    with sync_lock:
+                        output_lines = list(sync_state["output"])
+                    error_keywords = ("error", "exception", "traceback")
+                    error_lines = [line for line in output_lines[-20:] if any(kw in line.lower() for kw in error_keywords)]
+                    error_msg = "\n".join(error_lines[-5:]) if error_lines else f"Exit code {exit_code}"
+                db.finish_sync(sync_id, status=status, error_message=error_msg)
 
 
 @sync_bp.route("/run_sync", methods=["POST"])
@@ -90,7 +128,8 @@ def run_sync():
             return jsonify({"error": _("Sync already running")}), 400
         sync_state["running"] = True
 
-    thread = threading.Thread(target=_run_sync_process, args=(script,), daemon=True)
+    db = get_history_db()
+    thread = threading.Thread(target=_run_sync_process, args=(script, db), daemon=True)
     thread.start()
 
     return jsonify({"status": "started"})

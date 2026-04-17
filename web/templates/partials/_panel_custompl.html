@@ -44,6 +44,7 @@
             {{ pl.match }}</span>
           <span class="badge">{{ _('Limit:') }} {{ _('None') if pl.limit == 0 else pl.limit }}</span>
           {% if pl.backfill is defined and not pl.backfill %}<span class="badge badge-muted">{{ _('No Backfill') }}</span>{% endif %}
+          {% if pl.auto_sync is defined and not pl.auto_sync %}<span class="badge badge-muted">{{ _('No Auto-sync') }}</span>{% endif %}
           <span class="badge badge-blacklist blacklist-count-badge" data-pl-index="{{ loop.index0 }}" {% if not pl.blacklist %} style="display:none"
             {% endif %}>{{ pl.blacklist | length if pl.blacklist else 0 }}
             {{ _('blacklisted') }}</span>
