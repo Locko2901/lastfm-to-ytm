@@ -1,3 +1,4 @@
+{# j2lint: disable=S7 #}
 <div class="tabs">
   <button class="tab active" data-tab="playlist">{{ _('Playlist') }} <span class="tab-badge">{{ mappings | length }}</span></button>
   <button class="tab" data-tab="overrides">{{ _('Overrides') }} <span class="tab-badge">{{ overrides | length }}</span></button>
@@ -6,4 +7,5 @@
   <button class="tab" data-tab="cache">{{ _('Cache') }} <span class="tab-badge">{{ cached_tracks | length }}</span></button>
   <button class="tab" data-tab="tags">{{ _('Track Tags') }} <span class="tab-badge">{{ tag_cache_tracks | length }}</span></button>
   <button class="tab" data-tab="custompl">{{ _('Custom Playlists') }} <span class="tab-badge">{{ custom_playlists | length }}</span></button>
+  <button class="tab" id="historyTab" data-tab="history" {% if not history_enabled %} hidden {% endif %}>{{ _('History') }}</button>
 </div>

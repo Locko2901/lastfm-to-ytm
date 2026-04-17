@@ -1,6 +1,11 @@
 import { filterByTab } from "./filters.js"
 
 export function switchTab(tabId) {
+  const targetTab = document.querySelector(`.tab[data-tab="${tabId}"]`)
+  if (!targetTab || targetTab.hidden) {
+    tabId = "playlist"
+  }
+
   for (const t of document.querySelectorAll(".tab")) t.classList.remove("active")
   for (const p of document.querySelectorAll(".tab-panel")) p.classList.remove("active")
 
@@ -21,7 +26,7 @@ export function initTabs() {
 
   const urlParams = new URLSearchParams(window.location.search)
   const initialTab = urlParams.get("tab")
-  if (initialTab && document.querySelector(`[data-tab="${initialTab}"]`)) {
+  if (initialTab && document.querySelector(`[data-tab="${initialTab}"]:not([hidden])`)) {
     switchTab(initialTab)
   }
 }

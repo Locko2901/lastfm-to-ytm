@@ -1,3 +1,4 @@
+import { refreshHistoryPanelState, setHistoryTabVisibility } from "./history.js"
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
 import {
@@ -11,14 +12,49 @@ import {
 } from "./utils.js"
 
 const NO_RESTART_SETTINGS = [
+  "LASTFM_USER",
+  "LASTFM_API_KEY",
+  "PLAYLIST_NAME",
+  "MAKE_PUBLIC",
+  "LIMIT",
+  "DEDUPLICATE",
+  "USE_RECENCY_WEIGHTING",
+  "RECENCY_HALF_LIFE_HOURS",
+  "RECENCY_PLAY_WEIGHT",
+  "WEEKLY_ENABLED",
+  "WEEKLY_WEEK_START",
+  "WEEKLY_TIMEZONE",
+  "WEEKLY_KEEP_WEEKS",
+  "WEEKLY_PLAYLIST_PREFIX",
+  "WEEKLY_MAKE_PUBLIC",
+  "USE_ANON_SEARCH",
+  "EARLY_TERMINATION_SCORE",
+  "SLEEP_BETWEEN_SEARCHES",
+  "SEARCH_MAX_WORKERS",
+  "MAX_RAW_SCROBBLES",
+  "BACKFILL_PASSES",
+  "CACHE_SEARCH_TTL_DAYS",
+  "CACHE_NOTFOUND_TTL_DAYS",
+  "API_MAX_RETRIES",
+  "LASTFM_MAX_RETRIES",
+  "LASTFM_MAX_CONSECUTIVE_EMPTY",
+  "LASTFM_FORCE_IPV4",
+  "LOG_LEVEL",
+  "AUTO_TAG_SYNC_ENABLED",
+  "AUTO_TAG_SYNC_FREQUENCY",
   "USE_24_HOUR_CLOCK",
   "NOW_PLAYING_ENABLED",
   "NOW_PLAYING_INTERVAL",
-  "AUTO_SYNC_TYPE",
-  "AUTO_SYNC_INTERVAL_HOURS",
-  "AUTO_SYNC_START_TIME",
-  "AUTO_SYNC_CRON",
+  "CUSTOM_PLAYLISTS_PRIVACY",
+  "TAG_CACHE_TTL_DAYS",
+  "TAG_MIN_COUNT",
+  "TAG_SLEEP_BETWEEN",
+  "HISTORY_MAX_SIZE_MB",
+  "WEBHOOK_URL",
+  "WEBHOOK_EVENTS",
 ]
+
+const UI_RELOAD_SETTINGS = ["USE_24_HOUR_CLOCK"]
 
 export async function loadSettings() {
   try {
@@ -54,6 +90,8 @@ export async function loadSettings() {
     if (themeSelect) {
       themeSelect.value = localStorage.getItem("ytm-theme") || "dark"
     }
+
+    refreshHistoryBackfillVisibility()
   } catch (_error) {
     showToast(_("Failed to load settings"), "error")
   }
@@ -103,12 +141,22 @@ export async function saveSettings(event) {
       window.restartNowPlaying()
     }
 
+    if (changedSettings.includes("HISTORY_DB_ENABLED")) {
+      setHistoryTabVisibility(settings.HISTORY_DB_ENABLED)
+      await refreshHistoryPanelState()
+    }
+
     showToast(_("Settings saved successfully!"), "success")
     closeModal("settingsModal")
 
     const requiresRestart = changedSettings.some(s => !NO_RESTART_SETTINGS.includes(s))
     if (requiresRestart) {
       showRestartBanner()
+    }
+
+    const requiresReload = changedSettings.some(s => UI_RELOAD_SETTINGS.includes(s))
+    if (requiresReload) {
+      showReloadBanner()
     }
   } catch (error) {
     showToast(error.message || _("Failed to save settings"), "error")
@@ -147,6 +195,54 @@ function showRestartBanner() {
 
 export function dismissRestartBanner() {
   removeBanner("restartBanner")
+}
+
+function showReloadBanner() {
+  insertBanner(
+    "reloadBanner",
+    "auth-required-banner",
+    `
+    <div class="auth-banner-content">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+        <path d="M3 3v5h5"></path>
+        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+        <path d="M16 21h5v-5"></path>
+      </svg>
+      <span>${_("Display settings changed. Reload the page to update.")}</span>
+      <button class="btn btn-sm btn-primary" data-action="reloadPage">${_("Reload")}</button>
+      <button class="auth-banner-close" data-action="dismissReloadBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+  `,
+  )
+}
+
+export function dismissReloadBanner() {
+  removeBanner("reloadBanner")
+}
+
+export async function testWebhook() {
+  const urlInput = document.getElementById("WEBHOOK_URL")
+  const url = urlInput?.value?.trim()
+  if (!url) {
+    showToast(_("Enter a webhook URL first"), "warning")
+    return
+  }
+  try {
+    const resp = await fetch("/api/webhook/test", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    })
+    const data = await resp.json()
+    if (resp.ok) {
+      showToast(_("Test webhook sent successfully!"), "success")
+    } else {
+      showToast(data.error || _("Webhook test failed"), "error")
+    }
+  } catch (_error) {
+    showToast(_("Webhook test failed"), "error")
+  }
 }
 
 export async function restartServer() {
@@ -253,6 +349,7 @@ export function initSettings(switchTabFn) {
   initTheme()
   initLocale()
   initSchedulerTypeToggle()
+  initHistoryDbToggle()
   loadSchedulerStatus()
 
   return tabId => {
@@ -260,6 +357,9 @@ export function initSettings(switchTabFn) {
     if (tabId === "settings") {
       loadSettings()
       loadSchedulerStatus()
+    }
+    if (tabId === "history" && window.loadHistoryData) {
+      window.loadHistoryData()
     }
   }
 }
@@ -277,6 +377,33 @@ function initSchedulerTypeToggle() {
 
   typeSelect.addEventListener("change", updateVisibility)
   updateVisibility()
+}
+
+function refreshHistoryBackfillVisibility() {
+  const checkbox = document.getElementById("HISTORY_DB_ENABLED")
+  const backfillSection = document.getElementById("historyBackfillSection")
+  if (!checkbox || !backfillSection) return
+  backfillSection.style.display = checkbox.checked ? "" : "none"
+  if (checkbox.checked) loadHistoryDbSize()
+}
+
+function initHistoryDbToggle() {
+  const checkbox = document.getElementById("HISTORY_DB_ENABLED")
+  if (!checkbox) return
+  checkbox.addEventListener("change", refreshHistoryBackfillVisibility)
+}
+
+async function loadHistoryDbSize() {
+  try {
+    const r = await fetch("/api/history/status")
+    if (!r.ok) return
+    const data = await r.json()
+    const sizeEl = document.getElementById("historyDbSize")
+    if (sizeEl && data.db_size_bytes != null) {
+      const kb = (data.db_size_bytes / 1024).toFixed(1)
+      sizeEl.textContent = `${_("DB size:")} ${kb} KB`
+    }
+  } catch (_e) {}
 }
 
 export async function loadSchedulerStatus() {
