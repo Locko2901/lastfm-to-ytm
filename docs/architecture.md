@@ -134,7 +134,7 @@ Returns `(video_ids, misses, track_to_vid, run_log_mappings)` for downstream use
 
 **Scoring formula:**
 
-$$\text{score} = w_{\text{play}} \times \frac{\text{plays}}{\text{max\_plays}} + (1 - w_{\text{play}}) \times 0.5^{\text{age\_hours} / \text{half\_life}}$$
+$$\text{score} = w_{\text{play}} \times \frac{\text{plays}}{\text{max_plays}} + (1 - w_{\text{play}}) \times 0.5^{\text{age_hours} / \text{half_life}}$$
 
 - `play_weight` ($w_{\text{play}}$): default `0.7` (70% plays, 30% recency)
 - `half_life_hours`: default `24.0` - a track's recency score halves every 24 hours
