@@ -61,6 +61,22 @@ Rule severity rationale is documented inline as comments in `biome.jsonc`.
 
 Only `S4` (statement indentation) is ignored - it expects pure-Jinja nesting levels, not the surrounding HTML context, producing false positives on every indented Jinja tag. Since j2lint doesn't support config-file ignore for CLI runs, `S4` is also passed via `--ignore` in CI.
 
+## Pre-commit Script
+
+The repo includes a convenience script that runs every linting, formatting, and i18n step in one go:
+
+```bash
+./precommit.sh
+```
+
+It runs the following in order (aborting on the first failure):
+
+1. **Fix & format** - Ruff auto-fix, Ruff format, Biome lint+fix, Biome format, js-beautify templates
+2. **Lint checks** - Ruff lint, Ruff format check, Biome lint, j2lint templates
+3. **Translations** - Babel extract, update, and compile translation catalogs
+
+This saves you from running all the individual commands listed above. Run it before committing to make sure everything is clean.
+
 ## CI
 
 All three linters (+ HTML formatter) run on every push/PR via `.github/workflows/lint.yml`.
