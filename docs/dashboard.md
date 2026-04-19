@@ -67,5 +67,27 @@ The dashboard is installable as a Progressive Web App. In supported browsers, yo
 
 The dashboard supports two ways to back up your data:
 
-- **Plain export** - Export overrides, blacklist, and/or tag overrides as plain JSON files. Useful for quick backups or sharing configuration between instances. Available under **Settings &rarr; Data Management**.
-- **Encrypted export (Teleporter)** - Export your full configuration (including `.env`, `browser.json`, caches) as a password-encrypted binary file. See [Teleporter](teleporter.md).
+### Plain JSON Export &amp; Import
+
+Export overrides, blacklist, and/or tag overrides as plain JSON. Useful for quick backups or sharing configuration between instances. Available under **Settings &rarr; Data Management**.
+
+**Export** returns a JSON file with an `_export_meta` header and one or more data sections:
+
+| Type | Includes |
+|------|----------|
+| `all` | Overrides + blacklist + tag overrides |
+| `overrides` | Search overrides only |
+| `blacklist` | Blacklisted tracks only |
+| `tag_overrides` | Tag overrides only |
+
+**Import** accepts the same JSON format. Entries are validated and merged into the existing config:
+
+- Override entries must have `artist`, `title`, and a valid 11-character YouTube `video_id`.
+- Blacklist entries must have `artist` and `title`.
+- Tag override entries must have `artist`, `title`, and a non-empty `tags` list.
+
+Duplicate keys are overwritten (last write wins). Existing entries not present in the import file are left untouched.
+
+### Encrypted Export (Teleporter)
+
+Export your full configuration (including `.env`, `browser.json`, caches) as a password-encrypted binary file. See [Teleporter](teleporter.md).
