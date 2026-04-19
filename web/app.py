@@ -203,6 +203,7 @@ def index():
         track_tags_map=track_tags_map,
         tag_overrides_map=tag_overrides_map,
         history_enabled=is_history_enabled(),
+        docs_url="https://locko2901.github.io/lastfm-to-ytm/",
     )
 
 

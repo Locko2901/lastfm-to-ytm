@@ -1,0 +1,72 @@
+site_name: Last.fm → YouTube Music
+site_description: Create and maintain YouTube Music playlists from your Last.fm listening history
+repo_url: https://github.com/Locko2901/lastfm-to-ytm
+repo_name: Locko2901/lastfm-to-ytm
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Quick Start: quickstart.md
+      - Configuration: configuration.md
+  - Features:
+      - Web Dashboard: dashboard.md
+      - Custom Tag Playlists: tag-playlists.md
+      - Search Overrides: overrides.md
+      - Webhooks: webhooks.md
+      - History Database: history.md
+      - Teleporter: teleporter.md
+  - How It Works: how-it-works.md
+  - Troubleshooting: troubleshooting.md
+  - Development:
+      - Setup: development.md
+      - Architecture: architecture.md
+      - Search Internals: search-internals.md
+      - Playlist Sync Internals: playlist-sync-internals.md
+      - Web Dashboard Internals: web-internals.md
+      - Docker Internals: docker-internals.md
+      - Translations (i18n): i18n.md
+      - Linting & Formatting: linting.md
