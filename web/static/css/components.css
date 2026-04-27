@@ -1101,6 +1101,10 @@
   font-weight: 600;
 }
 
+body.tips-hidden .panel-description {
+  display: none;
+}
+
 .expandable-card {
   cursor: default;
 }

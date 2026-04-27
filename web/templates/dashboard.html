@@ -2,6 +2,7 @@
 {% extends "base.html" %}
 {% block body_attrs %} data-needs-setup="{{ 'true' if needs_setup else 'false' }}"
 data-needs-auth="{{ 'true' if needs_auth else 'false' }}"
+class="{% if not display_tips %}tips-hidden{% endif %}"
 {% endblock %}
 {% block header_actions %}
 <div class="header-info">

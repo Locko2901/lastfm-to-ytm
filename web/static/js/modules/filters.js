@@ -222,8 +222,8 @@ export function initFilters() {
       for (const c of document.querySelectorAll('.filter-chip[data-panel="tags"]')) c.classList.remove("active")
       chip.classList.add("active")
       filterTags()
-    } else if (!panel) {
-      for (const c of document.querySelectorAll(".filter-chip:not([data-panel])")) c.classList.remove("active")
+    } else if (!panel && chip.dataset.filter) {
+      for (const c of document.querySelectorAll(".filter-chip:not([data-panel])[data-filter]")) c.classList.remove("active")
       chip.classList.add("active")
       filterTracks()
     }
@@ -233,7 +233,7 @@ export function initFilters() {
   if (initialFilter) {
     const chip = document.querySelector(`.filter-chip:not([data-panel])[data-filter="${initialFilter}"]`)
     if (chip) {
-      for (const c of document.querySelectorAll(".filter-chip:not([data-panel])")) c.classList.remove("active")
+      for (const c of document.querySelectorAll(".filter-chip:not([data-panel])[data-filter]")) c.classList.remove("active")
       chip.classList.add("active")
     }
   }
