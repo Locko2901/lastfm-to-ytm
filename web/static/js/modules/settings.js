@@ -45,6 +45,7 @@ const NO_RESTART_SETTINGS = [
   "USE_24_HOUR_CLOCK",
   "NOW_PLAYING_ENABLED",
   "NOW_PLAYING_INTERVAL",
+  "DISPLAY_TIPS",
   "CUSTOM_PLAYLISTS_PRIVACY",
   "TAG_CACHE_TTL_DAYS",
   "TAG_MIN_COUNT",
@@ -144,6 +145,10 @@ export async function saveSettings(event) {
     if (changedSettings.includes("HISTORY_DB_ENABLED")) {
       setHistoryTabVisibility(settings.HISTORY_DB_ENABLED)
       await refreshHistoryPanelState()
+    }
+
+    if (changedSettings.includes("DISPLAY_TIPS")) {
+      document.body.classList.toggle("tips-hidden", !settings.DISPLAY_TIPS)
     }
 
     showToast(_("Settings saved successfully!"), "success")

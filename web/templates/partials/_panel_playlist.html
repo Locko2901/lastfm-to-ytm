@@ -1,6 +1,19 @@
 {# j2lint: disable=S7 #}
 {% from "macros/_track_actions.html" import search_bar, track_actions, refresh_icon, tag_pills %}
 <div class="tab-panel active" id="panel-playlist">
+  <div class="panel-description">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="8" y1="6" x2="21" y2="6"></line>
+      <line x1="8" y1="12" x2="21" y2="12"></line>
+      <line x1="8" y1="18" x2="21" y2="18"></line>
+      <line x1="3" y1="6" x2="3.01" y2="6"></line>
+      <line x1="3" y1="12" x2="3.01" y2="12"></line>
+      <line x1="3" y1="18" x2="3.01" y2="18"></line>
+    </svg>
+    <p>
+      {{ _('Tracks resolved from your latest sync run. Use the chips to filter by <strong>Override</strong>, <strong>Blacklist</strong>, <strong>Pending Retry</strong>, or tag presence, and right-click any track to fix or replace it.') }}
+    </p>
+  </div>
   {% if mappings %}
   <div class="filter-bar">
     {{ search_bar(_('Search tracks...'), "playlistSearch") }}

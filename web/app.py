@@ -179,6 +179,12 @@ def index():
 
     setup = get_setup_status()
 
+    from .services.env import parse_env_file
+
+    env_settings = parse_env_file()
+    display_tips_raw = env_settings.get("DISPLAY_TIPS", "true").strip().lower()
+    display_tips = display_tips_raw not in ("false", "0", "no", "off", "f", "n")
+
     return render_template(
         "dashboard.html",
         mappings=playlist_mappings,
@@ -203,6 +209,7 @@ def index():
         track_tags_map=track_tags_map,
         tag_overrides_map=tag_overrides_map,
         history_enabled=is_history_enabled(),
+        display_tips=display_tips,
         docs_url="https://locko2901.github.io/lastfm-to-ytm/",
     )
 

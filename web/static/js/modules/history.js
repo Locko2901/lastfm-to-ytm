@@ -408,8 +408,10 @@ async function loadHistoryTrend() {
   const legend = document.getElementById("historyTrendLegend")
   if (!container) return
 
+  const requestedDays = trendDays
+
   try {
-    const r = await fetch(`/api/history/trend?days=${trendDays}`)
+    const r = await fetch(`/api/history/trend?days=${requestedDays}`)
     if (!r.ok) return
     const data = await r.json()
 
@@ -419,7 +421,8 @@ async function loadHistoryTrend() {
       return
     }
 
-    renderTrendCanvas(container, data.trend)
+    const padded = padTrendToRange(data.trend, requestedDays)
+    renderTrendCanvas(container, padded)
 
     if (legend) {
       legend.innerHTML = `
@@ -434,9 +437,43 @@ async function loadHistoryTrend() {
   }
 }
 
-/* ---- Canvas-based trend chart ---- */
+function padTrendToRange(trend, days) {
+  const byDate = new Map()
+  for (const d of trend) byDate.set(d.date, d)
+
+  const out = []
+  const today = new Date()
+  const end = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
+  const dayMs = 86400000
+  for (let i = days - 1; i >= 0; i--) {
+    const ts = end - i * dayMs
+    const dt = new Date(ts)
+    const iso = `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}-${String(dt.getUTCDate()).padStart(2, "0")}`
+    const existing = byDate.get(iso)
+    if (existing) {
+      out.push(existing)
+    } else {
+      out.push({
+        date: iso,
+        total: 0,
+        success: 0,
+        error: 0,
+        avg_duration: null,
+        avg_resolved: null,
+        avg_missed: null,
+        avg_cache_rate: null,
+        empty: true,
+      })
+    }
+  }
+  return out
+}
 
 function renderTrendCanvas(container, trend) {
+  if (container._trendResizeObserver) {
+    container._trendResizeObserver.disconnect()
+    container._trendResizeObserver = null
+  }
   container.innerHTML = ""
 
   const wrapper = document.createElement("div")
@@ -555,7 +592,7 @@ function renderTrendCanvas(container, trend) {
     ctx,
     trend,
     i => xPos(i),
-    i => yRight(trend[i].avg_cache_rate ?? 0, 100),
+    i => (trend[i].avg_cache_rate == null ? null : yRight(trend[i].avg_cache_rate, 100)),
     colCache,
     2,
   )
@@ -564,14 +601,14 @@ function renderTrendCanvas(container, trend) {
     ctx,
     trend,
     i => xPos(i),
-    i => yRight(trend[i].avg_duration || 0, maxDur),
+    i => (trend[i].avg_duration == null ? null : yRight(trend[i].avg_duration, maxDur)),
     colDuration,
     2,
   )
 
   for (let i = 0; i < n; i++) {
-    dot(ctx, xPos(i), yRight(trend[i].avg_cache_rate ?? 0, 100), colCache, 3)
-    dot(ctx, xPos(i), yRight(trend[i].avg_duration || 0, maxDur), colDuration, 3)
+    if (trend[i].avg_cache_rate != null) dot(ctx, xPos(i), yRight(trend[i].avg_cache_rate, 100), colCache, 3)
+    if (trend[i].avg_duration != null) dot(ctx, xPos(i), yRight(trend[i].avg_duration, maxDur), colDuration, 3)
   }
 
   let activeIdx = -1
@@ -617,16 +654,16 @@ function renderTrendCanvas(container, trend) {
       ctx.globalAlpha = 1
 
       const d = trend[closest]
-      dot(ctx, cx, yRight(d.avg_cache_rate ?? 0, 100), colCache, 5)
-      dot(ctx, cx, yRight(d.avg_duration || 0, maxDur), colDuration, 5)
+      if (d.avg_cache_rate != null) dot(ctx, cx, yRight(d.avg_cache_rate, 100), colCache, 5)
+      if (d.avg_duration != null) dot(ctx, cx, yRight(d.avg_duration, maxDur), colDuration, 5)
 
-      const cacheRate = d.avg_cache_rate ?? 0
+      const cacheRate = d.avg_cache_rate ?? "–"
       tooltip.innerHTML = `
         <div class="trend-tip-date">${esc(d.date)}</div>
         <div class="trend-tip-row"><span style="color:${colSuccess}">${_("Success")}</span> ${d.success}</div>
         <div class="trend-tip-row"><span style="color:${colError}">${_("Error")}</span> ${d.error}</div>
-        <div class="trend-tip-row"><span style="color:${colCache}">${_("Cache Rate")}</span> ${cacheRate}%</div>
-        <div class="trend-tip-row"><span style="color:${colDuration}">${_("Avg Duration")}</span> ${d.avg_duration ?? "–"}s</div>
+        <div class="trend-tip-row"><span style="color:${colCache}">${_("Cache Rate")}</span> ${cacheRate === "–" ? "–" : `${cacheRate}%`}</div>
+        <div class="trend-tip-row"><span style="color:${colDuration}">${_("Avg Duration")}</span> ${d.avg_duration ?? "–"}${d.avg_duration == null ? "" : "s"}</div>
         <div class="trend-tip-row"><span>${_("Avg Resolved")}</span> ${d.avg_resolved ?? "–"}</div>
         <div class="trend-tip-row"><span>${_("Avg Missed")}</span> ${d.avg_missed ?? "–"}</div>
       `
@@ -708,7 +745,7 @@ function renderTrendCanvas(container, trend) {
       ctx,
       trend,
       i => xPos(i),
-      i => yRight(trend[i].avg_cache_rate ?? 0, 100),
+      i => (trend[i].avg_cache_rate == null ? null : yRight(trend[i].avg_cache_rate, 100)),
       colCache,
       2,
     )
@@ -716,41 +753,51 @@ function renderTrendCanvas(container, trend) {
       ctx,
       trend,
       i => xPos(i),
-      i => yRight(trend[i].avg_duration || 0, maxDur),
+      i => (trend[i].avg_duration == null ? null : yRight(trend[i].avg_duration, maxDur)),
       colDuration,
       2,
     )
 
     for (let i = 0; i < n; i++) {
-      dot(ctx, xPos(i), yRight(trend[i].avg_cache_rate ?? 0, 100), colCache, 3)
-      dot(ctx, xPos(i), yRight(trend[i].avg_duration || 0, maxDur), colDuration, 3)
+      if (trend[i].avg_cache_rate != null) dot(ctx, xPos(i), yRight(trend[i].avg_cache_rate, 100), colCache, 3)
+      if (trend[i].avg_duration != null) dot(ctx, xPos(i), yRight(trend[i].avg_duration, maxDur), colDuration, 3)
     }
 
     ctx.restore()
   }
 
   const ro = new ResizeObserver(() => {
+    if (!wrapper.isConnected) return
     const newRect = wrapper.getBoundingClientRect()
+    if (newRect.width <= 0) return
     if (Math.abs(newRect.width - W) > 2) {
       renderTrendCanvas(container, trend)
     }
   })
   ro.observe(wrapper)
+  container._trendResizeObserver = ro
 }
 
 function drawLine(ctx, data, xFn, yFn, color, width) {
-  if (data.length < 2) {
-    dot(ctx, xFn(0), yFn(0), color, 4)
-    return
-  }
   ctx.strokeStyle = color
   ctx.lineWidth = width
   ctx.lineJoin = "round"
   ctx.lineCap = "round"
+  let drawing = false
   ctx.beginPath()
-  ctx.moveTo(xFn(0), yFn(0))
-  for (let i = 1; i < data.length; i++) {
-    ctx.lineTo(xFn(i), yFn(i))
+  for (let i = 0; i < data.length; i++) {
+    const y = yFn(i)
+    if (y == null) {
+      drawing = false
+      continue
+    }
+    const x = xFn(i)
+    if (!drawing) {
+      ctx.moveTo(x, y)
+      drawing = true
+    } else {
+      ctx.lineTo(x, y)
+    }
   }
   ctx.stroke()
 }
