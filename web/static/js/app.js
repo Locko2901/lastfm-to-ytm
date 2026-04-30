@@ -82,6 +82,7 @@ import {
   goToSyncAndRun,
   initSyncDrawerResize,
   openSyncDrawer,
+  reattachRunningSync,
   runSync,
   runSyncDefault,
   runSyncTags,
@@ -246,6 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initFilters()
   initModals(window.closeAuthModal)
   initSyncDrawerResize()
+  reattachRunningSync()
   initTeleporter()
 
   const enhancedSwitchTab = initSettings(switchTab)

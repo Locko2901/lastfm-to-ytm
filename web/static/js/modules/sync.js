@@ -51,6 +51,140 @@ export function runSyncTags() {
   runSync("run_tags.py")
 }
 
+function classifyLine(text) {
+  if (text.includes("ERROR") || text.includes("Error")) return "error"
+  if (text.includes("WARNING") || text.includes("Not found")) return "warning"
+  if (text.includes("INFO")) return "info"
+  if (text.includes("SUCCESS") || text.includes("Sync complete")) return "success"
+  return ""
+}
+
+function appendSyncLine(text) {
+  const output = document.getElementById("syncOutput")
+  if (!output) return
+  const line = document.createElement("div")
+  line.className = "sync-line"
+  line.textContent = text
+  const cls = classifyLine(text)
+  if (cls) line.classList.add(cls)
+  output.appendChild(line)
+  if (!userScrolledAway) {
+    output.scrollTop = output.scrollHeight
+  }
+}
+
+function attachSyncStream() {
+  const indicator = document.getElementById("syncIndicator")
+  const statusText = document.getElementById("syncStatusText")
+  const runBtn = document.getElementById("runSyncBtn")
+  const stopBtn = document.getElementById("stopSyncBtn")
+
+  if (syncEventSource) {
+    syncEventSource.close()
+    syncEventSource = null
+  }
+
+  syncEventSource = new EventSource("/sync_output")
+
+  syncEventSource.onmessage = event => {
+    const data = JSON.parse(event.data)
+
+    if (data.line !== undefined) {
+      appendSyncLine(data.line)
+    }
+
+    if (data.finished) {
+      syncEventSource.close()
+      syncEventSource = null
+
+      const success = data.exit_code === 0
+      indicator.className = `sync-indicator ${success ? "success" : "error"}`
+      statusText.textContent = success ? _("Completed") : _("Failed")
+      runBtn.style.display = ""
+      stopBtn.style.display = "none"
+
+      showToast(success ? _("Sync completed successfully!") : _("Sync failed. Check output for errors."), success ? "success" : "error")
+
+      if (window.refreshStats) window.refreshStats()
+      fetch("/api/stats")
+        .then(r => r.json())
+        .then(stats => {
+          if (stats.last_sync) lastKnownSyncTime = stats.last_sync
+          manualSyncInProgress = false
+        })
+        .catch(() => {
+          manualSyncInProgress = false
+        })
+
+      if (success) {
+        refreshPanel("playlist")
+        refreshPanel("cache")
+        refreshPanel("notfound")
+        refreshPanel("overrides")
+        refreshPanel("blacklist")
+        refreshPanel("tags")
+        refreshPanel("custompl")
+        if (window.loadPlaylistsData) window.loadPlaylistsData()
+        if (window.clearPreviewCache) window.clearPreviewCache()
+      }
+
+      if (window.checkFailureLog) window.checkFailureLog()
+    }
+  }
+
+  syncEventSource.onerror = () => {
+    syncEventSource.close()
+    syncEventSource = null
+    manualSyncInProgress = false
+    indicator.className = "sync-indicator error"
+    statusText.textContent = _("Connection lost")
+    runBtn.style.display = ""
+    stopBtn.style.display = "none"
+  }
+}
+
+export async function reattachRunningSync() {
+  let status
+  try {
+    const res = await fetch("/api/status")
+    if (!res.ok) return
+    status = await res.json()
+  } catch (_e) {
+    return
+  }
+
+  if (!status.running) return
+
+  const output = document.getElementById("syncOutput")
+  const indicator = document.getElementById("syncIndicator")
+  const statusText = document.getElementById("syncStatusText")
+  const runBtn = document.getElementById("runSyncBtn")
+  const stopBtn = document.getElementById("stopSyncBtn")
+  if (!output || !indicator || !statusText || !runBtn || !stopBtn) return
+
+  openSyncDrawer()
+  manualSyncInProgress = true
+  userScrolledAway = false
+
+  if (scrollHandler) {
+    output.removeEventListener("scroll", scrollHandler)
+  }
+  scrollHandler = () => {
+    const threshold = 50
+    const isAtBottom = output.scrollHeight - output.scrollTop - output.clientHeight < threshold
+    userScrolledAway = !isAtBottom
+  }
+  output.addEventListener("scroll", scrollHandler)
+
+  output.innerHTML = ""
+  indicator.className = "sync-indicator running"
+  statusText.textContent = _("Running...")
+  runBtn.style.display = "none"
+  stopBtn.style.display = ""
+
+  attachSyncStream()
+}
+
 export async function runSync(script = "run.py") {
   const output = document.getElementById("syncOutput")
   const indicator = document.getElementById("syncIndicator")
@@ -91,80 +225,7 @@ export async function runSync(script = "run.py") {
       throw new Error(data.error || _("Failed to start sync"))
     }
 
-    syncEventSource = new EventSource("/sync_output")
-
-    syncEventSource.onmessage = event => {
-      const data = JSON.parse(event.data)
-
-      if (data.line !== undefined) {
-        const line = document.createElement("div")
-        line.className = "sync-line"
-        line.textContent = data.line
-
-        if (data.line.includes("ERROR") || data.line.includes("Error")) {
-          line.classList.add("error")
-        } else if (data.line.includes("WARNING") || data.line.includes("Not found")) {
-          line.classList.add("warning")
-        } else if (data.line.includes("INFO")) {
-          line.classList.add("info")
-        } else if (data.line.includes("SUCCESS") || data.line.includes("Sync complete")) {
-          line.classList.add("success")
-        }
-
-        output.appendChild(line)
-        if (!userScrolledAway) {
-          output.scrollTop = output.scrollHeight
-        }
-      }
-
-      if (data.finished) {
-        syncEventSource.close()
-        syncEventSource = null
-
-        const success = data.exit_code === 0
-        indicator.className = `sync-indicator ${success ? "success" : "error"}`
-        statusText.textContent = success ? _("Completed") : _("Failed")
-        runBtn.style.display = ""
-        stopBtn.style.display = "none"
-
-        showToast(success ? _("Sync completed successfully!") : _("Sync failed. Check output for errors."), success ? "success" : "error")
-
-        if (window.refreshStats) window.refreshStats()
-        fetch("/api/stats")
-          .then(r => r.json())
-          .then(stats => {
-            if (stats.last_sync) lastKnownSyncTime = stats.last_sync
-            manualSyncInProgress = false
-          })
-          .catch(() => {
-            manualSyncInProgress = false
-          })
-
-        if (success) {
-          refreshPanel("playlist")
-          refreshPanel("cache")
-          refreshPanel("notfound")
-          refreshPanel("overrides")
-          refreshPanel("blacklist")
-          refreshPanel("tags")
-          refreshPanel("custompl")
-          if (window.loadPlaylistsData) window.loadPlaylistsData()
-          if (window.clearPreviewCache) window.clearPreviewCache()
-        }
-
-        if (window.checkFailureLog) window.checkFailureLog()
-      }
-    }
-
-    syncEventSource.onerror = () => {
-      syncEventSource.close()
-      syncEventSource = null
-      manualSyncInProgress = false
-      indicator.className = "sync-indicator error"
-      statusText.textContent = _("Connection lost")
-      runBtn.style.display = ""
-      stopBtn.style.display = "none"
-    }
+    attachSyncStream()
   } catch (error) {
     manualSyncInProgress = false
     indicator.className = "sync-indicator error"
