@@ -7,6 +7,7 @@ from pathlib import Path
 
 from flask import g, has_request_context
 
+from src.cache.playlist import PlaylistCache
 from src.cache.search import SearchCache, SearchOverrides
 from src.cache.tags import TagCache, TagOverrides
 from src.config import CACHE_DIR, CONFIG_DIR, Settings, load_custom_playlists
@@ -214,6 +215,111 @@ def _get_playlist_context() -> dict:
         "weekly_enabled": True,
         "weekly_prefix": _derive_weekly_prefix(name),
     }
+
+
+def load_playlist_cache() -> PlaylistCache:
+    """Load playlist cache (lazy, per-request)."""
+    if "_playlist_cache" not in g:
+        ctx = _get_playlist_context()
+        g._playlist_cache = PlaylistCache(str(ctx["cache_file"]))
+    return g._playlist_cache
+
+
+def get_playlist_cache_summary() -> list[dict]:
+    """List cached playlists with id, video_count, last_updated."""
+    return load_playlist_cache().summary()
+
+
+def get_playlist_cache_tracks(playlist_name: str) -> list[dict]:
+    """Resolve a playlist cache template's video IDs to artist/title via search cache."""
+    pc = load_playlist_cache()
+    video_ids = pc.get_video_ids(playlist_name)
+    if not video_ids:
+        return []
+
+    sc = load_search_cache()
+    overrides = load_overrides()
+
+    vid_to_info: dict[str, dict] = {}
+    for sc_entry in sc.values():
+        vid = sc_entry.get("video_id")
+        if vid and vid not in vid_to_info:
+            vid_to_info[vid] = {
+                "artist": sc_entry.get("artist", ""),
+                "title": sc_entry.get("title", ""),
+                "yt_title": sc_entry.get("yt_title"),
+                "source": "cache",
+            }
+    for _key, ov_entry in overrides.override_items():
+        vid = ov_entry.get("video_id")
+        if vid and vid not in vid_to_info:
+            vid_to_info[vid] = {
+                "artist": ov_entry.get("artist", ""),
+                "title": ov_entry.get("title", ""),
+                "yt_title": None,
+                "source": "override",
+            }
+
+    return [
+        {
+            "video_id": vid,
+            **vid_to_info.get(vid, {"artist": "", "title": "", "yt_title": None, "source": "unknown"}),
+        }
+        for vid in video_ids
+    ]
+
+
+def remove_playlist_from_cache(playlist_name: str) -> bool:
+    """Remove a single playlist entry from the playlist cache (cache-only)."""
+    pc = load_playlist_cache()
+    if playlist_name in pc._cache:
+        pc.remove(playlist_name)
+        return True
+    return False
+
+
+def remove_track_from_playlist_cache(playlist_name: str, video_id: str) -> bool:
+    """Remove a video ID from a playlist's cached template."""
+    return load_playlist_cache().remove_video_id(playlist_name, video_id)
+
+
+def clear_playlist_cache_all() -> int:
+    """Clear all playlist cache entries. Returns count removed."""
+    pc = load_playlist_cache()
+    n = len(pc._cache)
+    pc.clear()
+    return n
+
+
+def clear_search_cache_all() -> int:
+    """Clear all search cache entries. Returns count removed."""
+    sc = load_search_cache()
+    n = len(sc._cache)
+    sc.clear()
+    return n
+
+
+def clear_search_cache_notfound() -> int:
+    """Clear all not-found entries from search cache. Returns count removed."""
+    return load_search_cache().clear_notfound()
+
+
+def clear_tag_cache_all() -> int:
+    """Clear all tag cache entries. Returns count removed."""
+    tc = load_tag_cache()
+    n = len(tc._cache)
+    tc.clear()
+    return n
+
+
+def bulk_delete_search_cache(keys: list[str]) -> int:
+    """Delete multiple search cache entries by raw key. Returns count deleted."""
+    return load_search_cache().delete_keys(keys)
+
+
+def bulk_delete_tag_cache(keys: list[str]) -> int:
+    """Delete multiple tag cache entries by raw key. Returns count deleted."""
+    return load_tag_cache().delete_keys(keys)
 
 
 def get_last_sync_time() -> str | None:

@@ -21,6 +21,7 @@ The web dashboard is always included with the Docker setup. It provides a full m
     ![Not Found](screenshots/notfound.png)
 
 - **Cache tab** - Browse all cached search results, see which video each track resolved to, and clear individual entries or the full cache.
+- **Cache management modal** - Header button (database icon) opens a dedicated modal with three tabs: **Search cache** (bulk select/delete entries, clear all not-found, clear everything), **Tag cache** (filter by artist/title/tag name, bulk delete), and **Playlist cache** (expand each cached playlist, remove individual tracks or whole playlist entries). Use this for surgical cleanup when a single bad cache entry is causing repeated wrong matches.
 - **Settings modal** - Edit all configuration (Last.fm credentials, playlist options, search tuning, weekly settings, etc.) without touching `.env`. Changes take effect on the next sync.
 
 ??? example "Screenshot: Settings modal"

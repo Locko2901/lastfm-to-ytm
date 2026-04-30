@@ -131,6 +131,10 @@ class SearchCache(JSONCache):
         """Return all cache entries."""
         return list(self._cache.items())
 
+    def values(self) -> list[dict]:
+        """Return all cache entry values."""
+        return list(self._cache.values())
+
     def delete_by_track(self, artist: str, title: str) -> bool:
         """Delete cache entry by artist/title."""
         key = self._make_key(artist, title)
@@ -139,6 +143,22 @@ class SearchCache(JSONCache):
             self._save()
             return True
         return False
+
+    def delete_keys(self, keys: list[str]) -> int:
+        """Delete multiple entries by raw cache key. Returns count deleted."""
+        deleted = 0
+        for key in keys:
+            if key in self._cache:
+                del self._cache[key]
+                deleted += 1
+        if deleted:
+            self._save()
+        return deleted
+
+    def clear_notfound(self) -> int:
+        """Delete all entries with no video_id. Returns count deleted."""
+        keys = [k for k, e in self._cache.items() if not e.get("video_id")]
+        return self.delete_keys(keys)
 
     def stats(self) -> dict[str, int]:
         """Get cache statistics."""

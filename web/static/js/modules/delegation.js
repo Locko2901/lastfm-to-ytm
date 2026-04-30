@@ -103,6 +103,18 @@ const actionHandlers = {
   },
   detailOverride: () => window.detailOverride(),
   detailBlacklist: () => window.detailBlacklist(),
+
+  showCacheAdminModal: () => window.showCacheAdminModal(),
+  reloadCacheAdmin: () => window.reloadCacheAdmin(),
+  cacheClearSearchAll: () => window.cacheClearSearchAll(),
+  cacheClearSearchNotfound: () => window.cacheClearSearchNotfound(),
+  cacheBulkDeleteSearch: () => window.cacheBulkDeleteSearch(),
+  cacheClearTagsAll: () => window.cacheClearTagsAll(),
+  cacheBulkDeleteTags: () => window.cacheBulkDeleteTags(),
+  cacheClearPlaylistAll: () => window.cacheClearPlaylistAll(),
+  cacheRemovePlaylist: el => window.cacheRemovePlaylistEntry(el.dataset.name),
+  cacheRemovePlaylistTrack: el => window.cacheRemovePlaylistTrack(el.dataset.name, el.dataset.videoId),
+  cacheAdminTogglePlaylist: el => window.cacheAdminTogglePlaylist(el.dataset.name),
 }
 
 export function initDelegation() {

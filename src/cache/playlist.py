@@ -90,6 +90,47 @@ class PlaylistCache(JSONCache):
             del self._cache[playlist_name]
             self._save()
 
+    def remove_video_id(self, playlist_name: str, video_id: str) -> bool:
+        """Remove a single video ID from a playlist's cached template.
+
+        Returns True if removed, False if playlist or video_id not found.
+        """
+        entry = self._cache.get(playlist_name)
+        if not entry or not isinstance(entry, dict):
+            return False
+        video_ids = entry.get("video_ids") or []
+        if video_id not in video_ids:
+            return False
+        entry["video_ids"] = [v for v in video_ids if v != video_id]
+        entry["last_updated"] = datetime.now(UTC).isoformat()
+        self._save()
+        log.info("Removed video %s from cached template '%s'", video_id, playlist_name)
+        return True
+
+    def summary(self) -> list[dict]:
+        """List cached playlists with id, video_count, last_updated."""
+        out: list[dict] = []
+        for name, entry in self._cache.items():
+            if not isinstance(entry, dict):
+                continue
+            out.append(
+                {
+                    "name": name,
+                    "id": entry.get("id"),
+                    "video_count": len(entry.get("video_ids") or []),
+                    "last_updated": entry.get("last_updated"),
+                }
+            )
+        out.sort(key=lambda x: x["name"].lower())
+        return out
+
+    def get_video_ids(self, playlist_name: str) -> list[str]:
+        """Get cached video IDs for a playlist (or empty list)."""
+        entry = self._cache.get(playlist_name)
+        if entry and isinstance(entry, dict):
+            return list(entry.get("video_ids") or [])
+        return []
+
     def prune_old_weeklies(self, base_prefix: str, keep_count: int = 1) -> list[str]:
         """Remove old weekly playlists."""
         import re

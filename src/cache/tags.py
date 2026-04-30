@@ -98,6 +98,17 @@ class TagCache(JSONCache):
             return True
         return False
 
+    def delete_keys(self, keys: list[str]) -> int:
+        """Delete multiple entries by raw cache key. Returns count deleted."""
+        deleted = 0
+        for key in keys:
+            if key in self._cache:
+                del self._cache[key]
+                deleted += 1
+        if deleted:
+            self._save()
+        return deleted
+
     def stats(self) -> dict[str, int]:
         """Get cache statistics."""
         total = len(self._cache)
