@@ -142,6 +142,7 @@ These settings only apply when running the web dashboard.
 | `AUTO_TAG_SYNC_ENABLED` | `false` | Also sync custom tag playlists after each scheduled run |
 | `AUTO_TAG_SYNC_FREQUENCY` | `1` | Run tag sync every N main syncs (`1` = every time) |
 | `USE_24_HOUR_CLOCK` | `true` | Display times in 24-hour format |
+| `DATE_FORMAT` | `auto` | Date display format: `auto` (browser locale), `DMY` (31/12), or `MDY` (12/31) |
 | `NOW_PLAYING_ENABLED` | `true` | Show "Now Playing" from Last.fm in the header |
 | `NOW_PLAYING_INTERVAL` | `15` | Seconds between Now Playing polls (`5`-`120`) |
 

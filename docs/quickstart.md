@@ -65,14 +65,41 @@ The Docker setup:
 
 ### Updating
 
-To update to the latest version:
+The dashboard shows a small pill at the top whenever your running instance
+is behind the upstream `main` branch on GitHub. Clicking it opens the
+GitHub compare view so you can see what changed before pulling.
+
+**Docker (recommended):**
 
 ```bash
 git pull
 ./run-docker.sh --rebuild
 ```
 
-Your cache, config, and `.env` are stored outside the container and persist across rebuilds.
+Add `--no-cache` if a dependency was bumped and you want a fully fresh
+image, and `--prune` to remove the previous image afterwards:
+
+```bash
+./run-docker.sh --no-cache --prune
+```
+
+Your cache, config, and `.env` are stored outside the container and
+persist across rebuilds.
+
+**CLI / manual install:**
+
+```bash
+git pull
+source .venv/bin/activate
+pip install --upgrade ".[web]"        # drop [web] if you installed without it
+pybabel compile -d web/translations   # only needed for the web dashboard
+```
+
+Then restart whatever is running the sync (cron, systemd, `lastfm-ytm-web`,
+etc.). The `pip install --upgrade` picks up any new dependencies; the
+`pybabel compile` step is required because the compiled `.mo` catalogs are
+gitignored and Flask-Babel silently falls back to source strings without
+them.
 
 ---
 
