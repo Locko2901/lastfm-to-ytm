@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-30 11:58+0200\n"
+"POT-Creation-Date: 2026-04-30 14:50+0200\n"
 "PO-Revision-Date: 2026-03-13 15:44+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -30,8 +30,8 @@ msgstr ""
 msgid "At least one tag is required."
 msgstr ""
 
-#: web/routes/actions.py:220 web/routes/api.py:173 web/routes/api.py:244
-#: web/routes/api.py:809
+#: web/routes/actions.py:220 web/routes/api.py:174 web/routes/api.py:245
+#: web/routes/api.py:810
 msgid "No data provided"
 msgstr ""
 
@@ -40,133 +40,133 @@ msgstr ""
 msgid "Imported"
 msgstr ""
 
-#: web/routes/api.py:153
+#: web/routes/api.py:154
 msgid ".env already exists"
 msgstr ""
 
-#: web/routes/api.py:156
+#: web/routes/api.py:157
 msgid ".env.example not found"
 msgstr ""
 
-#: web/routes/api.py:165
+#: web/routes/api.py:166
 msgid "Failed to create configuration file"
 msgstr ""
 
-#: web/routes/api.py:179
+#: web/routes/api.py:180
 msgid "Username and API key are required"
 msgstr ""
 
-#: web/routes/api.py:191
+#: web/routes/api.py:192
 msgid "Failed to save credentials"
 msgstr ""
 
-#: web/routes/api.py:270 web/routes/api.py:825
+#: web/routes/api.py:271 web/routes/api.py:826
 #, python-format
 msgid "Invalid cron expression: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:279 web/routes/api.py:833
+#: web/routes/api.py:280 web/routes/api.py:834
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr ""
 
-#: web/routes/api.py:291 web/static/js/modules/settings.js:129
+#: web/routes/api.py:292 web/static/js/modules/settings.js:129
 #: web/static/js/modules/settings.js:160
 msgid "Failed to save settings"
 msgstr ""
 
-#: web/routes/api.py:300
+#: web/routes/api.py:301
 msgid "No webhook URL provided"
 msgstr ""
 
-#: web/routes/api.py:313
+#: web/routes/api.py:314
 msgid "Webhook request failed. Check the URL and try again."
 msgstr ""
 
-#: web/routes/api.py:391
+#: web/routes/api.py:392
 msgid "Unknown panel"
 msgstr ""
 
-#: web/routes/api.py:405
+#: web/routes/api.py:406
 msgid "Invalid data: 'playlists' array required"
 msgstr ""
 
-#: web/routes/api.py:409
+#: web/routes/api.py:410
 msgid "'playlists' must be an array"
 msgstr ""
 
-#: web/routes/api.py:458
+#: web/routes/api.py:459
 msgid "Failed to save custom playlists"
 msgstr ""
 
-#: web/routes/api.py:569
+#: web/routes/api.py:570
 msgid "Artist and title are required"
 msgstr ""
 
-#: web/routes/api.py:647
+#: web/routes/api.py:648
 msgid "Last.fm credentials not configured"
 msgstr ""
 
-#: web/routes/api.py:715
+#: web/routes/api.py:716
 msgid "Failed to fetch from Last.fm"
 msgstr ""
 
-#: web/routes/api.py:718
+#: web/routes/api.py:719
 msgid "Internal error"
 msgstr ""
 
-#: web/routes/api.py:835
+#: web/routes/api.py:836
 msgid "Invalid start time format. Use HH:MM."
 msgstr ""
 
-#: web/routes/api.py:860
+#: web/routes/api.py:861
 msgid "Failed to configure scheduler. APScheduler may not be installed."
 msgstr ""
 
-#: web/routes/api.py:863
+#: web/routes/api.py:864
 #, python-format
 msgid "Invalid value: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:866
+#: web/routes/api.py:867
 msgid "Failed to configure scheduler"
 msgstr ""
 
-#: web/routes/api.py:874 web/routes/api.py:903 web/routes/api.py:925
+#: web/routes/api.py:875 web/routes/api.py:904 web/routes/api.py:926
 msgid "Password is required"
 msgstr ""
 
-#: web/routes/api.py:878
+#: web/routes/api.py:879
 msgid "Password must be at least 4 characters"
 msgstr ""
 
-#: web/routes/api.py:893 web/static/js/modules/modals.js:574
+#: web/routes/api.py:894 web/static/js/modules/modals.js:574
 #: web/static/js/modules/modals.js:585 web/static/js/modules/teleporter.js:91
 #: web/static/js/modules/teleporter.js:104
 msgid "Export failed"
 msgstr ""
 
-#: web/routes/api.py:905 web/routes/api.py:927
+#: web/routes/api.py:906 web/routes/api.py:928
 msgid "No file provided"
 msgstr ""
 
-#: web/routes/api.py:915 web/static/js/modules/teleporter.js:193
+#: web/routes/api.py:916 web/static/js/modules/teleporter.js:193
 #: web/static/js/modules/teleporter.js:205
 msgid "Preview failed"
 msgstr ""
 
-#: web/routes/api.py:937 web/static/js/modules/modals.js:653
+#: web/routes/api.py:938 web/static/js/modules/modals.js:653
 #: web/static/js/modules/modals.js:672 web/static/js/modules/teleporter.js:233
 #: web/static/js/modules/teleporter.js:242
 msgid "Import failed"
 msgstr ""
 
-#: web/routes/api.py:959 web/routes/api.py:982 web/routes/api.py:1001
-#: web/routes/api.py:1015 web/routes/api.py:1035 web/routes/api.py:1049
-#: web/routes/api.py:1072 web/routes/api.py:1082
+#: web/routes/api.py:960 web/routes/api.py:983 web/routes/api.py:1002
+#: web/routes/api.py:1016 web/routes/api.py:1036 web/routes/api.py:1050
+#: web/routes/api.py:1073 web/routes/api.py:1083
 msgid "History database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1005
+#: web/routes/api.py:1006
 msgid "Sync record not found"
 msgstr ""
 
@@ -1206,40 +1206,40 @@ msgstr ""
 msgid "Re-enable in Settings → Display"
 msgstr ""
 
-#: web/templates/dashboard.html:11 web/templates/dashboard.html:20
+#: web/templates/dashboard.html:12 web/templates/dashboard.html:21
 #, python-format
 msgid "Open %(name)s on YouTube Music"
 msgstr ""
 
-#: web/templates/dashboard.html:15
+#: web/templates/dashboard.html:16
 msgid "Main"
 msgstr ""
 
-#: web/templates/dashboard.html:27
+#: web/templates/dashboard.html:28
 msgid "Weekly"
 msgstr ""
 
-#: web/templates/dashboard.html:30
+#: web/templates/dashboard.html:31
 msgid "Scheduled sync enabled"
 msgstr ""
 
-#: web/templates/dashboard.html:35
+#: web/templates/dashboard.html:36
 msgid "Scheduled"
 msgstr ""
 
-#: web/templates/dashboard.html:37
+#: web/templates/dashboard.html:38
 msgid "Server time"
 msgstr ""
 
-#: web/templates/dashboard.html:47 web/templates/dashboard.html:56
+#: web/templates/dashboard.html:48 web/templates/dashboard.html:57
 msgid "Notifications"
 msgstr ""
 
-#: web/templates/dashboard.html:58
+#: web/templates/dashboard.html:59
 msgid "Clear all"
 msgstr ""
 
-#: web/templates/dashboard.html:59
+#: web/templates/dashboard.html:60
 #: web/templates/partials/_modal_cache_admin.html:142
 #: web/templates/partials/_modals.html:522
 #: web/templates/partials/_modals.html:695
@@ -1249,20 +1249,20 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: web/templates/dashboard.html:69
+#: web/templates/dashboard.html:70
 msgid "No notifications yet"
 msgstr ""
 
-#: web/templates/dashboard.html:72
+#: web/templates/dashboard.html:73
 msgid "Documentation"
 msgstr ""
 
-#: web/templates/dashboard.html:78
+#: web/templates/dashboard.html:79
 #: web/templates/partials/_modal_cache_admin.html:12
 msgid "Cache Management"
 msgstr ""
 
-#: web/templates/dashboard.html:85
+#: web/templates/dashboard.html:86
 #: web/templates/partials/_panel_settings.html:12
 msgid "Settings"
 msgstr ""
@@ -2853,12 +2853,8 @@ msgstr ""
 msgid "History"
 msgstr ""
 
-#: web/templates/partials/_update_pill.html:13
-msgid "How to update"
-msgstr ""
-
-#: web/templates/partials/_update_pill.html:14
-msgid "Dismiss"
+#: web/templates/partials/_update_pill.html:3
+msgid "Current version"
 msgstr ""
 
 #~ msgid "Edit Custom Playlist"
@@ -4272,5 +4268,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "View release"
+#~ msgstr ""
+
+#~ msgid "How to update"
+#~ msgstr ""
+
+#~ msgid "Dismiss"
 #~ msgstr ""
 

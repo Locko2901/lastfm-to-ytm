@@ -123,10 +123,11 @@ def status():
 
 @api_bp.route("/update-status")
 def update_status():
-    """Return how many commits the running build is behind ``origin/main``.
+    """Return the current app version and the latest published release.
 
-    Response keys: ``current`` (short SHA), ``behind_by``, ``compare_url``,
-    ``update_available``. Network failures yield ``behind_by=None``.
+    Response keys: ``current_version``, ``latest_version``, ``release_url``,
+    ``release_name``, ``update_available``. Remote fields are ``None`` if
+    the GitHub check failed.
     """
     return jsonify(get_update_status())
 
