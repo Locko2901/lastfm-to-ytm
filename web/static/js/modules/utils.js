@@ -24,6 +24,28 @@ export async function getUse24HourClock() {
   return settings ? Boolean(settings.USE_24_HOUR_CLOCK) : true
 }
 
+export async function getDateFormat() {
+  const settings = await getCachedSettings()
+  const value = settings?.DATE_FORMAT
+  if (value === "DMY" || value === "MDY") return value
+  return "auto"
+}
+
+export async function getDateTimePrefs() {
+  return {
+    use24Hour: await getUse24HourClock(),
+    dateFormat: await getDateFormat(),
+  }
+}
+
+export function getDateTimePrefsSync() {
+  const dateFormat = _cachedSettings?.DATE_FORMAT === "DMY" || _cachedSettings?.DATE_FORMAT === "MDY" ? _cachedSettings.DATE_FORMAT : "auto"
+  return {
+    use24Hour: _cachedSettings ? Boolean(_cachedSettings.USE_24_HOUR_CLOCK) : true,
+    dateFormat,
+  }
+}
+
 export function formatClockTime(date, use24Hour = true) {
   return date.toLocaleTimeString(undefined, {
     hour: "2-digit",
@@ -63,8 +85,8 @@ export async function updateAutoSyncIndicator() {
       let tooltip = _("Auto-sync enabled")
       if (status.next_run) {
         const nextRun = new Date(status.next_run)
-        const use24Hour = await getUse24HourClock()
-        tooltip += _(" • Next: %(time)s", { time: formatDateTime(nextRun, use24Hour) })
+        const prefs = await getDateTimePrefs()
+        tooltip += _(" • Next: %(time)s", { time: formatDateTime(nextRun, prefs) })
       }
       indicator.setAttribute("data-tooltip", tooltip)
     } else {
@@ -75,14 +97,38 @@ export async function updateAutoSyncIndicator() {
   }
 }
 
-export function formatDateTime(date, use24Hour = true) {
-  return date.toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
+export function formatDateTime(date, prefsOrUse24Hour = true) {
+  const prefs = _coercePrefs(prefsOrUse24Hour)
+  const opts = {
     hour: "2-digit",
     minute: "2-digit",
-    hour12: !use24Hour,
-  })
+    hour12: !prefs.use24Hour,
+  }
+  if (prefs.dateFormat === "DMY" || prefs.dateFormat === "MDY") {
+    opts.day = "2-digit"
+    opts.month = "2-digit"
+  } else {
+    opts.month = "short"
+    opts.day = "numeric"
+  }
+  const locale = _localeForDateFormat(prefs.dateFormat)
+  return date.toLocaleString(locale, opts)
+}
+
+function _coercePrefs(prefsOrUse24Hour) {
+  if (typeof prefsOrUse24Hour === "object" && prefsOrUse24Hour !== null) {
+    return {
+      use24Hour: Boolean(prefsOrUse24Hour.use24Hour),
+      dateFormat: prefsOrUse24Hour.dateFormat || "auto",
+    }
+  }
+  return { use24Hour: Boolean(prefsOrUse24Hour), dateFormat: "auto" }
+}
+
+function _localeForDateFormat(dateFormat) {
+  if (dateFormat === "DMY") return "en-GB"
+  if (dateFormat === "MDY") return "en-US"
+  return undefined
 }
 
 let _nowPlayingSettings = null
@@ -472,7 +518,7 @@ export async function hideNowPlaying() {
   } catch (_error) {}
 }
 
-export function formatRelativeTime(isoString) {
+export async function formatRelativeTime(isoString) {
   if (!isoString) return _("Never")
 
   const date = new Date(isoString)
@@ -488,7 +534,12 @@ export function formatRelativeTime(isoString) {
   if (diffHour < 24) return _("%(count)sh ago", { count: diffHour })
   if (diffDay < 7) return _("%(count)sd ago", { count: diffDay })
 
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
+  const dateFormat = await getDateFormat()
+  const locale = _localeForDateFormat(dateFormat)
+  if (dateFormat === "DMY" || dateFormat === "MDY") {
+    return date.toLocaleDateString(locale, { month: "2-digit", day: "2-digit" })
+  }
+  return date.toLocaleDateString(locale, { month: "short", day: "numeric" })
 }
 
 export async function updateLastSyncDisplay() {
@@ -498,9 +549,9 @@ export async function updateLastSyncDisplay() {
   const timestamp = el.dataset.timestamp
   const timeSpan = el.querySelector(".last-sync-time")
   if (timeSpan && timestamp) {
-    timeSpan.textContent = formatRelativeTime(timestamp)
-    const use24Hour = await getUse24HourClock()
-    el.setAttribute("data-tooltip", formatDateTime(new Date(timestamp), use24Hour))
+    timeSpan.textContent = await formatRelativeTime(timestamp)
+    const prefs = await getDateTimePrefs()
+    el.setAttribute("data-tooltip", formatDateTime(new Date(timestamp), prefs))
   }
 }
 
@@ -542,10 +593,12 @@ export async function refreshStats() {
         const timeSpan = valueEl.querySelector(".last-sync-time")
         if (stats.last_sync) {
           valueEl.dataset.timestamp = stats.last_sync
+          // biome-ignore lint/performance/noAwaitInLoops: settings are cached, await is effectively synchronous
+          const relative = await formatRelativeTime(stats.last_sync)
           if (timeSpan) {
-            timeSpan.textContent = formatRelativeTime(stats.last_sync)
+            timeSpan.textContent = relative
           } else {
-            valueEl.innerHTML = `<span class="last-sync-time">${formatRelativeTime(stats.last_sync)}</span>`
+            valueEl.innerHTML = `<span class="last-sync-time">${relative}</span>`
           }
         }
       }

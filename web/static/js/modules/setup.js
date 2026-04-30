@@ -1,7 +1,7 @@
 import { checkAuthStatus } from "./auth.js"
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
-import { escapeHtml, formatDateTime, formatRelativeTime, getUse24HourClock, insertBanner, removeBanner, showToast } from "./utils.js"
+import { escapeHtml, formatDateTime, formatRelativeTime, getDateTimePrefs, insertBanner, removeBanner, showToast } from "./utils.js"
 
 let currentSetupStep = 1
 const totalSetupSteps = 2
@@ -258,8 +258,8 @@ export async function checkFailureLog() {
   } catch (_e) {}
 }
 
-export function showSyncFailureBanner(data) {
-  const timeAgo = data.timestamp ? formatRelativeTime(data.timestamp) : ""
+export async function showSyncFailureBanner(data) {
+  const timeAgo = data.timestamp ? await formatRelativeTime(data.timestamp) : ""
 
   let hintHtml = ""
   if (data.hint) {
@@ -362,8 +362,8 @@ export async function showFailureLogModal() {
 
   if (lastFailureData.timestamp) {
     const date = new Date(lastFailureData.timestamp)
-    const use24Hour = await getUse24HourClock()
-    timeEl.innerHTML = `<strong>Time:</strong> ${formatDateTime(date, use24Hour)}`
+    const prefs = await getDateTimePrefs()
+    timeEl.innerHTML = `<strong>Time:</strong> ${formatDateTime(date, prefs)}`
   }
 
   errorEl.innerHTML = `<strong>Error:</strong> ${escapeHtml(lastFailureData.error || "Unknown error")}`

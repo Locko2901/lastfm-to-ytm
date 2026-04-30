@@ -1,15 +1,7 @@
 import { refreshHistoryPanelState, setHistoryTabVisibility } from "./history.js"
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
-import {
-  formatDateTime,
-  getUse24HourClock,
-  insertBanner,
-  invalidateSettingsCache,
-  removeBanner,
-  showToast,
-  updateAutoSyncIndicator,
-} from "./utils.js"
+import { formatDateTime, getDateTimePrefs, insertBanner, invalidateSettingsCache, removeBanner, showToast, updateAutoSyncIndicator } from "./utils.js"
 
 const NO_RESTART_SETTINGS = [
   "LASTFM_USER",
@@ -43,6 +35,7 @@ const NO_RESTART_SETTINGS = [
   "AUTO_TAG_SYNC_ENABLED",
   "AUTO_TAG_SYNC_FREQUENCY",
   "USE_24_HOUR_CLOCK",
+  "DATE_FORMAT",
   "NOW_PLAYING_ENABLED",
   "NOW_PLAYING_INTERVAL",
   "DISPLAY_TIPS",
@@ -55,7 +48,7 @@ const NO_RESTART_SETTINGS = [
   "WEBHOOK_EVENTS",
 ]
 
-const UI_RELOAD_SETTINGS = ["USE_24_HOUR_CLOCK"]
+const UI_RELOAD_SETTINGS = ["USE_24_HOUR_CLOCK", "DATE_FORMAT"]
 
 export async function loadSettings() {
   try {
@@ -454,8 +447,8 @@ async function updateSchedulerUI(status) {
     if (status.enabled && status.next_run) {
       nextRunInfo.style.display = "flex"
       const nextDate = new Date(status.next_run)
-      const use24Hour = await getUse24HourClock()
-      nextRunTime.textContent = formatDateTime(nextDate, use24Hour)
+      const prefs = await getDateTimePrefs()
+      nextRunTime.textContent = formatDateTime(nextDate, prefs)
     } else {
       nextRunInfo.style.display = "none"
     }
