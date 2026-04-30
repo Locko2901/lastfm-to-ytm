@@ -65,9 +65,11 @@ The Docker setup:
 
 ### Updating
 
-The dashboard shows a small pill at the top whenever your running instance
-is behind the upstream `main` branch on GitHub. Clicking it opens the
-GitHub compare view so you can see what changed before pulling.
+The dashboard shows a version pill (e.g. `v1.0.1`) in the header. When a
+newer release is published on GitHub, the pill highlights and shows the
+available version (e.g. `↑ v1.0.2`); clicking it opens the corresponding
+[GitHub release](https://github.com/Locko2901/lastfm-to-ytm/releases) so
+you can review the changelog before updating.
 
 **Docker (recommended):**
 
