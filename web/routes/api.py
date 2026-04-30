@@ -43,6 +43,7 @@ from ..services import (
     get_tag_suggestions,
     get_track_tag_overrides_map,
     get_track_tags_map,
+    get_update_status,
     is_history_enabled,
     load_custom_playlists_config,
     load_failure_log,
@@ -118,6 +119,16 @@ def status():
                 "exit_code": sync_state["exit_code"],
             }
         )
+
+
+@api_bp.route("/update-status")
+def update_status():
+    """Return how many commits the running build is behind ``origin/main``.
+
+    Response keys: ``current`` (short SHA), ``behind_by``, ``compare_url``,
+    ``update_available``. Network failures yield ``behind_by=None``.
+    """
+    return jsonify(get_update_status())
 
 
 @api_bp.route("/setup/status")

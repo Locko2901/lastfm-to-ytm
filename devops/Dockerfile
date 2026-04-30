@@ -59,6 +59,8 @@ COPY devops/gunicorn.conf.py ./gunicorn.conf.py
 COPY --from=builder /build/web/static/dist/ ./web/static/dist/
 COPY --from=builder /build/web/translations/ ./web/translations/
 
+COPY COMMIT_SHA ./COMMIT_SHA
+
 COPY devops/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 

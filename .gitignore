@@ -18,6 +18,9 @@ site/
 .env
 browser.json
 
+# Generated at Docker build time by run-docker.sh
+COMMIT_SHA
+
 # Cache directory
 /cache/
 

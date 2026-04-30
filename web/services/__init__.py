@@ -62,6 +62,9 @@ from .state import (
     sync_lock,
     sync_state,
 )
+from .update_check import (
+    get_update_status,
+)
 
 __all__ = [
     "ALL_SETTINGS",
@@ -97,6 +100,7 @@ __all__ = [
     "get_tag_suggestions",
     "get_track_tag_overrides_map",
     "get_track_tags_map",
+    "get_update_status",
     "history_record_action",
     "init_scheduler_from_env",
     "is_history_enabled",
