@@ -1,5 +1,19 @@
 import { closeAuthModal, connectAuth, initAuth } from "./modules/auth.js"
 import {
+  _onTogglePlaylist as cacheAdminTogglePlaylist,
+  cacheBulkDeleteSearch,
+  cacheBulkDeleteTags,
+  cacheClearPlaylistAll,
+  cacheClearSearchAll,
+  cacheClearSearchNotfound,
+  cacheClearTagsAll,
+  cacheRemovePlaylistEntry,
+  cacheRemovePlaylistTrack,
+  initCacheAdmin,
+  reloadCacheAdmin,
+  showCacheAdminModal,
+} from "./modules/cacheAdmin.js"
+import {
   blacklistFromPlaylist,
   clearPreviewCache,
   confirmDeletePlaylist,
@@ -196,6 +210,18 @@ window.confirmClearHistory = confirmClearHistory
 window.loadHistoryData = loadHistoryData
 window.switchHistoryView = switchHistoryView
 
+window.showCacheAdminModal = showCacheAdminModal
+window.reloadCacheAdmin = reloadCacheAdmin
+window.cacheClearSearchAll = cacheClearSearchAll
+window.cacheClearSearchNotfound = cacheClearSearchNotfound
+window.cacheBulkDeleteSearch = cacheBulkDeleteSearch
+window.cacheClearTagsAll = cacheClearTagsAll
+window.cacheBulkDeleteTags = cacheBulkDeleteTags
+window.cacheClearPlaylistAll = cacheClearPlaylistAll
+window.cacheRemovePlaylistEntry = cacheRemovePlaylistEntry
+window.cacheRemovePlaylistTrack = cacheRemovePlaylistTrack
+window.cacheAdminTogglePlaylist = cacheAdminTogglePlaylist
+
 initDelegation()
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -233,6 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadPlaylistsData()
   initCustomPlaylists()
   initHistory()
+  initCacheAdmin()
 
   initTagInput("tag-override-tags")
   initTagInput("add-tag-override-tags")

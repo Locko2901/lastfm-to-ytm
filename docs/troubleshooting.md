@@ -18,7 +18,7 @@ When YouTube removes a video for copyright reasons, it stays in the playlist as 
 
 Occasionally the sync can fail mid-run (rate limits, transient API errors, etc.) and leave the playlist in an empty or partially-filled state.
 
-**Workaround:** Run the sync again. If the playlist is still empty after a retry, delete `cache/.playlist_cache.json` (or the relevant entry in it) and run the sync once more so it rebuilds from scratch.
+**Workaround:** Run the sync again. If the playlist is still empty after a retry, open the **cache management modal** (database icon in the dashboard header) &rarr; *Playlist cache* tab and remove the affected entry, then run the sync once more so it rebuilds from scratch. As a last resort you can delete `cache/.playlist_cache.json` directly.
 
 ---
 
@@ -69,5 +69,5 @@ Occasionally the sync can fail mid-run (rate limits, transient API errors, etc.)
 
 ### Stale cache results
 
-- Cached search results expire after `CACHE_SEARCH_TTL_DAYS` (default: 30). If a video has been removed or a better match exists, clear the specific entry from the cache (via the web dashboard's Cache tab) or delete `cache/.search_cache.json` entirely.
+- Cached search results expire after `CACHE_SEARCH_TTL_DAYS` (default: 30). If a video has been removed or a better match exists, open the **cache management modal** (database icon in the dashboard header) &rarr; *Search cache* tab and bulk-delete the affected entries, or delete `cache/.search_cache.json` entirely.
 - "Not found" entries are retried after `CACHE_NOTFOUND_TTL_DAYS` (default: 7). To force an immediate retry, clear the entry from the cache.

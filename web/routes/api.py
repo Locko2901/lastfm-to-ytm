@@ -18,7 +18,13 @@ from ..services import (
     ENV_EXAMPLE_FILE,
     ENV_FILE,
     PRIVACY_SETTINGS,
+    bulk_delete_search_cache,
+    bulk_delete_tag_cache,
     clear_failure_log,
+    clear_playlist_cache_all,
+    clear_search_cache_all,
+    clear_search_cache_notfound,
+    clear_tag_cache_all,
     delete_custom_playlist_data,
     get_cache_stats,
     get_cached_tracks,
@@ -27,6 +33,8 @@ from ..services import (
     get_last_sync_time,
     get_not_found_tracks,
     get_overrides_data,
+    get_playlist_cache_summary,
+    get_playlist_cache_tracks,
     get_playlist_mappings,
     get_setup_status,
     get_tag_cache_tracks,
@@ -42,6 +50,8 @@ from ..services import (
     load_run_log,
     load_search_cache,
     parse_env_file,
+    remove_playlist_from_cache,
+    remove_track_from_playlist_cache,
     reset_history_db,
     save_custom_playlists_config,
     sync_lock,
@@ -1096,3 +1106,125 @@ def _get_gunicorn_master_pid() -> int | None:
         pass
 
     return None
+
+
+@api_bp.route("/cache/summary")
+def cache_summary():
+    """Aggregate cache stats and the playlist cache contents for the admin modal."""
+    return jsonify(
+        {
+            "search": get_cache_stats(),
+            "tags": get_tag_stats(),
+            "playlists": get_playlist_cache_summary(),
+        }
+    )
+
+
+@api_bp.route("/cache/playlist-tracks")
+def cache_playlist_tracks():
+    """Resolve a playlist cache template's video IDs to artist/title."""
+    name = request.args.get("name", "").strip()
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+    return jsonify({"name": name, "tracks": get_playlist_cache_tracks(name)})
+
+
+@api_bp.route("/cache/search/all", methods=["DELETE"])
+def cache_clear_search_all():
+    """Clear ALL entries from the search cache."""
+    deleted = clear_search_cache_all()
+    from ..services import history_record_action
+
+    history_record_action("cache_clear_search_all", "", "", detail=f"deleted={deleted}")
+    return jsonify({"deleted": deleted})
+
+
+@api_bp.route("/cache/search/notfound", methods=["DELETE"])
+def cache_clear_search_notfound():
+    """Clear all not-found entries from the search cache."""
+    deleted = clear_search_cache_notfound()
+    from ..services import history_record_action
+
+    history_record_action("cache_clear_search_notfound", "", "", detail=f"deleted={deleted}")
+    return jsonify({"deleted": deleted})
+
+
+@api_bp.route("/cache/search/bulk", methods=["DELETE"])
+def cache_bulk_delete_search():
+    """Bulk-delete search cache entries by raw key list (JSON: {keys: [...]})."""
+    payload = request.get_json(silent=True) or {}
+    keys = payload.get("keys") or []
+    if not isinstance(keys, list):
+        return jsonify({"error": "keys must be a list"}), 400
+    deleted = bulk_delete_search_cache([str(k) for k in keys])
+    from ..services import history_record_action
+
+    history_record_action("cache_clear_search_bulk", "", "", detail=f"deleted={deleted}")
+    return jsonify({"deleted": deleted})
+
+
+@api_bp.route("/cache/tags/all", methods=["DELETE"])
+def cache_clear_tags_all():
+    """Clear ALL entries from the tag cache."""
+    deleted = clear_tag_cache_all()
+    from ..services import history_record_action
+
+    history_record_action("cache_clear_tags_all", "", "", detail=f"deleted={deleted}")
+    return jsonify({"deleted": deleted})
+
+
+@api_bp.route("/cache/tags/bulk", methods=["DELETE"])
+def cache_bulk_delete_tags():
+    """Bulk-delete tag cache entries by raw key list (JSON: {keys: [...]})."""
+    payload = request.get_json(silent=True) or {}
+    keys = payload.get("keys") or []
+    if not isinstance(keys, list):
+        return jsonify({"error": "keys must be a list"}), 400
+    deleted = bulk_delete_tag_cache([str(k) for k in keys])
+    from ..services import history_record_action
+
+    history_record_action("cache_clear_tags_bulk", "", "", detail=f"deleted={deleted}")
+    return jsonify({"deleted": deleted})
+
+
+@api_bp.route("/cache/playlist/all", methods=["DELETE"])
+def cache_clear_playlist_all():
+    """Clear ENTIRE playlist cache (cache-only, leaves YTM playlists intact)."""
+    deleted = clear_playlist_cache_all()
+    from ..services import history_record_action
+
+    history_record_action("cache_clear_playlist_all", "", "", detail=f"deleted={deleted}")
+    return jsonify({"deleted": deleted})
+
+
+@api_bp.route("/cache/playlist/entry", methods=["DELETE"])
+def cache_clear_playlist_entry():
+    """Remove a single playlist from the playlist cache (cache-only)."""
+    payload = request.get_json(silent=True) or {}
+    name = (payload.get("name") or "").strip()
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+    removed = remove_playlist_from_cache(name)
+    if not removed:
+        return jsonify({"error": "playlist not found in cache"}), 404
+    from ..services import history_record_action
+
+    history_record_action("cache_clear_playlist_entry", "", "", detail=name)
+    return jsonify({"removed": True, "name": name})
+
+
+@api_bp.route("/cache/playlist/track", methods=["DELETE"])
+def cache_clear_playlist_track():
+    """Remove a single video ID from a playlist's cached template."""
+    payload = request.get_json(silent=True) or {}
+    name = (payload.get("name") or "").strip()
+    video_id = (payload.get("video_id") or "").strip()
+    if not name or not video_id:
+        return jsonify({"error": "name and video_id are required"}), 400
+    removed = remove_track_from_playlist_cache(name, video_id)
+    if not removed:
+        return jsonify({"error": "playlist or video_id not found"}), 404
+    from ..services import history_record_action
+
+    history_record_action("cache_clear_playlist_track", "", "", detail=f"{name} :: {video_id}")
+    return jsonify({"removed": True, "name": name, "video_id": video_id})

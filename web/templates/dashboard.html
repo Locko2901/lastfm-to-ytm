@@ -75,6 +75,13 @@ class="{% if not display_tips %}tips-hidden{% endif %}"
     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
   </svg>
 </a>
+<button class="btn btn-icon" data-action="showCacheAdminModal" title="{{ _('Cache Management') }}">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+  </svg>
+</button>
 <button class="btn btn-icon" data-action="showSettingsModal" title="{{ _('Settings') }}">
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="12" cy="12" r="3"></circle>
@@ -97,6 +104,7 @@ class="{% if not display_tips %}tips-hidden{% endif %}"
 {% include "partials/_panel_history.html" %}
 {% include "partials/_panel_sync.html" %}
 {% include "partials/_panel_settings.html" %}
+{% include "partials/_modal_cache_admin.html" %}
 {% include "partials/_modals.html" %}
 {% endblock %}
 {% block extra_scripts %}
