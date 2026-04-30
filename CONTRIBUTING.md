@@ -27,19 +27,21 @@ npm install
 
 This repo uses **[Conventional Commits](https://www.conventionalcommits.org/)**. The release version, git tag, GitHub Release, and changelog are all generated from commit messages by [release-please](https://locko2901.github.io/lastfm-to-ytm/releases/). Non-conforming commits won't break anything but will be excluded from the changelog.
 
-| Prefix | Use for | Version effect |
+| Prefix | Use for | Bump (when highest in the batch) |
 |---|---|---|
-| `feat:` | new user-facing feature | minor bump |
-| `fix:` | bug fix | patch bump |
-| `perf:` | performance improvement | patch bump |
-| `feat!:` / `fix!:` | breaking change (or add `BREAKING CHANGE:` footer) | **major bump** |
-| `docs:` | documentation only | no release |
-| `refactor:` | code change with no behavior change | no release |
-| `style:` | formatting, no logic | no release |
-| `test:` | tests | no release |
-| `ci:` / `build:` | CI or build tooling | no release |
-| `chore:` | misc maintenance | no release |
-| `i18n:` | translation catalog updates | no release |
+| `feat!:` / `fix!:` | breaking change (or add `BREAKING CHANGE:` footer) | **major** |
+| `feat:` | new user-facing feature | minor |
+| `fix:` | bug fix | patch |
+| `perf:` | performance improvement | patch |
+| `docs:` | documentation only | patch |
+| `refactor:` | code change with no behavior change | patch |
+| `style:` | formatting, no logic | patch |
+| `test:` | tests | patch |
+| `ci:` / `build:` | CI or build tooling | patch |
+| `chore:` | misc maintenance | patch |
+| `i18n:` | translation catalog updates | patch |
+
+Any conventional commit ends up in a Release PR. If a batch contains a `feat:`, the bump is minor; if anything is breaking, major; otherwise patch. If you don't want a release yet, just don't merge the open Release PR — it keeps accumulating until you do.
 
 Optional scope in parentheses, e.g. `feat(web): add cache modal`. See [Releases & Changelog](https://locko2901.github.io/lastfm-to-ytm/releases/) for full details on the release pipeline.
 
