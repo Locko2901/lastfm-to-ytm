@@ -1,62 +1,54 @@
 {# j2lint: disable=S7 #}
-<span id="updatePill" class="update-pill" hidden>
-  <a class="update-pill-link" href="#" target="_blank" rel="noopener noreferrer">
-    <svg class="update-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+<a id="versionPill" class="version-pill" href="https://github.com/Locko2901/lastfm-to-ytm/releases" target="_blank" rel="noopener noreferrer"
+  data-tooltip="{{ _('Current version') }}">
+  <span class="version-pill-tag">v<span class="version-pill-current">—</span></span>
+  <span class="version-pill-update" hidden>
+    <svg class="version-pill-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
       stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 19V5"></path>
       <path d="m5 12 7-7 7 7"></path>
     </svg>
-    <span class="update-pill-text"></span>
-  </a>
-  <span class="update-pill-sep" aria-hidden="true">·</span>
-  <a class="update-pill-docs" href="https://locko2901.github.io/lastfm-to-ytm/quickstart/#updating" target="_blank"
-    rel="noopener noreferrer">{{ _('How to update') }}</a>
-  <button class="update-pill-close" type="button" aria-label="{{ _('Dismiss') }}">
-    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18"></line>
-      <line x1="6" y1="6" x2="18" y2="18"></line>
-    </svg>
-  </button>
-</span>
+    <span class="version-pill-latest"></span>
+  </span>
+</a>
 
 <script nonce="{{ csp_nonce }}">
   (() => {
-    const pill = document.getElementById("updatePill")
+    const pill = document.getElementById("versionPill")
     if (!pill) return
-    const dismissedKey = "ytm-update-dismissed-sha"
     const t = window.__i18n__ || {}
     const tr = (k) => t[k] || k
+
+    const currentEl = pill.querySelector(".version-pill-current")
+    const latestEl = pill.querySelector(".version-pill-latest")
+    const updateBadge = pill.querySelector(".version-pill-update")
 
     fetch("/api/update-status", {
         credentials: "same-origin"
       })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (!data || !data.update_available || !data.behind_by) return
-        if (localStorage.getItem(dismissedKey) === data.current) return
+        if (!data) return
 
-        const text = pill.querySelector(".update-pill-text")
-        const link = pill.querySelector(".update-pill-link")
-        const close = pill.querySelector(".update-pill-close")
-
-        const n = data.behind_by
-        let template
-        if (data.on_main === true) {
-          template = n === 1 ? tr("%(n)s commit behind") : tr("%(n)s commits behind")
-        } else {
-          template = n === 1 ? tr("%(n)s new commit on main") : tr("%(n)s new commits on main")
+        if (data.current_version) {
+          currentEl.textContent = data.current_version
         }
-        text.textContent = template.replace("%(n)s", n)
 
-        if (data.compare_url) link.href = data.compare_url
-        pill.hidden = false
-
-        close.addEventListener("click", (e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          if (data.current) localStorage.setItem(dismissedKey, data.current)
-          pill.hidden = true
-        })
+        if (data.update_available && data.latest_version) {
+          latestEl.textContent = "v" + data.latest_version
+          updateBadge.hidden = false
+          pill.classList.add("has-update")
+          if (data.release_url) pill.href = data.release_url
+          pill.setAttribute(
+            "data-tooltip",
+            tr("Update available: %(v)s").replace("%(v)s", "v" + data.latest_version),
+          )
+        } else if (data.current_version) {
+          pill.setAttribute(
+            "data-tooltip",
+            tr("Up to date (v%(v)s)").replace("%(v)s", data.current_version),
+          )
+        }
       })
       .catch(() => {
         /* silent */

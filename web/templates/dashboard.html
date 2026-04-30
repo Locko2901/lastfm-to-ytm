@@ -6,6 +6,7 @@ class="{% if not display_tips %}tips-hidden{% endif %}"
 {% endblock %}
 {% block header_actions %}
 <div class="header-info">
+  {% include "partials/_update_pill.html" %}
   {% if playlist_links.main_url %}
   <a href="{{ playlist_links.main_url }}" target="_blank" rel="noopener noreferrer" class="playlist-link"
     data-tooltip="{{ _('Open %(name)s on YouTube Music', name=playlist_links.main_name) }}">
@@ -92,7 +93,6 @@ class="{% if not display_tips %}tips-hidden{% endif %}"
 </button>
 {% endblock %}
 {% block content %}
-{% include "partials/_update_pill.html" %}
 {% include "partials/_stats.html" %}
 {% include "partials/_tabs.html" %}
 {% include "partials/_panel_playlist.html" %}
