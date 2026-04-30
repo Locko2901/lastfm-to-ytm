@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.0.1](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.0.0...v1.0.1) (2026-04-30)
+
+
+### Bug Fixes
+
+* verify release-please pipeline ([3b9df66](https://github.com/Locko2901/lastfm-to-ytm/commit/3b9df66ad5944cf73e400b860e8c8283525b2a60))
+
+
+### Miscellaneous
+
+* align pyproject version with v1.0.0 tag ([cd0ba93](https://github.com/Locko2901/lastfm-to-ytm/commit/cd0ba9379ec991ed53043018fe7fd299abcde0d0))
+
 ## [1.0.0] - 2026-04-30
 
 ### Bug Fixes
@@ -116,4 +128,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **playlist**: Update button for removing cached tracks with icon
 - **update-pill**: Format HTML for better readability
-
