@@ -41,7 +41,7 @@ This repo uses **[Conventional Commits](https://www.conventionalcommits.org/)**.
 | `chore:` | misc maintenance | patch |
 | `i18n:` | translation catalog updates | patch |
 
-Any conventional commit ends up in a Release PR. If a batch contains a `feat:`, the bump is minor; if anything is breaking, major; otherwise patch. If you don't want a release yet, just don't merge the open Release PR — it keeps accumulating until you do.
+Any conventional commit ends up in a Release PR. If a batch contains a `feat:`, the bump is minor; if anything is breaking, major; otherwise patch. If you don't want a release yet, just don't merge the open Release PR - it keeps accumulating until you do.
 
 Optional scope in parentheses, e.g. `feat(web): add cache modal`. See [Releases & Changelog](https://locko2901.github.io/lastfm-to-ytm/releases/) for full details on the release pipeline.
 
