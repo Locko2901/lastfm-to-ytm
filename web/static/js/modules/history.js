@@ -1,6 +1,6 @@
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
-import { formatDateTime, getUse24HourClock, refreshPanel, showToast } from "./utils.js"
+import { formatDateTime, getDateTimePrefs, getDateTimePrefsSync, refreshPanel, showToast } from "./utils.js"
 
 let currentSubtab = "tracks"
 let trackPage = 0
@@ -260,7 +260,7 @@ async function loadHistorySyncs() {
   if (!list) return
 
   try {
-    const use24Hour = await getUse24HourClock()
+    const prefs = await getDateTimePrefs()
     const syncParams = new URLSearchParams({ limit: PAGE_SIZE, offset: syncPage * PAGE_SIZE })
     if (syncDateFrom) syncParams.set("from", syncDateFrom)
     if (syncDateTo) syncParams.set("to", syncDateTo)
@@ -279,7 +279,7 @@ async function loadHistorySyncs() {
         const statusMap = { success: "success", error: "danger" }
         const statusBadge = statusMap[s.status] ?? "warning"
         const duration = s.duration_secs != null ? `${s.duration_secs.toFixed(1)}s` : "–"
-        const date = formatShortDate(s.started_at, use24Hour)
+        const date = formatShortDate(s.started_at, prefs)
         return `
         <div class="track-item" data-action="showHistorySyncModal" data-sync-id="${s.id}" style="cursor: pointer;">
           <div class="track-info">
@@ -315,7 +315,7 @@ async function loadHistoryActions() {
   if (!list) return
 
   try {
-    const use24Hour = await getUse24HourClock()
+    const prefs = await getDateTimePrefs()
     const actionParams = new URLSearchParams({ limit: PAGE_SIZE, offset: actionPage * PAGE_SIZE })
     if (actionDateFrom) actionParams.set("from", actionDateFrom)
     if (actionDateTo) actionParams.set("to", actionDateTo)
@@ -331,7 +331,7 @@ async function loadHistoryActions() {
 
     list.innerHTML = data.actions
       .map(a => {
-        const date = formatShortDate(a.timestamp, use24Hour)
+        const date = formatShortDate(a.timestamp, prefs)
         const trackInfo = a.artist ? `${esc(a.artist)} – ${esc(a.title || "")}` : ""
         const trackAttrs =
           a.artist && a.title
@@ -411,6 +411,7 @@ async function loadHistoryTrend() {
   const requestedDays = trendDays
 
   try {
+    await getDateTimePrefs()
     const r = await fetch(`/api/history/trend?days=${requestedDays}`)
     if (!r.ok) return
     const data = await r.json()
@@ -566,7 +567,7 @@ function renderTrendCanvas(container, trend) {
     if (i % labelStep !== 0 && i !== n - 1) continue
     const x = xPos(i)
     ctx.fillStyle = colText
-    ctx.fillText(trend[i].date.slice(5), x, pad.top + plotH + 8)
+    ctx.fillText(formatTrendAxisDate(trend[i].date), x, pad.top + plotH + 8)
   }
 
   for (let i = 0; i < n; i++) {
@@ -659,7 +660,7 @@ function renderTrendCanvas(container, trend) {
 
       const cacheRate = d.avg_cache_rate ?? "–"
       tooltip.innerHTML = `
-        <div class="trend-tip-date">${esc(d.date)}</div>
+        <div class="trend-tip-date">${esc(formatTrendTipDate(d.date))}</div>
         <div class="trend-tip-row"><span style="color:${colSuccess}">${_("Success")}</span> ${d.success}</div>
         <div class="trend-tip-row"><span style="color:${colError}">${_("Error")}</span> ${d.error}</div>
         <div class="trend-tip-row"><span style="color:${colCache}">${_("Cache Rate")}</span> ${cacheRate === "–" ? "–" : `${cacheRate}%`}</div>
@@ -719,7 +720,7 @@ function renderTrendCanvas(container, trend) {
     for (let i = 0; i < n; i++) {
       if (i % labelStep !== 0 && i !== n - 1) continue
       ctx.fillStyle = colText
-      ctx.fillText(trend[i].date.slice(5), xPos(i), pad.top + plotH + 8)
+      ctx.fillText(formatTrendAxisDate(trend[i].date), xPos(i), pad.top + plotH + 8)
     }
 
     for (let i = 0; i < n; i++) {
@@ -959,13 +960,42 @@ function actionLabel(type) {
   return labels[type] || type.replace(/_/g, " ")
 }
 
-function formatShortDate(isoStr, use24Hour = true) {
+function formatShortDate(isoStr, prefs) {
   if (!isoStr) return "–"
   try {
-    return formatDateTime(new Date(isoStr), use24Hour)
+    return formatDateTime(new Date(isoStr), prefs)
   } catch (_e) {
     return isoStr.slice(0, 16)
   }
+}
+
+function _parseIsoDateOnly(iso) {
+  const [y, m, d] = iso.split("-").map(Number)
+  return new Date(y, (m || 1) - 1, d || 1)
+}
+
+function formatTrendAxisDate(iso) {
+  const prefs = getDateTimePrefsSync()
+  const date = _parseIsoDateOnly(iso)
+  if (prefs.dateFormat === "DMY") {
+    return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}`
+  }
+  if (prefs.dateFormat === "MDY") {
+    return `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}`
+  }
+  return iso.slice(5)
+}
+
+function formatTrendTipDate(iso) {
+  const prefs = getDateTimePrefsSync()
+  const date = _parseIsoDateOnly(iso)
+  if (prefs.dateFormat === "DMY") {
+    return date.toLocaleDateString("en-GB", { year: "numeric", month: "2-digit", day: "2-digit" })
+  }
+  if (prefs.dateFormat === "MDY") {
+    return date.toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" })
+  }
+  return iso
 }
 
 function setPagination(containerId, total, currentPage, onPageChange) {

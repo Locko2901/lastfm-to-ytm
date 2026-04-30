@@ -4,7 +4,7 @@ import { invalidateTagSuggestions, setTagInputValue } from "./tagInput.js"
 import {
   escapeHtml,
   formatDateTime,
-  getUse24HourClock,
+  getDateTimePrefs,
   isSuccessRedirect,
   postFormData,
   refreshPanel,
@@ -763,7 +763,7 @@ export async function showTrackDetailModal(artist, title, tab) {
     const resp = await fetch(`/api/track-detail?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`)
     if (!resp.ok) throw new Error(_("Failed to load details"))
     const d = await resp.json()
-    const use24Hour = await getUse24HourClock()
+    const prefs = await getDateTimePrefs()
 
     document.getElementById("detail-video-id").textContent = d.video_id || "-"
     document.getElementById("detail-yt-title").textContent = d.yt_title || "-"
@@ -791,12 +791,12 @@ export async function showTrackDetailModal(artist, title, tab) {
     const badges = []
     if (d.is_overridden) badges.push(`<span class="badge badge-override">${_("Override")}</span>`)
     if (d.is_blacklisted) badges.push(`<span class="badge badge-blacklist">${_("Blacklisted")}</span>`)
-    if (d.cache_timestamp) badges.push(`<span class="text-muted">${_("Cached:")} ${d.cache_timestamp.slice(0, 10)}</span>`)
+    if (d.cache_timestamp) badges.push(`<span class="text-muted">${_("Cached:")} ${_formatCacheDate(d.cache_timestamp, prefs)}</span>`)
     statusEl.innerHTML = badges.join(" ") || "-"
 
     document.getElementById("detail-history-seen").textContent = d.history_times_found != null ? `${d.history_times_found}×` : "-"
-    document.getElementById("detail-history-first").textContent = _formatDetailTimestamp(d.history_first_seen, use24Hour)
-    document.getElementById("detail-history-last").textContent = _formatDetailTimestamp(d.history_last_seen, use24Hour)
+    document.getElementById("detail-history-first").textContent = _formatDetailTimestamp(d.history_first_seen, prefs)
+    document.getElementById("detail-history-last").textContent = _formatDetailTimestamp(d.history_last_seen, prefs)
     document.getElementById("detail-history-actions").textContent = d.history_action_count != null ? String(d.history_action_count) : "-"
 
     const linksEl = document.getElementById("detail-links")
@@ -828,12 +828,28 @@ export async function showTrackDetailModal(artist, title, tab) {
   }
 }
 
-function _formatDetailTimestamp(isoStr, use24Hour) {
+function _formatDetailTimestamp(isoStr, prefs) {
   if (!isoStr) return "-"
   try {
-    return formatDateTime(new Date(isoStr), use24Hour)
+    return formatDateTime(new Date(isoStr), prefs)
   } catch (_e) {
     return isoStr
+  }
+}
+
+function _formatCacheDate(isoStr, prefs) {
+  if (!isoStr) return "-"
+  try {
+    const date = new Date(isoStr)
+    if (prefs.dateFormat === "DMY") {
+      return date.toLocaleDateString("en-GB", { year: "numeric", month: "2-digit", day: "2-digit" })
+    }
+    if (prefs.dateFormat === "MDY") {
+      return date.toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" })
+    }
+    return isoStr.slice(0, 10)
+  } catch (_e) {
+    return isoStr.slice(0, 10)
   }
 }
 
@@ -869,7 +885,7 @@ export async function showHistorySyncModal(syncId) {
     const resp = await fetch(`/api/history/syncs/${encodeURIComponent(syncId)}`)
     if (!resp.ok) throw new Error(_("Failed to load sync details"))
     const sync = await resp.json()
-    const use24Hour = await getUse24HourClock()
+    const prefs = await getDateTimePrefs()
     const statusMap = { success: "success", error: "danger" }
     const statusBadge = statusMap[sync.status] ?? "warning"
     const cacheTotal = (sync.cache_hits || 0) + (sync.cache_misses || 0)
@@ -877,8 +893,8 @@ export async function showHistorySyncModal(syncId) {
 
     document.getElementById("history-sync-title").textContent = `${sync.sync_type} · ${sync.trigger}`
     document.getElementById("history-sync-status").innerHTML = `<span class="badge badge-${statusBadge}">${escapeHtml(sync.status || "-")}</span>`
-    document.getElementById("history-sync-started").textContent = _formatDetailTimestamp(sync.started_at, use24Hour)
-    document.getElementById("history-sync-finished").textContent = _formatDetailTimestamp(sync.finished_at, use24Hour)
+    document.getElementById("history-sync-started").textContent = _formatDetailTimestamp(sync.started_at, prefs)
+    document.getElementById("history-sync-finished").textContent = _formatDetailTimestamp(sync.finished_at, prefs)
     document.getElementById("history-sync-duration").textContent = sync.duration_secs != null ? `${sync.duration_secs.toFixed(1)}s` : "-"
     document.getElementById("history-sync-resolved").textContent = `${sync.tracks_resolved}/${sync.tracks_total}`
     document.getElementById("history-sync-missed").textContent = String(sync.tracks_missed ?? 0)

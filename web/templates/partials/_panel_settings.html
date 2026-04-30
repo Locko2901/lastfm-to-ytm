@@ -95,6 +95,15 @@
                 <span>{{ _('Use 24-hour clock') }}</span>
               </label>
             </div>
+            <div class="form-group">
+              <label for="DATE_FORMAT">{{ _('Date format') }}</label>
+              <select id="DATE_FORMAT" name="DATE_FORMAT">
+                <option value="auto">{{ _('Auto (browser locale)') }}</option>
+                <option value="DMY">{{ _('Day/Month (31/12)') }}</option>
+                <option value="MDY">{{ _('Month/Day (12/31)') }}</option>
+              </select>
+              <span class="form-hint">{{ _('How dates are displayed in the interface') }}</span>
+            </div>
             <div class="form-group form-group-checkbox">
               <label>
                 <input type="checkbox" id="DISPLAY_TIPS" name="DISPLAY_TIPS">
