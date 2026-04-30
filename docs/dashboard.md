@@ -30,7 +30,8 @@ The web dashboard is always included with the Docker setup. It provides a full m
 ??? example "Screenshot: Settings modal"
     ![Settings Modal](screenshots/settings_modal.png)
 
-- **Sync console** - Trigger a sync manually and watch real-time output in a resizable terminal drawer. Stop a running sync at any time.
+- **Sync console** - Trigger a sync manually and watch real-time output in a resizable terminal drawer. Stop a running sync at any time. If you reload the page mid-sync, the console automatically reattaches to the running stream instead of going idle.
+- **Update pill** - When your running instance is behind the upstream `main` branch on GitHub, a small dismissable pill appears at the top of the dashboard showing how many commits you're behind, with a link to the [Updating](quickstart.md#updating) instructions. The check runs against the GitHub Compare API and is cached on disk for 24h. Dismissals are remembered per-commit, so a fresh release re-shows the pill.
 
 ??? example "Screenshot: Sync console"
     ![Sync Console](screenshots/sync_console.png)
