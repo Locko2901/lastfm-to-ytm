@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-30 11:14+0200\n"
+"POT-Creation-Date: 2026-04-30 11:38+0200\n"
 "PO-Revision-Date: 2026-03-13 15:44+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -2853,7 +2853,11 @@ msgstr ""
 msgid "History"
 msgstr ""
 
-#: web/templates/partials/_update_pill.html:9
+#: web/templates/partials/_update_pill.html:13
+msgid "How to update"
+msgstr ""
+
+#: web/templates/partials/_update_pill.html:14
 msgid "Dismiss"
 msgstr ""
 

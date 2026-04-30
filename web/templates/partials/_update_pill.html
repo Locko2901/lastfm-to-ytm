@@ -1,11 +1,16 @@
 {# j2lint: disable=S7 #}
-<a id="updatePill" class="update-pill" hidden href="#" target="_blank" rel="noopener noreferrer">
-  <svg class="update-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 19V5"></path>
-    <path d="m5 12 7-7 7 7"></path>
-  </svg>
-  <span class="update-pill-text"></span>
+<span id="updatePill" class="update-pill" hidden>
+  <a class="update-pill-link" href="#" target="_blank" rel="noopener noreferrer">
+    <svg class="update-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19V5"></path>
+      <path d="m5 12 7-7 7 7"></path>
+    </svg>
+    <span class="update-pill-text"></span>
+  </a>
+  <span class="update-pill-sep" aria-hidden="true">·</span>
+  <a class="update-pill-docs" href="https://github.com/Locko2901/lastfm-to-ytm/blob/main/docs/quickstart.md#updating"
+    target="_blank" rel="noopener noreferrer">{{ _('How to update') }}</a>
   <button class="update-pill-close" type="button" aria-label="{{ _('Dismiss') }}">
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
       stroke-linecap="round" stroke-linejoin="round">
@@ -13,7 +18,7 @@
       <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
   </button>
-</a>
+</span>
 
 <script nonce="{{ csp_nonce }}">
   (() => {
@@ -32,6 +37,7 @@
         if (localStorage.getItem(dismissedKey) === data.current) return
 
         const text = pill.querySelector(".update-pill-text")
+        const link = pill.querySelector(".update-pill-link")
         const close = pill.querySelector(".update-pill-close")
 
         const n = data.behind_by
@@ -43,7 +49,7 @@
         }
         text.textContent = template.replace("%(n)s", n)
 
-        if (data.compare_url) pill.href = data.compare_url
+        if (data.compare_url) link.href = data.compare_url
         pill.hidden = false
 
         close.addEventListener("click", (e) => {
