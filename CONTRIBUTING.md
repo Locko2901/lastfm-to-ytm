@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing! This project is small and maintained by one person, so the process is intentionally lightweight.
+Contributions are welcome. The process is intentionally lightweight.
 
 ## Reporting issues
 
