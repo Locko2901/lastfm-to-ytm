@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.1.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.0.1...v1.1.0) (2026-04-30)
+
+
+### Features
+
+* **web:** replace commits-behind pill with version pill tied to releases ([ad4a8b2](https://github.com/Locko2901/lastfm-to-ytm/commit/ad4a8b2b2baf446a43bd9f0297f18987916fc3b1))
+
+
+### Documentation
+
+* add CONTRIBUTING and release-please documentation ([adbb4fe](https://github.com/Locko2901/lastfm-to-ytm/commit/adbb4fe13fa8a0d4fff976579dd0308ab50a152b))
+* clarify that all conventional commits trigger releases ([a35f093](https://github.com/Locko2901/lastfm-to-ytm/commit/a35f093d36cf67f6bd75abbf67137bb02c0fef34))
+
+
+### Styling
+
+* tweak CONTRIBUTING intro ([bddb2a5](https://github.com/Locko2901/lastfm-to-ytm/commit/bddb2a521c4748952d928d478fa42d2346a74651))
+
+
+### Miscellaneous
+
+* I hate em dashes ([9c1ea18](https://github.com/Locko2901/lastfm-to-ytm/commit/9c1ea18028265371b36293ee8b5591e35c48e4c6))
+
 ## [1.0.1](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.0.0...v1.0.1) (2026-04-30)
 
 
