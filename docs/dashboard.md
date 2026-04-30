@@ -6,9 +6,12 @@ The web dashboard is always included with the Docker setup. It provides a full m
     You can run the web dashboard manually too:
     ```bash
     pip install ".[web]"
+    pybabel compile -d web/translations
     lastfm-ytm-web
     ```
     This starts the same dashboard at `http://localhost:2002`. You'll still need to handle process management yourself (e.g., keep it running via systemd or screen).
+
+    The `pybabel compile` step is required because the compiled `.mo` catalogs are gitignored - without them, Flask-Babel falls back to source strings and the language dropdown won't switch locales. The Docker image runs this automatically during build.
 
 ## Dashboard Features
 
