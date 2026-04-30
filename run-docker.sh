@@ -209,6 +209,12 @@ if [[ ! -f "$SCRIPT_DIR/browser.json" ]]; then
     echo '{}' > "$SCRIPT_DIR/browser.json"
 fi
 
+if command -v git &>/dev/null && git -C "$SCRIPT_DIR" rev-parse --git-dir &>/dev/null; then
+    git -C "$SCRIPT_DIR" rev-parse HEAD > "$SCRIPT_DIR/COMMIT_SHA" 2>/dev/null || echo "unknown" > "$SCRIPT_DIR/COMMIT_SHA"
+else
+    echo "unknown" > "$SCRIPT_DIR/COMMIT_SHA"
+fi
+
 echo -e "${GREEN}✓ Required files exist${NC}"
 
 echo -e "${BLUE}[4/5]${NC} Checking Docker image..."

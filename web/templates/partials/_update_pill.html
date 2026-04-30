@@ -1,0 +1,61 @@
+{# j2lint: disable=S7 #}
+<a id="updatePill" class="update-pill" hidden href="#" target="_blank" rel="noopener noreferrer">
+  <svg class="update-pill-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 19V5"></path>
+    <path d="m5 12 7-7 7 7"></path>
+  </svg>
+  <span class="update-pill-text"></span>
+  <button class="update-pill-close" type="button" aria-label="{{ _('Dismiss') }}">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+      stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </button>
+</a>
+
+<script nonce="{{ csp_nonce }}">
+  (() => {
+    const pill = document.getElementById("updatePill")
+    if (!pill) return
+    const dismissedKey = "ytm-update-dismissed-sha"
+    const t = window.__i18n__ || {}
+    const tr = (k) => t[k] || k
+
+    fetch("/api/update-status", {
+      credentials: "same-origin"
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data || !data.update_available || !data.behind_by) return
+        if (localStorage.getItem(dismissedKey) === data.current) return
+
+        const text = pill.querySelector(".update-pill-text")
+        const close = pill.querySelector(".update-pill-close")
+
+        const n = data.behind_by
+        let template
+        if (data.on_main === true) {
+          template = n === 1 ? tr("%(n)s commit behind") : tr("%(n)s commits behind")
+        } else {
+          template = n === 1 ? tr("%(n)s new commit on main") : tr("%(n)s new commits on main")
+        }
+        text.textContent = template.replace("%(n)s", n)
+
+        if (data.compare_url) pill.href = data.compare_url
+        pill.hidden = false
+
+        close.addEventListener("click", (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          if (data.current) localStorage.setItem(dismissedKey, data.current)
+          pill.hidden = true
+        })
+      })
+      .catch(() => {
+        /* silent */
+      })
+  })()
+
+</script>

@@ -92,6 +92,7 @@ class="{% if not display_tips %}tips-hidden{% endif %}"
 </button>
 {% endblock %}
 {% block content %}
+{% include "partials/_update_pill.html" %}
 {% include "partials/_stats.html" %}
 {% include "partials/_tabs.html" %}
 {% include "partials/_panel_playlist.html" %}
