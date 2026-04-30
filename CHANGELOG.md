@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.1.2](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.1.1...v1.1.2) (2026-04-30)
+
+
+### CI/CD
+
+* set GH_REPO so release notes patch step works without checkout ([b9865fb](https://github.com/Locko2901/lastfm-to-ytm/commit/b9865fbf747efa05a4ba2891e921632ab30f9f1e))
+
 ## [1.1.1](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.1.0...v1.1.1) (2026-04-30)
 
 
