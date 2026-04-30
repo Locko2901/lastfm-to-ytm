@@ -69,6 +69,7 @@ nav:
   - Troubleshooting: troubleshooting.md
   - Development:
       - Setup: development.md
+      - Contributing: contributing.md
       - Architecture: architecture.md
       - Search Internals: search-internals.md
       - Playlist Sync Internals: playlist-sync-internals.md
@@ -76,3 +77,4 @@ nav:
       - Docker Internals: docker-internals.md
       - Translations (i18n): i18n.md
       - Linting & Formatting: linting.md
+      - Releases & Changelog: releases.md
