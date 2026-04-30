@@ -15,16 +15,16 @@ A GitHub Action ([.github/workflows/release-please.yml](https://github.com/Locko
 
 ## Conventional Commits
 
-The bot relies entirely on commit message prefixes:
+The bot relies entirely on commit message prefixes. The **highest** bump in the batch wins:
 
-| Prefix | Effect | Example bump (1.2.3 &rarr;) |
+| Prefix | Bump applied if it's the highest in the batch | Example (1.2.3 &rarr;) |
 |---|---|---|
-| `fix:` | patch release | 1.2.4 |
-| `perf:` | patch release | 1.2.4 |
-| `feat:` | minor release | 1.3.0 |
-| `feat!:` / `fix!:` | **major** release | 2.0.0 |
-| Footer `BREAKING CHANGE:` | **major** release | 2.0.0 |
-| `chore:`, `docs:`, `refactor:`, `style:`, `test:`, `ci:`, `build:`, `i18n:` | no release | - |
+| `feat!:` / `fix!:` / `BREAKING CHANGE:` footer | **major** | 2.0.0 |
+| `feat:` | minor | 1.3.0 |
+| `fix:`, `perf:` | patch | 1.2.4 |
+| `docs:`, `refactor:`, `style:`, `test:`, `ci:`, `build:`, `chore:`, `i18n:` | patch (only if nothing higher in the batch) | 1.2.4 |
+
+In practice: any conventional commit will eventually result in a release PR. If a batch contains only `docs:`/`chore:`/etc., release-please cuts a patch release with those entries in the changelog. If you don't want to release yet, just don't merge the Release PR — it keeps accumulating commits until you do.
 
 Scopes are optional and shown in the changelog as bold prefixes:
 
