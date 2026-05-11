@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.1.3](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.1.2...v1.1.3) (2026-05-11)
+
+
+### Refactor
+
+* remove outdated update pill component ([c24931d](https://github.com/Locko2901/lastfm-to-ytm/commit/c24931ddfbd4d6155904b773efb7dbb00a6e332d))
+
+
+### Documentation
+
+* add roadmap ([32d949a](https://github.com/Locko2901/lastfm-to-ytm/commit/32d949a71a7198ead23430138f25bcb88e1a919f))
+* update outdated ([5f150ac](https://github.com/Locko2901/lastfm-to-ytm/commit/5f150ac23e61de041e1f326a012fc31e4599b174))
+
+
+### CI/CD
+
+* merge lint and release-please into single ci workflow ([400353c](https://github.com/Locko2901/lastfm-to-ytm/commit/400353cad17455cdb176821729d53eef756aaec4))
+* remove leftover release-please workflow file ([6bf75f5](https://github.com/Locko2901/lastfm-to-ytm/commit/6bf75f541d0f13cf91ec3b38829fe80395e08eb6))
+
 ## [1.1.2](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.1.1...v1.1.2) (2026-04-30)
 
 
