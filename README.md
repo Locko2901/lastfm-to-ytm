@@ -87,6 +87,13 @@ Full documentation is available at **[locko2901.github.io/lastfm-to-ytm](https:/
 - [Troubleshooting](https://locko2901.github.io/lastfm-to-ytm/troubleshooting/) - Common problems and known issues
 - [Development](https://locko2901.github.io/lastfm-to-ytm/development/) - Architecture, internals, and contributing
 
+## Roadmap
+
+Rough list of things on the radar - no promises, no timelines.
+
+- **Mobile / responsive UI polish** - the dashboard works on phones but it has its kinks.
+- **Prebuilt Docker image** - publish a multi-arch image to GHCR (and/or Docker Hub).
+
 ## Credits
 
 - [ytmusicapi](https://ytmusicapi.readthedocs.io/) - YouTube Music API wrapper
