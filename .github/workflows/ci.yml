@@ -1,9 +1,12 @@
-name: Lint
+name: CI
 
 on:
   push:
   pull_request:
     branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   python:
@@ -74,3 +77,30 @@ jobs:
 
       - name: Format check
         run: npm run format:templates && git diff --exit-code -- 'web/templates/**/*.html'
+
+  release-please:
+    name: release-please
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: [python, js-css, templates, templates-format]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: Append update guide link to release body
+        if: ${{ steps.release.outputs.release_created == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ steps.release.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          body=$(gh release view "$TAG" --json body --jq .body)
+          printf '%s\n\n---\n\n**Updating?** See the [update guide](https://locko2901.github.io/lastfm-to-ytm/quickstart/#updating).\n' "$body" \
+            | gh release edit "$TAG" --notes-file -
