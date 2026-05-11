@@ -4,7 +4,7 @@ Versioning, the changelog, and GitHub Releases are fully automated via [release-
 
 ## How it works
 
-A GitHub Action ([.github/workflows/release-please.yml](https://github.com/Locko2901/lastfm-to-ytm/blob/main/.github/workflows/release-please.yml)) watches `main`. On every push it:
+The `release-please` job in [.github/workflows/ci.yml](https://github.com/Locko2901/lastfm-to-ytm/blob/main/.github/workflows/ci.yml) watches `main`. It only runs after all lint jobs in the same workflow pass, so a broken build can never tag a release. On every successful push to `main` it:
 
 1. Parses commits since the last release tag.
 2. Maintains a single rolling **Release PR** titled `chore(main): release X.Y.Z` that bumps the version and updates the changelog.

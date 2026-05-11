@@ -79,7 +79,7 @@ This saves you from running all the individual commands listed above. Run it bef
 
 ## CI
 
-All three linters (+ HTML formatter) run on every push/PR via `.github/workflows/lint.yml`.
+All three linters (+ HTML formatter) run on every push/PR via `.github/workflows/ci.yml` (the same workflow that gates `release-please`).
 Jobs run in parallel; all must pass before merging.
 
 | Job | Command |
