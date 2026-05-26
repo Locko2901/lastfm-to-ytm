@@ -576,14 +576,17 @@ function renderTrendCanvas(container, trend) {
     const hSuccess = (d.success / maxSyncs) * plotH
     const hError = (d.error / maxSyncs) * plotH
 
-    ctx.fillStyle = colSuccess
-    ctx.globalAlpha = 0.45
-    roundRect(ctx, x, yLeft(d.success) - hError, barW, hSuccess, 2)
-    ctx.fill()
-
     if (d.error > 0) {
       ctx.fillStyle = colError
-      roundRect(ctx, x, yLeft(d.total), barW, hError, 2)
+      ctx.globalAlpha = 0.45
+      roundRect(ctx, x, yLeft(d.error), barW, hError, 2)
+      ctx.fill()
+    }
+
+    if (d.success > 0) {
+      ctx.fillStyle = colSuccess
+      ctx.globalAlpha = 0.45
+      roundRect(ctx, x, yLeft(d.total), barW, hSuccess, 2)
       ctx.fill()
     }
     ctx.globalAlpha = 1
@@ -728,15 +731,19 @@ function renderTrendCanvas(container, trend) {
       const x = xPos(i) - barW / 2
       const hSuccess = (d.success / maxSyncs) * plotH
       const hError = (d.error / maxSyncs) * plotH
-
-      ctx.fillStyle = colSuccess
-      ctx.globalAlpha = activeIdx >= 0 && activeIdx !== i ? 0.2 : 0.45
-      roundRect(ctx, x, yLeft(d.success) - hError, barW, hSuccess, 2)
-      ctx.fill()
+      const alpha = activeIdx >= 0 && activeIdx !== i ? 0.2 : 0.45
 
       if (d.error > 0) {
         ctx.fillStyle = colError
-        roundRect(ctx, x, yLeft(d.total), barW, hError, 2)
+        ctx.globalAlpha = alpha
+        roundRect(ctx, x, yLeft(d.error), barW, hError, 2)
+        ctx.fill()
+      }
+
+      if (d.success > 0) {
+        ctx.fillStyle = colSuccess
+        ctx.globalAlpha = alpha
+        roundRect(ctx, x, yLeft(d.total), barW, hSuccess, 2)
         ctx.fill()
       }
       ctx.globalAlpha = 1
