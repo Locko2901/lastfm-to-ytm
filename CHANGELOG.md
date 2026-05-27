@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.3.1](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.3.0...v1.3.1) (2026-05-27)
+
+
+### Bug Fixes
+
+* **ci:** publish stable image tags after release-please ([99df709](https://github.com/Locko2901/lastfm-to-ytm/commit/99df709c0c678f0ce3193e47cde167f24fedbfa4))
+
 ## [1.3.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.2.0...v1.3.0) (2026-05-27)
 
 
