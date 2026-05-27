@@ -885,6 +885,7 @@ def post_theme():
         return jsonify({"error": _("Failed to save theme overrides")}), 500
     return jsonify(saved)
 
+
 @api_bp.route("/teleporter/export", methods=["POST"])
 def teleporter_export():
     """Export all config as an encrypted binary file."""
