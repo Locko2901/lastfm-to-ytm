@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.4.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.3.1...v1.4.0) (2026-05-27)
+
+
+### Features
+
+* **theme:** add per-base custom color scheme with server persistence ([f8d0291](https://github.com/Locko2901/lastfm-to-ytm/commit/f8d02914b9416bd3d3567ea393b479886bdd1d50))
+* **update:** detect channel via .channel file and detached-HEAD git probe ([54f1b47](https://github.com/Locko2901/lastfm-to-ytm/commit/54f1b478a795da541fe1c2d4ad1aaca080e32224))
+
+
+### Bug Fixes
+
+* **install:** map YTMT_REF=main to --pull=dev so installer respects dev channel ([f4ddc24](https://github.com/Locko2901/lastfm-to-ytm/commit/f4ddc24c4008eb3bccde3e3311157a254ae75958))
+* **web:** align settings checkbox label and restore muted hint color ([4ac7894](https://github.com/Locko2901/lastfm-to-ytm/commit/4ac78945cc17ef8efbeec07753f7ae772ec3ed55))
+
+
+### Documentation
+
+* fix punctuation in releases documentation ([4151b69](https://github.com/Locko2901/lastfm-to-ytm/commit/4151b69132d76038b15c89c41c34c734242cb1a6))
+* rewrite channel detection and upgrade docs ([a732ffd](https://github.com/Locko2901/lastfm-to-ytm/commit/a732ffd7811af37ba2553e03669bd050f114c8ad))
+
+
+### Styling
+
+* make linters happy ([456abe4](https://github.com/Locko2901/lastfm-to-ytm/commit/456abe4d1c3d34cbf6366b59942b4ab0f819137e))
+
 ## [1.3.1](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.3.0...v1.3.1) (2026-05-27)
 
 
