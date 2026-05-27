@@ -4,17 +4,90 @@
 
 Docker gives you the web dashboard, built-in scheduler, and a self-contained environment.
 
+### One-line install (prebuilt image)
+
+The fastest path - downloads just the launcher script, the compose file,
+and `.env.example`, then pulls the prebuilt multi-arch image from GHCR.
+No `git` required.
+
+By default the installer resolves the **latest release tag** via the
+GitHub API and pins everything to it (it falls back to `main` only if no
+release exists or the API is unreachable).
+
 ```bash
-# Clone and enter the repo
+curl -fsSL https://raw.githubusercontent.com/Locko2901/lastfm-to-ytm/main/scripts/install.sh | bash
+cd lastfm-to-ytm
+./run-docker.sh --pull   # the installer prints the exact --pull=vX.Y.Z line to copy
+```
+
+Want a different target directory? Pass it as an argument:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Locko2901/lastfm-to-ytm/main/scripts/install.sh | bash -s -- my-ytmt
+```
+
+Pin to a specific release explicitly (or track the dev channel) via
+`YTMT_REF`:
+
+```bash
+# Pin to a specific tag
+curl -fsSL https://raw.githubusercontent.com/Locko2901/lastfm-to-ytm/main/scripts/install.sh \
+    | YTMT_REF=v1.2.0 bash
+cd lastfm-to-ytm
+./run-docker.sh --pull=v1.2.0
+
+# Track the bleeding edge instead
+curl -fsSL https://raw.githubusercontent.com/Locko2901/lastfm-to-ytm/main/scripts/install.sh \
+    | YTMT_REF=main bash
+cd lastfm-to-ytm
+./run-docker.sh --pull=dev
+```
+
+!!! tip "Curl-pipe-bash safety"
+    If you'd rather inspect the installer before running it, download it
+    first: `curl -fsSL .../install.sh -o install.sh && less install.sh && bash install.sh`.
+
+### Manual install (clone the repo)
+
+Use this if you want to build the image locally, pin a tag, hack on the
+source, or contribute back.
+
+```bash
+# Latest main
 git clone https://github.com/Locko2901/lastfm-to-ytm.git
 cd lastfm-to-ytm
 
 # Make the launcher executable (first time only)
 chmod +x run-docker.sh
 
-# Start the container
+# Start the container (builds the image locally)
 ./run-docker.sh
 ```
+
+#### Pinning a specific version
+
+To run a tagged release instead of the latest `main`:
+
+```bash
+# Shallow-clone just that tag
+git clone --depth 1 --branch v1.2.0 https://github.com/Locko2901/lastfm-to-ytm.git
+cd lastfm-to-ytm
+./run-docker.sh --pull=v1.2.0   # use the matching prebuilt image (fast)
+# or: ./run-docker.sh           # build that exact source locally
+```
+
+To switch an existing checkout to a tag:
+
+```bash
+cd lastfm-to-ytm
+git fetch --tags
+git checkout v1.2.0
+./run-docker.sh --pull=v1.2.0
+```
+
+You can see all available versions on the
+[releases page](https://github.com/Locko2901/lastfm-to-ytm/releases) or
+with `git tag --list 'v*' | sort -V`.
 
 The web dashboard will be available at `http://localhost:2002` (or `http://<your-server-ip>:2002`).
 
@@ -30,6 +103,7 @@ On first launch, the dashboard walks you through initial setup - creating your `
 |--------|-------|-------------|
 | `--rebuild` | `-r` | Force rebuild the Docker image |
 | `--no-cache` | | Rebuild without Docker cache (implies `--rebuild`) |
+| `--pull` | `-p` | Use the prebuilt image from GHCR instead of building locally (`--pull=TAG` to pin a tag) |
 | `--stop` | | Stop the running container |
 | `--logs` | `-l` | Follow container logs |
 | `--status` | | Show container status |
@@ -45,6 +119,37 @@ Options can be combined, e.g. `./run-docker.sh --no-cache --prune` to do a fresh
 |----------|---------|-------------|
 | `YTMT_PORT` | `2002` | Port to expose the web dashboard |
 | `YTMT_HEALTH_TIMEOUT` | `30` | Seconds to wait for health check |
+| `YTMT_IMAGE` | `lastfm-to-ytm-web:local` | Full image reference compose uses (override to pin a prebuilt tag) |
+
+### Using the Prebuilt Image
+
+Multi-arch images (`linux/amd64`, `linux/arm64`) are published to GitHub
+Container Registry on every push to `main` and on every tagged release.
+
+```bash
+./run-docker.sh --pull              # pulls ghcr.io/locko2901/lastfm-to-ytm:latest
+./run-docker.sh --pull=v1.2.0       # pin a specific version
+./run-docker.sh --pull=main         # always-fresh main branch build
+```
+
+Available tags:
+
+| Tag | Tracks | Channel |
+|---|---|---|
+| `latest` | The most recent tagged release | stable |
+| `vX.Y.Z`, `X.Y`, `X` | A specific release (semver) | stable |
+| `dev` | Latest untagged commit on `main` | development |
+| `sha-<short>` | A specific `main` commit | development |
+
+!!! note
+    `latest` only moves when a new release tag is published - it never
+    points at an untagged `main` commit. Use `dev` if you want the
+    bleeding edge.
+
+You can also bypass the launcher entirely - pulling and running the
+image with plain `docker` works fine, as long as you mount `cache/`,
+`config/`, `.env`, and `browser.json` the same way
+[`devops/docker-compose.yml`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/devops/docker-compose.yml) does.
 
 ### Common Docker Commands
 
@@ -83,6 +188,13 @@ image, and `--prune` to remove the previous image afterwards:
 
 ```bash
 ./run-docker.sh --no-cache --prune
+```
+
+If you are running the prebuilt image instead, just pull the new tag:
+
+```bash
+./run-docker.sh --pull           # latest release
+./run-docker.sh --pull=v1.2.0    # pin a specific version
 ```
 
 Your cache, config, and `.env` are stored outside the container and
