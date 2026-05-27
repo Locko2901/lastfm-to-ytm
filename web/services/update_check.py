@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import re
+import subprocess
 import time
 from pathlib import Path
 from typing import Any
@@ -20,10 +21,97 @@ HTTP_TIMEOUT = 5
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _PYPROJECT_FILE = _PROJECT_ROOT / "pyproject.toml"
+_COMMIT_SHA_FILE = _PROJECT_ROOT / "COMMIT_SHA"
+_CHANNEL_FILE = _PROJECT_ROOT / ".channel"
 _CACHE_DIR = Path(os.environ.get("CACHE_DIR", str(_PROJECT_ROOT / "cache")))
 _CACHE_FILE = _CACHE_DIR / ".update_check.json"
+_DEFAULT_BRANCH = os.environ.get("YTMT_GITHUB_BRANCH", "main")
 
 _VERSION_RE = re.compile(r"^\s*version\s*=\s*[\"']([^\"']+)[\"']", re.MULTILINE)
+_SHA_RE = re.compile(r"^[0-9a-fA-F]{7,40}$")
+_VALID_CHANNELS = {"stable", "dev"}
+
+
+def _detect_channel_from_git() -> str | None:
+    """Return ``"stable"`` only when HEAD is detached on a release tag.
+
+    A plain ``git clone`` (or ``git checkout main``) leaves HEAD attached to
+    the branch even if its tip commit happens to be tagged, so we require
+    detached HEAD *and* an exact tag match before declaring stable.
+
+    Returns ``None`` when git or a repository is unavailable (e.g. tarball
+    installs, prebuilt Docker images without a checkout).
+    """
+    try:
+        head_check = subprocess.run(
+            ["git", "-C", str(_PROJECT_ROOT), "rev-parse", "--git-dir"],
+            capture_output=True,
+            text=True,
+            timeout=2,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if head_check.returncode != 0:
+        return None
+    try:
+        symref = subprocess.run(
+            ["git", "-C", str(_PROJECT_ROOT), "symbolic-ref", "-q", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=2,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if symref.returncode == 0:
+        return "dev"
+    try:
+        describe = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(_PROJECT_ROOT),
+                "describe",
+                "--tags",
+                "--exact-match",
+                "HEAD",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=2,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if describe.returncode == 0 and describe.stdout.strip().lstrip("vV"):
+        return "stable"
+    return "dev"
+
+
+def _read_channel() -> str | None:
+    """Return the declared update channel (``"stable"`` or ``"dev"``), or ``None``.
+
+    Precedence:
+
+    1. ``YTMT_CHANNEL`` environment variable (manual override).
+    2. ``.channel`` pointer file in the project root, written by
+       ``run-docker.sh`` on every launch (same pattern as ``COMMIT_SHA``).
+    3. Git tag detection: HEAD on a release tag &rarr; ``"stable"``, else
+       ``"dev"``. Only applies to standalone checkouts.
+
+    Returns ``None`` when no signal is available.
+    """
+    env = os.environ.get("YTMT_CHANNEL", "").strip().lower()
+    if env in _VALID_CHANNELS:
+        return env
+    try:
+        file_value = _CHANNEL_FILE.read_text(encoding="utf-8").strip().lower()
+    except OSError:
+        file_value = ""
+    if file_value in _VALID_CHANNELS:
+        return file_value
+    return _detect_channel_from_git()
 
 
 def _read_local_version() -> str | None:
@@ -36,6 +124,38 @@ def _read_local_version() -> str | None:
     if not match:
         return None
     return match.group(1).strip() or None
+
+
+def _read_commit_sha() -> str | None:
+    """Return the full commit SHA the running build was built from, or ``None``.
+
+    Reads from the ``COMMIT_SHA`` file copied into the image at build time
+    (populated by CI or ``run-docker.sh``). Falls back to ``git rev-parse
+    HEAD`` for standalone installs running directly from a checkout. Returns
+    ``None`` for the placeholder value ``unknown`` or any unparseable content.
+    """
+    try:
+        text = _COMMIT_SHA_FILE.read_text(encoding="utf-8").strip()
+    except OSError:
+        text = ""
+    if text and text.lower() != "unknown" and _SHA_RE.match(text):
+        return text.lower()
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(_PROJECT_ROOT), "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=2,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    sha = result.stdout.strip().lower()
+    if not _SHA_RE.match(sha):
+        return None
+    return sha
 
 
 def _parse_version(value: str | None) -> tuple[int, ...] | None:
@@ -73,12 +193,9 @@ def _save_cache(payload: dict[str, Any]) -> None:
         logger.debug("Could not cache update info: %s", exc)
 
 
-def _fetch_latest_release() -> dict[str, Any] | None:
-    cached = _load_cache()
-    if cached is not None:
-        return cached
-
-    url = f"https://api.github.com/repos/{REPO}/releases/latest"
+def _github_get(path: str) -> dict[str, Any] | list[Any] | None:
+    """GET a JSON path from the GitHub REST API for the configured repo."""
+    url = f"https://api.github.com/repos/{REPO}{path}"
     try:
         response = requests.get(
             url,
@@ -86,24 +203,56 @@ def _fetch_latest_release() -> dict[str, Any] | None:
             headers={"Accept": "application/vnd.github+json"},
         )
     except requests.RequestException as exc:
-        logger.debug("GitHub release check failed: %s", exc)
+        logger.debug("GitHub request %s failed: %s", path, exc)
         return None
     if response.status_code != 200:
-        logger.debug("GitHub release check returned HTTP %s", response.status_code)
+        logger.debug("GitHub request %s returned HTTP %s", path, response.status_code)
         return None
     try:
-        data = response.json()
+        return response.json()
     except ValueError:
         return None
 
-    tag = data.get("tag_name")
+
+def _fetch_remote_info(version: str | None) -> dict[str, Any] | None:
+    """Fetch latest release, branch HEAD sha, and the sha of the current version's tag.
+
+    Cached in a single JSON blob.
+    """
+    cached = _load_cache()
+    if cached is not None and cached.get("version_at_fetch") == version:
+        return cached
+
+    release = _github_get("/releases/latest")
+    if not isinstance(release, dict):
+        return None
+    tag = release.get("tag_name")
     if not tag:
         return None
 
+    branch_head_sha: str | None = None
+    head = _github_get(f"/commits/{_DEFAULT_BRANCH}")
+    if isinstance(head, dict):
+        sha = head.get("sha")
+        if isinstance(sha, str):
+            branch_head_sha = sha.lower()
+
+    current_tag_sha: str | None = None
+    if version:
+        ref = _github_get(f"/git/ref/tags/v{version}")
+        if isinstance(ref, dict):
+            obj = ref.get("object") or {}
+            sha = obj.get("sha")
+            if isinstance(sha, str):
+                current_tag_sha = sha.lower()
+
     payload = {
         "tag": tag,
-        "name": data.get("name") or tag,
-        "url": data.get("html_url"),
+        "name": release.get("name") or tag,
+        "url": release.get("html_url"),
+        "branch_head_sha": branch_head_sha,
+        "current_tag_sha": current_tag_sha,
+        "version_at_fetch": version,
         "fetched_at": time.time(),
     }
     _save_cache(payload)
@@ -111,23 +260,42 @@ def _fetch_latest_release() -> dict[str, Any] | None:
 
 
 def get_update_status() -> dict[str, Any]:
-    """Compare the running version against the latest GitHub release.
+    """Compare the running build against the latest release and branch HEAD.
 
-    Returns:
-        ``{"current_version", "latest_version", "release_url",
-        "release_name", "update_available"}``. ``latest_version`` /
-        ``release_url`` are ``None`` if the GitHub check failed.
+    Returns a dict with keys:
+
+    - ``current_version``: version from ``pyproject.toml``
+    - ``current_sha`` / ``current_sha_short``: full / 7-char build SHA, or
+      ``None`` for non-image installs without a populated ``COMMIT SHA``
+    - ``build_type``: declared channel from ``YTMT_CHANNEL`` env var or the
+      ``.channel`` pointer file (``"stable"`` or ``"dev"``). When no explicit
+      channel is set, falls back to SHA inference: ``"stable"`` if
+      ``current_sha`` matches the tag ``v{current_version}``; ``"dev"`` if the
+      SHA is known but doesn't match; ``"unknown"`` otherwise.
+    - ``latest_version`` / ``release_url`` / ``release_name``: latest released
+      tag (``None`` on fetch failure)
+    - ``latest_branch_sha`` / ``latest_branch_sha_short``: HEAD of the default
+      branch (used for dev-build update detection)
+    - ``update_available``: stable builds compare semver; dev builds compare
+      ``current_sha`` to ``latest_branch_sha``
     """
     current = _read_local_version()
+    current_sha = _read_commit_sha()
+    declared_channel = _read_channel()
     result: dict[str, Any] = {
         "current_version": current,
+        "current_sha": current_sha,
+        "current_sha_short": current_sha[:7] if current_sha else None,
+        "build_type": declared_channel or "unknown",
         "latest_version": None,
         "release_url": None,
         "release_name": None,
+        "latest_branch_sha": None,
+        "latest_branch_sha_short": None,
         "update_available": False,
     }
 
-    remote = _fetch_latest_release()
+    remote = _fetch_remote_info(current)
     if not remote:
         return result
 
@@ -137,9 +305,25 @@ def get_update_status() -> dict[str, Any]:
     result["release_url"] = remote.get("url")
     result["release_name"] = remote.get("name") or tag
 
-    current_parsed = _parse_version(current)
-    latest_parsed = _parse_version(latest)
-    if current_parsed is not None and latest_parsed is not None:
-        result["update_available"] = latest_parsed > current_parsed
+    branch_head = remote.get("branch_head_sha")
+    if isinstance(branch_head, str):
+        result["latest_branch_sha"] = branch_head
+        result["latest_branch_sha_short"] = branch_head[:7]
+
+    current_tag_sha = remote.get("current_tag_sha")
+    if declared_channel is None and current_sha:
+        if isinstance(current_tag_sha, str) and current_sha == current_tag_sha:
+            result["build_type"] = "stable"
+        else:
+            result["build_type"] = "dev"
+
+    if result["build_type"] == "dev":
+        if branch_head and current_sha and branch_head != current_sha:
+            result["update_available"] = True
+    else:
+        current_parsed = _parse_version(current)
+        latest_parsed = _parse_version(latest)
+        if current_parsed is not None and latest_parsed is not None:
+            result["update_available"] = latest_parsed > current_parsed
 
     return result

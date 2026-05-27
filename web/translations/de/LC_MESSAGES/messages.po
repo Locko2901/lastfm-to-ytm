@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-27 13:40+0200\n"
+"POT-Creation-Date: 2026-05-27 18:20+0200\n"
 "PO-Revision-Date: 2026-05-13 11:41+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -21,316 +21,306 @@ msgstr ""
 #: web/routes/actions.py:89
 msgid "Invalid video ID. Must be 11 characters (or a valid YouTube URL)."
 msgstr ""
-"Ungültige Video-ID. Muss 11 Zeichen lang sein (oder eine gültige YouTube-"
-"URL)."
 
 #: web/routes/actions.py:92 web/routes/actions.py:142
 msgid "Artist and title are required."
-msgstr "Künstler und Titel sind erforderlich."
+msgstr ""
 
 #: web/routes/actions.py:145 web/routes/actions.py:149
 msgid "At least one tag is required."
-msgstr "Mindestens ein Tag ist erforderlich."
+msgstr ""
 
 #: web/routes/actions.py:220 web/routes/api.py:175 web/routes/api.py:246
 #: web/routes/api.py:811
 msgid "No data provided"
-msgstr "Keine Daten übermittelt"
+msgstr ""
 
 #: web/routes/actions.py:233 web/routes/actions.py:244
 #: web/routes/actions.py:259
 msgid "Imported"
-msgstr "Importiert"
+msgstr ""
 
 #: web/routes/api.py:155
 msgid ".env already exists"
-msgstr ".env existiert bereits"
+msgstr ""
 
 #: web/routes/api.py:158
 msgid ".env.example not found"
-msgstr ".env.example nicht gefunden"
+msgstr ""
 
 #: web/routes/api.py:167
 msgid "Failed to create configuration file"
-msgstr "Konfigurationsdatei konnte nicht erstellt werden"
+msgstr ""
 
 #: web/routes/api.py:181
 msgid "Username and API key are required"
-msgstr "Benutzername und API-Schlüssel sind erforderlich"
+msgstr ""
 
 #: web/routes/api.py:193
 msgid "Failed to save credentials"
-msgstr "Zugangsdaten konnten nicht gespeichert werden"
+msgstr ""
 
 #: web/routes/api.py:272 web/routes/api.py:827
 #, python-format
 msgid "Invalid cron expression: %(error)s"
-msgstr "Ungültiger Cron-Ausdruck: %(error)s"
+msgstr ""
 
 #: web/routes/api.py:281 web/routes/api.py:835
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
-msgstr "Ungültige Startzeit: Stunde muss 0-23, Minute 0-59 sein"
+msgstr ""
 
 #: web/routes/api.py:293 web/static/js/modules/settings.js:130
 #: web/static/js/modules/settings.js:161
 msgid "Failed to save settings"
-msgstr "Einstellungen konnten nicht gespeichert werden"
+msgstr ""
 
 #: web/routes/api.py:302
 msgid "No webhook URL provided"
-msgstr "Keine Webhook-URL angegeben"
+msgstr ""
 
 #: web/routes/api.py:315
 msgid "Webhook request failed. Check the URL and try again."
-msgstr "Webhook-Anfrage fehlgeschlagen. URL prüfen und erneut versuchen."
+msgstr ""
 
 #: web/routes/api.py:393
 msgid "Unknown panel"
-msgstr "Unbekanntes Panel"
+msgstr ""
 
 #: web/routes/api.py:407
 msgid "Invalid data: 'playlists' array required"
-msgstr "Ungültige Daten: 'playlists'-Array erforderlich"
+msgstr ""
 
 #: web/routes/api.py:411
 msgid "'playlists' must be an array"
-msgstr "'playlists' muss ein Array sein"
+msgstr ""
 
 #: web/routes/api.py:460
 msgid "Failed to save custom playlists"
-msgstr "Benutzerdefinierte Playlists konnten nicht gespeichert werden"
+msgstr ""
 
 #: web/routes/api.py:571
 msgid "Artist and title are required"
-msgstr "Künstler und Titel sind erforderlich"
+msgstr ""
 
 #: web/routes/api.py:649
 msgid "Last.fm credentials not configured"
-msgstr "Last.fm-Zugangsdaten nicht konfiguriert"
+msgstr ""
 
 #: web/routes/api.py:717
 msgid "Failed to fetch from Last.fm"
-msgstr "Abruf von Last.fm fehlgeschlagen"
+msgstr ""
 
 #: web/routes/api.py:720
 msgid "Internal error"
-msgstr "Interner Fehler"
+msgstr ""
 
 #: web/routes/api.py:837
 msgid "Invalid start time format. Use HH:MM."
-msgstr "Ungültiges Startzeit-Format. Verwende HH:MM."
+msgstr ""
 
 #: web/routes/api.py:862
 msgid "Failed to configure scheduler. APScheduler may not be installed."
 msgstr ""
-"Scheduler konnte nicht konfiguriert werden. APScheduler ist "
-"möglicherweise nicht installiert."
 
 #: web/routes/api.py:865
 #, python-format
 msgid "Invalid value: %(error)s"
-msgstr "Ungültiger Wert: %(error)s"
+msgstr ""
 
 #: web/routes/api.py:868
 msgid "Failed to configure scheduler"
-msgstr "Scheduler konnte nicht konfiguriert werden"
+msgstr ""
 
 #: web/routes/api.py:885
-#, fuzzy
 msgid "Failed to save theme overrides"
-msgstr "Tag-Override konnte nicht gespeichert werden"
+msgstr ""
 
-#: web/routes/api.py:893 web/routes/api.py:922 web/routes/api.py:944
+#: web/routes/api.py:894 web/routes/api.py:923 web/routes/api.py:945
 msgid "Password is required"
-msgstr "Passwort ist erforderlich"
+msgstr ""
 
-#: web/routes/api.py:897
+#: web/routes/api.py:898
 msgid "Password must be at least 4 characters"
-msgstr "Passwort muss mindestens 4 Zeichen lang sein"
+msgstr ""
 
-#: web/routes/api.py:912 web/static/js/modules/modals.js:574
+#: web/routes/api.py:913 web/static/js/modules/modals.js:574
 #: web/static/js/modules/modals.js:585 web/static/js/modules/teleporter.js:91
 #: web/static/js/modules/teleporter.js:104
 msgid "Export failed"
-msgstr "Export fehlgeschlagen"
+msgstr ""
 
-#: web/routes/api.py:924 web/routes/api.py:946
+#: web/routes/api.py:925 web/routes/api.py:947
 msgid "No file provided"
-msgstr "Keine Datei angegeben"
+msgstr ""
 
-#: web/routes/api.py:934 web/static/js/modules/teleporter.js:193
+#: web/routes/api.py:935 web/static/js/modules/teleporter.js:193
 #: web/static/js/modules/teleporter.js:205
 msgid "Preview failed"
-msgstr "Vorschau fehlgeschlagen"
+msgstr ""
 
-#: web/routes/api.py:956 web/static/js/modules/modals.js:653
+#: web/routes/api.py:957 web/static/js/modules/modals.js:653
 #: web/static/js/modules/modals.js:672 web/static/js/modules/teleporter.js:233
 #: web/static/js/modules/teleporter.js:242
 msgid "Import failed"
-msgstr "Import fehlgeschlagen"
+msgstr ""
 
-#: web/routes/api.py:978 web/routes/api.py:1001 web/routes/api.py:1020
-#: web/routes/api.py:1034 web/routes/api.py:1054 web/routes/api.py:1068
-#: web/routes/api.py:1091 web/routes/api.py:1101
+#: web/routes/api.py:979 web/routes/api.py:1002 web/routes/api.py:1021
+#: web/routes/api.py:1035 web/routes/api.py:1055 web/routes/api.py:1069
+#: web/routes/api.py:1092 web/routes/api.py:1102
 msgid "History database is not enabled"
-msgstr "Verlaufsdatenbank ist nicht aktiviert"
+msgstr ""
 
-#: web/routes/api.py:1024
+#: web/routes/api.py:1025
 msgid "Sync record not found"
-msgstr "Sync-Eintrag nicht gefunden"
+msgstr ""
 
 #: web/routes/auth.py:27
 msgid "No headers provided"
-msgstr "Keine Header angegeben"
+msgstr ""
 
 #: web/routes/auth.py:41
 msgid ""
 "Missing required headers (cookie, x-goog-authuser). Make sure you copy "
 "from a /browse request while logged in."
 msgstr ""
-"Erforderliche Header fehlen (cookie, x-goog-authuser). Stelle sicher, "
-"dass du sie aus einer /browse-Anfrage kopierst, während du angemeldet "
-"bist."
 
 #: web/routes/auth.py:45
 #, python-format
 msgid "Failed to parse headers: %(error_msg)s"
-msgstr "Header konnten nicht verarbeitet werden: %(error_msg)s"
+msgstr ""
 
 #: web/routes/auth.py:68
 msgid "Headers were saved but auth appears expired. Try copying fresh headers."
 msgstr ""
-"Header wurden gespeichert, aber die Authentifizierung scheint abgelaufen "
-"zu sein. Versuche, neue Header zu kopieren."
 
 #: web/routes/auth.py:82 web/routes/auth.py:125
 msgid "browser.json not found"
-msgstr "browser.json nicht gefunden"
+msgstr ""
 
 #: web/routes/auth.py:84
 msgid "browser.json is empty"
-msgstr "browser.json ist leer"
+msgstr ""
 
 #: web/routes/auth.py:89
 msgid "Missing cookie in auth file"
-msgstr "Cookie in der Authentifizierungsdatei fehlt"
+msgstr ""
 
 #: web/routes/auth.py:92
 msgid "Auth cookie appears invalid"
-msgstr "Authentifizierungs-Cookie scheint ungültig zu sein"
+msgstr ""
 
 #: web/routes/auth.py:95
 msgid "Invalid JSON in auth file"
-msgstr "Ungültiges JSON in der Authentifizierungsdatei"
+msgstr ""
 
 #: web/routes/auth.py:97
 msgid "Cannot read auth file"
-msgstr "Authentifizierungsdatei kann nicht gelesen werden"
+msgstr ""
 
 #: web/routes/auth.py:141
 msgid "Auth expired - please regenerate"
-msgstr "Authentifizierung abgelaufen – bitte neu generieren"
+msgstr ""
 
 #: web/routes/auth.py:143
 msgid "Auth test failed"
-msgstr "Authentifizierungstest fehlgeschlagen"
+msgstr ""
 
 #: web/routes/sync.py:128
 msgid "Sync already running"
-msgstr "Synchronisierung läuft bereits"
+msgstr ""
 
 #: web/routes/sync.py:146
 msgid "No sync running"
-msgstr "Keine Synchronisierung aktiv"
+msgstr ""
 
 #: web/static/js/modules/auth.js:26
 msgid "Please paste request headers first"
-msgstr "Bitte zuerst die Anfrage-Header einfügen"
+msgstr ""
 
 #: web/static/js/modules/auth.js:33
 msgid "Connecting..."
-msgstr "Verbindung wird hergestellt..."
+msgstr ""
 
 #: web/static/js/modules/auth.js:48
 msgid "Auth saved (could not verify live)"
-msgstr "Authentifizierung gespeichert (Live-Prüfung nicht möglich)"
+msgstr ""
 
 #: web/static/js/modules/auth.js:49
 msgid "YouTube Music connected!"
-msgstr "YouTube Music verbunden!"
+msgstr ""
 
 #: web/static/js/modules/auth.js:53 web/static/js/modules/auth.js:54
 #: web/static/js/modules/auth.js:59
 msgid "Connection failed"
-msgstr "Verbindung fehlgeschlagen"
+msgstr ""
 
 #: web/static/js/modules/auth.js:58
 msgid "Network error - check your connection and try again"
-msgstr "Netzwerkfehler – überprüfe deine Verbindung und versuche es erneut"
+msgstr ""
 
 #: web/static/js/modules/auth.js:66
 #, python-format
 msgid "Connected! Last liked song: %(song)s"
-msgstr "Verbunden! Zuletzt geliebter Song: %(song)s"
+msgstr ""
 
 #: web/static/js/modules/auth.js:68
 msgid "Connected and verified!"
-msgstr "Verbunden und verifiziert!"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:118
 #, python-format
 msgid "%(total)s entries · %(found)s found · %(nf)s not-found"
-msgstr "%(total)s Einträge · %(found)s gefunden · %(nf)s nicht gefunden"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:126
 #, python-format
 msgid "%(total)s entries · %(with)s with tags · %(empty)s empty"
-msgstr "%(total)s Einträge · %(with)s mit Tags · %(empty)s ohne"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:135
 #, python-format
 msgid "%(n)s playlists · %(v)s cached video IDs"
-msgstr "%(n)s Playlists · %(v)s gecachte Video-IDs"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:152
 #: web/static/js/modules/cacheAdmin.js:206
 msgid "No entries."
-msgstr "Keine Einträge."
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:162
 #: web/templates/partials/_panel_notfound.html:32
 #: web/templates/partials/_stats.html:17 web/templates/partials/_tabs.html:6
 msgid "Not Found"
-msgstr "Nicht gefunden"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:163
 #: web/templates/partials/_custompl_tracks.html:22
 #: web/templates/partials/_panel_playlist.html:63
 msgid "Cached"
-msgstr "Im Cache"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:189
 #: web/static/js/modules/cacheAdmin.js:248
 #: web/templates/partials/_modal_cache_admin.html:62
 #: web/templates/partials/_modal_cache_admin.html:98
 msgid "selected"
-msgstr "ausgewählt"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:222 web/static/js/modules/modals.js:787
 msgid "No tags"
-msgstr "Keine Tags"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:260
 msgid "No cached playlists."
-msgstr "Keine gecachten Playlists."
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:275
 msgid "tracks"
-msgstr "Tracks"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:279
 msgid "Remove from cache"
-msgstr "Aus dem Cache entfernen"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:290
 #: web/templates/partials/_modal_cache_admin.html:44
@@ -346,91 +336,84 @@ msgstr "Aus dem Cache entfernen"
 #: web/templates/partials/_panel_history.html:129
 #: web/templates/partials/_panel_settings.html:533
 msgid "Loading..."
-msgstr "Lädt..."
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:291
 msgid "Failed to load tracks."
-msgstr "Tracks konnten nicht geladen werden."
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:293
 msgid "No cached tracks."
-msgstr "Keine gecachten Tracks."
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:303
 msgid "Unknown"
-msgstr "Unbekannt"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:308
 msgid "Remove from cached template"
-msgstr "Aus gecachter Vorlage entfernen"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:356
 #, python-format
 msgid "Failed to load cache data: %(msg)s"
-msgstr "Cache-Daten konnten nicht geladen werden: %(msg)s"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:365
 msgid ""
 "Delete ALL search cache entries? Tracks will be re-searched on the next "
 "sync."
 msgstr ""
-"ALLE Such-Cache-Einträge löschen? Tracks werden bei der nächsten "
-"Synchronisierung erneut gesucht."
 
 #: web/static/js/modules/cacheAdmin.js:368
 #, python-format
 msgid "Cleared %(n)s search cache entries"
-msgstr "%(n)s Such-Cache-Einträge gelöscht"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:376
 msgid "Delete all not-found search cache entries?"
-msgstr "Alle „nicht gefunden“-Such-Cache-Einträge löschen?"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:379
 #, python-format
 msgid "Cleared %(n)s not-found entries"
-msgstr "%(n)s „nicht gefunden“-Einträge gelöscht"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:389
 #, python-format
 msgid "Delete %(n)s selected search cache entries?"
-msgstr "%(n)s ausgewählte Such-Cache-Einträge löschen?"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:392
 #: web/static/js/modules/cacheAdmin.js:416
 #, python-format
 msgid "Deleted %(n)s entries"
-msgstr "%(n)s Einträge gelöscht"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:400
 msgid "Delete ALL tag cache entries? Tags will be re-fetched on the next sync."
 msgstr ""
-"ALLE Tag-Cache-Einträge löschen? Tags werden bei der nächsten "
-"Synchronisierung erneut abgerufen."
 
 #: web/static/js/modules/cacheAdmin.js:403
 #, python-format
 msgid "Cleared %(n)s tag cache entries"
-msgstr "%(n)s Tag-Cache-Einträge gelöscht"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:413
 #, python-format
 msgid "Delete %(n)s selected tag cache entries?"
-msgstr "%(n)s ausgewählte Tag-Cache-Einträge löschen?"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:426
 msgid ""
 "Clear the ENTIRE playlist cache? Your YouTube Music playlists will NOT be"
 " deleted, but the next sync will need to re-discover their IDs."
 msgstr ""
-"Den GESAMTEN Playlist-Cache leeren? Deine YouTube-Music-Playlists werden "
-"NICHT gelöscht, aber die nächste Synchronisierung muss ihre IDs neu "
-"ermitteln."
 
 #: web/static/js/modules/cacheAdmin.js:432
 #, python-format
 msgid "Cleared %(n)s playlist cache entries"
-msgstr "%(n)s Playlist-Cache-Einträge gelöscht"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:441
 #, python-format
@@ -438,258 +421,251 @@ msgid ""
 "Remove playlist '%(n)s' from the cache? The actual YTM playlist is left "
 "intact."
 msgstr ""
-"Playlist „%(n)s“ aus dem Cache entfernen? Die eigentliche YTM-Playlist "
-"bleibt unangetastet."
 
 #: web/static/js/modules/cacheAdmin.js:444
 #, python-format
 msgid "Removed '%(n)s' from playlist cache"
-msgstr "„%(n)s“ aus dem Playlist-Cache entfernt"
+msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:456
 msgid "Removed track from cached template"
-msgstr "Track aus gecachter Vorlage entfernt"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:19
 msgid "Edit Custom Playlist"
-msgstr "Benutzerdefinierte Playlist bearbeiten"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:32
-#: web/templates/partials/_modals.html:298
+#: web/templates/partials/_modals.html:288
 msgid "Add Custom Playlist"
-msgstr "Benutzerdefinierte Playlist hinzufügen"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:64
 msgid "Please enter a playlist name"
-msgstr "Bitte einen Playlist-Namen eingeben"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:69
 #: web/static/js/modules/modals.js:467
 msgid "Please enter at least one tag"
-msgstr "Bitte mindestens einen Tag eingeben"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:109
 msgid "Custom playlist saved!"
-msgstr "Benutzerdefinierte Playlist gespeichert!"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:113
 msgid "Failed to save custom playlist"
-msgstr "Benutzerdefinierte Playlist konnte nicht gespeichert werden"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:148
 msgid "Custom playlist deleted"
-msgstr "Benutzerdefinierte Playlist gelöscht"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:152
 msgid "Failed to delete custom playlist"
-msgstr "Benutzerdefinierte Playlist konnte nicht gelöscht werden"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:193
 #: web/static/js/modules/history.js:254
 msgid "Failed to load tracks"
-msgstr "Tracks konnten nicht geladen werden"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:205
 #: web/templates/partials/_panel_custompl.html:50
 msgid "blacklisted"
-msgstr "auf Sperrliste"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:215
 msgid "Track already blacklisted"
-msgstr "Track steht bereits auf der Sperrliste"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:230
 msgid "blacklisted from"
-msgstr "gesperrt aus"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:242
 #: web/static/js/modules/modals.js:442 web/static/js/modules/modals.js:451
 msgid "Failed to blacklist track"
-msgstr "Track konnte nicht auf die Sperrliste gesetzt werden"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:266
 msgid "restored in"
-msgstr "wiederhergestellt in"
+msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:278
 msgid "Failed to restore track"
-msgstr "Track konnte nicht wiederhergestellt werden"
+msgstr ""
 
 #: web/static/js/modules/customTheme.js:233
 msgid "Light theme"
-msgstr "Helles Design"
+msgstr ""
 
 #: web/static/js/modules/customTheme.js:233
 msgid "Dark theme"
-msgstr "Dunkles Design"
+msgstr ""
 
 #: web/static/js/modules/customTheme.js:234
 #, python-format
 msgid "Editing: %(parent)s"
-msgstr "Bearbeitet: %(parent)s"
+msgstr ""
 
 #: web/static/js/modules/customTheme.js:274
-#, fuzzy
 msgid "Custom theme saved"
-msgstr "Benutzerdefinierte Playlist gespeichert!"
+msgstr ""
 
 #: web/static/js/modules/customTheme.js:288
 msgid "Reset to base theme"
-msgstr "Auf Basis-Design zurückgesetzt"
+msgstr ""
 
 #: web/static/js/modules/customTheme.js:318
-#, fuzzy
 msgid "Theme imported"
-msgstr "Importiert"
+msgstr ""
 
 #: web/static/js/modules/customTheme.js:320
-#, fuzzy
 msgid "Invalid theme file"
-msgstr "Ungültige JSON-Datei"
+msgstr ""
 
-#: web/static/js/modules/history.js:196 web/static/js/modules/settings.js:420
+#: web/static/js/modules/history.js:196 web/static/js/modules/settings.js:419
 msgid "DB size:"
-msgstr "DB-Größe:"
+msgstr ""
 
 #: web/static/js/modules/history.js:219 web/static/js/modules/history.js:376
 msgid "No tracks found"
-msgstr "Keine Tracks gefunden"
+msgstr ""
 
 #: web/static/js/modules/history.js:236 web/static/js/modules/history.js:392
 msgid "Not found"
-msgstr "Nicht gefunden"
+msgstr ""
 
 #: web/static/js/modules/history.js:241 web/static/js/modules/history.js:395
 msgid "seen"
-msgstr "gesehen"
+msgstr ""
 
 #: web/static/js/modules/history.js:242
 msgid "missed"
-msgstr "verpasst"
+msgstr ""
 
 #: web/static/js/modules/history.js:272
 msgid "No syncs recorded yet"
-msgstr "Noch keine Synchronisierungen aufgezeichnet"
+msgstr ""
 
-#: web/static/js/modules/history.js:295 web/templates/partials/_modals.html:859
+#: web/static/js/modules/history.js:295 web/templates/partials/_modals.html:828
 msgid "Resolved"
-msgstr "Aufgelöst"
+msgstr ""
 
-#: web/static/js/modules/history.js:296 web/templates/partials/_modals.html:867
+#: web/static/js/modules/history.js:296 web/templates/partials/_modals.html:836
 #: web/templates/partials/_tabs.html:7
 msgid "Cache"
-msgstr "Cache"
+msgstr ""
 
 #: web/static/js/modules/history.js:297
 msgid "API"
-msgstr "API"
+msgstr ""
 
 #: web/static/js/modules/history.js:309
 msgid "Failed to load syncs"
-msgstr "Synchronisierungen konnten nicht geladen werden"
+msgstr ""
 
 #: web/static/js/modules/history.js:327
 msgid "No actions recorded yet"
-msgstr "Noch keine Aktionen aufgezeichnet"
+msgstr ""
 
 #: web/static/js/modules/history.js:362
 msgid "Failed to load actions"
-msgstr "Aktionen konnten nicht geladen werden"
+msgstr ""
 
 #: web/static/js/modules/history.js:402
 msgid "Failed to load top tracks"
-msgstr "Top-Tracks konnten nicht geladen werden"
+msgstr ""
 
 #: web/static/js/modules/history.js:420
 msgid "No sync data yet"
-msgstr "Noch keine Sync-Daten"
+msgstr ""
 
 #: web/static/js/modules/history.js:430 web/static/js/modules/history.js:667
 msgid "Success"
-msgstr "Erfolgreich"
+msgstr ""
 
 #: web/static/js/modules/history.js:431 web/static/js/modules/history.js:668
-#: web/templates/partials/_modals.html:883
+#: web/templates/partials/_modals.html:852
 msgid "Error"
-msgstr "Fehler"
+msgstr ""
 
 #: web/static/js/modules/history.js:432 web/static/js/modules/history.js:669
 msgid "Cache Rate"
-msgstr "Cache-Quote"
+msgstr ""
 
 #: web/static/js/modules/history.js:433 web/static/js/modules/history.js:670
 #: web/templates/partials/_panel_history.html:34
 msgid "Avg Duration"
-msgstr "Ø Dauer"
+msgstr ""
 
 #: web/static/js/modules/history.js:437
 msgid "Failed to load trend data"
-msgstr "Trenddaten konnten nicht geladen werden"
+msgstr ""
 
 #: web/static/js/modules/history.js:671
 msgid "Avg Resolved"
-msgstr "Ø Aufgelöst"
+msgstr ""
 
 #: web/static/js/modules/history.js:672
 msgid "Avg Missed"
-msgstr "Ø Verpasst"
+msgstr ""
 
 #: web/static/js/modules/history.js:854 web/static/js/modules/history.js:860
 msgid "Backfill failed"
-msgstr "Nachbefüllung fehlgeschlagen"
+msgstr ""
 
 #: web/static/js/modules/history.js:857
 msgid "Backfill complete:"
-msgstr "Nachbefüllung abgeschlossen:"
+msgstr ""
 
 #: web/static/js/modules/history.js:857
 msgid "cache"
-msgstr "Cache"
+msgstr ""
 
 #: web/static/js/modules/history.js:857
 msgid "override entries"
-msgstr "Override-Einträge"
+msgstr ""
 
 #: web/static/js/modules/history.js:881 web/static/js/modules/history.js:889
 msgid "Clear History"
-msgstr "Verlauf löschen"
+msgstr ""
 
 #: web/static/js/modules/history.js:885
 msgid ""
 "This will permanently delete all history data (tracks, syncs, actions). "
 "Continue?"
 msgstr ""
-"Dadurch werden alle Verlaufsdaten (Tracks, Synchronisierungen, Aktionen) "
-"dauerhaft gelöscht. Fortfahren?"
 
-#: web/static/js/modules/history.js:888 web/templates/partials/_modals.html:127
-#: web/templates/partials/_modals.html:164
-#: web/templates/partials/_modals.html:203
-#: web/templates/partials/_modals.html:245
-#: web/templates/partials/_modals.html:286
-#: web/templates/partials/_modals.html:364
-#: web/templates/partials/_modals.html:393
-#: web/templates/partials/_modals.html:463
-#: web/templates/partials/_modals.html:899
-#: web/templates/partials/_modals.html:927
+#: web/static/js/modules/history.js:888 web/templates/partials/_modals.html:122
+#: web/templates/partials/_modals.html:158
+#: web/templates/partials/_modals.html:196
+#: web/templates/partials/_modals.html:236
+#: web/templates/partials/_modals.html:276
+#: web/templates/partials/_modals.html:352
+#: web/templates/partials/_modals.html:380
+#: web/templates/partials/_modals.html:446
+#: web/templates/partials/_modals.html:867
+#: web/templates/partials/_modals.html:892
 msgid "Cancel"
-msgstr "Abbrechen"
+msgstr ""
 
 #: web/static/js/modules/history.js:904 web/static/js/modules/history.js:909
 msgid "Failed to clear history"
-msgstr "Verlauf konnte nicht gelöscht werden"
+msgstr ""
 
 #: web/static/js/modules/history.js:906
 msgid "History cleared"
-msgstr "Verlauf gelöscht"
+msgstr ""
 
 #: web/static/js/modules/history.js:950
 msgid "Added override"
-msgstr "Override hinzugefügt"
+msgstr ""
 
 #: web/static/js/modules/history.js:951
 msgid "Removed override"
-msgstr "Override entfernt"
+msgstr ""
 
 #: web/static/js/modules/history.js:952 web/static/js/modules/modals.js:276
 #: web/static/js/modules/modals.js:793
@@ -700,241 +676,239 @@ msgstr "Override entfernt"
 #: web/templates/partials/_panel_playlist.html:62
 #: web/templates/partials/_stats.html:13
 msgid "Blacklisted"
-msgstr "Auf Sperrliste"
+msgstr ""
 
 #: web/static/js/modules/history.js:953
 msgid "Unblacklisted"
-msgstr "Von Sperrliste entfernt"
+msgstr ""
 
 #: web/static/js/modules/history.js:954
 msgid "Cleared cache entry"
-msgstr "Cache-Eintrag geleert"
+msgstr ""
 
 #: web/static/js/modules/history.js:955
 msgid "Added tag override"
-msgstr "Tag-Override hinzugefügt"
+msgstr ""
 
 #: web/static/js/modules/history.js:956
 msgid "Removed tag override"
-msgstr "Tag-Override entfernt"
+msgstr ""
 
 #: web/static/js/modules/history.js:957
 msgid "Cleared tag cache"
-msgstr "Tag-Cache geleert"
+msgstr ""
 
 #: web/static/js/modules/history.js:958
 msgid "Backfill from cache"
-msgstr "Nachbefüllung aus Cache"
+msgstr ""
 
 #: web/static/js/modules/history.js:959
 msgid "Backfill from overrides"
-msgstr "Nachbefüllung aus Overrides"
+msgstr ""
 
 #: web/static/js/modules/history.js:960
 msgid "Sync started"
-msgstr "Synchronisierung gestartet"
+msgstr ""
 
 #: web/static/js/modules/history.js:961
 msgid "Sync completed"
-msgstr "Synchronisierung abgeschlossen"
+msgstr ""
 
 #: web/static/js/modules/history.js:962
 msgid "Sync failed"
-msgstr "Synchronisierung fehlgeschlagen"
+msgstr ""
 
 #: web/static/js/modules/history.js:963
 msgid "Custom playlist synced"
-msgstr "Benutzerdefinierte Playlist synchronisiert"
+msgstr ""
 
 #: web/static/js/modules/history.js:964
 msgid "Custom playlist failed"
-msgstr "Benutzerdefinierte Playlist fehlgeschlagen"
+msgstr ""
 
 #: web/static/js/modules/history.js:965
 msgid "YouTube substitution"
-msgstr "YouTube-Ersetzung"
+msgstr ""
 
 #: web/static/js/modules/history.js:1018
 msgid "Previous"
-msgstr "Zurück"
+msgstr ""
 
 #: web/static/js/modules/history.js:1019 web/static/js/modules/setup.js:68
-#: web/static/js/modules/setup.js:119 web/templates/partials/_modals.html:94
+#: web/static/js/modules/setup.js:119 web/templates/partials/_modals.html:90
 msgid "Next"
-msgstr "Weiter"
+msgstr ""
 
 #: web/static/js/modules/history.js:1024
 msgid "total"
-msgstr "gesamt"
+msgstr ""
 
 #: web/static/js/modules/modals.js:106
 msgid "Tag override removed"
-msgstr "Tag-Override entfernt"
+msgstr ""
 
 #: web/static/js/modules/modals.js:108
 msgid "Failed to remove tag override"
-msgstr "Tag-Override konnte nicht entfernt werden"
+msgstr ""
 
 #: web/static/js/modules/modals.js:133
 msgid "Tag cache cleared - will re-fetch on next sync"
 msgstr ""
-"Tag-Cache geleert – wird bei der nächsten Synchronisierung erneut "
-"abgerufen"
 
 #: web/static/js/modules/modals.js:137
 msgid "Failed to clear tag cache entry"
-msgstr "Tag-Cache-Eintrag konnte nicht geleert werden"
+msgstr ""
 
 #: web/static/js/modules/modals.js:176
 #: web/templates/partials/_panel_playlist.html:54
 msgid "Will re-search on next sync"
-msgstr "Wird bei der nächsten Synchronisierung erneut gesucht"
+msgstr ""
 
 #: web/static/js/modules/modals.js:178
 #: web/templates/partials/_panel_playlist.html:26
 #: web/templates/partials/_panel_playlist.html:55
 msgid "Pending Retry"
-msgstr "Erneuter Versuch ausstehend"
+msgstr ""
 
 #: web/static/js/modules/modals.js:189 web/static/js/modules/modals.js:340
 #: web/static/js/modules/modals.js:352 web/static/js/modules/modals.js:784
 #: web/static/js/modules/modals.js:792
 #: web/templates/macros/_track_actions.html:30
 #: web/templates/partials/_custompl_tracks.html:20
-#: web/templates/partials/_modals.html:811
+#: web/templates/partials/_modals.html:781
 #: web/templates/partials/_panel_cache.html:50
 #: web/templates/partials/_panel_playlist.html:60
 #: web/templates/partials/_panel_tags.html:46
 #: web/templates/partials/_panel_tags.html:52
 #: web/templates/partials/_panel_tags.html:61
 msgid "Override"
-msgstr "Override"
+msgstr ""
 
 #: web/static/js/modules/modals.js:191 web/static/js/modules/modals.js:225
 #: web/static/js/modules/modals.js:281 web/static/js/modules/modals.js:632
 #: web/templates/macros/_track_actions.html:45
 #: web/templates/partials/_custompl_tracks.html:38
-#: web/templates/partials/_modals.html:128
-#: web/templates/partials/_modals.html:165
-#: web/templates/partials/_modals.html:813 web/templates/partials/_tabs.html:5
+#: web/templates/partials/_modals.html:123
+#: web/templates/partials/_modals.html:159
+#: web/templates/partials/_modals.html:782 web/templates/partials/_tabs.html:5
 msgid "Blacklist"
-msgstr "Sperrliste"
+msgstr ""
 
 #: web/static/js/modules/modals.js:197
 msgid "Cache cleared - will retry on next sync"
-msgstr "Cache geleert – erneuter Versuch bei der nächsten Synchronisierung"
+msgstr ""
 
 #: web/static/js/modules/modals.js:201
 msgid "Failed to clear cache entry"
-msgstr "Cache-Eintrag konnte nicht geleert werden"
+msgstr ""
 
 #: web/static/js/modules/modals.js:217
 msgid "Failed to unblacklist"
-msgstr "Entfernen von der Sperrliste fehlgeschlagen"
+msgstr ""
 
 #: web/static/js/modules/modals.js:250 web/static/js/modules/modals.js:424
 msgid "Blacklisted via web dashboard"
-msgstr "Über Web-Dashboard gesperrt"
+msgstr ""
 
 #: web/static/js/modules/modals.js:263
 msgid "Failed to blacklist"
-msgstr "Sperren fehlgeschlagen"
+msgstr ""
 
 #: web/static/js/modules/modals.js:282
 #: web/templates/macros/_track_actions.html:51
 #: web/templates/partials/_custompl_tracks.html:33
 #: web/templates/partials/_panel_blacklist.html:34
 msgid "Restore"
-msgstr "Wiederherstellen"
+msgstr ""
 
 #: web/static/js/modules/modals.js:295
 msgid "Failed to blacklist track. Please try again."
-msgstr "Track konnte nicht gesperrt werden. Bitte erneut versuchen."
+msgstr ""
 
 #: web/static/js/modules/modals.js:307
 msgid "Override via web dashboard"
-msgstr "Override über Web-Dashboard"
+msgstr ""
 
 #: web/static/js/modules/modals.js:313 web/static/js/modules/modals.js:434
 #: web/static/js/modules/modals.js:502 web/static/js/modules/setup.js:99
 msgid "Saving..."
-msgstr "Speichert..."
+msgstr ""
 
 #: web/static/js/modules/modals.js:324
 msgid "Invalid input"
-msgstr "Ungültige Eingabe"
+msgstr ""
 
 #: web/static/js/modules/modals.js:327 web/static/js/modules/modals.js:375
 msgid "Failed to save override"
-msgstr "Override konnte nicht gespeichert werden"
+msgstr ""
 
 #: web/static/js/modules/modals.js:361
 #: web/templates/macros/_track_actions.html:39
-#: web/templates/partials/_modals.html:288
+#: web/templates/partials/_modals.html:278
 msgid "Remove Override"
-msgstr "Override entfernen"
+msgstr ""
 
 #: web/static/js/modules/modals.js:369
 msgid "Override saved!"
-msgstr "Override gespeichert!"
+msgstr ""
 
 #: web/static/js/modules/modals.js:388
 msgid "Please fill in all required fields"
-msgstr "Bitte alle Pflichtfelder ausfüllen"
+msgstr ""
 
 #: web/static/js/modules/modals.js:404 web/static/js/modules/modals.js:413
 msgid "Failed to add override"
-msgstr "Override konnte nicht hinzugefügt werden"
+msgstr ""
 
 #: web/static/js/modules/modals.js:407
 msgid "Override added!"
-msgstr "Override hinzugefügt!"
+msgstr ""
 
 #: web/static/js/modules/modals.js:427
 msgid "Please fill in artist and title"
-msgstr "Bitte Künstler und Titel ausfüllen"
+msgstr ""
 
 #: web/static/js/modules/modals.js:445
 msgid "Track blacklisted!"
-msgstr "Track gesperrt!"
+msgstr ""
 
 #: web/static/js/modules/modals.js:492
 msgid "No tag changes detected"
-msgstr "Keine Tag-Änderungen erkannt"
+msgstr ""
 
 #: web/static/js/modules/modals.js:512 web/static/js/modules/modals.js:524
 msgid "Failed to save tag override"
-msgstr "Tag-Override konnte nicht gespeichert werden"
+msgstr ""
 
 #: web/static/js/modules/modals.js:515
 msgid "Tag override saved!"
-msgstr "Tag-Override gespeichert!"
+msgstr ""
 
 #: web/static/js/modules/modals.js:583
 msgid "Export downloaded"
-msgstr "Export heruntergeladen"
+msgstr ""
 
 #: web/static/js/modules/modals.js:617
 msgid "Please select a JSON file"
-msgstr "Bitte eine JSON-Datei auswählen"
+msgstr ""
 
-#: web/static/js/modules/modals.js:632 web/templates/partials/_modals.html:871
+#: web/static/js/modules/modals.js:632 web/templates/partials/_modals.html:840
 #: web/templates/partials/_panel_playlist.html:22
 #: web/templates/partials/_stats.html:9 web/templates/partials/_tabs.html:4
 msgid "Overrides"
-msgstr "Overrides"
+msgstr ""
 
 #: web/static/js/modules/modals.js:632
 msgid "Tag Overrides"
-msgstr "Tag-Overrides"
+msgstr ""
 
 #: web/static/js/modules/modals.js:636
 msgid "Invalid JSON file"
-msgstr "Ungültige JSON-Datei"
+msgstr ""
 
 #: web/static/js/modules/modals.js:646
 msgid "Importing..."
-msgstr "Importiert..."
+msgstr ""
 
 #: web/static/js/modules/modals.js:658
 #, python-format
@@ -942,283 +916,271 @@ msgid ""
 "Imported %(overrides)s overrides, %(blacklist)s blacklist, and "
 "%(tag_overrides)s tag override entries"
 msgstr ""
-"%(overrides)s Overrides, %(blacklist)s Sperrliste und %(tag_overrides)s "
-"Tag-Override-Einträge importiert"
 
 #: web/static/js/modules/modals.js:764
 msgid "Failed to load details"
-msgstr "Details konnten nicht geladen werden"
+msgstr ""
 
 #: web/static/js/modules/modals.js:794
 #: web/templates/partials/_panel_notfound.html:33
 msgid "Cached:"
-msgstr "Im Cache:"
+msgstr ""
 
 #: web/static/js/modules/modals.js:806
 #: web/templates/partials/_panel_custompl.html:33
 msgid "Open in YouTube Music"
-msgstr "In YouTube Music öffnen"
+msgstr ""
 
 #: web/static/js/modules/modals.js:810
 msgid "View on Last.fm"
-msgstr "Auf Last.fm ansehen"
+msgstr ""
 
 #: web/static/js/modules/modals.js:819
 msgid "Error loading details"
-msgstr "Fehler beim Laden der Details"
+msgstr ""
 
 #: web/static/js/modules/modals.js:878
 msgid "Loading sync details..."
-msgstr "Sync-Details werden geladen..."
+msgstr ""
 
 #: web/static/js/modules/modals.js:886
 msgid "Failed to load sync details"
-msgstr "Sync-Details konnten nicht geladen werden"
+msgstr ""
 
 #: web/static/js/modules/modals.js:916
 msgid "Sync details"
-msgstr "Sync-Details"
+msgstr ""
 
 #: web/static/js/modules/modals.js:917
 msgid "Error loading sync details"
-msgstr "Fehler beim Laden der Sync-Details"
+msgstr ""
 
 #: web/static/js/modules/settings.js:57 web/static/js/modules/settings.js:91
 msgid "Failed to load settings"
-msgstr "Einstellungen konnten nicht geladen werden"
+msgstr ""
 
 #: web/static/js/modules/settings.js:148
 msgid "Settings saved successfully!"
-msgstr "Einstellungen erfolgreich gespeichert!"
+msgstr ""
 
 #: web/static/js/modules/settings.js:187
 msgid "Settings saved. Restart the server to apply changes."
 msgstr ""
-"Einstellungen gespeichert. Server neu starten, um Änderungen zu "
-"übernehmen."
 
 #: web/static/js/modules/settings.js:188 web/static/js/modules/settings.js:262
 msgid "Restart Now"
-msgstr "Jetzt neu starten"
+msgstr ""
 
 #: web/static/js/modules/settings.js:211
 msgid "Display settings changed. Reload the page to update."
-msgstr "Anzeigeeinstellungen geändert. Seite neu laden, um zu aktualisieren."
+msgstr ""
 
 #: web/static/js/modules/settings.js:212
 msgid "Reload"
-msgstr "Neu laden"
+msgstr ""
 
 #: web/static/js/modules/settings.js:227
 msgid "Enter a webhook URL first"
-msgstr "Zuerst eine Webhook-URL eingeben"
+msgstr ""
 
 #: web/static/js/modules/settings.js:238
 msgid "Test webhook sent successfully!"
-msgstr "Test-Webhook erfolgreich gesendet!"
+msgstr ""
 
 #: web/static/js/modules/settings.js:240 web/static/js/modules/settings.js:243
 msgid "Webhook test failed"
-msgstr "Webhook-Test fehlgeschlagen"
+msgstr ""
 
 #: web/static/js/modules/settings.js:251
 msgid "Restarting..."
-msgstr "Neustart..."
+msgstr ""
 
 #: web/static/js/modules/settings.js:256
 msgid "Server restarting..."
-msgstr "Server startet neu..."
+msgstr ""
 
 #: web/static/js/modules/settings.js:259
 msgid "Failed to restart server"
-msgstr "Server-Neustart fehlgeschlagen"
+msgstr ""
 
 #: web/static/js/modules/settings.js:285
 msgid "Server may have restarted. Please refresh manually."
 msgstr ""
-"Der Server wurde möglicherweise neu gestartet. Bitte manuell "
-"aktualisieren."
 
-#: web/static/js/modules/settings.js:446
+#: web/static/js/modules/settings.js:445
 msgid "APScheduler not installed"
-msgstr "APScheduler ist nicht installiert"
+msgstr ""
 
-#: web/static/js/modules/settings.js:459
+#: web/static/js/modules/settings.js:458
 msgid "Automation Active"
-msgstr "Automatisierung aktiv"
+msgstr ""
 
-#: web/static/js/modules/settings.js:459
+#: web/static/js/modules/settings.js:458
 msgid "Automation Disabled"
-msgstr "Automatisierung deaktiviert"
+msgstr ""
 
 #: web/static/js/modules/setup.js:58
 msgid "Finish Setup"
-msgstr "Einrichtung abschließen"
+msgstr ""
 
 #: web/static/js/modules/setup.js:58
 msgid "Skip for Now"
-msgstr "Vorerst überspringen"
+msgstr ""
 
 #: web/static/js/modules/setup.js:64
 msgid "Reconnect YouTube Music"
-msgstr "YouTube Music neu verbinden"
+msgstr ""
 
-#: web/static/js/modules/setup.js:64 web/templates/partials/_modals.html:85
-#: web/templates/partials/_modals.html:410
+#: web/static/js/modules/setup.js:64 web/templates/partials/_modals.html:83
+#: web/templates/partials/_modals.html:395
 msgid "Connect YouTube Music"
-msgstr "YouTube Music verbinden"
+msgstr ""
 
 #: web/static/js/modules/setup.js:89
 msgid "Please enter both username and API key"
-msgstr "Bitte sowohl Benutzername als auch API-Schlüssel eingeben"
+msgstr ""
 
 #: web/static/js/modules/setup.js:112
 msgid "Last.fm credentials saved!"
-msgstr "Last.fm-Zugangsdaten gespeichert!"
+msgstr ""
 
 #: web/static/js/modules/setup.js:127
 msgid "Setup complete! You can now run a sync."
 msgstr ""
-"Einrichtung abgeschlossen! Du kannst jetzt eine Synchronisierung "
-"ausführen."
 
 #: web/static/js/modules/setup.js:129
 msgid "Setup saved. You can authenticate with YouTube Music later in Settings."
 msgstr ""
-"Einrichtung gespeichert. Du kannst dich später in den Einstellungen bei "
-"YouTube Music authentifizieren."
 
 #: web/static/js/modules/setup.js:172
 msgid "YouTube Music is connected!"
-msgstr "YouTube Music ist verbunden!"
+msgstr ""
 
 #: web/static/js/modules/setup.js:182
 msgid "Not connected yet. Click the button below to authenticate."
 msgstr ""
-"Noch nicht verbunden. Klicke auf den Button unten, um dich zu "
-"authentifizieren."
 
 #: web/static/js/modules/setup.js:207
 msgid "YouTube Music authentication is missing."
-msgstr "YouTube-Music-Authentifizierung fehlt."
+msgstr ""
 
 #: web/static/js/modules/setup.js:208
 msgid "Set Up Auth"
-msgstr "Authentifizierung einrichten"
+msgstr ""
 
 #: web/static/js/modules/setup.js:269
 msgid "Sync"
-msgstr "Synchronisieren"
+msgstr ""
 
 #: web/static/js/modules/setup.js:271
 msgid "Tag playlist"
-msgstr "Tag-Playlist"
+msgstr ""
 
 #: web/static/js/modules/setup.js:271
 msgid "Tag sync"
-msgstr "Tag-Synchronisierung"
+msgstr ""
 
 #: web/static/js/modules/setup.js:273
 msgid "failed"
-msgstr "fehlgeschlagen"
+msgstr ""
 
 #: web/static/js/modules/setup.js:286
 msgid "Unknown error"
-msgstr "Unbekannter Fehler"
+msgstr ""
 
 #: web/static/js/modules/setup.js:289
 msgid "View Details"
-msgstr "Details anzeigen"
+msgstr ""
 
 #: web/static/js/modules/sync.js:102
 msgid "Completed"
-msgstr "Abgeschlossen"
+msgstr ""
 
 #: web/static/js/modules/sync.js:102
 msgid "Failed"
-msgstr "Fehlgeschlagen"
+msgstr ""
 
 #: web/static/js/modules/sync.js:106
 msgid "Sync completed successfully!"
-msgstr "Synchronisierung erfolgreich abgeschlossen!"
+msgstr ""
 
 #: web/static/js/modules/sync.js:106
 msgid "Sync failed. Check output for errors."
-msgstr "Synchronisierung fehlgeschlagen. Ausgabe auf Fehler prüfen."
+msgstr ""
 
 #: web/static/js/modules/sync.js:140
 msgid "Connection lost"
-msgstr "Verbindung verloren"
+msgstr ""
 
 #: web/static/js/modules/sync.js:181 web/static/js/modules/sync.js:213
 msgid "Running..."
-msgstr "Läuft..."
+msgstr ""
 
 #: web/static/js/modules/sync.js:225
 msgid "Failed to start sync"
-msgstr "Synchronisierung konnte nicht gestartet werden"
+msgstr ""
 
 #: web/static/js/modules/sync.js:253
 msgid "Stopped"
-msgstr "Gestoppt"
+msgstr ""
 
 #: web/static/js/modules/sync.js:257
 msgid "Sync stopped"
-msgstr "Synchronisierung gestoppt"
+msgstr ""
 
 #: web/static/js/modules/sync.js:401
 msgid "Scheduled sync completed! New data available."
-msgstr "Geplante Synchronisierung abgeschlossen! Neue Daten verfügbar."
+msgstr ""
 
 #: web/static/js/modules/sync.js:402
 #: web/templates/partials/_modal_cache_admin.html:152
 msgid "Refresh"
-msgstr "Aktualisieren"
+msgstr ""
 
-#: web/static/js/modules/tagInput.js:43 web/templates/partials/_modals.html:276
+#: web/static/js/modules/tagInput.js:43 web/templates/partials/_modals.html:267
 msgid "Add a tag..."
-msgstr "Tag hinzufügen..."
+msgstr ""
 
 #: web/static/js/modules/tagInput.js:194
 msgid "Add"
-msgstr "Hinzufügen"
+msgstr ""
 
 #: web/static/js/modules/teleporter.js:72
 msgid "Password must be at least 8 characters"
-msgstr "Passwort muss mindestens 8 Zeichen lang sein"
+msgstr ""
 
 #: web/static/js/modules/teleporter.js:81
 msgid "Encrypting..."
-msgstr "Wird verschlüsselt..."
+msgstr ""
 
 #: web/static/js/modules/teleporter.js:101
 msgid "Encrypted backup downloaded"
-msgstr "Verschlüsseltes Backup heruntergeladen"
+msgstr ""
 
 #: web/static/js/modules/teleporter.js:124
 msgid "Please select a .bin backup file"
-msgstr "Bitte eine .bin-Backup-Datei auswählen"
+msgstr ""
 
 #: web/static/js/modules/teleporter.js:175
 #: web/static/js/modules/teleporter.js:215
 msgid "Enter the decryption password"
-msgstr "Entschlüsselungspasswort eingeben"
+msgstr ""
 
 #: web/static/js/modules/teleporter.js:182
 msgid "Decrypting..."
-msgstr "Wird entschlüsselt..."
+msgstr ""
 
 #: web/static/js/modules/teleporter.js:198
 msgid "Files included"
-msgstr "Enthaltene Dateien"
+msgstr ""
 
 #: web/static/js/modules/teleporter.js:200
 msgid "Exported"
-msgstr "Exportiert"
+msgstr ""
 
 #: web/static/js/modules/teleporter.js:222
 msgid "Restoring..."
-msgstr "Wird wiederhergestellt..."
+msgstr ""
 
 #: web/static/js/modules/teleporter.js:239
 #, python-format
@@ -1226,221 +1188,212 @@ msgid ""
 "Restored %(count)s config files. Restart may be needed for changes to "
 "take effect."
 msgstr ""
-"%(count)s Konfigurationsdateien wiederhergestellt. Ein Neustart kann "
-"erforderlich sein, damit Änderungen wirksam werden."
 
 #: web/static/js/modules/utils.js:85
 msgid "Auto-sync enabled"
-msgstr "Auto-Sync aktiviert"
+msgstr ""
 
 #: web/static/js/modules/utils.js:89
 #, python-format
 msgid " • Next: %(time)s"
-msgstr " • Nächste: %(time)s"
+msgstr ""
 
 #: web/static/js/modules/utils.js:515
 msgid "Now Playing disabled. Re-enable in Settings → Display"
-msgstr "„Now Playing“ deaktiviert. In Einstellungen → Anzeige wieder aktivieren"
+msgstr ""
 
 #: web/static/js/modules/utils.js:522 web/templates/partials/_stats.html:31
 msgid "Never"
-msgstr "Nie"
+msgstr ""
 
 #: web/static/js/modules/utils.js:532
 msgid "Just now"
-msgstr "Gerade eben"
+msgstr ""
 
 #: web/static/js/modules/utils.js:533
 #, python-format
 msgid "%(count)sm ago"
-msgstr "vor %(count)s Min."
+msgstr ""
 
 #: web/static/js/modules/utils.js:534
 #, python-format
 msgid "%(count)sh ago"
-msgstr "vor %(count)s Std."
+msgstr ""
 
 #: web/static/js/modules/utils.js:535
 #, python-format
 msgid "%(count)sd ago"
-msgstr "vor %(count)s Tg."
+msgstr ""
 
 #: web/templates/base.html:8
 msgid "Last.fm → YouTube Music Sync Manager"
-msgstr "Last.fm → YouTube Music Sync-Manager"
+msgstr ""
 
-#: web/templates/base.html:72
+#: web/templates/base.html:71
 msgid "Sync Manager"
-msgstr "Sync-Manager"
+msgstr ""
 
-#: web/templates/base.html:111
+#: web/templates/base.html:110
 msgid "Hide Now Playing"
-msgstr "„Now Playing“ ausblenden"
+msgstr ""
 
-#: web/templates/base.html:113
+#: web/templates/base.html:112
 msgid "Re-enable in Settings → Display"
-msgstr "In Einstellungen → Anzeige wieder aktivieren"
+msgstr ""
 
 #: web/templates/dashboard.html:12 web/templates/dashboard.html:21
 #, python-format
 msgid "Open %(name)s on YouTube Music"
-msgstr "%(name)s in YouTube Music öffnen"
+msgstr ""
 
 #: web/templates/dashboard.html:16
 msgid "Main"
-msgstr "Haupt"
+msgstr ""
 
 #: web/templates/dashboard.html:28
 msgid "Weekly"
-msgstr "Wöchentlich"
+msgstr ""
 
 #: web/templates/dashboard.html:31
 msgid "Scheduled sync enabled"
-msgstr "Geplante Synchronisierung aktiviert"
+msgstr ""
 
 #: web/templates/dashboard.html:36
 msgid "Scheduled"
-msgstr "Geplant"
+msgstr ""
 
 #: web/templates/dashboard.html:38
 msgid "Server time"
-msgstr "Serverzeit"
+msgstr ""
 
 #: web/templates/dashboard.html:48 web/templates/dashboard.html:57
 msgid "Notifications"
-msgstr "Benachrichtigungen"
+msgstr ""
 
 #: web/templates/dashboard.html:59
 msgid "Clear all"
-msgstr "Alle löschen"
+msgstr ""
 
 #: web/templates/dashboard.html:60
 #: web/templates/partials/_modal_cache_admin.html:142
-#: web/templates/partials/_modals.html:543
-#: web/templates/partials/_modals.html:730
-#: web/templates/partials/_modals.html:809
-#: web/templates/partials/_modals.html:890
+#: web/templates/partials/_modals.html:522
+#: web/templates/partials/_modals.html:702
+#: web/templates/partials/_modals.html:780
+#: web/templates/partials/_modals.html:858
 #: web/templates/partials/_panel_settings.html:654
 msgid "Close"
-msgstr "Schließen"
+msgstr ""
 
 #: web/templates/dashboard.html:70
 msgid "No notifications yet"
-msgstr "Noch keine Benachrichtigungen"
+msgstr ""
 
 #: web/templates/dashboard.html:73
 msgid "Documentation"
-msgstr "Dokumentation"
+msgstr ""
 
 #: web/templates/dashboard.html:79
 #: web/templates/partials/_modal_cache_admin.html:12
 msgid "Cache Management"
-msgstr "Cache-Verwaltung"
+msgstr ""
 
 #: web/templates/dashboard.html:86
 #: web/templates/partials/_panel_settings.html:12
 msgid "Settings"
-msgstr "Einstellungen"
+msgstr ""
 
 #: web/templates/macros/_track_actions.html:9
 msgid "Clear search"
-msgstr "Suche löschen"
+msgstr ""
 
 #: web/templates/macros/_track_actions.html:57
 msgid "Clear from cache & retry on next sync"
-msgstr "Aus Cache löschen und bei nächster Synchronisierung erneut versuchen"
+msgstr ""
 
 #: web/templates/macros/_track_actions.html:65
-#: web/templates/partials/_modals.html:275
-#: web/templates/partials/_modals.html:781
+#: web/templates/partials/_modals.html:266
+#: web/templates/partials/_modals.html:753
 msgid "Tags"
-msgstr "Tags"
+msgstr ""
 
 #: web/templates/macros/_track_actions.html:80
 #: web/templates/partials/_panel_tags.html:56
 msgid "Show all tags"
-msgstr "Alle Tags anzeigen"
+msgstr ""
 
 #: web/templates/macros/_track_actions.html:88
 msgid "View details"
-msgstr "Details anzeigen"
+msgstr ""
 
 #: web/templates/partials/_custompl_tracks.html:46
 msgid "No matching tracks found. Run a tag sync first."
 msgstr ""
-"Keine passenden Tracks gefunden. Führe zuerst eine Tag-Synchronisierung "
-"aus."
 
 #: web/templates/partials/_modal_cache_admin.html:24
 #: web/templates/partials/_modal_cache_admin.html:43
 msgid "Search Cache"
-msgstr "Such-Cache"
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:25
 #: web/templates/partials/_modal_cache_admin.html:82
 msgid "Tag Cache"
-msgstr "Tag-Cache"
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:26
 #: web/templates/partials/_modal_cache_admin.html:118
 msgid "Playlist Cache"
-msgstr "Playlist-Cache"
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:37
 msgid ""
 "Cache deletions are immediate and cannot be undone. Affected entries will"
 " be re-fetched on the next sync."
 msgstr ""
-"Cache-Löschungen erfolgen sofort und können nicht rückgängig gemacht "
-"werden. Betroffene Einträge werden bei der nächsten Synchronisierung "
-"erneut abgerufen."
 
 #: web/templates/partials/_modal_cache_admin.html:47
 msgid ""
 "Successful artist/title → video ID lookups (cache) and previously-failed "
 "searches (not-found)."
 msgstr ""
-"Erfolgreiche Künstler/Titel → Video-ID-Lookups (Cache) und zuvor "
-"fehlgeschlagene Suchen (nicht gefunden)."
 
 #: web/templates/partials/_modal_cache_admin.html:51
 msgid "Clear all not-found"
-msgstr "Alle „nicht gefunden“ löschen"
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:54
 msgid "Clear ALL search cache"
-msgstr "GESAMTEN Such-Cache leeren"
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:61
 #: web/templates/partials/_modal_cache_admin.html:97
 msgid "Bulk delete entries"
-msgstr "Einträge stapelweise löschen"
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:64
 msgid "Filter by artist or title..."
-msgstr "Nach Künstler oder Titel filtern..."
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:67
 #: web/templates/partials/_modal_cache_admin.html:103
 msgid "Select all visible"
-msgstr "Alle sichtbaren auswählen"
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:70
 #: web/templates/partials/_modal_cache_admin.html:106
 msgid "Delete selected"
-msgstr "Ausgewählte löschen"
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:86
 msgid "Last.fm genre tags fetched per track."
-msgstr "Pro Track abgerufene Last.fm-Genre-Tags."
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:90
 msgid "Clear ALL tag cache"
-msgstr "GESAMTEN Tag-Cache leeren"
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:100
 msgid "Filter by artist, title, or tag..."
-msgstr "Nach Künstler, Titel oder Tag filtern..."
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:122
 msgid ""
@@ -1448,620 +1401,603 @@ msgid ""
 "only clears the cache - your YouTube Music playlists are not deleted. The"
 " next sync will rebuild the cache."
 msgstr ""
-"Gecachte Playlist-IDs und gewünschte Track-Vorlagen. Das Entfernen von "
-"Einträgen hier leert nur den Cache – deine YouTube-Music-Playlists werden"
-" nicht gelöscht. Die nächste Synchronisierung baut den Cache neu auf."
 
 #: web/templates/partials/_modal_cache_admin.html:126
 msgid "Clear ALL playlist cache"
-msgstr "GESAMTEN Playlist-Cache leeren"
+msgstr ""
 
 #: web/templates/partials/_modal_cache_admin.html:132
 msgid "Filter playlists..."
-msgstr "Playlists filtern..."
+msgstr ""
 
 #: web/templates/partials/_modals.html:12
 msgid "First-Time Setup"
-msgstr "Ersteinrichtung"
+msgstr ""
 
 #: web/templates/partials/_modals.html:14
 msgid "Skip setup"
-msgstr "Einrichtung überspringen"
+msgstr ""
 
 #: web/templates/partials/_modals.html:32
 msgid "Last.fm"
-msgstr "Last.fm"
+msgstr ""
 
 #: web/templates/partials/_modals.html:42
 msgid "YouTube Music"
-msgstr "YouTube Music"
+msgstr ""
 
 #: web/templates/partials/_modals.html:48
 msgid "Let's get you set up! First, enter your Last.fm credentials."
-msgstr "Lass uns dich einrichten! Gib zuerst deine Last.fm-Zugangsdaten ein."
+msgstr ""
 
 #: web/templates/partials/_modals.html:51
 #: web/templates/partials/_panel_settings.html:35
 msgid "Last.fm Username"
-msgstr "Last.fm-Benutzername"
+msgstr ""
 
 #: web/templates/partials/_modals.html:52
 #: web/templates/partials/_panel_settings.html:36
 msgid "Your Last.fm username"
-msgstr "Dein Last.fm-Benutzername"
+msgstr ""
 
 #: web/templates/partials/_modals.html:55
 #: web/templates/partials/_panel_settings.html:40
 msgid "Last.fm API Key"
-msgstr "Last.fm-API-Schlüssel"
+msgstr ""
 
 #: web/templates/partials/_modals.html:56
 msgid "Your API key"
-msgstr "Dein API-Schlüssel"
+msgstr ""
 
-#: web/templates/partials/_modals.html:65
+#: web/templates/partials/_modals.html:64
 msgid "Create an API key"
-msgstr "API-Schlüssel erstellen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:65
+#: web/templates/partials/_modals.html:64
 msgid "(it's free)"
-msgstr "(kostenlos)"
+msgstr ""
 
-#: web/templates/partials/_modals.html:72
+#: web/templates/partials/_modals.html:71
 msgid "Now let's connect to YouTube Music."
-msgstr "Jetzt verbinden wir uns mit YouTube Music."
+msgstr ""
 
-#: web/templates/partials/_modals.html:92
+#: web/templates/partials/_modals.html:89
 msgid "Back"
-msgstr "Zurück"
+msgstr ""
 
-#: web/templates/partials/_modals.html:102
+#: web/templates/partials/_modals.html:98
 msgid "Blacklist Track"
-msgstr "Track sperren"
+msgstr ""
+
+#: web/templates/partials/_modals.html:113
+#: web/templates/partials/_modals.html:183
+#: web/templates/partials/_modals.html:262
+msgid "Track"
+msgstr ""
 
 #: web/templates/partials/_modals.html:117
-#: web/templates/partials/_modals.html:189
+#: web/templates/partials/_modals.html:153
+#: web/templates/partials/_modals.html:191
+#: web/templates/partials/_modals.html:231
 #: web/templates/partials/_modals.html:271
-msgid "Track"
-msgstr "Track"
-
-#: web/templates/partials/_modals.html:121
-#: web/templates/partials/_modals.html:158
-#: web/templates/partials/_modals.html:197
-#: web/templates/partials/_modals.html:239
-#: web/templates/partials/_modals.html:280
 msgid "Reason (optional)"
-msgstr "Grund (optional)"
+msgstr ""
 
-#: web/templates/partials/_modals.html:122
-#: web/templates/partials/_modals.html:159
+#: web/templates/partials/_modals.html:118
+#: web/templates/partials/_modals.html:154
 msgid "Why blacklist this track?"
-msgstr "Warum diesen Track sperren?"
+msgstr ""
 
-#: web/templates/partials/_modals.html:137
+#: web/templates/partials/_modals.html:132
 #: web/templates/partials/_panel_blacklist.html:17
 msgid "Add to Blacklist"
-msgstr "Zur Sperrliste hinzufügen"
+msgstr ""
+
+#: web/templates/partials/_modals.html:145
+#: web/templates/partials/_modals.html:219
+#: web/templates/partials/_modals.html:733
+msgid "Artist"
+msgstr ""
+
+#: web/templates/partials/_modals.html:146
+#: web/templates/partials/_modals.html:220
+msgid "Artist name"
+msgstr ""
+
+#: web/templates/partials/_modals.html:149
+#: web/templates/partials/_modals.html:223
+#: web/templates/partials/_modals.html:737
+msgid "Title"
+msgstr ""
 
 #: web/templates/partials/_modals.html:150
-#: web/templates/partials/_modals.html:226
-#: web/templates/partials/_modals.html:761
-msgid "Artist"
-msgstr "Künstler"
-
-#: web/templates/partials/_modals.html:151
-#: web/templates/partials/_modals.html:227
-msgid "Artist name"
-msgstr "Künstlername"
-
-#: web/templates/partials/_modals.html:154
-#: web/templates/partials/_modals.html:230
-#: web/templates/partials/_modals.html:765
-msgid "Title"
-msgstr "Titel"
-
-#: web/templates/partials/_modals.html:155
-#: web/templates/partials/_modals.html:231
+#: web/templates/partials/_modals.html:224
 msgid "Track title"
-msgstr "Track-Titel"
+msgstr ""
 
-#: web/templates/partials/_modals.html:174
+#: web/templates/partials/_modals.html:168
 msgid "Override Track"
-msgstr "Track überschreiben"
+msgstr ""
 
-#: web/templates/partials/_modals.html:193
-#: web/templates/partials/_modals.html:234
+#: web/templates/partials/_modals.html:187
+#: web/templates/partials/_modals.html:227
 msgid "YouTube Video ID or URL"
-msgstr "YouTube-Video-ID oder URL"
+msgstr ""
 
-#: web/templates/partials/_modals.html:194
-#: web/templates/partials/_modals.html:235
+#: web/templates/partials/_modals.html:188
+#: web/templates/partials/_modals.html:228
 msgid "Id or full URL"
-msgstr "ID oder vollständige URL"
+msgstr ""
 
-#: web/templates/partials/_modals.html:198
+#: web/templates/partials/_modals.html:192
 msgid "Why override this?"
-msgstr "Warum diesen überschreiben?"
+msgstr ""
 
-#: web/templates/partials/_modals.html:204
-#: web/templates/partials/_modals.html:246
+#: web/templates/partials/_modals.html:197
+#: web/templates/partials/_modals.html:237
 msgid "Save Override"
-msgstr "Override speichern"
+msgstr ""
 
-#: web/templates/partials/_modals.html:213
+#: web/templates/partials/_modals.html:206
 #: web/templates/partials/_panel_overrides.html:18
 #: web/templates/partials/_panel_overrides.html:66
 msgid "Add Override"
-msgstr "Override hinzufügen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:240
+#: web/templates/partials/_modals.html:232
 msgid "Why add this override?"
-msgstr "Warum dieses Override hinzufügen?"
+msgstr ""
 
-#: web/templates/partials/_modals.html:255
+#: web/templates/partials/_modals.html:246
 msgid "Edit Tag Override"
-msgstr "Tag-Override bearbeiten"
+msgstr ""
 
-#: web/templates/partials/_modals.html:277
+#: web/templates/partials/_modals.html:268
 msgid "Add or remove tags"
-msgstr "Tags hinzufügen oder entfernen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:281
+#: web/templates/partials/_modals.html:272
 msgid "Why override tags?"
-msgstr "Warum Tags überschreiben?"
+msgstr ""
 
-#: web/templates/partials/_modals.html:289
+#: web/templates/partials/_modals.html:279
 msgid "Save Tags"
-msgstr "Tags speichern"
+msgstr ""
 
-#: web/templates/partials/_modals.html:310
+#: web/templates/partials/_modals.html:300
 #: web/templates/partials/_panel_settings.html:156
 msgid "Playlist Name"
-msgstr "Playlist-Name"
+msgstr ""
 
-#: web/templates/partials/_modals.html:311
+#: web/templates/partials/_modals.html:301
 msgid "My Rock Playlist"
-msgstr "Meine Rock-Playlist"
+msgstr ""
 
-#: web/templates/partials/_modals.html:314
+#: web/templates/partials/_modals.html:304
 msgid "Description"
-msgstr "Beschreibung"
+msgstr ""
 
-#: web/templates/partials/_modals.html:316
+#: web/templates/partials/_modals.html:305
 #: web/templates/partials/_panel_settings.html:162
 msgid "Custom description (leave empty for auto-generated)"
-msgstr "Eigene Beschreibung (leer lassen für automatische Generierung)"
+msgstr ""
+
+#: web/templates/partials/_modals.html:306
+msgid "Leave empty to auto-generate based on tags"
+msgstr ""
+
+#: web/templates/partials/_modals.html:309
+msgid "Tags (comma-separated)"
+msgstr ""
+
+#: web/templates/partials/_modals.html:310
+msgid "rock, alternative, indie"
+msgstr ""
+
+#: web/templates/partials/_modals.html:311
+msgid "Tracks with these Last.fm tags will be included"
+msgstr ""
+
+#: web/templates/partials/_modals.html:314
+msgid "Match Mode"
+msgstr ""
+
+#: web/templates/partials/_modals.html:316
+msgid "Any (track has at least one tag)"
+msgstr ""
 
 #: web/templates/partials/_modals.html:317
-msgid "Leave empty to auto-generate based on tags"
-msgstr "Leer lassen, um automatisch anhand der Tags zu generieren"
-
-#: web/templates/partials/_modals.html:320
-msgid "Tags (comma-separated)"
-msgstr "Tags (kommagetrennt)"
+msgid "All (track has all tags)"
+msgstr ""
 
 #: web/templates/partials/_modals.html:321
-msgid "rock, alternative, indie"
-msgstr "rock, alternative, indie"
-
-#: web/templates/partials/_modals.html:322
-msgid "Tracks with these Last.fm tags will be included"
-msgstr "Tracks mit diesen Last.fm-Tags werden eingeschlossen"
-
-#: web/templates/partials/_modals.html:325
-msgid "Match Mode"
-msgstr "Übereinstimmungsmodus"
-
-#: web/templates/partials/_modals.html:327
-msgid "Any (track has at least one tag)"
-msgstr "Beliebig (Track hat mindestens einen Tag)"
-
-#: web/templates/partials/_modals.html:328
-msgid "All (track has all tags)"
-msgstr "Alle (Track hat alle Tags)"
-
-#: web/templates/partials/_modals.html:332
 #: web/templates/partials/_panel_settings.html:166
 msgid "Track Limit"
-msgstr "Track-Limit"
+msgstr ""
 
-#: web/templates/partials/_modals.html:338
+#: web/templates/partials/_modals.html:327
 msgid "No Limit"
-msgstr "Kein Limit"
+msgstr ""
 
-#: web/templates/partials/_modals.html:340
+#: web/templates/partials/_modals.html:329
 msgid "Include as many matching tracks as possible"
-msgstr "So viele passende Tracks wie möglich einschließen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:345
+#: web/templates/partials/_modals.html:334
 #: web/templates/partials/_panel_settings.html:356
 msgid "Backfill"
-msgstr "Nachbefüllen"
+msgstr ""
+
+#: web/templates/partials/_modals.html:336
+msgid "Fetch more scrobbles if the limit is not met"
+msgstr ""
+
+#: web/templates/partials/_modals.html:341
+msgid "Include in auto-sync"
+msgstr ""
+
+#: web/templates/partials/_modals.html:343
+msgid "Sync this playlist during scheduled runs"
+msgstr ""
+
+#: web/templates/partials/_modals.html:346
+msgid "Blacklist (optional)"
+msgstr ""
 
 #: web/templates/partials/_modals.html:347
-msgid "Fetch more scrobbles if the limit is not met"
-msgstr "Weitere Scrobbles abrufen, wenn das Limit nicht erreicht wird"
-
-#: web/templates/partials/_modals.html:352
-msgid "Include in auto-sync"
-msgstr "In Auto-Sync einbeziehen"
-
-#: web/templates/partials/_modals.html:354
-msgid "Sync this playlist during scheduled runs"
-msgstr "Diese Playlist bei geplanten Läufen synchronisieren"
-
-#: web/templates/partials/_modals.html:357
-msgid "Blacklist (optional)"
-msgstr "Sperrliste (optional)"
-
-#: web/templates/partials/_modals.html:358
 msgid "artist|title (one per line)"
-msgstr "künstler|titel (einer pro Zeile)"
+msgstr ""
 
-#: web/templates/partials/_modals.html:359
+#: web/templates/partials/_modals.html:348
 msgid "Exclude specific tracks from this playlist"
-msgstr "Bestimmte Tracks aus dieser Playlist ausschließen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:365
+#: web/templates/partials/_modals.html:353
 msgid "Save Playlist"
-msgstr "Playlist speichern"
+msgstr ""
 
-#: web/templates/partials/_modals.html:373
+#: web/templates/partials/_modals.html:361
 msgid "Delete Playlist"
-msgstr "Playlist löschen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:383
+#: web/templates/partials/_modals.html:371
 msgid "Are you sure you want to delete"
-msgstr "Bist du sicher, dass du löschen möchtest"
+msgstr ""
 
-#: web/templates/partials/_modals.html:387
+#: web/templates/partials/_modals.html:375
 msgid "Also delete from YouTube Music"
-msgstr "Auch aus YouTube Music löschen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:395
+#: web/templates/partials/_modals.html:381
 #: web/templates/partials/_panel_custompl.html:63
 msgid "Delete"
-msgstr "Löschen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:424
+#: web/templates/partials/_modals.html:409
 msgid "Open"
-msgstr "Öffne"
+msgstr ""
 
-#: web/templates/partials/_modals.html:426
+#: web/templates/partials/_modals.html:410
 msgid "and make sure you're logged in"
-msgstr "und stelle sicher, dass du angemeldet bist"
+msgstr ""
 
-#: web/templates/partials/_modals.html:429
+#: web/templates/partials/_modals.html:413
 msgid "Open DevTools"
-msgstr "DevTools öffnen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:429
+#: web/templates/partials/_modals.html:413
 msgid "or"
-msgstr "oder"
+msgstr ""
 
-#: web/templates/partials/_modals.html:429
+#: web/templates/partials/_modals.html:413
 msgid "on Mac"
-msgstr "auf dem Mac"
+msgstr ""
 
-#: web/templates/partials/_modals.html:430
+#: web/templates/partials/_modals.html:414
 msgid "Network"
-msgstr "Netzwerk"
+msgstr ""
 
-#: web/templates/partials/_modals.html:431
-#: web/templates/partials/_modals.html:444
+#: web/templates/partials/_modals.html:415
+#: web/templates/partials/_modals.html:428
 msgid "tab"
-msgstr "Tab"
+msgstr ""
 
-#: web/templates/partials/_modals.html:434
+#: web/templates/partials/_modals.html:418
 msgid "Filter by"
-msgstr "Filtern nach"
+msgstr ""
 
-#: web/templates/partials/_modals.html:435
+#: web/templates/partials/_modals.html:419
 msgid "in the search bar. If nothing appears, scroll down or click"
 msgstr ""
-"in der Suchleiste. Wenn nichts erscheint, scrolle nach unten oder klicke "
-"auf"
 
-#: web/templates/partials/_modals.html:436
+#: web/templates/partials/_modals.html:420
 msgid "Library"
-msgstr "Bibliothek"
+msgstr ""
+
+#: web/templates/partials/_modals.html:421
+msgid "in the top bar."
+msgstr ""
+
+#: web/templates/partials/_modals.html:425
+msgid "right-click the request"
+msgstr ""
+
+#: web/templates/partials/_modals.html:425
+msgid "Copy"
+msgstr ""
+
+#: web/templates/partials/_modals.html:426
+msgid "Copy Request Headers"
+msgstr ""
+
+#: web/templates/partials/_modals.html:428
+msgid "click the request name"
+msgstr ""
+
+#: web/templates/partials/_modals.html:428
+msgid "Headers"
+msgstr ""
+
+#: web/templates/partials/_modals.html:429
+msgid "copy everything from"
+msgstr ""
+
+#: web/templates/partials/_modals.html:431
+msgid "to the end of \"Request headers\", or right-click"
+msgstr ""
+
+#: web/templates/partials/_modals.html:431
+msgid "Copy as cURL"
+msgstr ""
 
 #: web/templates/partials/_modals.html:437
-msgid "in the top bar."
-msgstr "in der oberen Leiste."
-
-#: web/templates/partials/_modals.html:441
-msgid "right-click the request"
-msgstr "Rechtsklick auf die Anfrage"
-
-#: web/templates/partials/_modals.html:441
-msgid "Copy"
-msgstr "Kopieren"
-
-#: web/templates/partials/_modals.html:442
-msgid "Copy Request Headers"
-msgstr "Request-Header kopieren"
-
-#: web/templates/partials/_modals.html:444
-msgid "click the request name"
-msgstr "klicke auf den Anfragennamen"
-
-#: web/templates/partials/_modals.html:444
-msgid "Headers"
-msgstr "Header"
-
-#: web/templates/partials/_modals.html:445
-msgid "copy everything from"
-msgstr "alles kopieren ab"
-
-#: web/templates/partials/_modals.html:447
-msgid "to the end of \"Request headers\", or right-click"
-msgstr "bis zum Ende von \"Request headers\", oder Rechtsklick auf"
-
-#: web/templates/partials/_modals.html:447
-msgid "Copy as cURL"
-msgstr "Als cURL kopieren"
-
-#: web/templates/partials/_modals.html:454
 msgid "Paste request headers or cURL command here..."
-msgstr "Request-Header oder cURL-Befehl hier einfügen..."
+msgstr ""
 
-#: web/templates/partials/_modals.html:470
+#: web/templates/partials/_modals.html:453
 msgid "Connect"
-msgstr "Verbinden"
+msgstr ""
 
-#: web/templates/partials/_modals.html:486
+#: web/templates/partials/_modals.html:469
 #: web/templates/partials/_panel_settings.html:633
 msgid "Export / Import"
-msgstr "Export / Import"
+msgstr ""
 
-#: web/templates/partials/_modals.html:498
-#: web/templates/partials/_modals.html:581
-#: web/templates/partials/_modals.html:922
+#: web/templates/partials/_modals.html:481
+#: web/templates/partials/_modals.html:559
+#: web/templates/partials/_modals.html:888
 msgid "Export"
-msgstr "Exportieren"
+msgstr ""
 
-#: web/templates/partials/_modals.html:499
+#: web/templates/partials/_modals.html:482
 msgid "Download overrides and blacklist as a JSON file for backup or sharing."
 msgstr ""
-"Overrides und Sperrliste als JSON-Datei für Backup oder Teilen "
-"herunterladen."
 
-#: web/templates/partials/_modals.html:508
+#: web/templates/partials/_modals.html:491
 msgid "Export All"
-msgstr "Alle exportieren"
+msgstr ""
 
-#: web/templates/partials/_modals.html:511
+#: web/templates/partials/_modals.html:493
 msgid "Overrides Only"
-msgstr "Nur Overrides"
+msgstr ""
 
-#: web/templates/partials/_modals.html:513
+#: web/templates/partials/_modals.html:494
 msgid "Blacklist Only"
-msgstr "Nur Sperrliste"
+msgstr ""
 
-#: web/templates/partials/_modals.html:515
+#: web/templates/partials/_modals.html:496
 msgid "Tag Overrides Only"
-msgstr "Nur Tag-Overrides"
+msgstr ""
 
-#: web/templates/partials/_modals.html:520
-#: web/templates/partials/_modals.html:537
-#: web/templates/partials/_modals.html:664
-#: web/templates/partials/_modals.html:924
+#: web/templates/partials/_modals.html:501
+#: web/templates/partials/_modals.html:517
+#: web/templates/partials/_modals.html:640
+#: web/templates/partials/_modals.html:889
 msgid "Import"
-msgstr "Importieren"
+msgstr ""
 
-#: web/templates/partials/_modals.html:522
+#: web/templates/partials/_modals.html:503
 msgid ""
 "Import overrides and blacklist from a previously exported JSON file. "
 "Existing entries will be preserved."
 msgstr ""
-"Overrides und Sperrliste aus einer zuvor exportierten JSON-Datei "
-"importieren. Bestehende Einträge bleiben erhalten."
 
-#: web/templates/partials/_modals.html:531
+#: web/templates/partials/_modals.html:512
 msgid "Drop a JSON file here or click to browse"
-msgstr "JSON-Datei hier ablegen oder klicken zum Durchsuchen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:559
+#: web/templates/partials/_modals.html:537
 #: web/templates/partials/_panel_settings.html:643
 msgid "Teleporter"
-msgstr "Teleporter"
+msgstr ""
 
-#: web/templates/partials/_modals.html:577
+#: web/templates/partials/_modals.html:555
 msgid ""
 "This backup contains sensitive data (API keys, auth tokens). Keep it "
 "secure."
 msgstr ""
-"Dieses Backup enthält sensible Daten (API-Schlüssel, Auth-Tokens). "
-"Bewahre es sicher auf."
 
-#: web/templates/partials/_modals.html:582
+#: web/templates/partials/_modals.html:560
 msgid "Bundle all config files into an encrypted backup."
-msgstr "Alle Konfigurationsdateien in ein verschlüsseltes Backup bündeln."
+msgstr ""
 
-#: web/templates/partials/_modals.html:584
+#: web/templates/partials/_modals.html:562
 msgid "Encryption Password"
-msgstr "Verschlüsselungspasswort"
+msgstr ""
 
-#: web/templates/partials/_modals.html:587
+#: web/templates/partials/_modals.html:564
 msgid "Enter a password (min. 8 characters)"
-msgstr "Passwort eingeben (mind. 8 Zeichen)"
+msgstr ""
 
-#: web/templates/partials/_modals.html:589
-#: web/templates/partials/_modals.html:693
+#: web/templates/partials/_modals.html:567
+#: web/templates/partials/_modals.html:667
 msgid "Show password"
-msgstr "Passwort anzeigen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:608
+#: web/templates/partials/_modals.html:586
 msgid "Include cache files"
-msgstr "Cache-Dateien einbeziehen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:619
+#: web/templates/partials/_modals.html:597
 msgid "Search cache"
-msgstr "Such-Cache"
+msgstr ""
 
-#: web/templates/partials/_modals.html:621
+#: web/templates/partials/_modals.html:599
 msgid ""
 "Cached YouTube Music search results. Avoids re-searching tracks on a new "
 "instance."
 msgstr ""
-"Gecachte YouTube-Music-Suchergebnisse. Vermeidet erneute Suchen auf einer"
-" neuen Instanz."
 
-#: web/templates/partials/_modals.html:627
+#: web/templates/partials/_modals.html:605
 msgid "Playlist cache"
-msgstr "Playlist-Cache"
+msgstr ""
 
-#: web/templates/partials/_modals.html:629
+#: web/templates/partials/_modals.html:607
 msgid ""
 "Stores playlist IDs and desired track state. Needed to resume syncing "
 "without recreating playlists."
 msgstr ""
-"Speichert Playlist-IDs und den gewünschten Track-Zustand. Erforderlich, "
-"um die Synchronisierung fortzusetzen, ohne Playlists neu zu erstellen."
 
-#: web/templates/partials/_modals.html:635
+#: web/templates/partials/_modals.html:613
 msgid "Tag cache"
-msgstr "Tag-Cache"
+msgstr ""
 
-#: web/templates/partials/_modals.html:637
+#: web/templates/partials/_modals.html:614
 msgid "Cached Last.fm tag lookups. Avoids re-fetching tags for every track."
 msgstr ""
-"Gecachte Last.fm-Tag-Lookups. Vermeidet das erneute Abrufen von Tags für "
-"jeden Track."
 
-#: web/templates/partials/_modals.html:643
+#: web/templates/partials/_modals.html:620
 msgid "Theme overrides"
-msgstr "Eigene Farben"
+msgstr ""
 
-#: web/templates/partials/_modals.html:645
+#: web/templates/partials/_modals.html:621
 msgid "Your custom color scheme for the dashboard (per base theme)."
-msgstr "Dein eigenes Farbschema für das Dashboard (pro Basis-Design)."
+msgstr ""
 
-#: web/templates/partials/_modals.html:657
+#: web/templates/partials/_modals.html:633
 msgid "Export Encrypted Backup"
-msgstr "Verschlüsseltes Backup exportieren"
+msgstr ""
+
+#: web/templates/partials/_modals.html:641
+msgid "Restore config from an encrypted backup file."
+msgstr ""
+
+#: web/templates/partials/_modals.html:649
+msgid "Drop a .bin backup file here or click to browse"
+msgstr ""
+
+#: web/templates/partials/_modals.html:654
+msgid "Remove file"
+msgstr ""
+
+#: web/templates/partials/_modals.html:663
+msgid "Decryption Password"
+msgstr ""
 
 #: web/templates/partials/_modals.html:665
-msgid "Restore config from an encrypted backup file."
-msgstr "Konfiguration aus einer verschlüsselten Backup-Datei wiederherstellen."
-
-#: web/templates/partials/_modals.html:673
-msgid "Drop a .bin backup file here or click to browse"
-msgstr ".bin-Backup-Datei hier ablegen oder klicken zum Durchsuchen"
-
-#: web/templates/partials/_modals.html:679
-msgid "Remove file"
-msgstr "Datei entfernen"
+msgid "Enter the password used during export"
+msgstr ""
 
 #: web/templates/partials/_modals.html:688
-msgid "Decryption Password"
-msgstr "Entschlüsselungspasswort"
-
-#: web/templates/partials/_modals.html:691
-msgid "Enter the password used during export"
-msgstr "Das beim Export verwendete Passwort eingeben"
-
-#: web/templates/partials/_modals.html:715
 msgid "Preview"
-msgstr "Vorschau"
+msgstr ""
 
-#: web/templates/partials/_modals.html:723
+#: web/templates/partials/_modals.html:696
 msgid "Restore Backup"
-msgstr "Backup wiederherstellen"
+msgstr ""
+
+#: web/templates/partials/_modals.html:717
+msgid "Track Details"
+msgstr ""
+
+#: web/templates/partials/_modals.html:741
+msgid "Video ID"
+msgstr ""
 
 #: web/templates/partials/_modals.html:745
-msgid "Track Details"
-msgstr "Track-Details"
+msgid "YouTube Title"
+msgstr ""
+
+#: web/templates/partials/_modals.html:749
+msgid "Source"
+msgstr ""
+
+#: web/templates/partials/_modals.html:757
+#: web/templates/partials/_modals.html:812
+msgid "Status"
+msgstr ""
+
+#: web/templates/partials/_modals.html:761
+msgid "Seen"
+msgstr ""
+
+#: web/templates/partials/_modals.html:765
+msgid "First Seen"
+msgstr ""
 
 #: web/templates/partials/_modals.html:769
-msgid "Video ID"
-msgstr "Video-ID"
+msgid "Last Seen"
+msgstr ""
 
 #: web/templates/partials/_modals.html:773
-msgid "YouTube Title"
-msgstr "YouTube-Titel"
-
-#: web/templates/partials/_modals.html:777
-msgid "Source"
-msgstr "Quelle"
-
-#: web/templates/partials/_modals.html:785
-#: web/templates/partials/_modals.html:843
-msgid "Status"
-msgstr "Status"
-
-#: web/templates/partials/_modals.html:789
-msgid "Seen"
-msgstr "Gesehen"
-
-#: web/templates/partials/_modals.html:793
-msgid "First Seen"
-msgstr "Zuerst gesehen"
-
-#: web/templates/partials/_modals.html:797
-msgid "Last Seen"
-msgstr "Zuletzt gesehen"
-
-#: web/templates/partials/_modals.html:801
 #: web/templates/partials/_panel_history.html:46
 #: web/templates/partials/_panel_history.html:54
 msgid "Actions"
-msgstr "Aktionen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:827
+#: web/templates/partials/_modals.html:796
 msgid "Sync Details"
-msgstr "Sync-Details"
+msgstr ""
 
-#: web/templates/partials/_modals.html:847
+#: web/templates/partials/_modals.html:816
 msgid "Started"
-msgstr "Gestartet"
+msgstr ""
 
-#: web/templates/partials/_modals.html:851
+#: web/templates/partials/_modals.html:820
 msgid "Finished"
-msgstr "Beendet"
+msgstr ""
 
-#: web/templates/partials/_modals.html:855
+#: web/templates/partials/_modals.html:824
 msgid "Duration"
-msgstr "Dauer"
+msgstr ""
 
-#: web/templates/partials/_modals.html:863
+#: web/templates/partials/_modals.html:832
 #: web/templates/partials/_panel_history.html:26
 #: web/templates/partials/_panel_history.html:65
 msgid "Missed"
-msgstr "Verpasst"
+msgstr ""
 
-#: web/templates/partials/_modals.html:875
+#: web/templates/partials/_modals.html:844
 #: web/templates/partials/_panel_history.html:42
 msgid "API Searches"
-msgstr "API-Suchen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:879
+#: web/templates/partials/_modals.html:848
 msgid "Playlist Ops"
-msgstr "Playlist-Operationen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:898
+#: web/templates/partials/_modals.html:866
 msgid "Customize Theme"
-msgstr "Design anpassen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:909
+#: web/templates/partials/_modals.html:877
 msgid ""
 "Pick a color for each token. Changes preview live; nothing is saved until"
 " you click Save."
 msgstr ""
 
-#: web/templates/partials/_modals.html:920
+#: web/templates/partials/_modals.html:887
 msgid "Discard customizations for the current base theme"
-msgstr "Anpassungen für das aktuelle Basis-Design verwerfen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:920
+#: web/templates/partials/_modals.html:887
 msgid "Reset to parent"
-msgstr "Auf Basis zurücksetzen"
+msgstr ""
 
-#: web/templates/partials/_modals.html:928
+#: web/templates/partials/_modals.html:893
 #: web/templates/partials/_panel_settings.html:663
 msgid "Save"
-msgstr "Speichern"
+msgstr ""
 
 #: web/templates/partials/_panel_blacklist.html:8
 msgid ""
@@ -2069,26 +2005,20 @@ msgid ""
 "during sync even if they appear in your Last.fm history - use it to "
 "filter out tracks you never want resurfaced."
 msgstr ""
-"Tracks, die aus jeder Playlist ausgeschlossen sind. Gesperrte Einträge "
-"werden bei der Synchronisierung übersprungen, auch wenn sie in deinem "
-"Last.fm-Verlauf erscheinen – damit kannst du Tracks herausfiltern, die "
-"nie wieder auftauchen sollen."
 
 #: web/templates/partials/_panel_blacklist.html:26
 msgid "Reason:"
-msgstr "Grund:"
+msgstr ""
 
 #: web/templates/partials/_panel_blacklist.html:48
 msgid "No Blacklisted Tracks"
-msgstr "Keine gesperrten Tracks"
+msgstr ""
 
 #: web/templates/partials/_panel_blacklist.html:49
 msgid ""
 "Blacklisted tracks will be skipped during sync and won't appear in your "
 "playlist."
 msgstr ""
-"Gesperrte Tracks werden bei der Synchronisierung übersprungen und "
-"erscheinen nicht in deiner Playlist."
 
 #: web/templates/partials/_panel_cache.html:11
 msgid ""
@@ -2096,52 +2026,46 @@ msgid ""
 "Music API on subsequent syncs. Clear individual entries to force a fresh "
 "search next run."
 msgstr ""
-"Erfolgreiche Künstler/Titel → Video-ID-Lookups, gespeichert, um die "
-"YouTube-Music-API bei nachfolgenden Synchronisierungen zu umgehen. "
-"Einzelne Einträge löschen, um beim nächsten Lauf eine neue Suche zu "
-"erzwingen."
 
 #: web/templates/partials/_panel_cache.html:16
 msgid "Search cached tracks..."
-msgstr "Gecachte Tracks durchsuchen..."
+msgstr ""
 
 #: web/templates/partials/_panel_cache.html:18
 #: web/templates/partials/_panel_history.html:63
 #: web/templates/partials/_panel_playlist.html:21
 #: web/templates/partials/_panel_tags.html:16
 msgid "All"
-msgstr "Alle"
+msgstr ""
 
 #: web/templates/partials/_panel_cache.html:20
 #: web/templates/partials/_panel_tags.html:18
 msgid "Has Override"
-msgstr "Hat Override"
+msgstr ""
 
 #: web/templates/partials/_panel_cache.html:24
 msgid "No Override"
-msgstr "Kein Override"
+msgstr ""
 
 #: web/templates/partials/_panel_cache.html:26
 #: web/templates/partials/_panel_playlist.html:28
 #: web/templates/partials/_panel_tags.html:20
 msgid "Has Tags"
-msgstr "Hat Tags"
+msgstr ""
 
 #: web/templates/partials/_panel_cache.html:27
 #: web/templates/partials/_panel_playlist.html:29
 #: web/templates/partials/_panel_tags.html:22
 msgid "No Tags"
-msgstr "Keine Tags"
+msgstr ""
 
 #: web/templates/partials/_panel_cache.html:72
 msgid "No Cached Searches"
-msgstr "Keine gecachten Suchen"
+msgstr ""
 
 #: web/templates/partials/_panel_cache.html:73
 msgid "Run a sync to populate the search cache with YouTube Music matches."
 msgstr ""
-"Führe eine Synchronisierung aus, um den Such-Cache mit YouTube-Music-"
-"Treffern zu füllen."
 
 #: web/templates/partials/_panel_custompl.html:9
 msgid ""
@@ -2150,144 +2074,134 @@ msgid ""
 " listening history. Tags are shown in the <strong>Track Tags</strong> "
 "tab."
 msgstr ""
-"Automatisch generierte YouTube-Music-Playlists basierend auf Last.fm-"
-"Genre-Tags. Definiere Tag-Regeln und das System erstellt und pflegt "
-"Playlists aus deinem Hörverlauf. Tags werden im Tab <strong>Track-"
-"Tags</strong> angezeigt."
 
 #: web/templates/partials/_panel_custompl.html:18
 #: web/templates/partials/_panel_custompl.html:84
 msgid "Add Playlist"
-msgstr "Playlist hinzufügen"
+msgstr ""
 
 #: web/templates/partials/_panel_custompl.html:43
 msgid "Match:"
-msgstr "Übereinstimmung:"
+msgstr ""
 
 #: web/templates/partials/_panel_custompl.html:45
 msgid "Limit:"
-msgstr "Limit:"
+msgstr ""
 
 #: web/templates/partials/_panel_custompl.html:45
 msgid "None"
-msgstr "Keine"
+msgstr ""
 
 #: web/templates/partials/_panel_custompl.html:46
 msgid "No Backfill"
-msgstr "Keine Nachbefüllung"
+msgstr ""
 
 #: web/templates/partials/_panel_custompl.html:47
 msgid "No Auto-sync"
-msgstr "Kein Auto-Sync"
+msgstr ""
 
 #: web/templates/partials/_panel_custompl.html:60
 #: web/templates/partials/_panel_overrides.html:44
 msgid "Edit"
-msgstr "Bearbeiten"
+msgstr ""
 
 #: web/templates/partials/_panel_custompl.html:69
 msgid "Loading tracks..."
-msgstr "Tracks werden geladen..."
+msgstr ""
 
 #: web/templates/partials/_panel_custompl.html:82
 msgid "No Custom Playlists"
-msgstr "Keine benutzerdefinierten Playlists"
+msgstr ""
 
 #: web/templates/partials/_panel_custompl.html:83
 msgid ""
 "Create playlists that auto-populate based on Last.fm genre tags from your"
 " listening history."
 msgstr ""
-"Erstelle Playlists, die sich automatisch anhand von Last.fm-Genre-Tags "
-"aus deinem Hörverlauf füllen."
 
 #: web/templates/partials/_panel_history.html:10
 msgid ""
 "Track history, sync metrics, and action log. All data is stored locally "
 "in a SQLite database."
 msgstr ""
-"Track-Verlauf, Sync-Metriken und Aktionsprotokoll. Alle Daten werden "
-"lokal in einer SQLite-Datenbank gespeichert."
 
 #: web/templates/partials/_panel_history.html:17
 msgid "Total Tracks"
-msgstr "Tracks gesamt"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:21
 #: web/templates/partials/_panel_history.html:64
 msgid "Found"
-msgstr "Gefunden"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:30
 msgid "Total Syncs"
-msgstr "Synchronisierungen gesamt"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:38
 msgid "Cache Hit Rate"
-msgstr "Cache-Trefferquote"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:52
 msgid "Tracks"
-msgstr "Tracks"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:53
 msgid "Syncs"
-msgstr "Synchronisierungen"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:55
 msgid "Top Tracks"
-msgstr "Top-Tracks"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:56
 msgid "Trend"
-msgstr "Trend"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:61
 #: web/templates/partials/_panel_playlist.html:19
 msgid "Search tracks..."
-msgstr "Tracks suchen..."
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:79
 #: web/templates/partials/_panel_history.html:96
 msgid "From"
-msgstr "Von"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:81
 #: web/templates/partials/_panel_history.html:98
 msgid "To"
-msgstr "Bis"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:121
 msgid "7 days"
-msgstr "7 Tage"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:122
 msgid "14 days"
-msgstr "14 Tage"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:123
 msgid "30 days"
-msgstr "30 Tage"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:124
 msgid "90 days"
-msgstr "90 Tage"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:143
 msgid "History Database Disabled"
-msgstr "Verlaufsdatenbank deaktiviert"
+msgstr ""
 
 #: web/templates/partials/_panel_history.html:144
 msgid ""
 "Enable the history database in Settings to track songs, syncs, and "
 "actions over time."
 msgstr ""
-"Aktiviere die Verlaufsdatenbank in den Einstellungen, um Songs, "
-"Synchronisierungen und Aktionen über die Zeit zu verfolgen."
 
 #: web/templates/partials/_panel_history.html:145
 msgid "Open Settings"
-msgstr "Einstellungen öffnen"
+msgstr ""
 
 #: web/templates/partials/_panel_notfound.html:11
 msgid ""
@@ -2295,24 +2209,20 @@ msgid ""
 "<strong>Override</strong>, clear the cache to retry, or blacklist them to"
 " silence repeated misses."
 msgstr ""
-"Scrobbles, die die YouTube-Music-Suche nicht zuordnen konnte. Füge ein "
-"manuelles <strong>Override</strong> hinzu, leere den Cache für einen "
-"erneuten Versuch oder setze sie auf die Sperrliste, um wiederholte "
-"Fehlversuche zu unterdrücken."
 
 #: web/templates/partials/_panel_notfound.html:16
 msgid "Search not found tracks..."
-msgstr "„Nicht gefunden“-Tracks durchsuchen..."
+msgstr ""
 
 #: web/templates/partials/_panel_notfound.html:52
 msgid "No Missing Tracks"
-msgstr "Keine fehlenden Tracks"
+msgstr ""
 
 #: web/templates/partials/_panel_notfound.html:53
 msgid ""
 "All tracks in the cache have been successfully matched to YouTube Music "
 "videos."
-msgstr "Alle Tracks im Cache wurden erfolgreich YouTube-Music-Videos zugeordnet."
+msgstr ""
 
 #: web/templates/partials/_panel_overrides.html:9
 msgid ""
@@ -2320,31 +2230,25 @@ msgid ""
 "pair. Overrides always win over the cache and search results - perfect "
 "for forcing the right version of a track."
 msgstr ""
-"Manuelle Korrekturen, die eine bestimmte YouTube-Video-ID für ein "
-"Künstler/Titel-Paar festlegen. Overrides haben immer Vorrang vor Cache "
-"und Suchergebnissen – perfekt, um die richtige Version eines Tracks zu "
-"erzwingen."
 
 #: web/templates/partials/_panel_overrides.html:34
 #: web/templates/partials/_panel_playlist.html:61
 msgid "Tag Override"
-msgstr "Tag-Override"
+msgstr ""
 
 #: web/templates/partials/_panel_overrides.html:51
 msgid "Remove"
-msgstr "Entfernen"
+msgstr ""
 
 #: web/templates/partials/_panel_overrides.html:64
 msgid "No Overrides"
-msgstr "Keine Overrides"
+msgstr ""
 
 #: web/templates/partials/_panel_overrides.html:65
 msgid ""
 "Overrides let you manually specify which YouTube video should be used for"
 " a track."
 msgstr ""
-"Mit Overrides kannst du manuell festlegen, welches YouTube-Video für "
-"einen Track verwendet werden soll."
 
 #: web/templates/partials/_panel_playlist.html:14
 msgid ""
@@ -2353,640 +2257,615 @@ msgid ""
 "Retry</strong>, or tag presence, and right-click any track to fix or "
 "replace it."
 msgstr ""
-"Tracks, die bei deinem letzten Sync-Lauf aufgelöst wurden. Filtere mit "
-"den Chips nach <strong>Override</strong>, <strong>Sperrliste</strong>, "
-"<strong>Erneuter Versuch ausstehend</strong> oder Tag-Vorhandensein und "
-"klicke mit der rechten Maustaste auf einen Track, um ihn zu korrigieren "
-"oder zu ersetzen."
 
 #: web/templates/partials/_panel_playlist.html:64
 msgid "Search"
-msgstr "Suche"
+msgstr ""
 
 #: web/templates/partials/_panel_playlist.html:84
 msgid "No Playlist Data"
-msgstr "Keine Playlist-Daten"
+msgstr ""
 
 #: web/templates/partials/_panel_playlist.html:85
 msgid "Run a sync to generate playlist mappings and see them here."
 msgstr ""
-"Führe eine Synchronisierung aus, um Playlist-Zuordnungen zu generieren "
-"und sie hier zu sehen."
 
 #: web/templates/partials/_panel_playlist.html:86
 msgid "Run Sync"
-msgstr "Synchronisierung starten"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:31
 msgid "Credentials"
-msgstr "Zugangsdaten"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:37
 msgid "Your Last.fm username for scrobble fetching"
-msgstr "Dein Last.fm-Benutzername zum Abrufen von Scrobbles"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:42
 msgid "Get yours at"
-msgstr "Erhalte deinen unter"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:45
 msgid "YouTube Music Auth"
-msgstr "YouTube-Music-Authentifizierung"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:53
 msgid "Regenerate"
-msgstr "Neu generieren"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:57
 msgid "Checking..."
-msgstr "Wird geprüft..."
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:60
 msgid "Update browser.json with new credentials from your browser"
-msgstr "browser.json mit neuen Zugangsdaten aus deinem Browser aktualisieren"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:72
 msgid "Display"
-msgstr "Anzeige"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:76
 msgid "Theme"
-msgstr "Design"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:78
 msgid "Dark (Default)"
-msgstr "Dunkel (Standard)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:79
 msgid "Light"
-msgstr "Hell"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:82
 msgid "Color scheme for the interface"
-msgstr "Farbschema für die Oberfläche"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:88
 msgid "Use custom colors"
-msgstr "Eigene Farben verwenden"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:91
 msgid "Apply your saved custom colors on top of the selected theme."
-msgstr "Wende deine gespeicherten Farben zusätzlich zum gewählten Design an."
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:93
 msgid "Customize colors"
-msgstr "Farben anpassen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:97
 msgid "Language"
-msgstr "Sprache"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:103
 msgid "Interface language (requires reload)"
-msgstr "Oberflächensprache (erfordert Neuladen)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:108
 msgid "Use 24-hour clock"
-msgstr "24-Stunden-Format verwenden"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:112
 msgid "Date format"
-msgstr "Datumsformat"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:114
 msgid "Auto (browser locale)"
-msgstr "Automatisch (Browser-Locale)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:115
 msgid "Day/Month (31/12)"
-msgstr "Tag/Monat (31.12.)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:116
 msgid "Month/Day (12/31)"
-msgstr "Monat/Tag (12/31)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:118
 msgid "How dates are displayed in the interface"
-msgstr "Wie Daten in der Oberfläche angezeigt werden"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:123
 msgid "Display tips"
-msgstr "Hinweise anzeigen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:125
 msgid "Show the helper info banners at the top of each tab"
-msgstr "Hilfs-Info-Banner oben in jedem Tab anzeigen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:130
 msgid "Show \"Now Playing\" from Last.fm"
-msgstr "\"Now Playing\" von Last.fm anzeigen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:132
 msgid "Display currently playing track in the header"
-msgstr "Aktuell laufenden Track im Header anzeigen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:135
 msgid "Now Playing Poll Interval (seconds)"
-msgstr "„Now Playing“-Abfrageintervall (Sekunden)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:137
 msgid "How often to check for currently playing track (5-120 seconds)"
-msgstr "Wie oft auf den aktuell laufenden Track geprüft wird (5-120 Sekunden)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:152
 msgid "Main Playlist"
-msgstr "Haupt-Playlist"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:157
 msgid "Last.fm Recents (auto)"
-msgstr "Last.fm-Aktuelle (automatisch)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:160
 msgid "Playlist Description"
-msgstr "Playlist-Beschreibung"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:163
 msgid "Leave empty to auto-generate based on Last.fm username and ranking mode"
 msgstr ""
-"Leer lassen, um automatisch basierend auf Last.fm-Benutzername und "
-"Ranking-Modus zu generieren"
 
 #: web/templates/partials/_panel_settings.html:168
 msgid "Target number of tracks in playlist"
-msgstr "Zielanzahl an Tracks in der Playlist"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:171
 msgid "Playlist Visibility"
-msgstr "Playlist-Sichtbarkeit"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:173
 #: web/templates/partials/_panel_settings.html:245
 #: web/templates/partials/_panel_settings.html:294
 msgid "Private"
-msgstr "Privat"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:174
 #: web/templates/partials/_panel_settings.html:246
 #: web/templates/partials/_panel_settings.html:295
 msgid "Unlisted"
-msgstr "Ungelistet"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:175
 #: web/templates/partials/_panel_settings.html:247
 #: web/templates/partials/_panel_settings.html:296
 msgid "Public"
-msgstr "Öffentlich"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:181
 msgid "Deduplicate tracks"
-msgstr "Tracks deduplizieren"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:195
 msgid "Track Ranking"
-msgstr "Track-Ranking"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:201
 msgid "Use recency weighting"
-msgstr "Aktualitätsgewichtung verwenden"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:203
 msgid "Rank by play count + recency (off = most recent first)"
-msgstr "Nach Wiedergabezahl + Aktualität ranken (aus = neueste zuerst)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:206
 msgid "Recency Half-Life (hours)"
-msgstr "Aktualitäts-Halbwertszeit (Stunden)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:208
 msgid "How fast recency decays (lower = favor newer tracks)"
-msgstr "Wie schnell die Aktualität abnimmt (niedriger = neuere Tracks bevorzugen)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:211
 msgid "Play Weight (0.0-1.0)"
-msgstr "Wiedergabegewichtung (0.0-1.0)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:213
 msgid "0.0 = pure recency, 1.0 = pure play count"
-msgstr "0.0 = nur Aktualität, 1.0 = nur Wiedergabezahl"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:216
 msgid "Minimum Plays"
-msgstr "Mindestanzahl Wiedergaben"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:218
 msgid ""
 "Gate tracks: must be scrobbled at least this many times in the fetched "
 "window (1 = no gate)"
 msgstr ""
-"Titel filtern: muss im abgerufenen Zeitfenster mindestens so oft "
-"gescrobbelt worden sein (1 = kein Filter)"
 
 #: web/templates/partials/_panel_settings.html:232
 msgid "Weekly Playlists"
-msgstr "Wöchentliche Playlists"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:238
 msgid "Enable weekly playlists"
-msgstr "Wöchentliche Playlists aktivieren"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:242
 msgid "Weekly Playlist Visibility"
-msgstr "Sichtbarkeit wöchentlicher Playlists"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:244
 #: web/templates/partials/_panel_settings.html:293
 msgid "Inherit from main"
-msgstr "Von Haupt übernehmen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:251
 msgid "Week Start Day"
-msgstr "Wochenstarttag"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:253
 msgid "Monday"
-msgstr "Montag"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:254
 msgid "Tuesday"
-msgstr "Dienstag"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:255
 msgid "Wednesday"
-msgstr "Mittwoch"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:256
 msgid "Thursday"
-msgstr "Donnerstag"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:257
 msgid "Friday"
-msgstr "Freitag"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:258
 msgid "Saturday"
-msgstr "Samstag"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:259
 msgid "Sunday"
-msgstr "Sonntag"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:263
 msgid "Keep Weeks"
-msgstr "Wochen behalten"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:265
 msgid "How many weeks to keep (0 = keep all)"
-msgstr "Wie viele Wochen behalten (0 = alle behalten)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:268
 msgid "Playlist Prefix"
-msgstr "Playlist-Präfix"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:269
 msgid "(derived from main name)"
-msgstr "(abgeleitet vom Hauptnamen)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:270
 msgid "Override weekly playlist name prefix"
-msgstr "Präfix für wöchentliche Playlist-Namen überschreiben"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:273
 msgid "Timezone"
-msgstr "Zeitzone"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:275
 msgid "E.g., Europe/Berlin, America/New_York"
-msgstr "Z. B. Europe/Berlin, America/New_York"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:287
 #: web/templates/partials/_tabs.html:9
 msgid "Custom Playlists"
-msgstr "Benutzerdefinierte Playlists"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:291
 msgid "Custom Playlist Visibility"
-msgstr "Sichtbarkeit benutzerdefinierter Playlists"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:300
 msgid "Minimum Tag Count"
-msgstr "Minimale Tag-Anzahl"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:302
 msgid "Minimum Last.fm tag vote count to include"
-msgstr "Minimale Last.fm-Tag-Stimmenzahl, um eingeschlossen zu werden"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:305
 msgid "Sleep Between Tag Fetches (seconds)"
-msgstr "Pause zwischen Tag-Abrufen (Sekunden)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:307
 msgid "Delay between tag API calls to avoid rate limiting"
-msgstr "Verzögerung zwischen Tag-API-Aufrufen, um Rate-Limits zu vermeiden"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:319
 msgid "Search Behavior"
-msgstr "Suchverhalten"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:325
 msgid "Use anonymous search"
-msgstr "Anonyme Suche verwenden"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:327
 msgid "Recommended for better search results"
-msgstr "Empfohlen für bessere Suchergebnisse"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:330
 msgid "Early Termination Score (0.0-1.0)"
-msgstr "Frühe-Abbruch-Punktzahl (0.0-1.0)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:332
 msgid "Stop search early if match score exceeds this"
 msgstr ""
-"Suche frühzeitig beenden, wenn die Trefferpunktzahl diesen Wert "
-"überschreitet"
 
 #: web/templates/partials/_panel_settings.html:335
 msgid "Sleep Between Searches (seconds)"
-msgstr "Pause zwischen Suchen (Sekunden)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:337
 msgid "Delay between searches to avoid rate limiting"
-msgstr "Verzögerung zwischen Suchen, um Rate-Limits zu vermeiden"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:340
 msgid "Max Search Workers"
-msgstr "Max. Such-Worker"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:342
 msgid "Parallel search threads (higher = faster but more API load)"
-msgstr "Parallele Such-Threads (höher = schneller, aber mehr API-Last)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:360
 msgid "Max Raw Scrobbles"
-msgstr "Max. Roh-Scrobbles"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:362
 msgid "Max scrobbles to fetch (0 = unlimited)"
-msgstr "Maximale Anzahl abzurufender Scrobbles (0 = unbegrenzt)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:365
 msgid "Backfill Passes"
-msgstr "Nachbefüllungs-Durchläufe"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:367
 msgid "Additional fetch attempts if below LIMIT (0 = disabled)"
-msgstr "Zusätzliche Abrufversuche, wenn unterhalb von LIMIT (0 = deaktiviert)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:380
 msgid "Caching"
-msgstr "Caching"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:384
 msgid "Search Cache TTL (days)"
-msgstr "Such-Cache-TTL (Tage)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:386
 msgid "Days before cached searches expire (0 = never)"
-msgstr "Tage, bevor gecachte Suchen ablaufen (0 = nie)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:389
 msgid "Not-Found Cache TTL (days)"
-msgstr "„Nicht gefunden“-Cache-TTL (Tage)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:391
 msgid "Days before \"not found\" results are retried"
-msgstr "Tage, bevor \"nicht gefunden\"-Ergebnisse erneut versucht werden"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:394
 msgid "Tag Cache TTL (days)"
-msgstr "Tag-Cache-TTL (Tage)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:396
 msgid "Days before cached tags expire (0 = never)"
-msgstr "Tage, bevor gecachte Tags ablaufen (0 = nie)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:408
 msgid "History Database"
-msgstr "Verlaufsdatenbank"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:414
 msgid "Enable history database"
-msgstr "Verlaufsdatenbank aktivieren"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:416
 msgid ""
 "Store track lookups, sync runs, and actions in a local SQLite database "
 "for analytics"
 msgstr ""
-"Track-Lookups, Sync-Läufe und Aktionen für Analysen in einer lokalen "
-"SQLite-Datenbank speichern"
 
 #: web/templates/partials/_panel_settings.html:422
 msgid "Max DB Size (MB)"
-msgstr "Max. DB-Größe (MB)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:424
 msgid "Auto-prune oldest records when exceeded. 0 = unlimited."
-msgstr "Älteste Einträge automatisch löschen, wenn überschritten. 0 = unbegrenzt."
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:428
 msgid ""
 "Import existing data from your search cache and overrides into the "
 "history database."
 msgstr ""
-"Vorhandene Daten aus deinem Such-Cache und deinen Overrides in die "
-"Verlaufsdatenbank importieren."
 
 #: web/templates/partials/_panel_settings.html:438
 msgid "Backfill from Cache"
-msgstr "Aus Cache nachbefüllen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:446
 msgid "Clear All History"
-msgstr "Gesamten Verlauf löschen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:460
 msgid "Webhooks"
-msgstr "Webhooks"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:464
 msgid "Webhook URL"
-msgstr "Webhook-URL"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:466
 msgid ""
 "Receives a JSON POST with sync results. Works with ntfy, Discord, Slack, "
 "or any HTTP endpoint."
 msgstr ""
-"Empfängt einen JSON-POST mit Sync-Ergebnissen. Funktioniert mit ntfy, "
-"Discord, Slack oder jedem HTTP-Endpunkt."
 
 #: web/templates/partials/_panel_settings.html:469
 msgid "Send notifications for"
-msgstr "Benachrichtigungen senden für"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:472
 msgid "Errors only"
-msgstr "Nur Fehler"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:473
 msgid "All syncs"
-msgstr "Alle Synchronisierungen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:481
 msgid "Test"
-msgstr "Test"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:484
 msgid "Choose when to send webhook notifications"
-msgstr "Wähle, wann Webhook-Benachrichtigungen gesendet werden sollen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:495
 msgid "Reliability & Retries"
-msgstr "Zuverlässigkeit & Wiederholungen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:499
 msgid "YTM API Max Retries"
-msgstr "Max. YTM-API-Wiederholungen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:503
 msgid "Last.fm Max Retries"
-msgstr "Max. Last.fm-Wiederholungen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:507
 msgid "Max Consecutive Empty Pages"
-msgstr "Max. aufeinanderfolgende leere Seiten"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:509
 msgid "Stop after N pages with no new tracks"
-msgstr "Nach N Seiten ohne neue Tracks stoppen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:514
 msgid "Force IPv4 for Last.fm"
-msgstr "IPv4 für Last.fm erzwingen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:516
 msgid "Helps with flaky Last.fm IPv6 connections"
-msgstr "Hilft bei instabilen Last.fm-IPv6-Verbindungen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:528
 msgid "Automation"
-msgstr "Automatisierung"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:540
 msgid "Enable automated sync"
-msgstr "Automatisierte Synchronisierung aktivieren"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:542
 msgid "Automatically run sync at scheduled intervals"
-msgstr "Synchronisierung automatisch in geplanten Intervallen ausführen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:547
 msgid "Include tag playlists"
-msgstr "Tag-Playlists einbeziehen"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:549
 msgid "Also sync custom tag-based playlists after each scheduled run"
 msgstr ""
-"Nach jedem geplanten Lauf auch benutzerdefinierte tag-basierte Playlists "
-"synchronisieren"
 
 #: web/templates/partials/_panel_settings.html:552
 msgid "Tag sync frequency"
-msgstr "Tag-Sync-Häufigkeit"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:554
 msgid "Run tag sync every N main syncs (1 = every time, 3 = every 3rd sync)"
 msgstr ""
-"Tag-Sync alle N Haupt-Synchronisierungen ausführen (1 = jedes Mal, 3 = "
-"jede 3. Synchronisierung)"
 
 #: web/templates/partials/_panel_settings.html:557
 msgid "Schedule Type"
-msgstr "Zeitplan-Typ"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:559
 msgid "Interval (every N hours)"
-msgstr "Intervall (alle N Stunden)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:560
 #: web/templates/partials/_panel_settings.html:574
 msgid "Cron Expression"
-msgstr "Cron-Ausdruck"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:564
 msgid "Interval (hours)"
-msgstr "Intervall (Stunden)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:566
 msgid "How often to sync (e.g., 6 = every 6 hours)"
-msgstr "Wie oft synchronisiert wird (z. B. 6 = alle 6 Stunden)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:569
 msgid "Starting at (optional)"
-msgstr "Beginnend um (optional)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:571
 msgid "Anchor time for intervals (e.g., 00:00 → 0, 6, 12, 18h)"
-msgstr "Ankerzeit für Intervalle (z. B. 00:00 → 0, 6, 12, 18 Uhr)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:576
 msgid "Standard cron format: minute hour day month weekday (server time)"
-msgstr "Standard-Cron-Format: Minute Stunde Tag Monat Wochentag (Serverzeit)"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:585
 msgid "Next run:"
-msgstr "Nächster Lauf:"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:599
 msgid "Logging"
-msgstr "Protokollierung"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:603
 msgid "Log Level"
-msgstr "Log-Level"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:623
 msgid "Data Management"
-msgstr "Datenverwaltung"
+msgstr ""
 
 #: web/templates/partials/_panel_settings.html:625
 msgid "Export or import your overrides and blacklist data as JSON."
 msgstr ""
-"Exportiere oder importiere deine Overrides- und Sperrlisten-Daten als "
-"JSON."
 
 #: web/templates/partials/_panel_sync.html:10
 msgid "Sync Console"
-msgstr "Sync-Konsole"
+msgstr ""
 
 #: web/templates/partials/_panel_sync.html:12
 msgid "Ready"
-msgstr "Bereit"
+msgstr ""
 
 #: web/templates/partials/_panel_sync.html:20
 msgid "Run"
-msgstr "Ausführen"
+msgstr ""
 
 #: web/templates/partials/_panel_sync.html:22
 msgid "More sync options"
-msgstr "Weitere Sync-Optionen"
+msgstr ""
 
 #: web/templates/partials/_panel_sync.html:30
 msgid "Tag Playlist Sync"
-msgstr "Tag-Playlist-Synchronisierung"
+msgstr ""
 
 #: web/templates/partials/_panel_sync.html:31
 msgid "Build tag-based playlists"
-msgstr "Tag-basierte Playlists erstellen"
+msgstr ""
 
 #: web/templates/partials/_panel_sync.html:39
 msgid "Stop"
-msgstr "Stoppen"
+msgstr ""
 
 #: web/templates/partials/_panel_sync.html:41
 msgid "Toggle console"
-msgstr "Konsole umschalten"
+msgstr ""
 
 #: web/templates/partials/_panel_tags.html:10
 msgid ""
@@ -2994,85 +2873,2375 @@ msgid ""
 " These tags power <strong>Custom Playlists</strong> - define tag rules "
 "there to auto-generate playlists."
 msgstr ""
-"Genre-Tags, die für jeden Track in deinem Hörverlauf von Last.fm "
-"abgerufen werden. Diese Tags sind die Grundlage für "
-"<strong>Benutzerdefinierte Playlists</strong> – definiere dort Tag-"
-"Regeln, um Playlists automatisch zu generieren."
 
 #: web/templates/partials/_panel_tags.html:14
 msgid "Search tagged tracks..."
-msgstr "Getaggte Tracks durchsuchen..."
+msgstr ""
 
 #: web/templates/partials/_panel_tags.html:24
 #: web/templates/partials/_stats.html:25 web/templates/partials/_tabs.html:8
 msgid "Track Tags"
-msgstr "Track-Tags"
+msgstr ""
 
 #: web/templates/partials/_panel_tags.html:25
 msgid "Artist Tags"
-msgstr "Künstler-Tags"
+msgstr ""
 
 #: web/templates/partials/_panel_tags.html:46
 #: web/templates/partials/_panel_tags.html:52
 msgid "Artist tag"
-msgstr "Künstler-Tag"
+msgstr ""
 
 #: web/templates/partials/_panel_tags.html:46
 #: web/templates/partials/_panel_tags.html:52
 msgid "Track tag"
-msgstr "Track-Tag"
+msgstr ""
 
 #: web/templates/partials/_panel_tags.html:59
 msgid "No tags found"
-msgstr "Keine Tags gefunden"
+msgstr ""
 
 #: web/templates/partials/_panel_tags.html:68
 msgid "Edit Tags"
-msgstr "Tags bearbeiten"
+msgstr ""
 
 #: web/templates/partials/_panel_tags.html:71
 msgid "Clear from tag cache & re-fetch on next sync"
-msgstr "Aus Tag-Cache löschen und bei nächster Synchronisierung erneut abrufen"
+msgstr ""
 
 #: web/templates/partials/_panel_tags.html:92
 msgid "No Tag Data"
-msgstr "Keine Tag-Daten"
+msgstr ""
 
 #: web/templates/partials/_panel_tags.html:94
 msgid ""
 "Genre tags are fetched from Last.fm during sync. Run a sync with custom "
 "playlists enabled to populate the tag cache."
 msgstr ""
-"Genre-Tags werden während der Synchronisierung von Last.fm abgerufen. "
-"Führe eine Synchronisierung mit aktivierten benutzerdefinierten Playlists"
-" aus, um den Tag-Cache zu füllen."
 
 #: web/templates/partials/_stats.html:5
 msgid "Playlist Tracks"
-msgstr "Playlist-Tracks"
+msgstr ""
 
 #: web/templates/partials/_stats.html:21
 msgid "Cached Searches"
-msgstr "Gecachte Suchen"
+msgstr ""
 
 #: web/templates/partials/_stats.html:33
 msgid "Last Sync"
-msgstr "Letzte Synchronisierung"
+msgstr ""
 
 #: web/templates/partials/_tabs.html:3
 msgid "Playlist"
-msgstr "Playlist"
+msgstr ""
 
 #: web/templates/partials/_tabs.html:10
 msgid "History"
-msgstr "Verlauf"
+msgstr ""
 
 #: web/templates/partials/_update_pill.html:3
 msgid "Current version"
-msgstr "Aktuelle Version"
+msgstr ""
 
 #~ msgid "Reset"
 #~ msgstr "Test"
 
 #~ msgid "Custom"
 #~ msgstr "Stoppen"
+
+#~ msgid "Invalid video ID. Must be 11 characters (or a valid YouTube URL)."
+#~ msgstr ""
+#~ "Ungültige Video-ID. Muss 11 Zeichen "
+#~ "lang sein (oder eine gültige YouTube-"
+#~ "URL)."
+
+#~ msgid "Artist and title are required."
+#~ msgstr "Künstler und Titel sind erforderlich."
+
+#~ msgid "At least one tag is required."
+#~ msgstr "Mindestens ein Tag ist erforderlich."
+
+#~ msgid "No data provided"
+#~ msgstr "Keine Daten übermittelt"
+
+#~ msgid "Imported"
+#~ msgstr "Importiert"
+
+#~ msgid ".env already exists"
+#~ msgstr ".env existiert bereits"
+
+#~ msgid ".env.example not found"
+#~ msgstr ".env.example nicht gefunden"
+
+#~ msgid "Failed to create configuration file"
+#~ msgstr "Konfigurationsdatei konnte nicht erstellt werden"
+
+#~ msgid "Username and API key are required"
+#~ msgstr "Benutzername und API-Schlüssel sind erforderlich"
+
+#~ msgid "Failed to save credentials"
+#~ msgstr "Zugangsdaten konnten nicht gespeichert werden"
+
+#~ msgid "Invalid cron expression: %(error)s"
+#~ msgstr "Ungültiger Cron-Ausdruck: %(error)s"
+
+#~ msgid "Invalid start time: hour must be 0-23, minute 0-59"
+#~ msgstr "Ungültige Startzeit: Stunde muss 0-23, Minute 0-59 sein"
+
+#~ msgid "Failed to save settings"
+#~ msgstr "Einstellungen konnten nicht gespeichert werden"
+
+#~ msgid "No webhook URL provided"
+#~ msgstr "Keine Webhook-URL angegeben"
+
+#~ msgid "Webhook request failed. Check the URL and try again."
+#~ msgstr "Webhook-Anfrage fehlgeschlagen. URL prüfen und erneut versuchen."
+
+#~ msgid "Unknown panel"
+#~ msgstr "Unbekanntes Panel"
+
+#~ msgid "Invalid data: 'playlists' array required"
+#~ msgstr "Ungültige Daten: 'playlists'-Array erforderlich"
+
+#~ msgid "'playlists' must be an array"
+#~ msgstr "'playlists' muss ein Array sein"
+
+#~ msgid "Failed to save custom playlists"
+#~ msgstr "Benutzerdefinierte Playlists konnten nicht gespeichert werden"
+
+#~ msgid "Artist and title are required"
+#~ msgstr "Künstler und Titel sind erforderlich"
+
+#~ msgid "Last.fm credentials not configured"
+#~ msgstr "Last.fm-Zugangsdaten nicht konfiguriert"
+
+#~ msgid "Failed to fetch from Last.fm"
+#~ msgstr "Abruf von Last.fm fehlgeschlagen"
+
+#~ msgid "Internal error"
+#~ msgstr "Interner Fehler"
+
+#~ msgid "Invalid start time format. Use HH:MM."
+#~ msgstr "Ungültiges Startzeit-Format. Verwende HH:MM."
+
+#~ msgid "Failed to configure scheduler. APScheduler may not be installed."
+#~ msgstr ""
+#~ "Scheduler konnte nicht konfiguriert werden."
+#~ " APScheduler ist möglicherweise nicht "
+#~ "installiert."
+
+#~ msgid "Invalid value: %(error)s"
+#~ msgstr "Ungültiger Wert: %(error)s"
+
+#~ msgid "Failed to configure scheduler"
+#~ msgstr "Scheduler konnte nicht konfiguriert werden"
+
+#~ msgid "Failed to save theme overrides"
+#~ msgstr "Tag-Override konnte nicht gespeichert werden"
+
+#~ msgid "Password is required"
+#~ msgstr "Passwort ist erforderlich"
+
+#~ msgid "Password must be at least 4 characters"
+#~ msgstr "Passwort muss mindestens 4 Zeichen lang sein"
+
+#~ msgid "Export failed"
+#~ msgstr "Export fehlgeschlagen"
+
+#~ msgid "No file provided"
+#~ msgstr "Keine Datei angegeben"
+
+#~ msgid "Preview failed"
+#~ msgstr "Vorschau fehlgeschlagen"
+
+#~ msgid "Import failed"
+#~ msgstr "Import fehlgeschlagen"
+
+#~ msgid "History database is not enabled"
+#~ msgstr "Verlaufsdatenbank ist nicht aktiviert"
+
+#~ msgid "Sync record not found"
+#~ msgstr "Sync-Eintrag nicht gefunden"
+
+#~ msgid "No headers provided"
+#~ msgstr "Keine Header angegeben"
+
+#~ msgid ""
+#~ "Missing required headers (cookie, x-goog-"
+#~ "authuser). Make sure you copy from "
+#~ "a /browse request while logged in."
+#~ msgstr ""
+#~ "Erforderliche Header fehlen (cookie, x"
+#~ "-goog-authuser). Stelle sicher, dass du "
+#~ "sie aus einer /browse-Anfrage kopierst,"
+#~ " während du angemeldet bist."
+
+#~ msgid "Failed to parse headers: %(error_msg)s"
+#~ msgstr "Header konnten nicht verarbeitet werden: %(error_msg)s"
+
+#~ msgid "Headers were saved but auth appears expired. Try copying fresh headers."
+#~ msgstr ""
+#~ "Header wurden gespeichert, aber die "
+#~ "Authentifizierung scheint abgelaufen zu sein."
+#~ " Versuche, neue Header zu kopieren."
+
+#~ msgid "browser.json not found"
+#~ msgstr "browser.json nicht gefunden"
+
+#~ msgid "browser.json is empty"
+#~ msgstr "browser.json ist leer"
+
+#~ msgid "Missing cookie in auth file"
+#~ msgstr "Cookie in der Authentifizierungsdatei fehlt"
+
+#~ msgid "Auth cookie appears invalid"
+#~ msgstr "Authentifizierungs-Cookie scheint ungültig zu sein"
+
+#~ msgid "Invalid JSON in auth file"
+#~ msgstr "Ungültiges JSON in der Authentifizierungsdatei"
+
+#~ msgid "Cannot read auth file"
+#~ msgstr "Authentifizierungsdatei kann nicht gelesen werden"
+
+#~ msgid "Auth expired - please regenerate"
+#~ msgstr "Authentifizierung abgelaufen – bitte neu generieren"
+
+#~ msgid "Auth test failed"
+#~ msgstr "Authentifizierungstest fehlgeschlagen"
+
+#~ msgid "Sync already running"
+#~ msgstr "Synchronisierung läuft bereits"
+
+#~ msgid "No sync running"
+#~ msgstr "Keine Synchronisierung aktiv"
+
+#~ msgid "Please paste request headers first"
+#~ msgstr "Bitte zuerst die Anfrage-Header einfügen"
+
+#~ msgid "Connecting..."
+#~ msgstr "Verbindung wird hergestellt..."
+
+#~ msgid "Auth saved (could not verify live)"
+#~ msgstr "Authentifizierung gespeichert (Live-Prüfung nicht möglich)"
+
+#~ msgid "YouTube Music connected!"
+#~ msgstr "YouTube Music verbunden!"
+
+#~ msgid "Connection failed"
+#~ msgstr "Verbindung fehlgeschlagen"
+
+#~ msgid "Network error - check your connection and try again"
+#~ msgstr "Netzwerkfehler – überprüfe deine Verbindung und versuche es erneut"
+
+#~ msgid "Connected! Last liked song: %(song)s"
+#~ msgstr "Verbunden! Zuletzt geliebter Song: %(song)s"
+
+#~ msgid "Connected and verified!"
+#~ msgstr "Verbunden und verifiziert!"
+
+#~ msgid "%(total)s entries · %(found)s found · %(nf)s not-found"
+#~ msgstr "%(total)s Einträge · %(found)s gefunden · %(nf)s nicht gefunden"
+
+#~ msgid "%(total)s entries · %(with)s with tags · %(empty)s empty"
+#~ msgstr "%(total)s Einträge · %(with)s mit Tags · %(empty)s ohne"
+
+#~ msgid "%(n)s playlists · %(v)s cached video IDs"
+#~ msgstr "%(n)s Playlists · %(v)s gecachte Video-IDs"
+
+#~ msgid "No entries."
+#~ msgstr "Keine Einträge."
+
+#~ msgid "Not Found"
+#~ msgstr "Nicht gefunden"
+
+#~ msgid "Cached"
+#~ msgstr "Im Cache"
+
+#~ msgid "selected"
+#~ msgstr "ausgewählt"
+
+#~ msgid "No tags"
+#~ msgstr "Keine Tags"
+
+#~ msgid "No cached playlists."
+#~ msgstr "Keine gecachten Playlists."
+
+#~ msgid "tracks"
+#~ msgstr "Tracks"
+
+#~ msgid "Remove from cache"
+#~ msgstr "Aus dem Cache entfernen"
+
+#~ msgid "Loading..."
+#~ msgstr "Lädt..."
+
+#~ msgid "Failed to load tracks."
+#~ msgstr "Tracks konnten nicht geladen werden."
+
+#~ msgid "No cached tracks."
+#~ msgstr "Keine gecachten Tracks."
+
+#~ msgid "Unknown"
+#~ msgstr "Unbekannt"
+
+#~ msgid "Remove from cached template"
+#~ msgstr "Aus gecachter Vorlage entfernen"
+
+#~ msgid "Failed to load cache data: %(msg)s"
+#~ msgstr "Cache-Daten konnten nicht geladen werden: %(msg)s"
+
+#~ msgid ""
+#~ "Delete ALL search cache entries? Tracks"
+#~ " will be re-searched on the "
+#~ "next sync."
+#~ msgstr ""
+#~ "ALLE Such-Cache-Einträge löschen? Tracks"
+#~ " werden bei der nächsten Synchronisierung"
+#~ " erneut gesucht."
+
+#~ msgid "Cleared %(n)s search cache entries"
+#~ msgstr "%(n)s Such-Cache-Einträge gelöscht"
+
+#~ msgid "Delete all not-found search cache entries?"
+#~ msgstr "Alle „nicht gefunden“-Such-Cache-Einträge löschen?"
+
+#~ msgid "Cleared %(n)s not-found entries"
+#~ msgstr "%(n)s „nicht gefunden“-Einträge gelöscht"
+
+#~ msgid "Delete %(n)s selected search cache entries?"
+#~ msgstr "%(n)s ausgewählte Such-Cache-Einträge löschen?"
+
+#~ msgid "Deleted %(n)s entries"
+#~ msgstr "%(n)s Einträge gelöscht"
+
+#~ msgid "Delete ALL tag cache entries? Tags will be re-fetched on the next sync."
+#~ msgstr ""
+#~ "ALLE Tag-Cache-Einträge löschen? Tags"
+#~ " werden bei der nächsten Synchronisierung"
+#~ " erneut abgerufen."
+
+#~ msgid "Cleared %(n)s tag cache entries"
+#~ msgstr "%(n)s Tag-Cache-Einträge gelöscht"
+
+#~ msgid "Delete %(n)s selected tag cache entries?"
+#~ msgstr "%(n)s ausgewählte Tag-Cache-Einträge löschen?"
+
+#~ msgid ""
+#~ "Clear the ENTIRE playlist cache? Your"
+#~ " YouTube Music playlists will NOT be"
+#~ " deleted, but the next sync will "
+#~ "need to re-discover their IDs."
+#~ msgstr ""
+#~ "Den GESAMTEN Playlist-Cache leeren? "
+#~ "Deine YouTube-Music-Playlists werden "
+#~ "NICHT gelöscht, aber die nächste "
+#~ "Synchronisierung muss ihre IDs neu "
+#~ "ermitteln."
+
+#~ msgid "Cleared %(n)s playlist cache entries"
+#~ msgstr "%(n)s Playlist-Cache-Einträge gelöscht"
+
+#~ msgid ""
+#~ "Remove playlist '%(n)s' from the cache?"
+#~ " The actual YTM playlist is left "
+#~ "intact."
+#~ msgstr ""
+#~ "Playlist „%(n)s“ aus dem Cache "
+#~ "entfernen? Die eigentliche YTM-Playlist "
+#~ "bleibt unangetastet."
+
+#~ msgid "Removed '%(n)s' from playlist cache"
+#~ msgstr "„%(n)s“ aus dem Playlist-Cache entfernt"
+
+#~ msgid "Removed track from cached template"
+#~ msgstr "Track aus gecachter Vorlage entfernt"
+
+#~ msgid "Edit Custom Playlist"
+#~ msgstr "Benutzerdefinierte Playlist bearbeiten"
+
+#~ msgid "Add Custom Playlist"
+#~ msgstr "Benutzerdefinierte Playlist hinzufügen"
+
+#~ msgid "Please enter a playlist name"
+#~ msgstr "Bitte einen Playlist-Namen eingeben"
+
+#~ msgid "Please enter at least one tag"
+#~ msgstr "Bitte mindestens einen Tag eingeben"
+
+#~ msgid "Custom playlist saved!"
+#~ msgstr "Benutzerdefinierte Playlist gespeichert!"
+
+#~ msgid "Failed to save custom playlist"
+#~ msgstr "Benutzerdefinierte Playlist konnte nicht gespeichert werden"
+
+#~ msgid "Custom playlist deleted"
+#~ msgstr "Benutzerdefinierte Playlist gelöscht"
+
+#~ msgid "Failed to delete custom playlist"
+#~ msgstr "Benutzerdefinierte Playlist konnte nicht gelöscht werden"
+
+#~ msgid "Failed to load tracks"
+#~ msgstr "Tracks konnten nicht geladen werden"
+
+#~ msgid "blacklisted"
+#~ msgstr "auf Sperrliste"
+
+#~ msgid "Track already blacklisted"
+#~ msgstr "Track steht bereits auf der Sperrliste"
+
+#~ msgid "blacklisted from"
+#~ msgstr "gesperrt aus"
+
+#~ msgid "Failed to blacklist track"
+#~ msgstr "Track konnte nicht auf die Sperrliste gesetzt werden"
+
+#~ msgid "restored in"
+#~ msgstr "wiederhergestellt in"
+
+#~ msgid "Failed to restore track"
+#~ msgstr "Track konnte nicht wiederhergestellt werden"
+
+#~ msgid "Light theme"
+#~ msgstr "Helles Design"
+
+#~ msgid "Dark theme"
+#~ msgstr "Dunkles Design"
+
+#~ msgid "Editing: %(parent)s"
+#~ msgstr "Bearbeitet: %(parent)s"
+
+#~ msgid "Custom theme saved"
+#~ msgstr "Benutzerdefinierte Playlist gespeichert!"
+
+#~ msgid "Reset to base theme"
+#~ msgstr "Auf Basis-Design zurückgesetzt"
+
+#~ msgid "Theme imported"
+#~ msgstr "Importiert"
+
+#~ msgid "Invalid theme file"
+#~ msgstr "Ungültige JSON-Datei"
+
+#~ msgid "DB size:"
+#~ msgstr "DB-Größe:"
+
+#~ msgid "No tracks found"
+#~ msgstr "Keine Tracks gefunden"
+
+#~ msgid "Not found"
+#~ msgstr "Nicht gefunden"
+
+#~ msgid "seen"
+#~ msgstr "gesehen"
+
+#~ msgid "missed"
+#~ msgstr "verpasst"
+
+#~ msgid "No syncs recorded yet"
+#~ msgstr "Noch keine Synchronisierungen aufgezeichnet"
+
+#~ msgid "Resolved"
+#~ msgstr "Aufgelöst"
+
+#~ msgid "Cache"
+#~ msgstr "Cache"
+
+#~ msgid "API"
+#~ msgstr "API"
+
+#~ msgid "Failed to load syncs"
+#~ msgstr "Synchronisierungen konnten nicht geladen werden"
+
+#~ msgid "No actions recorded yet"
+#~ msgstr "Noch keine Aktionen aufgezeichnet"
+
+#~ msgid "Failed to load actions"
+#~ msgstr "Aktionen konnten nicht geladen werden"
+
+#~ msgid "Failed to load top tracks"
+#~ msgstr "Top-Tracks konnten nicht geladen werden"
+
+#~ msgid "No sync data yet"
+#~ msgstr "Noch keine Sync-Daten"
+
+#~ msgid "Success"
+#~ msgstr "Erfolgreich"
+
+#~ msgid "Error"
+#~ msgstr "Fehler"
+
+#~ msgid "Cache Rate"
+#~ msgstr "Cache-Quote"
+
+#~ msgid "Avg Duration"
+#~ msgstr "Ø Dauer"
+
+#~ msgid "Failed to load trend data"
+#~ msgstr "Trenddaten konnten nicht geladen werden"
+
+#~ msgid "Avg Resolved"
+#~ msgstr "Ø Aufgelöst"
+
+#~ msgid "Avg Missed"
+#~ msgstr "Ø Verpasst"
+
+#~ msgid "Backfill failed"
+#~ msgstr "Nachbefüllung fehlgeschlagen"
+
+#~ msgid "Backfill complete:"
+#~ msgstr "Nachbefüllung abgeschlossen:"
+
+#~ msgid "cache"
+#~ msgstr "Cache"
+
+#~ msgid "override entries"
+#~ msgstr "Override-Einträge"
+
+#~ msgid "Clear History"
+#~ msgstr "Verlauf löschen"
+
+#~ msgid ""
+#~ "This will permanently delete all history"
+#~ " data (tracks, syncs, actions). Continue?"
+#~ msgstr ""
+#~ "Dadurch werden alle Verlaufsdaten (Tracks, "
+#~ "Synchronisierungen, Aktionen) dauerhaft gelöscht."
+#~ " Fortfahren?"
+
+#~ msgid "Cancel"
+#~ msgstr "Abbrechen"
+
+#~ msgid "Failed to clear history"
+#~ msgstr "Verlauf konnte nicht gelöscht werden"
+
+#~ msgid "History cleared"
+#~ msgstr "Verlauf gelöscht"
+
+#~ msgid "Added override"
+#~ msgstr "Override hinzugefügt"
+
+#~ msgid "Removed override"
+#~ msgstr "Override entfernt"
+
+#~ msgid "Blacklisted"
+#~ msgstr "Auf Sperrliste"
+
+#~ msgid "Unblacklisted"
+#~ msgstr "Von Sperrliste entfernt"
+
+#~ msgid "Cleared cache entry"
+#~ msgstr "Cache-Eintrag geleert"
+
+#~ msgid "Added tag override"
+#~ msgstr "Tag-Override hinzugefügt"
+
+#~ msgid "Removed tag override"
+#~ msgstr "Tag-Override entfernt"
+
+#~ msgid "Cleared tag cache"
+#~ msgstr "Tag-Cache geleert"
+
+#~ msgid "Backfill from cache"
+#~ msgstr "Nachbefüllung aus Cache"
+
+#~ msgid "Backfill from overrides"
+#~ msgstr "Nachbefüllung aus Overrides"
+
+#~ msgid "Sync started"
+#~ msgstr "Synchronisierung gestartet"
+
+#~ msgid "Sync completed"
+#~ msgstr "Synchronisierung abgeschlossen"
+
+#~ msgid "Sync failed"
+#~ msgstr "Synchronisierung fehlgeschlagen"
+
+#~ msgid "Custom playlist synced"
+#~ msgstr "Benutzerdefinierte Playlist synchronisiert"
+
+#~ msgid "Custom playlist failed"
+#~ msgstr "Benutzerdefinierte Playlist fehlgeschlagen"
+
+#~ msgid "YouTube substitution"
+#~ msgstr "YouTube-Ersetzung"
+
+#~ msgid "Previous"
+#~ msgstr "Zurück"
+
+#~ msgid "Next"
+#~ msgstr "Weiter"
+
+#~ msgid "total"
+#~ msgstr "gesamt"
+
+#~ msgid "Tag override removed"
+#~ msgstr "Tag-Override entfernt"
+
+#~ msgid "Failed to remove tag override"
+#~ msgstr "Tag-Override konnte nicht entfernt werden"
+
+#~ msgid "Tag cache cleared - will re-fetch on next sync"
+#~ msgstr ""
+#~ "Tag-Cache geleert – wird bei der"
+#~ " nächsten Synchronisierung erneut abgerufen"
+
+#~ msgid "Failed to clear tag cache entry"
+#~ msgstr "Tag-Cache-Eintrag konnte nicht geleert werden"
+
+#~ msgid "Will re-search on next sync"
+#~ msgstr "Wird bei der nächsten Synchronisierung erneut gesucht"
+
+#~ msgid "Pending Retry"
+#~ msgstr "Erneuter Versuch ausstehend"
+
+#~ msgid "Override"
+#~ msgstr "Override"
+
+#~ msgid "Blacklist"
+#~ msgstr "Sperrliste"
+
+#~ msgid "Cache cleared - will retry on next sync"
+#~ msgstr "Cache geleert – erneuter Versuch bei der nächsten Synchronisierung"
+
+#~ msgid "Failed to clear cache entry"
+#~ msgstr "Cache-Eintrag konnte nicht geleert werden"
+
+#~ msgid "Failed to unblacklist"
+#~ msgstr "Entfernen von der Sperrliste fehlgeschlagen"
+
+#~ msgid "Blacklisted via web dashboard"
+#~ msgstr "Über Web-Dashboard gesperrt"
+
+#~ msgid "Failed to blacklist"
+#~ msgstr "Sperren fehlgeschlagen"
+
+#~ msgid "Restore"
+#~ msgstr "Wiederherstellen"
+
+#~ msgid "Failed to blacklist track. Please try again."
+#~ msgstr "Track konnte nicht gesperrt werden. Bitte erneut versuchen."
+
+#~ msgid "Override via web dashboard"
+#~ msgstr "Override über Web-Dashboard"
+
+#~ msgid "Saving..."
+#~ msgstr "Speichert..."
+
+#~ msgid "Invalid input"
+#~ msgstr "Ungültige Eingabe"
+
+#~ msgid "Failed to save override"
+#~ msgstr "Override konnte nicht gespeichert werden"
+
+#~ msgid "Remove Override"
+#~ msgstr "Override entfernen"
+
+#~ msgid "Override saved!"
+#~ msgstr "Override gespeichert!"
+
+#~ msgid "Please fill in all required fields"
+#~ msgstr "Bitte alle Pflichtfelder ausfüllen"
+
+#~ msgid "Failed to add override"
+#~ msgstr "Override konnte nicht hinzugefügt werden"
+
+#~ msgid "Override added!"
+#~ msgstr "Override hinzugefügt!"
+
+#~ msgid "Please fill in artist and title"
+#~ msgstr "Bitte Künstler und Titel ausfüllen"
+
+#~ msgid "Track blacklisted!"
+#~ msgstr "Track gesperrt!"
+
+#~ msgid "No tag changes detected"
+#~ msgstr "Keine Tag-Änderungen erkannt"
+
+#~ msgid "Failed to save tag override"
+#~ msgstr "Tag-Override konnte nicht gespeichert werden"
+
+#~ msgid "Tag override saved!"
+#~ msgstr "Tag-Override gespeichert!"
+
+#~ msgid "Export downloaded"
+#~ msgstr "Export heruntergeladen"
+
+#~ msgid "Please select a JSON file"
+#~ msgstr "Bitte eine JSON-Datei auswählen"
+
+#~ msgid "Overrides"
+#~ msgstr "Overrides"
+
+#~ msgid "Tag Overrides"
+#~ msgstr "Tag-Overrides"
+
+#~ msgid "Invalid JSON file"
+#~ msgstr "Ungültige JSON-Datei"
+
+#~ msgid "Importing..."
+#~ msgstr "Importiert..."
+
+#~ msgid ""
+#~ "Imported %(overrides)s overrides, %(blacklist)s "
+#~ "blacklist, and %(tag_overrides)s tag override"
+#~ " entries"
+#~ msgstr ""
+#~ "%(overrides)s Overrides, %(blacklist)s Sperrliste"
+#~ " und %(tag_overrides)s Tag-Override-"
+#~ "Einträge importiert"
+
+#~ msgid "Failed to load details"
+#~ msgstr "Details konnten nicht geladen werden"
+
+#~ msgid "Cached:"
+#~ msgstr "Im Cache:"
+
+#~ msgid "Open in YouTube Music"
+#~ msgstr "In YouTube Music öffnen"
+
+#~ msgid "View on Last.fm"
+#~ msgstr "Auf Last.fm ansehen"
+
+#~ msgid "Error loading details"
+#~ msgstr "Fehler beim Laden der Details"
+
+#~ msgid "Loading sync details..."
+#~ msgstr "Sync-Details werden geladen..."
+
+#~ msgid "Failed to load sync details"
+#~ msgstr "Sync-Details konnten nicht geladen werden"
+
+#~ msgid "Sync details"
+#~ msgstr "Sync-Details"
+
+#~ msgid "Error loading sync details"
+#~ msgstr "Fehler beim Laden der Sync-Details"
+
+#~ msgid "Failed to load settings"
+#~ msgstr "Einstellungen konnten nicht geladen werden"
+
+#~ msgid "Settings saved successfully!"
+#~ msgstr "Einstellungen erfolgreich gespeichert!"
+
+#~ msgid "Settings saved. Restart the server to apply changes."
+#~ msgstr ""
+#~ "Einstellungen gespeichert. Server neu starten,"
+#~ " um Änderungen zu übernehmen."
+
+#~ msgid "Restart Now"
+#~ msgstr "Jetzt neu starten"
+
+#~ msgid "Display settings changed. Reload the page to update."
+#~ msgstr "Anzeigeeinstellungen geändert. Seite neu laden, um zu aktualisieren."
+
+#~ msgid "Reload"
+#~ msgstr "Neu laden"
+
+#~ msgid "Enter a webhook URL first"
+#~ msgstr "Zuerst eine Webhook-URL eingeben"
+
+#~ msgid "Test webhook sent successfully!"
+#~ msgstr "Test-Webhook erfolgreich gesendet!"
+
+#~ msgid "Webhook test failed"
+#~ msgstr "Webhook-Test fehlgeschlagen"
+
+#~ msgid "Restarting..."
+#~ msgstr "Neustart..."
+
+#~ msgid "Server restarting..."
+#~ msgstr "Server startet neu..."
+
+#~ msgid "Failed to restart server"
+#~ msgstr "Server-Neustart fehlgeschlagen"
+
+#~ msgid "Server may have restarted. Please refresh manually."
+#~ msgstr ""
+#~ "Der Server wurde möglicherweise neu "
+#~ "gestartet. Bitte manuell aktualisieren."
+
+#~ msgid "APScheduler not installed"
+#~ msgstr "APScheduler ist nicht installiert"
+
+#~ msgid "Automation Active"
+#~ msgstr "Automatisierung aktiv"
+
+#~ msgid "Automation Disabled"
+#~ msgstr "Automatisierung deaktiviert"
+
+#~ msgid "Finish Setup"
+#~ msgstr "Einrichtung abschließen"
+
+#~ msgid "Skip for Now"
+#~ msgstr "Vorerst überspringen"
+
+#~ msgid "Reconnect YouTube Music"
+#~ msgstr "YouTube Music neu verbinden"
+
+#~ msgid "Connect YouTube Music"
+#~ msgstr "YouTube Music verbinden"
+
+#~ msgid "Please enter both username and API key"
+#~ msgstr "Bitte sowohl Benutzername als auch API-Schlüssel eingeben"
+
+#~ msgid "Last.fm credentials saved!"
+#~ msgstr "Last.fm-Zugangsdaten gespeichert!"
+
+#~ msgid "Setup complete! You can now run a sync."
+#~ msgstr ""
+#~ "Einrichtung abgeschlossen! Du kannst jetzt "
+#~ "eine Synchronisierung ausführen."
+
+#~ msgid "Setup saved. You can authenticate with YouTube Music later in Settings."
+#~ msgstr ""
+#~ "Einrichtung gespeichert. Du kannst dich "
+#~ "später in den Einstellungen bei YouTube"
+#~ " Music authentifizieren."
+
+#~ msgid "YouTube Music is connected!"
+#~ msgstr "YouTube Music ist verbunden!"
+
+#~ msgid "Not connected yet. Click the button below to authenticate."
+#~ msgstr ""
+#~ "Noch nicht verbunden. Klicke auf den "
+#~ "Button unten, um dich zu "
+#~ "authentifizieren."
+
+#~ msgid "YouTube Music authentication is missing."
+#~ msgstr "YouTube-Music-Authentifizierung fehlt."
+
+#~ msgid "Set Up Auth"
+#~ msgstr "Authentifizierung einrichten"
+
+#~ msgid "Sync"
+#~ msgstr "Synchronisieren"
+
+#~ msgid "Tag playlist"
+#~ msgstr "Tag-Playlist"
+
+#~ msgid "Tag sync"
+#~ msgstr "Tag-Synchronisierung"
+
+#~ msgid "failed"
+#~ msgstr "fehlgeschlagen"
+
+#~ msgid "Unknown error"
+#~ msgstr "Unbekannter Fehler"
+
+#~ msgid "View Details"
+#~ msgstr "Details anzeigen"
+
+#~ msgid "Completed"
+#~ msgstr "Abgeschlossen"
+
+#~ msgid "Failed"
+#~ msgstr "Fehlgeschlagen"
+
+#~ msgid "Sync completed successfully!"
+#~ msgstr "Synchronisierung erfolgreich abgeschlossen!"
+
+#~ msgid "Sync failed. Check output for errors."
+#~ msgstr "Synchronisierung fehlgeschlagen. Ausgabe auf Fehler prüfen."
+
+#~ msgid "Connection lost"
+#~ msgstr "Verbindung verloren"
+
+#~ msgid "Running..."
+#~ msgstr "Läuft..."
+
+#~ msgid "Failed to start sync"
+#~ msgstr "Synchronisierung konnte nicht gestartet werden"
+
+#~ msgid "Stopped"
+#~ msgstr "Gestoppt"
+
+#~ msgid "Sync stopped"
+#~ msgstr "Synchronisierung gestoppt"
+
+#~ msgid "Scheduled sync completed! New data available."
+#~ msgstr "Geplante Synchronisierung abgeschlossen! Neue Daten verfügbar."
+
+#~ msgid "Refresh"
+#~ msgstr "Aktualisieren"
+
+#~ msgid "Add a tag..."
+#~ msgstr "Tag hinzufügen..."
+
+#~ msgid "Add"
+#~ msgstr "Hinzufügen"
+
+#~ msgid "Password must be at least 8 characters"
+#~ msgstr "Passwort muss mindestens 8 Zeichen lang sein"
+
+#~ msgid "Encrypting..."
+#~ msgstr "Wird verschlüsselt..."
+
+#~ msgid "Encrypted backup downloaded"
+#~ msgstr "Verschlüsseltes Backup heruntergeladen"
+
+#~ msgid "Please select a .bin backup file"
+#~ msgstr "Bitte eine .bin-Backup-Datei auswählen"
+
+#~ msgid "Enter the decryption password"
+#~ msgstr "Entschlüsselungspasswort eingeben"
+
+#~ msgid "Decrypting..."
+#~ msgstr "Wird entschlüsselt..."
+
+#~ msgid "Files included"
+#~ msgstr "Enthaltene Dateien"
+
+#~ msgid "Exported"
+#~ msgstr "Exportiert"
+
+#~ msgid "Restoring..."
+#~ msgstr "Wird wiederhergestellt..."
+
+#~ msgid ""
+#~ "Restored %(count)s config files. Restart "
+#~ "may be needed for changes to take"
+#~ " effect."
+#~ msgstr ""
+#~ "%(count)s Konfigurationsdateien wiederhergestellt. "
+#~ "Ein Neustart kann erforderlich sein, "
+#~ "damit Änderungen wirksam werden."
+
+#~ msgid "Auto-sync enabled"
+#~ msgstr "Auto-Sync aktiviert"
+
+#~ msgid " • Next: %(time)s"
+#~ msgstr " • Nächste: %(time)s"
+
+#~ msgid "Now Playing disabled. Re-enable in Settings → Display"
+#~ msgstr "„Now Playing“ deaktiviert. In Einstellungen → Anzeige wieder aktivieren"
+
+#~ msgid "Never"
+#~ msgstr "Nie"
+
+#~ msgid "Just now"
+#~ msgstr "Gerade eben"
+
+#~ msgid "%(count)sm ago"
+#~ msgstr "vor %(count)s Min."
+
+#~ msgid "%(count)sh ago"
+#~ msgstr "vor %(count)s Std."
+
+#~ msgid "%(count)sd ago"
+#~ msgstr "vor %(count)s Tg."
+
+#~ msgid "Last.fm → YouTube Music Sync Manager"
+#~ msgstr "Last.fm → YouTube Music Sync-Manager"
+
+#~ msgid "Sync Manager"
+#~ msgstr "Sync-Manager"
+
+#~ msgid "Hide Now Playing"
+#~ msgstr "„Now Playing“ ausblenden"
+
+#~ msgid "Re-enable in Settings → Display"
+#~ msgstr "In Einstellungen → Anzeige wieder aktivieren"
+
+#~ msgid "Open %(name)s on YouTube Music"
+#~ msgstr "%(name)s in YouTube Music öffnen"
+
+#~ msgid "Main"
+#~ msgstr "Haupt"
+
+#~ msgid "Weekly"
+#~ msgstr "Wöchentlich"
+
+#~ msgid "Scheduled sync enabled"
+#~ msgstr "Geplante Synchronisierung aktiviert"
+
+#~ msgid "Scheduled"
+#~ msgstr "Geplant"
+
+#~ msgid "Server time"
+#~ msgstr "Serverzeit"
+
+#~ msgid "Notifications"
+#~ msgstr "Benachrichtigungen"
+
+#~ msgid "Clear all"
+#~ msgstr "Alle löschen"
+
+#~ msgid "Close"
+#~ msgstr "Schließen"
+
+#~ msgid "No notifications yet"
+#~ msgstr "Noch keine Benachrichtigungen"
+
+#~ msgid "Documentation"
+#~ msgstr "Dokumentation"
+
+#~ msgid "Cache Management"
+#~ msgstr "Cache-Verwaltung"
+
+#~ msgid "Settings"
+#~ msgstr "Einstellungen"
+
+#~ msgid "Clear search"
+#~ msgstr "Suche löschen"
+
+#~ msgid "Clear from cache & retry on next sync"
+#~ msgstr "Aus Cache löschen und bei nächster Synchronisierung erneut versuchen"
+
+#~ msgid "Tags"
+#~ msgstr "Tags"
+
+#~ msgid "Show all tags"
+#~ msgstr "Alle Tags anzeigen"
+
+#~ msgid "View details"
+#~ msgstr "Details anzeigen"
+
+#~ msgid "No matching tracks found. Run a tag sync first."
+#~ msgstr ""
+#~ "Keine passenden Tracks gefunden. Führe "
+#~ "zuerst eine Tag-Synchronisierung aus."
+
+#~ msgid "Search Cache"
+#~ msgstr "Such-Cache"
+
+#~ msgid "Tag Cache"
+#~ msgstr "Tag-Cache"
+
+#~ msgid "Playlist Cache"
+#~ msgstr "Playlist-Cache"
+
+#~ msgid ""
+#~ "Cache deletions are immediate and cannot"
+#~ " be undone. Affected entries will be"
+#~ " re-fetched on the next sync."
+#~ msgstr ""
+#~ "Cache-Löschungen erfolgen sofort und "
+#~ "können nicht rückgängig gemacht werden. "
+#~ "Betroffene Einträge werden bei der "
+#~ "nächsten Synchronisierung erneut abgerufen."
+
+#~ msgid ""
+#~ "Successful artist/title → video ID "
+#~ "lookups (cache) and previously-failed "
+#~ "searches (not-found)."
+#~ msgstr ""
+#~ "Erfolgreiche Künstler/Titel → Video-ID-"
+#~ "Lookups (Cache) und zuvor fehlgeschlagene "
+#~ "Suchen (nicht gefunden)."
+
+#~ msgid "Clear all not-found"
+#~ msgstr "Alle „nicht gefunden“ löschen"
+
+#~ msgid "Clear ALL search cache"
+#~ msgstr "GESAMTEN Such-Cache leeren"
+
+#~ msgid "Bulk delete entries"
+#~ msgstr "Einträge stapelweise löschen"
+
+#~ msgid "Filter by artist or title..."
+#~ msgstr "Nach Künstler oder Titel filtern..."
+
+#~ msgid "Select all visible"
+#~ msgstr "Alle sichtbaren auswählen"
+
+#~ msgid "Delete selected"
+#~ msgstr "Ausgewählte löschen"
+
+#~ msgid "Last.fm genre tags fetched per track."
+#~ msgstr "Pro Track abgerufene Last.fm-Genre-Tags."
+
+#~ msgid "Clear ALL tag cache"
+#~ msgstr "GESAMTEN Tag-Cache leeren"
+
+#~ msgid "Filter by artist, title, or tag..."
+#~ msgstr "Nach Künstler, Titel oder Tag filtern..."
+
+#~ msgid ""
+#~ "Cached playlist IDs and desired track"
+#~ " templates. Removing entries here only "
+#~ "clears the cache - your YouTube "
+#~ "Music playlists are not deleted. The "
+#~ "next sync will rebuild the cache."
+#~ msgstr ""
+#~ "Gecachte Playlist-IDs und gewünschte "
+#~ "Track-Vorlagen. Das Entfernen von Einträgen"
+#~ " hier leert nur den Cache – "
+#~ "deine YouTube-Music-Playlists werden "
+#~ "nicht gelöscht. Die nächste Synchronisierung"
+#~ " baut den Cache neu auf."
+
+#~ msgid "Clear ALL playlist cache"
+#~ msgstr "GESAMTEN Playlist-Cache leeren"
+
+#~ msgid "Filter playlists..."
+#~ msgstr "Playlists filtern..."
+
+#~ msgid "First-Time Setup"
+#~ msgstr "Ersteinrichtung"
+
+#~ msgid "Skip setup"
+#~ msgstr "Einrichtung überspringen"
+
+#~ msgid "Last.fm"
+#~ msgstr "Last.fm"
+
+#~ msgid "YouTube Music"
+#~ msgstr "YouTube Music"
+
+#~ msgid "Let's get you set up! First, enter your Last.fm credentials."
+#~ msgstr "Lass uns dich einrichten! Gib zuerst deine Last.fm-Zugangsdaten ein."
+
+#~ msgid "Last.fm Username"
+#~ msgstr "Last.fm-Benutzername"
+
+#~ msgid "Your Last.fm username"
+#~ msgstr "Dein Last.fm-Benutzername"
+
+#~ msgid "Last.fm API Key"
+#~ msgstr "Last.fm-API-Schlüssel"
+
+#~ msgid "Your API key"
+#~ msgstr "Dein API-Schlüssel"
+
+#~ msgid "Create an API key"
+#~ msgstr "API-Schlüssel erstellen"
+
+#~ msgid "(it's free)"
+#~ msgstr "(kostenlos)"
+
+#~ msgid "Now let's connect to YouTube Music."
+#~ msgstr "Jetzt verbinden wir uns mit YouTube Music."
+
+#~ msgid "Back"
+#~ msgstr "Zurück"
+
+#~ msgid "Blacklist Track"
+#~ msgstr "Track sperren"
+
+#~ msgid "Track"
+#~ msgstr "Track"
+
+#~ msgid "Reason (optional)"
+#~ msgstr "Grund (optional)"
+
+#~ msgid "Why blacklist this track?"
+#~ msgstr "Warum diesen Track sperren?"
+
+#~ msgid "Add to Blacklist"
+#~ msgstr "Zur Sperrliste hinzufügen"
+
+#~ msgid "Artist"
+#~ msgstr "Künstler"
+
+#~ msgid "Artist name"
+#~ msgstr "Künstlername"
+
+#~ msgid "Title"
+#~ msgstr "Titel"
+
+#~ msgid "Track title"
+#~ msgstr "Track-Titel"
+
+#~ msgid "Override Track"
+#~ msgstr "Track überschreiben"
+
+#~ msgid "YouTube Video ID or URL"
+#~ msgstr "YouTube-Video-ID oder URL"
+
+#~ msgid "Id or full URL"
+#~ msgstr "ID oder vollständige URL"
+
+#~ msgid "Why override this?"
+#~ msgstr "Warum diesen überschreiben?"
+
+#~ msgid "Save Override"
+#~ msgstr "Override speichern"
+
+#~ msgid "Add Override"
+#~ msgstr "Override hinzufügen"
+
+#~ msgid "Why add this override?"
+#~ msgstr "Warum dieses Override hinzufügen?"
+
+#~ msgid "Edit Tag Override"
+#~ msgstr "Tag-Override bearbeiten"
+
+#~ msgid "Add or remove tags"
+#~ msgstr "Tags hinzufügen oder entfernen"
+
+#~ msgid "Why override tags?"
+#~ msgstr "Warum Tags überschreiben?"
+
+#~ msgid "Save Tags"
+#~ msgstr "Tags speichern"
+
+#~ msgid "Playlist Name"
+#~ msgstr "Playlist-Name"
+
+#~ msgid "My Rock Playlist"
+#~ msgstr "Meine Rock-Playlist"
+
+#~ msgid "Description"
+#~ msgstr "Beschreibung"
+
+#~ msgid "Custom description (leave empty for auto-generated)"
+#~ msgstr "Eigene Beschreibung (leer lassen für automatische Generierung)"
+
+#~ msgid "Leave empty to auto-generate based on tags"
+#~ msgstr "Leer lassen, um automatisch anhand der Tags zu generieren"
+
+#~ msgid "Tags (comma-separated)"
+#~ msgstr "Tags (kommagetrennt)"
+
+#~ msgid "rock, alternative, indie"
+#~ msgstr "rock, alternative, indie"
+
+#~ msgid "Tracks with these Last.fm tags will be included"
+#~ msgstr "Tracks mit diesen Last.fm-Tags werden eingeschlossen"
+
+#~ msgid "Match Mode"
+#~ msgstr "Übereinstimmungsmodus"
+
+#~ msgid "Any (track has at least one tag)"
+#~ msgstr "Beliebig (Track hat mindestens einen Tag)"
+
+#~ msgid "All (track has all tags)"
+#~ msgstr "Alle (Track hat alle Tags)"
+
+#~ msgid "Track Limit"
+#~ msgstr "Track-Limit"
+
+#~ msgid "No Limit"
+#~ msgstr "Kein Limit"
+
+#~ msgid "Include as many matching tracks as possible"
+#~ msgstr "So viele passende Tracks wie möglich einschließen"
+
+#~ msgid "Backfill"
+#~ msgstr "Nachbefüllen"
+
+#~ msgid "Fetch more scrobbles if the limit is not met"
+#~ msgstr "Weitere Scrobbles abrufen, wenn das Limit nicht erreicht wird"
+
+#~ msgid "Include in auto-sync"
+#~ msgstr "In Auto-Sync einbeziehen"
+
+#~ msgid "Sync this playlist during scheduled runs"
+#~ msgstr "Diese Playlist bei geplanten Läufen synchronisieren"
+
+#~ msgid "Blacklist (optional)"
+#~ msgstr "Sperrliste (optional)"
+
+#~ msgid "artist|title (one per line)"
+#~ msgstr "künstler|titel (einer pro Zeile)"
+
+#~ msgid "Exclude specific tracks from this playlist"
+#~ msgstr "Bestimmte Tracks aus dieser Playlist ausschließen"
+
+#~ msgid "Save Playlist"
+#~ msgstr "Playlist speichern"
+
+#~ msgid "Delete Playlist"
+#~ msgstr "Playlist löschen"
+
+#~ msgid "Are you sure you want to delete"
+#~ msgstr "Bist du sicher, dass du löschen möchtest"
+
+#~ msgid "Also delete from YouTube Music"
+#~ msgstr "Auch aus YouTube Music löschen"
+
+#~ msgid "Delete"
+#~ msgstr "Löschen"
+
+#~ msgid "Open"
+#~ msgstr "Öffne"
+
+#~ msgid "and make sure you're logged in"
+#~ msgstr "und stelle sicher, dass du angemeldet bist"
+
+#~ msgid "Open DevTools"
+#~ msgstr "DevTools öffnen"
+
+#~ msgid "or"
+#~ msgstr "oder"
+
+#~ msgid "on Mac"
+#~ msgstr "auf dem Mac"
+
+#~ msgid "Network"
+#~ msgstr "Netzwerk"
+
+#~ msgid "tab"
+#~ msgstr "Tab"
+
+#~ msgid "Filter by"
+#~ msgstr "Filtern nach"
+
+#~ msgid "in the search bar. If nothing appears, scroll down or click"
+#~ msgstr ""
+#~ "in der Suchleiste. Wenn nichts "
+#~ "erscheint, scrolle nach unten oder "
+#~ "klicke auf"
+
+#~ msgid "Library"
+#~ msgstr "Bibliothek"
+
+#~ msgid "in the top bar."
+#~ msgstr "in der oberen Leiste."
+
+#~ msgid "right-click the request"
+#~ msgstr "Rechtsklick auf die Anfrage"
+
+#~ msgid "Copy"
+#~ msgstr "Kopieren"
+
+#~ msgid "Copy Request Headers"
+#~ msgstr "Request-Header kopieren"
+
+#~ msgid "click the request name"
+#~ msgstr "klicke auf den Anfragennamen"
+
+#~ msgid "Headers"
+#~ msgstr "Header"
+
+#~ msgid "copy everything from"
+#~ msgstr "alles kopieren ab"
+
+#~ msgid "to the end of \"Request headers\", or right-click"
+#~ msgstr "bis zum Ende von \"Request headers\", oder Rechtsklick auf"
+
+#~ msgid "Copy as cURL"
+#~ msgstr "Als cURL kopieren"
+
+#~ msgid "Paste request headers or cURL command here..."
+#~ msgstr "Request-Header oder cURL-Befehl hier einfügen..."
+
+#~ msgid "Connect"
+#~ msgstr "Verbinden"
+
+#~ msgid "Export / Import"
+#~ msgstr "Export / Import"
+
+#~ msgid "Export"
+#~ msgstr "Exportieren"
+
+#~ msgid "Download overrides and blacklist as a JSON file for backup or sharing."
+#~ msgstr ""
+#~ "Overrides und Sperrliste als JSON-Datei"
+#~ " für Backup oder Teilen herunterladen."
+
+#~ msgid "Export All"
+#~ msgstr "Alle exportieren"
+
+#~ msgid "Overrides Only"
+#~ msgstr "Nur Overrides"
+
+#~ msgid "Blacklist Only"
+#~ msgstr "Nur Sperrliste"
+
+#~ msgid "Tag Overrides Only"
+#~ msgstr "Nur Tag-Overrides"
+
+#~ msgid "Import"
+#~ msgstr "Importieren"
+
+#~ msgid ""
+#~ "Import overrides and blacklist from a"
+#~ " previously exported JSON file. Existing"
+#~ " entries will be preserved."
+#~ msgstr ""
+#~ "Overrides und Sperrliste aus einer zuvor"
+#~ " exportierten JSON-Datei importieren. "
+#~ "Bestehende Einträge bleiben erhalten."
+
+#~ msgid "Drop a JSON file here or click to browse"
+#~ msgstr "JSON-Datei hier ablegen oder klicken zum Durchsuchen"
+
+#~ msgid "Teleporter"
+#~ msgstr "Teleporter"
+
+#~ msgid ""
+#~ "This backup contains sensitive data (API"
+#~ " keys, auth tokens). Keep it secure."
+#~ msgstr ""
+#~ "Dieses Backup enthält sensible Daten "
+#~ "(API-Schlüssel, Auth-Tokens). Bewahre es"
+#~ " sicher auf."
+
+#~ msgid "Bundle all config files into an encrypted backup."
+#~ msgstr "Alle Konfigurationsdateien in ein verschlüsseltes Backup bündeln."
+
+#~ msgid "Encryption Password"
+#~ msgstr "Verschlüsselungspasswort"
+
+#~ msgid "Enter a password (min. 8 characters)"
+#~ msgstr "Passwort eingeben (mind. 8 Zeichen)"
+
+#~ msgid "Show password"
+#~ msgstr "Passwort anzeigen"
+
+#~ msgid "Include cache files"
+#~ msgstr "Cache-Dateien einbeziehen"
+
+#~ msgid "Search cache"
+#~ msgstr "Such-Cache"
+
+#~ msgid ""
+#~ "Cached YouTube Music search results. "
+#~ "Avoids re-searching tracks on a "
+#~ "new instance."
+#~ msgstr ""
+#~ "Gecachte YouTube-Music-Suchergebnisse. "
+#~ "Vermeidet erneute Suchen auf einer neuen"
+#~ " Instanz."
+
+#~ msgid "Playlist cache"
+#~ msgstr "Playlist-Cache"
+
+#~ msgid ""
+#~ "Stores playlist IDs and desired track"
+#~ " state. Needed to resume syncing "
+#~ "without recreating playlists."
+#~ msgstr ""
+#~ "Speichert Playlist-IDs und den "
+#~ "gewünschten Track-Zustand. Erforderlich, um"
+#~ " die Synchronisierung fortzusetzen, ohne "
+#~ "Playlists neu zu erstellen."
+
+#~ msgid "Tag cache"
+#~ msgstr "Tag-Cache"
+
+#~ msgid "Cached Last.fm tag lookups. Avoids re-fetching tags for every track."
+#~ msgstr ""
+#~ "Gecachte Last.fm-Tag-Lookups. Vermeidet "
+#~ "das erneute Abrufen von Tags für "
+#~ "jeden Track."
+
+#~ msgid "Theme overrides"
+#~ msgstr "Eigene Farben"
+
+#~ msgid "Your custom color scheme for the dashboard (per base theme)."
+#~ msgstr "Dein eigenes Farbschema für das Dashboard (pro Basis-Design)."
+
+#~ msgid "Export Encrypted Backup"
+#~ msgstr "Verschlüsseltes Backup exportieren"
+
+#~ msgid "Restore config from an encrypted backup file."
+#~ msgstr "Konfiguration aus einer verschlüsselten Backup-Datei wiederherstellen."
+
+#~ msgid "Drop a .bin backup file here or click to browse"
+#~ msgstr ".bin-Backup-Datei hier ablegen oder klicken zum Durchsuchen"
+
+#~ msgid "Remove file"
+#~ msgstr "Datei entfernen"
+
+#~ msgid "Decryption Password"
+#~ msgstr "Entschlüsselungspasswort"
+
+#~ msgid "Enter the password used during export"
+#~ msgstr "Das beim Export verwendete Passwort eingeben"
+
+#~ msgid "Preview"
+#~ msgstr "Vorschau"
+
+#~ msgid "Restore Backup"
+#~ msgstr "Backup wiederherstellen"
+
+#~ msgid "Track Details"
+#~ msgstr "Track-Details"
+
+#~ msgid "Video ID"
+#~ msgstr "Video-ID"
+
+#~ msgid "YouTube Title"
+#~ msgstr "YouTube-Titel"
+
+#~ msgid "Source"
+#~ msgstr "Quelle"
+
+#~ msgid "Status"
+#~ msgstr "Status"
+
+#~ msgid "Seen"
+#~ msgstr "Gesehen"
+
+#~ msgid "First Seen"
+#~ msgstr "Zuerst gesehen"
+
+#~ msgid "Last Seen"
+#~ msgstr "Zuletzt gesehen"
+
+#~ msgid "Actions"
+#~ msgstr "Aktionen"
+
+#~ msgid "Sync Details"
+#~ msgstr "Sync-Details"
+
+#~ msgid "Started"
+#~ msgstr "Gestartet"
+
+#~ msgid "Finished"
+#~ msgstr "Beendet"
+
+#~ msgid "Duration"
+#~ msgstr "Dauer"
+
+#~ msgid "Missed"
+#~ msgstr "Verpasst"
+
+#~ msgid "API Searches"
+#~ msgstr "API-Suchen"
+
+#~ msgid "Playlist Ops"
+#~ msgstr "Playlist-Operationen"
+
+#~ msgid "Customize Theme"
+#~ msgstr "Design anpassen"
+
+#~ msgid ""
+#~ "Pick a color for each token. "
+#~ "Changes preview live; nothing is saved"
+#~ " until you click Save."
+#~ msgstr ""
+
+#~ msgid "Discard customizations for the current base theme"
+#~ msgstr "Anpassungen für das aktuelle Basis-Design verwerfen"
+
+#~ msgid "Reset to parent"
+#~ msgstr "Auf Basis zurücksetzen"
+
+#~ msgid "Save"
+#~ msgstr "Speichern"
+
+#~ msgid ""
+#~ "Tracks excluded from every playlist. "
+#~ "Blacklisted entries are skipped during "
+#~ "sync even if they appear in your"
+#~ " Last.fm history - use it to "
+#~ "filter out tracks you never want "
+#~ "resurfaced."
+#~ msgstr ""
+#~ "Tracks, die aus jeder Playlist "
+#~ "ausgeschlossen sind. Gesperrte Einträge werden"
+#~ " bei der Synchronisierung übersprungen, "
+#~ "auch wenn sie in deinem Last.fm-"
+#~ "Verlauf erscheinen – damit kannst du "
+#~ "Tracks herausfiltern, die nie wieder "
+#~ "auftauchen sollen."
+
+#~ msgid "Reason:"
+#~ msgstr "Grund:"
+
+#~ msgid "No Blacklisted Tracks"
+#~ msgstr "Keine gesperrten Tracks"
+
+#~ msgid ""
+#~ "Blacklisted tracks will be skipped "
+#~ "during sync and won't appear in "
+#~ "your playlist."
+#~ msgstr ""
+#~ "Gesperrte Tracks werden bei der "
+#~ "Synchronisierung übersprungen und erscheinen "
+#~ "nicht in deiner Playlist."
+
+#~ msgid ""
+#~ "Successful artist/title → video ID "
+#~ "lookups, kept to skip the YouTube "
+#~ "Music API on subsequent syncs. Clear "
+#~ "individual entries to force a fresh "
+#~ "search next run."
+#~ msgstr ""
+#~ "Erfolgreiche Künstler/Titel → Video-ID-"
+#~ "Lookups, gespeichert, um die YouTube-"
+#~ "Music-API bei nachfolgenden Synchronisierungen"
+#~ " zu umgehen. Einzelne Einträge löschen, "
+#~ "um beim nächsten Lauf eine neue "
+#~ "Suche zu erzwingen."
+
+#~ msgid "Search cached tracks..."
+#~ msgstr "Gecachte Tracks durchsuchen..."
+
+#~ msgid "All"
+#~ msgstr "Alle"
+
+#~ msgid "Has Override"
+#~ msgstr "Hat Override"
+
+#~ msgid "No Override"
+#~ msgstr "Kein Override"
+
+#~ msgid "Has Tags"
+#~ msgstr "Hat Tags"
+
+#~ msgid "No Tags"
+#~ msgstr "Keine Tags"
+
+#~ msgid "No Cached Searches"
+#~ msgstr "Keine gecachten Suchen"
+
+#~ msgid "Run a sync to populate the search cache with YouTube Music matches."
+#~ msgstr ""
+#~ "Führe eine Synchronisierung aus, um den"
+#~ " Such-Cache mit YouTube-Music-"
+#~ "Treffern zu füllen."
+
+#~ msgid ""
+#~ "Auto-generated YouTube Music playlists "
+#~ "based on Last.fm genre tags. Define "
+#~ "tag rules and the system creates "
+#~ "and maintains playlists from your "
+#~ "listening history. Tags are shown in "
+#~ "the <strong>Track Tags</strong> tab."
+#~ msgstr ""
+#~ "Automatisch generierte YouTube-Music-Playlists"
+#~ " basierend auf Last.fm-Genre-Tags. "
+#~ "Definiere Tag-Regeln und das System "
+#~ "erstellt und pflegt Playlists aus deinem"
+#~ " Hörverlauf. Tags werden im Tab "
+#~ "<strong>Track-Tags</strong> angezeigt."
+
+#~ msgid "Add Playlist"
+#~ msgstr "Playlist hinzufügen"
+
+#~ msgid "Match:"
+#~ msgstr "Übereinstimmung:"
+
+#~ msgid "Limit:"
+#~ msgstr "Limit:"
+
+#~ msgid "None"
+#~ msgstr "Keine"
+
+#~ msgid "No Backfill"
+#~ msgstr "Keine Nachbefüllung"
+
+#~ msgid "No Auto-sync"
+#~ msgstr "Kein Auto-Sync"
+
+#~ msgid "Edit"
+#~ msgstr "Bearbeiten"
+
+#~ msgid "Loading tracks..."
+#~ msgstr "Tracks werden geladen..."
+
+#~ msgid "No Custom Playlists"
+#~ msgstr "Keine benutzerdefinierten Playlists"
+
+#~ msgid ""
+#~ "Create playlists that auto-populate "
+#~ "based on Last.fm genre tags from "
+#~ "your listening history."
+#~ msgstr ""
+#~ "Erstelle Playlists, die sich automatisch "
+#~ "anhand von Last.fm-Genre-Tags aus "
+#~ "deinem Hörverlauf füllen."
+
+#~ msgid ""
+#~ "Track history, sync metrics, and action"
+#~ " log. All data is stored locally "
+#~ "in a SQLite database."
+#~ msgstr ""
+#~ "Track-Verlauf, Sync-Metriken und "
+#~ "Aktionsprotokoll. Alle Daten werden lokal "
+#~ "in einer SQLite-Datenbank gespeichert."
+
+#~ msgid "Total Tracks"
+#~ msgstr "Tracks gesamt"
+
+#~ msgid "Found"
+#~ msgstr "Gefunden"
+
+#~ msgid "Total Syncs"
+#~ msgstr "Synchronisierungen gesamt"
+
+#~ msgid "Cache Hit Rate"
+#~ msgstr "Cache-Trefferquote"
+
+#~ msgid "Tracks"
+#~ msgstr "Tracks"
+
+#~ msgid "Syncs"
+#~ msgstr "Synchronisierungen"
+
+#~ msgid "Top Tracks"
+#~ msgstr "Top-Tracks"
+
+#~ msgid "Trend"
+#~ msgstr "Trend"
+
+#~ msgid "Search tracks..."
+#~ msgstr "Tracks suchen..."
+
+#~ msgid "From"
+#~ msgstr "Von"
+
+#~ msgid "To"
+#~ msgstr "Bis"
+
+#~ msgid "7 days"
+#~ msgstr "7 Tage"
+
+#~ msgid "14 days"
+#~ msgstr "14 Tage"
+
+#~ msgid "30 days"
+#~ msgstr "30 Tage"
+
+#~ msgid "90 days"
+#~ msgstr "90 Tage"
+
+#~ msgid "History Database Disabled"
+#~ msgstr "Verlaufsdatenbank deaktiviert"
+
+#~ msgid ""
+#~ "Enable the history database in Settings"
+#~ " to track songs, syncs, and actions"
+#~ " over time."
+#~ msgstr ""
+#~ "Aktiviere die Verlaufsdatenbank in den "
+#~ "Einstellungen, um Songs, Synchronisierungen "
+#~ "und Aktionen über die Zeit zu "
+#~ "verfolgen."
+
+#~ msgid "Open Settings"
+#~ msgstr "Einstellungen öffnen"
+
+#~ msgid ""
+#~ "Scrobbles that YouTube Music search "
+#~ "could not match. Add a manual "
+#~ "<strong>Override</strong>, clear the cache to"
+#~ " retry, or blacklist them to silence"
+#~ " repeated misses."
+#~ msgstr ""
+#~ "Scrobbles, die die YouTube-Music-Suche"
+#~ " nicht zuordnen konnte. Füge ein "
+#~ "manuelles <strong>Override</strong> hinzu, leere "
+#~ "den Cache für einen erneuten Versuch "
+#~ "oder setze sie auf die Sperrliste, "
+#~ "um wiederholte Fehlversuche zu unterdrücken."
+
+#~ msgid "Search not found tracks..."
+#~ msgstr "„Nicht gefunden“-Tracks durchsuchen..."
+
+#~ msgid "No Missing Tracks"
+#~ msgstr "Keine fehlenden Tracks"
+
+#~ msgid ""
+#~ "All tracks in the cache have been"
+#~ " successfully matched to YouTube Music "
+#~ "videos."
+#~ msgstr ""
+#~ "Alle Tracks im Cache wurden erfolgreich"
+#~ " YouTube-Music-Videos zugeordnet."
+
+#~ msgid ""
+#~ "Manual fixes that pin a specific "
+#~ "YouTube video ID for an artist/title "
+#~ "pair. Overrides always win over the "
+#~ "cache and search results - perfect "
+#~ "for forcing the right version of a"
+#~ " track."
+#~ msgstr ""
+#~ "Manuelle Korrekturen, die eine bestimmte "
+#~ "YouTube-Video-ID für ein Künstler"
+#~ "/Titel-Paar festlegen. Overrides haben "
+#~ "immer Vorrang vor Cache und "
+#~ "Suchergebnissen – perfekt, um die "
+#~ "richtige Version eines Tracks zu "
+#~ "erzwingen."
+
+#~ msgid "Tag Override"
+#~ msgstr "Tag-Override"
+
+#~ msgid "Remove"
+#~ msgstr "Entfernen"
+
+#~ msgid "No Overrides"
+#~ msgstr "Keine Overrides"
+
+#~ msgid ""
+#~ "Overrides let you manually specify which"
+#~ " YouTube video should be used for "
+#~ "a track."
+#~ msgstr ""
+#~ "Mit Overrides kannst du manuell "
+#~ "festlegen, welches YouTube-Video für "
+#~ "einen Track verwendet werden soll."
+
+#~ msgid ""
+#~ "Tracks resolved from your latest sync"
+#~ " run. Use the chips to filter "
+#~ "by <strong>Override</strong>, <strong>Blacklist</strong>,"
+#~ " <strong>Pending Retry</strong>, or tag "
+#~ "presence, and right-click any track "
+#~ "to fix or replace it."
+#~ msgstr ""
+#~ "Tracks, die bei deinem letzten Sync-"
+#~ "Lauf aufgelöst wurden. Filtere mit den"
+#~ " Chips nach <strong>Override</strong>, "
+#~ "<strong>Sperrliste</strong>, <strong>Erneuter Versuch "
+#~ "ausstehend</strong> oder Tag-Vorhandensein und"
+#~ " klicke mit der rechten Maustaste auf"
+#~ " einen Track, um ihn zu korrigieren"
+#~ " oder zu ersetzen."
+
+#~ msgid "Search"
+#~ msgstr "Suche"
+
+#~ msgid "No Playlist Data"
+#~ msgstr "Keine Playlist-Daten"
+
+#~ msgid "Run a sync to generate playlist mappings and see them here."
+#~ msgstr ""
+#~ "Führe eine Synchronisierung aus, um "
+#~ "Playlist-Zuordnungen zu generieren und sie"
+#~ " hier zu sehen."
+
+#~ msgid "Run Sync"
+#~ msgstr "Synchronisierung starten"
+
+#~ msgid "Credentials"
+#~ msgstr "Zugangsdaten"
+
+#~ msgid "Your Last.fm username for scrobble fetching"
+#~ msgstr "Dein Last.fm-Benutzername zum Abrufen von Scrobbles"
+
+#~ msgid "Get yours at"
+#~ msgstr "Erhalte deinen unter"
+
+#~ msgid "YouTube Music Auth"
+#~ msgstr "YouTube-Music-Authentifizierung"
+
+#~ msgid "Regenerate"
+#~ msgstr "Neu generieren"
+
+#~ msgid "Checking..."
+#~ msgstr "Wird geprüft..."
+
+#~ msgid "Update browser.json with new credentials from your browser"
+#~ msgstr "browser.json mit neuen Zugangsdaten aus deinem Browser aktualisieren"
+
+#~ msgid "Display"
+#~ msgstr "Anzeige"
+
+#~ msgid "Theme"
+#~ msgstr "Design"
+
+#~ msgid "Dark (Default)"
+#~ msgstr "Dunkel (Standard)"
+
+#~ msgid "Light"
+#~ msgstr "Hell"
+
+#~ msgid "Color scheme for the interface"
+#~ msgstr "Farbschema für die Oberfläche"
+
+#~ msgid "Use custom colors"
+#~ msgstr "Eigene Farben verwenden"
+
+#~ msgid "Apply your saved custom colors on top of the selected theme."
+#~ msgstr "Wende deine gespeicherten Farben zusätzlich zum gewählten Design an."
+
+#~ msgid "Customize colors"
+#~ msgstr "Farben anpassen"
+
+#~ msgid "Language"
+#~ msgstr "Sprache"
+
+#~ msgid "Interface language (requires reload)"
+#~ msgstr "Oberflächensprache (erfordert Neuladen)"
+
+#~ msgid "Use 24-hour clock"
+#~ msgstr "24-Stunden-Format verwenden"
+
+#~ msgid "Date format"
+#~ msgstr "Datumsformat"
+
+#~ msgid "Auto (browser locale)"
+#~ msgstr "Automatisch (Browser-Locale)"
+
+#~ msgid "Day/Month (31/12)"
+#~ msgstr "Tag/Monat (31.12.)"
+
+#~ msgid "Month/Day (12/31)"
+#~ msgstr "Monat/Tag (12/31)"
+
+#~ msgid "How dates are displayed in the interface"
+#~ msgstr "Wie Daten in der Oberfläche angezeigt werden"
+
+#~ msgid "Display tips"
+#~ msgstr "Hinweise anzeigen"
+
+#~ msgid "Show the helper info banners at the top of each tab"
+#~ msgstr "Hilfs-Info-Banner oben in jedem Tab anzeigen"
+
+#~ msgid "Show \"Now Playing\" from Last.fm"
+#~ msgstr "\"Now Playing\" von Last.fm anzeigen"
+
+#~ msgid "Display currently playing track in the header"
+#~ msgstr "Aktuell laufenden Track im Header anzeigen"
+
+#~ msgid "Now Playing Poll Interval (seconds)"
+#~ msgstr "„Now Playing“-Abfrageintervall (Sekunden)"
+
+#~ msgid "How often to check for currently playing track (5-120 seconds)"
+#~ msgstr "Wie oft auf den aktuell laufenden Track geprüft wird (5-120 Sekunden)"
+
+#~ msgid "Main Playlist"
+#~ msgstr "Haupt-Playlist"
+
+#~ msgid "Last.fm Recents (auto)"
+#~ msgstr "Last.fm-Aktuelle (automatisch)"
+
+#~ msgid "Playlist Description"
+#~ msgstr "Playlist-Beschreibung"
+
+#~ msgid "Leave empty to auto-generate based on Last.fm username and ranking mode"
+#~ msgstr ""
+#~ "Leer lassen, um automatisch basierend "
+#~ "auf Last.fm-Benutzername und Ranking-"
+#~ "Modus zu generieren"
+
+#~ msgid "Target number of tracks in playlist"
+#~ msgstr "Zielanzahl an Tracks in der Playlist"
+
+#~ msgid "Playlist Visibility"
+#~ msgstr "Playlist-Sichtbarkeit"
+
+#~ msgid "Private"
+#~ msgstr "Privat"
+
+#~ msgid "Unlisted"
+#~ msgstr "Ungelistet"
+
+#~ msgid "Public"
+#~ msgstr "Öffentlich"
+
+#~ msgid "Deduplicate tracks"
+#~ msgstr "Tracks deduplizieren"
+
+#~ msgid "Track Ranking"
+#~ msgstr "Track-Ranking"
+
+#~ msgid "Use recency weighting"
+#~ msgstr "Aktualitätsgewichtung verwenden"
+
+#~ msgid "Rank by play count + recency (off = most recent first)"
+#~ msgstr "Nach Wiedergabezahl + Aktualität ranken (aus = neueste zuerst)"
+
+#~ msgid "Recency Half-Life (hours)"
+#~ msgstr "Aktualitäts-Halbwertszeit (Stunden)"
+
+#~ msgid "How fast recency decays (lower = favor newer tracks)"
+#~ msgstr ""
+#~ "Wie schnell die Aktualität abnimmt "
+#~ "(niedriger = neuere Tracks bevorzugen)"
+
+#~ msgid "Play Weight (0.0-1.0)"
+#~ msgstr "Wiedergabegewichtung (0.0-1.0)"
+
+#~ msgid "0.0 = pure recency, 1.0 = pure play count"
+#~ msgstr "0.0 = nur Aktualität, 1.0 = nur Wiedergabezahl"
+
+#~ msgid "Minimum Plays"
+#~ msgstr "Mindestanzahl Wiedergaben"
+
+#~ msgid ""
+#~ "Gate tracks: must be scrobbled at "
+#~ "least this many times in the "
+#~ "fetched window (1 = no gate)"
+#~ msgstr ""
+#~ "Titel filtern: muss im abgerufenen "
+#~ "Zeitfenster mindestens so oft gescrobbelt "
+#~ "worden sein (1 = kein Filter)"
+
+#~ msgid "Weekly Playlists"
+#~ msgstr "Wöchentliche Playlists"
+
+#~ msgid "Enable weekly playlists"
+#~ msgstr "Wöchentliche Playlists aktivieren"
+
+#~ msgid "Weekly Playlist Visibility"
+#~ msgstr "Sichtbarkeit wöchentlicher Playlists"
+
+#~ msgid "Inherit from main"
+#~ msgstr "Von Haupt übernehmen"
+
+#~ msgid "Week Start Day"
+#~ msgstr "Wochenstarttag"
+
+#~ msgid "Monday"
+#~ msgstr "Montag"
+
+#~ msgid "Tuesday"
+#~ msgstr "Dienstag"
+
+#~ msgid "Wednesday"
+#~ msgstr "Mittwoch"
+
+#~ msgid "Thursday"
+#~ msgstr "Donnerstag"
+
+#~ msgid "Friday"
+#~ msgstr "Freitag"
+
+#~ msgid "Saturday"
+#~ msgstr "Samstag"
+
+#~ msgid "Sunday"
+#~ msgstr "Sonntag"
+
+#~ msgid "Keep Weeks"
+#~ msgstr "Wochen behalten"
+
+#~ msgid "How many weeks to keep (0 = keep all)"
+#~ msgstr "Wie viele Wochen behalten (0 = alle behalten)"
+
+#~ msgid "Playlist Prefix"
+#~ msgstr "Playlist-Präfix"
+
+#~ msgid "(derived from main name)"
+#~ msgstr "(abgeleitet vom Hauptnamen)"
+
+#~ msgid "Override weekly playlist name prefix"
+#~ msgstr "Präfix für wöchentliche Playlist-Namen überschreiben"
+
+#~ msgid "Timezone"
+#~ msgstr "Zeitzone"
+
+#~ msgid "E.g., Europe/Berlin, America/New_York"
+#~ msgstr "Z. B. Europe/Berlin, America/New_York"
+
+#~ msgid "Custom Playlists"
+#~ msgstr "Benutzerdefinierte Playlists"
+
+#~ msgid "Custom Playlist Visibility"
+#~ msgstr "Sichtbarkeit benutzerdefinierter Playlists"
+
+#~ msgid "Minimum Tag Count"
+#~ msgstr "Minimale Tag-Anzahl"
+
+#~ msgid "Minimum Last.fm tag vote count to include"
+#~ msgstr "Minimale Last.fm-Tag-Stimmenzahl, um eingeschlossen zu werden"
+
+#~ msgid "Sleep Between Tag Fetches (seconds)"
+#~ msgstr "Pause zwischen Tag-Abrufen (Sekunden)"
+
+#~ msgid "Delay between tag API calls to avoid rate limiting"
+#~ msgstr "Verzögerung zwischen Tag-API-Aufrufen, um Rate-Limits zu vermeiden"
+
+#~ msgid "Search Behavior"
+#~ msgstr "Suchverhalten"
+
+#~ msgid "Use anonymous search"
+#~ msgstr "Anonyme Suche verwenden"
+
+#~ msgid "Recommended for better search results"
+#~ msgstr "Empfohlen für bessere Suchergebnisse"
+
+#~ msgid "Early Termination Score (0.0-1.0)"
+#~ msgstr "Frühe-Abbruch-Punktzahl (0.0-1.0)"
+
+#~ msgid "Stop search early if match score exceeds this"
+#~ msgstr ""
+#~ "Suche frühzeitig beenden, wenn die "
+#~ "Trefferpunktzahl diesen Wert überschreitet"
+
+#~ msgid "Sleep Between Searches (seconds)"
+#~ msgstr "Pause zwischen Suchen (Sekunden)"
+
+#~ msgid "Delay between searches to avoid rate limiting"
+#~ msgstr "Verzögerung zwischen Suchen, um Rate-Limits zu vermeiden"
+
+#~ msgid "Max Search Workers"
+#~ msgstr "Max. Such-Worker"
+
+#~ msgid "Parallel search threads (higher = faster but more API load)"
+#~ msgstr "Parallele Such-Threads (höher = schneller, aber mehr API-Last)"
+
+#~ msgid "Max Raw Scrobbles"
+#~ msgstr "Max. Roh-Scrobbles"
+
+#~ msgid "Max scrobbles to fetch (0 = unlimited)"
+#~ msgstr "Maximale Anzahl abzurufender Scrobbles (0 = unbegrenzt)"
+
+#~ msgid "Backfill Passes"
+#~ msgstr "Nachbefüllungs-Durchläufe"
+
+#~ msgid "Additional fetch attempts if below LIMIT (0 = disabled)"
+#~ msgstr "Zusätzliche Abrufversuche, wenn unterhalb von LIMIT (0 = deaktiviert)"
+
+#~ msgid "Caching"
+#~ msgstr "Caching"
+
+#~ msgid "Search Cache TTL (days)"
+#~ msgstr "Such-Cache-TTL (Tage)"
+
+#~ msgid "Days before cached searches expire (0 = never)"
+#~ msgstr "Tage, bevor gecachte Suchen ablaufen (0 = nie)"
+
+#~ msgid "Not-Found Cache TTL (days)"
+#~ msgstr "„Nicht gefunden“-Cache-TTL (Tage)"
+
+#~ msgid "Days before \"not found\" results are retried"
+#~ msgstr "Tage, bevor \"nicht gefunden\"-Ergebnisse erneut versucht werden"
+
+#~ msgid "Tag Cache TTL (days)"
+#~ msgstr "Tag-Cache-TTL (Tage)"
+
+#~ msgid "Days before cached tags expire (0 = never)"
+#~ msgstr "Tage, bevor gecachte Tags ablaufen (0 = nie)"
+
+#~ msgid "History Database"
+#~ msgstr "Verlaufsdatenbank"
+
+#~ msgid "Enable history database"
+#~ msgstr "Verlaufsdatenbank aktivieren"
+
+#~ msgid ""
+#~ "Store track lookups, sync runs, and "
+#~ "actions in a local SQLite database "
+#~ "for analytics"
+#~ msgstr ""
+#~ "Track-Lookups, Sync-Läufe und Aktionen"
+#~ " für Analysen in einer lokalen "
+#~ "SQLite-Datenbank speichern"
+
+#~ msgid "Max DB Size (MB)"
+#~ msgstr "Max. DB-Größe (MB)"
+
+#~ msgid "Auto-prune oldest records when exceeded. 0 = unlimited."
+#~ msgstr ""
+#~ "Älteste Einträge automatisch löschen, wenn "
+#~ "überschritten. 0 = unbegrenzt."
+
+#~ msgid ""
+#~ "Import existing data from your search"
+#~ " cache and overrides into the history"
+#~ " database."
+#~ msgstr ""
+#~ "Vorhandene Daten aus deinem Such-Cache"
+#~ " und deinen Overrides in die "
+#~ "Verlaufsdatenbank importieren."
+
+#~ msgid "Backfill from Cache"
+#~ msgstr "Aus Cache nachbefüllen"
+
+#~ msgid "Clear All History"
+#~ msgstr "Gesamten Verlauf löschen"
+
+#~ msgid "Webhooks"
+#~ msgstr "Webhooks"
+
+#~ msgid "Webhook URL"
+#~ msgstr "Webhook-URL"
+
+#~ msgid ""
+#~ "Receives a JSON POST with sync "
+#~ "results. Works with ntfy, Discord, "
+#~ "Slack, or any HTTP endpoint."
+#~ msgstr ""
+#~ "Empfängt einen JSON-POST mit Sync-"
+#~ "Ergebnissen. Funktioniert mit ntfy, Discord,"
+#~ " Slack oder jedem HTTP-Endpunkt."
+
+#~ msgid "Send notifications for"
+#~ msgstr "Benachrichtigungen senden für"
+
+#~ msgid "Errors only"
+#~ msgstr "Nur Fehler"
+
+#~ msgid "All syncs"
+#~ msgstr "Alle Synchronisierungen"
+
+#~ msgid "Test"
+#~ msgstr "Test"
+
+#~ msgid "Choose when to send webhook notifications"
+#~ msgstr "Wähle, wann Webhook-Benachrichtigungen gesendet werden sollen"
+
+#~ msgid "Reliability & Retries"
+#~ msgstr "Zuverlässigkeit & Wiederholungen"
+
+#~ msgid "YTM API Max Retries"
+#~ msgstr "Max. YTM-API-Wiederholungen"
+
+#~ msgid "Last.fm Max Retries"
+#~ msgstr "Max. Last.fm-Wiederholungen"
+
+#~ msgid "Max Consecutive Empty Pages"
+#~ msgstr "Max. aufeinanderfolgende leere Seiten"
+
+#~ msgid "Stop after N pages with no new tracks"
+#~ msgstr "Nach N Seiten ohne neue Tracks stoppen"
+
+#~ msgid "Force IPv4 for Last.fm"
+#~ msgstr "IPv4 für Last.fm erzwingen"
+
+#~ msgid "Helps with flaky Last.fm IPv6 connections"
+#~ msgstr "Hilft bei instabilen Last.fm-IPv6-Verbindungen"
+
+#~ msgid "Automation"
+#~ msgstr "Automatisierung"
+
+#~ msgid "Enable automated sync"
+#~ msgstr "Automatisierte Synchronisierung aktivieren"
+
+#~ msgid "Automatically run sync at scheduled intervals"
+#~ msgstr "Synchronisierung automatisch in geplanten Intervallen ausführen"
+
+#~ msgid "Include tag playlists"
+#~ msgstr "Tag-Playlists einbeziehen"
+
+#~ msgid "Also sync custom tag-based playlists after each scheduled run"
+#~ msgstr ""
+#~ "Nach jedem geplanten Lauf auch "
+#~ "benutzerdefinierte tag-basierte Playlists "
+#~ "synchronisieren"
+
+#~ msgid "Tag sync frequency"
+#~ msgstr "Tag-Sync-Häufigkeit"
+
+#~ msgid "Run tag sync every N main syncs (1 = every time, 3 = every 3rd sync)"
+#~ msgstr ""
+#~ "Tag-Sync alle N Haupt-Synchronisierungen"
+#~ " ausführen (1 = jedes Mal, 3 ="
+#~ " jede 3. Synchronisierung)"
+
+#~ msgid "Schedule Type"
+#~ msgstr "Zeitplan-Typ"
+
+#~ msgid "Interval (every N hours)"
+#~ msgstr "Intervall (alle N Stunden)"
+
+#~ msgid "Cron Expression"
+#~ msgstr "Cron-Ausdruck"
+
+#~ msgid "Interval (hours)"
+#~ msgstr "Intervall (Stunden)"
+
+#~ msgid "How often to sync (e.g., 6 = every 6 hours)"
+#~ msgstr "Wie oft synchronisiert wird (z. B. 6 = alle 6 Stunden)"
+
+#~ msgid "Starting at (optional)"
+#~ msgstr "Beginnend um (optional)"
+
+#~ msgid "Anchor time for intervals (e.g., 00:00 → 0, 6, 12, 18h)"
+#~ msgstr "Ankerzeit für Intervalle (z. B. 00:00 → 0, 6, 12, 18 Uhr)"
+
+#~ msgid "Standard cron format: minute hour day month weekday (server time)"
+#~ msgstr "Standard-Cron-Format: Minute Stunde Tag Monat Wochentag (Serverzeit)"
+
+#~ msgid "Next run:"
+#~ msgstr "Nächster Lauf:"
+
+#~ msgid "Logging"
+#~ msgstr "Protokollierung"
+
+#~ msgid "Log Level"
+#~ msgstr "Log-Level"
+
+#~ msgid "Data Management"
+#~ msgstr "Datenverwaltung"
+
+#~ msgid "Export or import your overrides and blacklist data as JSON."
+#~ msgstr ""
+#~ "Exportiere oder importiere deine Overrides-"
+#~ " und Sperrlisten-Daten als JSON."
+
+#~ msgid "Sync Console"
+#~ msgstr "Sync-Konsole"
+
+#~ msgid "Ready"
+#~ msgstr "Bereit"
+
+#~ msgid "Run"
+#~ msgstr "Ausführen"
+
+#~ msgid "More sync options"
+#~ msgstr "Weitere Sync-Optionen"
+
+#~ msgid "Tag Playlist Sync"
+#~ msgstr "Tag-Playlist-Synchronisierung"
+
+#~ msgid "Build tag-based playlists"
+#~ msgstr "Tag-basierte Playlists erstellen"
+
+#~ msgid "Stop"
+#~ msgstr "Stoppen"
+
+#~ msgid "Toggle console"
+#~ msgstr "Konsole umschalten"
+
+#~ msgid ""
+#~ "Genre tags fetched from Last.fm for "
+#~ "each track in your listening history."
+#~ " These tags power <strong>Custom "
+#~ "Playlists</strong> - define tag rules "
+#~ "there to auto-generate playlists."
+#~ msgstr ""
+#~ "Genre-Tags, die für jeden Track in"
+#~ " deinem Hörverlauf von Last.fm abgerufen"
+#~ " werden. Diese Tags sind die "
+#~ "Grundlage für <strong>Benutzerdefinierte "
+#~ "Playlists</strong> – definiere dort Tag-"
+#~ "Regeln, um Playlists automatisch zu "
+#~ "generieren."
+
+#~ msgid "Search tagged tracks..."
+#~ msgstr "Getaggte Tracks durchsuchen..."
+
+#~ msgid "Track Tags"
+#~ msgstr "Track-Tags"
+
+#~ msgid "Artist Tags"
+#~ msgstr "Künstler-Tags"
+
+#~ msgid "Artist tag"
+#~ msgstr "Künstler-Tag"
+
+#~ msgid "Track tag"
+#~ msgstr "Track-Tag"
+
+#~ msgid "No tags found"
+#~ msgstr "Keine Tags gefunden"
+
+#~ msgid "Edit Tags"
+#~ msgstr "Tags bearbeiten"
+
+#~ msgid "Clear from tag cache & re-fetch on next sync"
+#~ msgstr "Aus Tag-Cache löschen und bei nächster Synchronisierung erneut abrufen"
+
+#~ msgid "No Tag Data"
+#~ msgstr "Keine Tag-Daten"
+
+#~ msgid ""
+#~ "Genre tags are fetched from Last.fm "
+#~ "during sync. Run a sync with "
+#~ "custom playlists enabled to populate the"
+#~ " tag cache."
+#~ msgstr ""
+#~ "Genre-Tags werden während der "
+#~ "Synchronisierung von Last.fm abgerufen. Führe"
+#~ " eine Synchronisierung mit aktivierten "
+#~ "benutzerdefinierten Playlists aus, um den "
+#~ "Tag-Cache zu füllen."
+
+#~ msgid "Playlist Tracks"
+#~ msgstr "Playlist-Tracks"
+
+#~ msgid "Cached Searches"
+#~ msgstr "Gecachte Suchen"
+
+#~ msgid "Last Sync"
+#~ msgstr "Letzte Synchronisierung"
+
+#~ msgid "Playlist"
+#~ msgstr "Playlist"
+
+#~ msgid "History"
+#~ msgstr "Verlauf"
+
+#~ msgid "Current version"
+#~ msgstr "Aktuelle Version"
+

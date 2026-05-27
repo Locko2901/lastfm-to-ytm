@@ -40,6 +40,7 @@ PRUNE=false
 PRUNE_ALL=false
 PULL=false
 PULL_TAG=""
+CHANNEL_OVERRIDE=""
 ACTION="start"  # default
 for arg in "$@"; do
     case $arg in
@@ -73,6 +74,9 @@ for arg in "$@"; do
             PULL=true
             PULL_TAG="${arg#--pull=}"
             ;;
+        --channel=*)
+            CHANNEL_OVERRIDE="${arg#--channel=}"
+            ;;
         --help|-h)
             echo "Usage: ./run-docker.sh [OPTIONS]"
             echo
@@ -87,6 +91,8 @@ for arg in "$@"; do
             echo "                   Can be combined with --rebuild/--no-cache"
             echo "  --pull, -p       Use prebuilt image from GHCR instead of building locally"
             echo "                   (--pull=TAG to pin a specific tag, default: latest)"
+            echo "  --channel=CH     Force update channel for the version pill (stable|dev)"
+            echo "                   Sticky: only needed once to switch channels"
             echo "  --help, -h       Show this help message"
             echo
             echo "Environment variables:"
@@ -102,6 +108,11 @@ for arg in "$@"; do
             ;;
     esac
 done
+
+if [[ -n "$CHANNEL_OVERRIDE" && "$CHANNEL_OVERRIDE" != "stable" && "$CHANNEL_OVERRIDE" != "dev" ]]; then
+    echo -e "${RED}✗ --channel must be 'stable' or 'dev' (got: $CHANNEL_OVERRIDE)${NC}"
+    exit 1
+fi
 
 do_prune() {
     if [[ "$PRUNE_ALL" == true ]]; then
@@ -242,6 +253,26 @@ if command -v git &>/dev/null && git -C "$SCRIPT_DIR" rev-parse --git-dir &>/dev
 elif [[ ! -f "$SCRIPT_DIR/COMMIT_SHA" ]]; then
     echo "unknown" > "$SCRIPT_DIR/COMMIT_SHA"
 fi
+
+CHANNEL=""
+if [[ -n "$CHANNEL_OVERRIDE" ]]; then
+    CHANNEL="$CHANNEL_OVERRIDE"
+elif [[ "$PULL" == true ]]; then
+    if [[ -z "$PULL_TAG" || "$PULL_TAG" == "latest" || "$PULL_TAG" =~ ^v?[0-9]+(\.[0-9]+){0,2}$ ]]; then
+        CHANNEL="stable"
+    else
+        CHANNEL="dev"
+    fi
+elif command -v git &>/dev/null \
+    && git -C "$SCRIPT_DIR" rev-parse --git-dir &>/dev/null \
+    && ! git -C "$SCRIPT_DIR" symbolic-ref -q HEAD &>/dev/null \
+    && git -C "$SCRIPT_DIR" describe --tags --exact-match HEAD &>/dev/null; then
+    CHANNEL="stable"
+else
+    CHANNEL="dev"
+fi
+echo "$CHANNEL" > "$SCRIPT_DIR/.channel"
+echo -e "${GREEN}✓ Update channel: ${CHANNEL}${NC}"
 
 echo -e "${GREEN}✓ Required files exist${NC}"
 
