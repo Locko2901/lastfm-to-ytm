@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.3.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.2.0...v1.3.0) (2026-05-27)
+
+
+### Features
+
+* **ci:** publish multi-arch Docker images to GHCR ([b71430c](https://github.com/Locko2901/lastfm-to-ytm/commit/b71430cb0a29b1d948af987e2bf4594b79f54f2e))
+* **docker:** add one-line install script for prebuilt image ([87b14e7](https://github.com/Locko2901/lastfm-to-ytm/commit/87b14e7ff643c1755ad86f90cf63e93a890e12f5))
+
+
+### Bug Fixes
+
+* **docker:** pre-create bind-mount targets and chown browser.json ([c2c38ce](https://github.com/Locko2901/lastfm-to-ytm/commit/c2c38cefff755d9576ac7bda9e35cdd109e03d47))
+
+
+### Miscellaneous
+
+* **i18n:** refresh extracted message references ([e2881c0](https://github.com/Locko2901/lastfm-to-ytm/commit/e2881c0fc8964306a273dcd678fb75b5750b6701))
+
 ## [1.2.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.1.3...v1.2.0) (2026-05-27)
 
 
