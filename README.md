@@ -92,7 +92,10 @@ Full documentation is available at **[locko2901.github.io/lastfm-to-ytm](https:/
 Rough list of things on the radar - no promises, no timelines.
 
 - **Mobile / responsive UI polish** - the dashboard works on phones but it has its kinks.
-- **Prebuilt Docker image** - publish a multi-arch image to GHCR (and/or Docker Hub).
+
+Done:
+
+- **Prebuilt Docker image** - multi-arch (`linux/amd64`, `linux/arm64`) images are published to `ghcr.io/locko2901/lastfm-to-ytm` on every push to `main` and tagged release. See [Quickstart](https://locko2901.github.io/lastfm-to-ytm/quickstart/#using-the-prebuilt-image).
 
 ## Credits
 

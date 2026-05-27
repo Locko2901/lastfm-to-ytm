@@ -52,6 +52,10 @@ feat!: drop Python 3.10 support
 
 GitHub &rarr; **Settings &rarr; Actions &rarr; General &rarr; Workflow permissions** &rarr; enable *"Allow GitHub Actions to create and approve pull requests"*. Without this, release-please cannot open the Release PR.
 
+## Docker images
+
+Tagging a release also fires the `docker-publish` job in [`ci.yml`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/.github/workflows/ci.yml), which pushes a multi-arch image to `ghcr.io/locko2901/lastfm-to-ytm` with `:vX.Y.Z`, `:X.Y`, `:X`, and `:latest` tags - the stable channel. Untagged pushes to `main` publish a separate development channel (`:dev`, `:sha-<short>`) so `:latest` never points at an unreleased commit. The publish step runs after the linters and gates `release-please`, so a failed image build blocks the release tag. See [Docker Internals](docker-internals.md#published-images-ghcr).
+
 ## Manual changelog regeneration (rare)
 
 If the historical changelog ever needs to be rebuilt from scratch:
