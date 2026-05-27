@@ -46,16 +46,20 @@
   padding-top: calc(0.875rem * 1.4 + 0.375rem);
 }
 
-.settings-form .form-group-checkbox > label {
-  min-height: calc(0.5rem + 0.875rem + 0.5rem + 2px);
-}
-
 .settings-form .form-group label {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-secondary);
   margin-bottom: 0.375rem;
+}
+
+.settings-form .form-group-checkbox > label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0;
+  min-height: calc(0.5rem + 0.875rem + 0.5rem + 2px);
 }
 
 .settings-form .form-group input[type="text"],

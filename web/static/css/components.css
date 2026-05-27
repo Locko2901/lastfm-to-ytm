@@ -629,7 +629,7 @@
   flex-shrink: 0;
 }
 
-.form-group-checkbox span {
+.form-group-checkbox > label > span {
   font-size: 0.875rem;
   color: var(--text-primary);
 }
