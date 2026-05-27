@@ -56,6 +56,37 @@ GitHub &rarr; **Settings &rarr; Actions &rarr; General &rarr; Workflow permissio
 
 Tagging a release also fires the `docker-publish` job in [`ci.yml`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/.github/workflows/ci.yml), which pushes a multi-arch image to `ghcr.io/locko2901/lastfm-to-ytm` with `:vX.Y.Z`, `:X.Y`, `:X`, and `:latest` tags - the stable channel. Untagged pushes to `main` publish a separate development channel (`:dev`, `:sha-<short>`) so `:latest` never points at an unreleased commit. The publish step runs after the linters and gates `release-please`, so a failed image build blocks the release tag. See [Docker Internals](docker-internals.md#published-images-ghcr).
 
+## Build identification & the version pill
+
+The dashboard's version pill distinguishes **stable** builds (running a tagged release) from **dev** builds (running anything else). The channel is decided at launch from observable state - no SHA comparison required - with the following precedence:
+
+1. `YTMT_CHANNEL=stable|dev` environment variable (manual override).
+2. `.channel` pointer file in the project root (written on every launch by `run-docker.sh`).
+3. Git probe: HEAD is **detached on a release tag** &rarr; stable, otherwise &rarr; dev. Only used when neither of the above is present (i.e. standalone runs).
+
+How each install populates the signal:
+
+- **Prebuilt Docker** (`./run-docker.sh --pull[=TAG]`) - launcher writes `.channel` based on the requested tag (empty / `latest` / `vX.Y.Z` &rarr; stable; anything else &rarr; dev).
+- **Local Docker build** (`./run-docker.sh`) - launcher writes `.channel` based on the git probe (detached on a tag &rarr; stable, else dev).
+- **Standalone** (`python run.py`) - no launcher; the dashboard runs the git probe at request time.
+
+| State | Pill label | Update arrow appears when |
+|---|---|---|
+| Stable | `v1.3.1` | A newer release tag exists |
+| Dev | `dev·abc1234` | The default branch HEAD differs from the build's SHA (new release **or** new commit) |
+
+Note that a plain `git clone` (or `git checkout main`) leaves HEAD attached to the branch and is always classified as **dev**, even when the branch tip happens to be a release commit. To be on stable you have to explicitly `git checkout vX.Y.Z`.
+
+`COMMIT_SHA` (used for the SHA shown in the dev pill and for the dev update arrow) is populated by:
+
+- CI (`docker-publish` job) &rarr; `${{ github.sha }}` for both stable and dev images
+- `run-docker.sh` &rarr; `git rev-parse HEAD` of the local checkout
+- Standalone runs &rarr; no file; the app falls back to `git rev-parse HEAD` of the working tree at runtime
+
+## Upgrading
+
+See [Updating](quickstart.md#updating) in the quickstart for the per-install upgrade commands.
+
 ## Manual changelog regeneration (rare)
 
 If the historical changelog ever needs to be rebuilt from scratch:
