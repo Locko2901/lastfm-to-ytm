@@ -443,6 +443,7 @@ def run(settings: Settings) -> None:
                 raise
         else:
             log.info("Playlist already up to date")
+            ctx.playlist_cache.touch(settings.playlist_name)
 
         pl_id = existing_id
     else:
