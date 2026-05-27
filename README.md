@@ -53,7 +53,11 @@ Create and maintain a YouTube Music playlist from your Last.fm listening history
 | **Get started** | `./run-docker.sh` | `pip install . && python run.py` |
 
 ```bash
-# Docker (recommended)
+# Docker (recommended, prebuilt image - no git/build needed)
+curl -fsSL https://raw.githubusercontent.com/Locko2901/lastfm-to-ytm/main/scripts/install.sh | bash
+cd lastfm-to-ytm && ./run-docker.sh --pull
+
+# Docker (clone & build locally)
 git clone https://github.com/Locko2901/lastfm-to-ytm.git
 cd lastfm-to-ytm && ./run-docker.sh
 
