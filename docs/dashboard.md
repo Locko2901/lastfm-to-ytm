@@ -68,6 +68,29 @@ The dashboard header shows a "Scheduled" indicator and the next run time when th
 
 The dashboard is installable as a Progressive Web App. In supported browsers, you can add it to your home screen or install it as a standalone app for quick access.
 
+## Custom Theme
+
+Override any of the dashboard's CSS color tokens to build your own color scheme on top of the built-in **Dark** or **Light** themes.
+
+- Open **Settings → Display → Customize colors** to launch the color picker modal.
+- Each row exposes a swatch + hex input for one CSS variable (backgrounds, text, accent, semantic, borders).
+- Changes preview live as you edit; nothing is persisted until you click **Save**.
+- The **Use custom colors** checkbox in Settings toggles the entire override layer on or off without losing your saved values.
+
+### Per-base customization
+
+Customizations are stored **per base theme**. Editing while Dark is active updates the Dark overrides; switching to Light and editing again creates an independent Light override set. Switching between Dark and Light at runtime swaps in the appropriate override bucket automatically.
+
+The **Reset to parent** button inside the modal clears only the *current* base theme's overrides, restoring it to the built-in colors while leaving the other base theme untouched.
+
+### Persistence
+
+Overrides are saved to `cache/.theme_overrides.json` (same folder as the search/playlist/tag caches) via `POST /api/theme`, and are injected into every page render server-side — so the first paint already reflects your scheme (no flash of default theme).
+
+### Backup / restore
+
+The theme override file is included in the [Teleporter](teleporter.md) cache picker, so you can back up and restore your color scheme together with the rest of your configuration. It can also be exported as standalone JSON from the modal's **Export** / **Import** buttons (useful for sharing themes between users or instances).
+
 ## Data Export &amp; Import
 
 The dashboard supports two ways to back up your data:

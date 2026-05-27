@@ -29,10 +29,32 @@
   {% endif %}
   <script nonce="{{ csp_nonce }}">
     window.__i18n__ = {{ js_translations | tojson }};;
+    window.__themeOverrides__ = {{ initial_theme_overrides | tojson }};
     (() => {
-      const theme = localStorage.getItem("ytm-theme")
-      if (theme && theme !== "dark") {
+      let theme = localStorage.getItem("ytm-theme")
+      if (theme !== "dark" && theme !== "light") theme = "dark"
+      if (theme !== "dark") {
         document.documentElement.setAttribute("data-theme", theme)
+      }
+
+      const store = window.__themeOverrides__
+      if (!store || !store.enabled) return
+      const overrides = (store.parents && store.parents[theme]) || {}
+      const lines = []
+      for (const [k, v] of Object.entries(overrides)) {
+        if (typeof v !== "string") continue
+        lines.push(`  ${k}: ${v};`)
+        const m = /^#?([a-f0-9]{6})$/i.exec(v.trim())
+        if (m) {
+          const n = parseInt(m[1], 16)
+          lines.push(`  ${k}-rgb: ${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255};`)
+        }
+      }
+      if (lines.length) {
+        const style = document.createElement("style")
+        style.id = "custom-theme-style"
+        style.textContent = `:root {\n${lines.join("\n")}\n}\n`
+        document.head.appendChild(style)
       }
     })()
 
@@ -59,8 +81,8 @@
   <div id="nowPlayingWidget" class="now-playing-widget hidden">
     <div class="now-playing-art-wrapper">
       <img id="nowPlayingArt" class="now-playing-art hidden" src="" alt="" />
-      <svg id="nowPlayingArtFallback" class="now-playing-art-fallback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-        stroke-linecap="round" stroke-linejoin="round">
+      <svg id="nowPlayingArtFallback" class="now-playing-art-fallback" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"></circle>
         <circle cx="12" cy="12" r="3"></circle>
         <line x1="12" y1="2" x2="12" y2="4"></line>
@@ -78,8 +100,8 @@
 
   <div id="nowPlayingContextMenu" class="context-menu hidden">
     <button class="context-menu-item" data-action="hideNowPlaying">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
         <path
           d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
         </path>

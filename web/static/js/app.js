@@ -26,6 +26,15 @@ import {
   togglePlaylistPreview,
   unblacklistFromPlaylist,
 } from "./modules/customPlaylists.js"
+import {
+  cancelCustomThemeModal,
+  exportCustomTheme,
+  onCustomThemeImportChange,
+  resetCustomTheme,
+  saveCustomThemeFromModal,
+  showCustomThemeModal,
+  triggerImportCustomTheme,
+} from "./modules/customTheme.js"
 import { initDelegation } from "./modules/delegation.js"
 import { filterCache, filterNotFound, filterTags, filterTracks, goToFilter, initFilters } from "./modules/filters.js"
 import { clearHistory, confirmClearHistory, historyBackfill, initHistory, loadHistoryData, switchHistoryView } from "./modules/history.js"
@@ -187,6 +196,14 @@ window.dismissRestartBanner = dismissRestartBanner
 window.dismissReloadBanner = dismissReloadBanner
 window.restartServer = restartServer
 window.testWebhook = testWebhook
+
+window.showCustomThemeModal = showCustomThemeModal
+window.cancelCustomThemeModal = cancelCustomThemeModal
+window.saveCustomThemeFromModal = saveCustomThemeFromModal
+window.resetCustomTheme = resetCustomTheme
+window.exportCustomTheme = exportCustomTheme
+window.triggerImportCustomTheme = triggerImportCustomTheme
+window.onCustomThemeImportChange = onCustomThemeImportChange
 
 window.showCustomPlaylistModal = showCustomPlaylistModal
 window.editCustomPlaylist = editCustomPlaylist

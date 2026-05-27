@@ -49,6 +49,7 @@ _CACHE_FILES: dict[str, Path] = {
     "search_cache": CACHE_DIR / ".search_cache.json",
     "tag_cache": CACHE_DIR / ".tag_cache.json",
     "playlist_cache": CACHE_DIR / ".playlist_cache.json",
+    "theme_overrides": CACHE_DIR / ".theme_overrides.json",
 }
 
 
@@ -236,6 +237,7 @@ def preview_config(data: bytes, password: str) -> dict:
         "search_cache": "search_cache.json",
         "tag_cache": "tag_cache.json",
         "playlist_cache": "playlist_cache.json",
+        "theme_overrides": "theme_overrides.json",
     }
 
     included = []

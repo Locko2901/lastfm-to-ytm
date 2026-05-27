@@ -17,6 +17,7 @@ The Teleporter lets you export and import your entire configuration as a single 
 - `cache/.search_cache.json` - cached YouTube Music search results. Avoids re-searching tracks on a new instance.
 - `cache/.playlist_cache.json` - stores playlist IDs and desired track state. Needed to resume syncing without recreating playlists.
 - `cache/.tag_cache.json` - cached Last.fm tag lookups. Avoids re-fetching tags for every track.
+- `cache/.theme_overrides.json` - your dashboard [custom color scheme](dashboard.md#custom-theme) (per base theme).
 
 ---
 
