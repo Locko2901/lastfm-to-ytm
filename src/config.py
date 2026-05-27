@@ -87,6 +87,7 @@ class Settings:
     use_recency_weighting: bool = True
     recency_half_life_hours: float = 24.0
     recency_play_weight: float = 0.7
+    recency_min_plays: int = 1
     max_raw_scrobbles: int = 2000
     log_level: str = "INFO"
     weekly_enabled: bool = True
@@ -148,6 +149,8 @@ class Settings:
         recency_play_weight = _str_to_float(os.getenv("RECENCY_PLAY_WEIGHT"), 0.7)
         if not 0.0 <= recency_play_weight <= 1.0:
             recency_play_weight = 0.7
+        recency_min_plays = _str_to_int(os.getenv("RECENCY_MIN_PLAYS"), 1)
+        recency_min_plays = max(recency_min_plays, 1)
 
         max_raw_scrobbles = _str_to_int(os.getenv("MAX_RAW_SCROBBLES"), 2000)
         if max_raw_scrobbles == 0:
@@ -215,6 +218,7 @@ class Settings:
             use_recency_weighting=use_recency_weighting,
             recency_half_life_hours=recency_half_life_hours,
             recency_play_weight=recency_play_weight,
+            recency_min_plays=recency_min_plays,
             max_raw_scrobbles=max_raw_scrobbles,
             log_level=log_level,
             weekly_enabled=weekly_enabled,

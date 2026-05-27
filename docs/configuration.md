@@ -58,6 +58,7 @@ All settings are configured via environment variables in `.env`. The tables belo
 | `USE_RECENCY_WEIGHTING` | `true` | Rank by play count + recency (`false` = most recent first) |
 | `RECENCY_HALF_LIFE_HOURS` | `24.0` | How fast recency decays (lower = favor newer tracks) |
 | `RECENCY_PLAY_WEIGHT` | `0.7` | Balance: `0.0` = pure recency, `1.0` = pure play count |
+| `RECENCY_MIN_PLAYS` | `1` | Minimum scrobbles within fetched window for a track to qualify (`1` = no gate) |
 
 ### Weekly Playlists
 

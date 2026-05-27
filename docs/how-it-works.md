@@ -70,6 +70,7 @@ When enabled, the tool combines play count and recency to rank tracks:
     - Default half-life: **24 hours** (`RECENCY_HALF_LIFE_HOURS=24.0`)
 - **Final score**: `play_weight &times; play_score + (1 - play_weight) &times; recency_score`
     - Default: 70% play count, 30% recency (`RECENCY_PLAY_WEIGHT=0.7`)
+- **Minimum play gate**: tracks with fewer than `RECENCY_MIN_PLAYS` scrobbles inside the fetched window are dropped before scoring (default `1` = no gate). Useful for surfacing only songs you've revisited. Note that the gate counts plays inside the fetched recency window only - raise `MAX_RAW_SCROBBLES` if you need a larger window.
 - **Sorting priority**: Higher score &rarr; more recent play &rarr; higher play count
 
 When `USE_RECENCY_WEIGHTING=false`, the tool simply takes the most recent unique tracks in chronological order (most recent first), up to `LIMIT`.
