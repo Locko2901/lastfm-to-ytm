@@ -1,5 +1,6 @@
 services:
   lastfm-web:
+    image: ${YTMT_IMAGE:-lastfm-to-ytm-web:local}
     build:
       context: ..
       dockerfile: devops/Dockerfile

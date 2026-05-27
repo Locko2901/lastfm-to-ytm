@@ -31,11 +31,15 @@ IMAGE_NAME="lastfm-to-ytm-web"
 CONTAINER_NAME="lastfm-to-ytm"
 PORT="${YTMT_PORT:-2002}"
 HEALTH_TIMEOUT="${YTMT_HEALTH_TIMEOUT:-30}"
+PREBUILT_IMAGE_REPO="ghcr.io/locko2901/lastfm-to-ytm"
+PREBUILT_TAG_DEFAULT="latest"
 
 REBUILD=false
 NO_CACHE=false
 PRUNE=false
 PRUNE_ALL=false
+PULL=false
+PULL_TAG=""
 ACTION="start"  # default
 for arg in "$@"; do
     case $arg in
@@ -62,6 +66,13 @@ for arg in "$@"; do
             PRUNE=true
             PRUNE_ALL=true
             ;;
+        --pull|-p)
+            PULL=true
+            ;;
+        --pull=*)
+            PULL=true
+            PULL_TAG="${arg#--pull=}"
+            ;;
         --help|-h)
             echo "Usage: ./run-docker.sh [OPTIONS]"
             echo
@@ -74,11 +85,14 @@ for arg in "$@"; do
             echo "  --prune          Remove dangling images and old project images"
             echo "  --prune-all      Aggressive cleanup: also clear build cache and unused images"
             echo "                   Can be combined with --rebuild/--no-cache"
+            echo "  --pull, -p       Use prebuilt image from GHCR instead of building locally"
+            echo "                   (--pull=TAG to pin a specific tag, default: latest)"
             echo "  --help, -h       Show this help message"
             echo
             echo "Environment variables:"
             echo "  YTMT_PORT            Port to expose (default: 2002)"
             echo "  YTMT_HEALTH_TIMEOUT  Seconds to wait for health check (default: 30)"
+            echo "  YTMT_IMAGE           Override full image ref (e.g. ghcr.io/locko2901/lastfm-to-ytm:v1.2.0)"
             exit 0
             ;;
         *)
@@ -160,6 +174,18 @@ case $ACTION in
         ;;
 esac
 
+if [[ "$PULL" == true ]]; then
+    if [[ "$REBUILD" == true ]]; then
+        echo -e "${RED}✗ --pull cannot be combined with --rebuild/--no-cache${NC}"
+        exit 1
+    fi
+    if [[ -z "${YTMT_IMAGE:-}" ]]; then
+        TAG="${PULL_TAG:-$PREBUILT_TAG_DEFAULT}"
+        export YTMT_IMAGE="${PREBUILT_IMAGE_REPO}:${TAG}"
+    fi
+    IMAGE_NAME="$YTMT_IMAGE"
+fi
+
 echo -e "${CYAN}╔═══════════════════════════════════╗${NC}"
 echo -e "${CYAN}║   lastfm-to-ytm Docker Launcher   ║${NC}"
 echo -e "${CYAN}╚═══════════════════════════════════╝${NC}"
@@ -211,7 +237,7 @@ fi
 
 if command -v git &>/dev/null && git -C "$SCRIPT_DIR" rev-parse --git-dir &>/dev/null; then
     git -C "$SCRIPT_DIR" rev-parse HEAD > "$SCRIPT_DIR/COMMIT_SHA" 2>/dev/null || echo "unknown" > "$SCRIPT_DIR/COMMIT_SHA"
-else
+elif [[ ! -f "$SCRIPT_DIR/COMMIT_SHA" ]]; then
     echo "unknown" > "$SCRIPT_DIR/COMMIT_SHA"
 fi
 
@@ -219,41 +245,54 @@ echo -e "${GREEN}✓ Required files exist${NC}"
 
 echo -e "${BLUE}[4/5]${NC} Checking Docker image..."
 
-IMAGE_EXISTS=$(docker images -q "$IMAGE_NAME" 2>/dev/null)
-
-if [[ -z "$IMAGE_EXISTS" ]] || [[ "$REBUILD" == true ]]; then
-    if [[ "$REBUILD" == true ]]; then
-        if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
-            echo -e "${YELLOW}→ Stopping and removing old container...${NC}"
-            docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null || true
-        fi
+if [[ "$PULL" == true ]]; then
+    echo -e "${YELLOW}→ Pulling prebuilt image: ${IMAGE_NAME}${NC}"
+    if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+        echo -e "${YELLOW}→ Stopping old container...${NC}"
+        docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null || true
     fi
-
-    if [[ "$NO_CACHE" == true ]]; then
-        echo -e "${YELLOW}→ Rebuilding image (--no-cache, full rebuild)...${NC}"
-        docker compose -f "$COMPOSE_FILE" build --no-cache --pull || {
-            echo -e "${RED}✗ Image build failed${NC}"
-            exit 1
-        }
-    elif [[ "$REBUILD" == true ]]; then
-        echo -e "${YELLOW}→ Rebuilding image (--rebuild flag)...${NC}"
-        docker compose -f "$COMPOSE_FILE" build --pull || {
-            echo -e "${RED}✗ Image build failed${NC}"
-            exit 1
-        }
-    else
-        echo -e "${YELLOW}→ Building image for the first time...${NC}"
-        docker compose -f "$COMPOSE_FILE" build || {
-            echo -e "${RED}✗ Image build failed${NC}"
-            exit 1
-        }
-    fi
-    echo -e "${GREEN}✓ Image built successfully${NC}"
-
-    docker builder prune --keep-storage 1GB -f >/dev/null 2>&1 || true
+    docker compose -f "$COMPOSE_FILE" pull || {
+        echo -e "${RED}✗ Image pull failed${NC}"
+        exit 1
+    }
+    echo -e "${GREEN}✓ Image pulled successfully${NC}"
 else
-    echo -e "${GREEN}✓ Image already exists${NC}"
-    echo -e "  ${CYAN}(use --rebuild to force rebuild, --no-cache for fresh build)${NC}"
+    IMAGE_EXISTS=$(docker images -q "$IMAGE_NAME" 2>/dev/null)
+
+    if [[ -z "$IMAGE_EXISTS" ]] || [[ "$REBUILD" == true ]]; then
+        if [[ "$REBUILD" == true ]]; then
+            if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+                echo -e "${YELLOW}→ Stopping and removing old container...${NC}"
+                docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null || true
+            fi
+        fi
+
+        if [[ "$NO_CACHE" == true ]]; then
+            echo -e "${YELLOW}→ Rebuilding image (--no-cache, full rebuild)...${NC}"
+            docker compose -f "$COMPOSE_FILE" build --no-cache --pull || {
+                echo -e "${RED}✗ Image build failed${NC}"
+                exit 1
+            }
+        elif [[ "$REBUILD" == true ]]; then
+            echo -e "${YELLOW}→ Rebuilding image (--rebuild flag)...${NC}"
+            docker compose -f "$COMPOSE_FILE" build --pull || {
+                echo -e "${RED}✗ Image build failed${NC}"
+                exit 1
+            }
+        else
+            echo -e "${YELLOW}→ Building image for the first time...${NC}"
+            docker compose -f "$COMPOSE_FILE" build || {
+                echo -e "${RED}✗ Image build failed${NC}"
+                exit 1
+            }
+        fi
+        echo -e "${GREEN}✓ Image built successfully${NC}"
+
+        docker builder prune --keep-storage 1GB -f >/dev/null 2>&1 || true
+    else
+        echo -e "${GREEN}✓ Image already exists${NC}"
+        echo -e "  ${CYAN}(use --rebuild to force rebuild, --no-cache for fresh build, --pull for prebuilt)${NC}"
+    fi
 fi
 
 echo -e "${BLUE}[5/5]${NC} Starting container..."
