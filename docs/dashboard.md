@@ -85,7 +85,7 @@ The **Reset to parent** button inside the modal clears only the *current* base t
 
 ### Persistence
 
-Overrides are saved to `cache/.theme_overrides.json` (same folder as the search/playlist/tag caches) via `POST /api/theme`, and are injected into every page render server-side — so the first paint already reflects your scheme (no flash of default theme).
+Overrides are saved to `cache/.theme_overrides.json` (same folder as the search/playlist/tag caches) via `POST /api/theme`, and are injected into every page render server-side - so the first paint already reflects your scheme (no flash of default theme).
 
 ### Backup / restore
 

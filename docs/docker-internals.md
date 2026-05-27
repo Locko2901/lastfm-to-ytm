@@ -88,7 +88,7 @@ The `docker-publish` job in [`ci.yml`](https://github.com/Locko2901/lastfm-to-yt
 - **Registry**: `ghcr.io/locko2901/lastfm-to-ytm`
 - **Architectures**: `linux/amd64`, `linux/arm64` (via QEMU + Buildx)
 - **Triggers & tags**:
-    - Push to `main` (untagged commits) &rarr; `:dev`, `:sha-<short>` &mdash; rolling development channel.
+    - Push to `main` (untagged commits) &rarr; `:dev`, `:sha-<short>` - rolling development channel.
     - `v*.*.*` tag (created by release-please) &rarr; `:vX.Y.Z`, `:X.Y`, `:X`, `:latest` - stable release channel.
     - `:latest` is **only** published from release tags - it never points at an untagged `main` commit.
 - **Caching**: GitHub Actions cache (`type=gha`) keeps incremental builds fast.
