@@ -78,7 +78,20 @@
                 <option value="dark">{{ _('Dark (Default)') }}</option>
                 <option value="light">{{ _('Light') }}</option>
               </select>
-              <span class="form-hint">{{ _('Color scheme for the interface') }}</span>
+              <span class="form-hint">
+                {{ _('Color scheme for the interface') }}
+              </span>
+            </div>
+            <div class="form-group form-group-checkbox">
+              <label>
+                <input type="checkbox" id="custom-theme-toggle">
+                <span>{{ _('Use custom colors') }}</span>
+              </label>
+              <span class="form-hint">
+                {{ _('Apply your saved custom colors on top of the selected theme.') }}
+                &middot;
+                <button type="button" class="link-button" data-action="showCustomThemeModal">{{ _('Customize colors') }}</button>
+              </span>
             </div>
             <div class="form-group">
               <label for="locale-select">{{ _('Language') }}</label>

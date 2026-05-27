@@ -115,6 +115,13 @@ const actionHandlers = {
   cacheRemovePlaylist: el => window.cacheRemovePlaylistEntry(el.dataset.name),
   cacheRemovePlaylistTrack: el => window.cacheRemovePlaylistTrack(el.dataset.name, el.dataset.videoId),
   cacheAdminTogglePlaylist: el => window.cacheAdminTogglePlaylist(el.dataset.name),
+
+  showCustomThemeModal: () => window.showCustomThemeModal(),
+  cancelCustomThemeModal: () => window.cancelCustomThemeModal(),
+  saveCustomThemeFromModal: () => window.saveCustomThemeFromModal(),
+  resetCustomTheme: () => window.resetCustomTheme(),
+  exportCustomTheme: () => window.exportCustomTheme(),
+  triggerImportCustomTheme: () => window.triggerImportCustomTheme(),
 }
 
 export function initDelegation() {

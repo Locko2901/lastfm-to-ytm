@@ -1,3 +1,4 @@
+import { applyCustomTheme, loadCustomTheme, onParentThemeChanged, setCustomEnabled } from "./customTheme.js"
 import { refreshHistoryPanelState, setHistoryTabVisibility } from "./history.js"
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
@@ -303,8 +304,19 @@ export function initTheme() {
     themeSelect.addEventListener("change", e => {
       applyTheme(e.target.value)
       saveTheme(e.target.value)
+      onParentThemeChanged()
     })
   }
+
+  const customToggle = document.getElementById("custom-theme-toggle")
+  if (customToggle) {
+    customToggle.checked = !!loadCustomTheme().enabled
+    customToggle.addEventListener("change", e => {
+      setCustomEnabled(e.target.checked)
+    })
+  }
+
+  applyCustomTheme()
 }
 
 function applyTheme(theme) {
@@ -349,6 +361,11 @@ export function initSettings(switchTabFn) {
   initSchedulerTypeToggle()
   initHistoryDbToggle()
   loadSchedulerStatus()
+
+  const importInput = document.getElementById("customThemeImportInput")
+  if (importInput) {
+    importInput.addEventListener("change", e => window.onCustomThemeImportChange?.(e))
+  }
 
   return tabId => {
     switchTabFn(tabId)

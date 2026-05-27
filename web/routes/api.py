@@ -64,6 +64,7 @@ from ..services.scheduler import (
     start_scheduler,
 )
 from ..services.teleporter import export_config, import_config, preview_config
+from ..services.theme import load_theme_overrides, save_theme_overrides
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -866,6 +867,23 @@ def scheduler_configure():
         logger.error(f"Failed to configure scheduler: {e}")
         return jsonify({"error": _("Failed to configure scheduler")}), 500
 
+
+@api_bp.route("/theme", methods=["GET"])
+def get_theme():
+    """Return the persisted custom theme overrides."""
+    return jsonify(load_theme_overrides())
+
+
+@api_bp.route("/theme", methods=["POST"])
+def post_theme():
+    """Persist custom theme overrides. Body: {enabled, parents:{dark,light}}."""
+    data = request.get_json(silent=True) or {}
+    try:
+        saved = save_theme_overrides(data)
+    except OSError as e:
+        logger.error("Failed to persist theme overrides: %s", e)
+        return jsonify({"error": _("Failed to save theme overrides")}), 500
+    return jsonify(saved)
 
 @api_bp.route("/teleporter/export", methods=["POST"])
 def teleporter_export():

@@ -121,10 +121,13 @@ def inject_globals():
     js_translations = {}
     if hasattr(catalog, "_catalog"):
         js_translations = {k: v for k, v in catalog._catalog.items() if k and v and isinstance(k, str)}
+    from .services.theme import load_theme_overrides
+
     return {
         "csp_nonce": getattr(g, "csp_nonce", ""),
         "available_locales": locale_choices,
         "js_translations": js_translations,
+        "initial_theme_overrides": load_theme_overrides(),
     }
 
 
