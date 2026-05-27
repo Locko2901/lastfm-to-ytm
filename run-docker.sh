@@ -217,6 +217,8 @@ echo -e "${GREEN}✓ Docker daemon is running${NC}"
 
 echo -e "${BLUE}[3/5]${NC} Checking required files..."
 
+mkdir -p "$SCRIPT_DIR/cache" "$SCRIPT_DIR/config"
+
 if [[ -d "$SCRIPT_DIR/.env" ]]; then
     echo -e "${YELLOW}→ Removing .env directory (Docker artifact)...${NC}"
     rm -rf "$SCRIPT_DIR/.env"
