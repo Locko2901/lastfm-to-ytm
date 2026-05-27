@@ -24,7 +24,7 @@ The bot relies entirely on commit message prefixes. The **highest** bump in the 
 | `fix:`, `perf:` | patch | 1.2.4 |
 | `docs:`, `refactor:`, `style:`, `test:`, `ci:`, `build:`, `chore:`, `i18n:` | patch (only if nothing higher in the batch) | 1.2.4 |
 
-In practice: any conventional commit will eventually result in a release PR. If a batch contains only `docs:`/`chore:`/etc., release-please cuts a patch release with those entries in the changelog. If you don't want to release yet, just don't merge the Release PR — it keeps accumulating commits until you do.
+In practice: any conventional commit will eventually result in a release PR. If a batch contains only `docs:`/`chore:`/etc., release-please cuts a patch release with those entries in the changelog. If you don't want to release yet, just don't merge the Release PR - it keeps accumulating commits until you do.
 
 Scopes are optional and shown in the changelog as bold prefixes:
 
