@@ -20,4 +20,9 @@ gosu lastfm test -f /app/config/search_overrides.json || \
 [ -f /app/.env ] || touch /app/.env
 chown lastfm:lastfm /app/.env 2>/dev/null || true
 
+[ -d /app/browser.json ] && rm -rf /app/browser.json
+[ -f /app/browser.json ] || echo '{}' > /app/browser.json
+chown lastfm:lastfm /app/browser.json 2>/dev/null || true
+chmod 664 /app/browser.json 2>/dev/null || true
+
 exec gosu lastfm "$@"

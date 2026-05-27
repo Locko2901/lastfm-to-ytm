@@ -82,6 +82,13 @@ fetch ".env.example"              ".env.example"
 
 chmod +x "${TARGET}/run-docker.sh"
 
+# Pre-create bind-mount targets so docker compose doesn't auto-create
+# them as root-owned (which would break the entrypoint's UID/GID remap
+# and cause "Permission denied" on browser.json / config files).
+mkdir -p "${TARGET}/cache" "${TARGET}/config"
+touch "${TARGET}/.env"
+[[ -f "${TARGET}/browser.json" ]] || echo '{}' > "${TARGET}/browser.json"
+
 # Pin the image tag to the requested ref when it looks like a release tag.
 # Otherwise the launcher's default 'latest' is used.
 PULL_FLAG="--pull"
