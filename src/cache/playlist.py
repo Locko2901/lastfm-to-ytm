@@ -83,6 +83,19 @@ class PlaylistCache(JSONCache):
         log.debug("Template unchanged for '%s'", playlist_name)
         return False
 
+    def touch(self, playlist_name: str) -> None:
+        """Update the ``last_updated`` timestamp without modifying the template.
+
+        Used after a sync run that produced no changes, so the dashboard's
+        "last sync" stat reflects the most recent sync attempt rather than the
+        last time the playlist's contents actually changed.
+        """
+        entry = self._cache.get(playlist_name)
+        if not entry or not isinstance(entry, dict):
+            return
+        entry["last_updated"] = datetime.now(UTC).isoformat()
+        self._save()
+
     def remove(self, playlist_name: str) -> None:
         """Remove playlist from cache."""
         if playlist_name in self._cache:

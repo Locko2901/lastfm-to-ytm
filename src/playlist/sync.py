@@ -484,6 +484,7 @@ def upsert_playlist(
             playlist_cache.set_template(name, existing_id, video_ids)
         else:
             log.info("Playlist '%s' already up to date", name)
+            playlist_cache.touch(name)
         return existing_id
 
     log.info("Creating playlist '%s'...", name)
