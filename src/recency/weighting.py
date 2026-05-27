@@ -32,8 +32,13 @@ def collapse_recency_weighted(
     recents: list[Scrobble],
     half_life_hours: float = 24.0,
     play_weight: float = 0.7,
+    min_plays: int = 1,
 ) -> list[WeightedTrack]:
-    """Aggregate scrobbles to unique tracks ranked by play count + recency."""
+    """Aggregate scrobbles to unique tracks ranked by play count + recency.
+
+    Tracks with fewer than ``min_plays`` scrobbles within the fetched window
+    are filtered out before scoring.
+    """
     now = time.time()
     agg: dict[tuple[str, str], dict[str, Any]] = {}
 
@@ -54,6 +59,12 @@ def collapse_recency_weighted(
                 a["ts_latest"] = t.ts
                 if t.album:
                     a["album"] = t.album
+
+    if min_plays > 1:
+        before = len(agg)
+        agg = {k: v for k, v in agg.items() if int(v["plays"]) >= min_plays}
+        log = __import__("logging").getLogger(__name__)
+        log.info("min_plays=%d filter: %d/%d tracks kept", min_plays, len(agg), before)
 
     max_plays = max((int(a["plays"]) for a in agg.values()), default=1)
 

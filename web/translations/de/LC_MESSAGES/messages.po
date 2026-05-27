@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-13 11:47+0200\n"
+"POT-Creation-Date: 2026-05-27 10:34+0200\n"
 "PO-Revision-Date: 2026-05-13 11:41+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -71,8 +71,8 @@ msgstr "Ungültiger Cron-Ausdruck: %(error)s"
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr "Ungültige Startzeit: Stunde muss 0-23, Minute 0-59 sein"
 
-#: web/routes/api.py:292 web/static/js/modules/settings.js:129
-#: web/static/js/modules/settings.js:160
+#: web/routes/api.py:292 web/static/js/modules/settings.js:130
+#: web/static/js/modules/settings.js:161
 msgid "Failed to save settings"
 msgstr "Einstellungen konnten nicht gespeichert werden"
 
@@ -339,7 +339,7 @@ msgstr "Aus dem Cache entfernen"
 #: web/templates/partials/_panel_history.html:104
 #: web/templates/partials/_panel_history.html:113
 #: web/templates/partials/_panel_history.html:129
-#: web/templates/partials/_panel_settings.html:515
+#: web/templates/partials/_panel_settings.html:520
 msgid "Loading..."
 msgstr "Lädt..."
 
@@ -510,7 +510,7 @@ msgstr "wiederhergestellt in"
 msgid "Failed to restore track"
 msgstr "Track konnte nicht wiederhergestellt werden"
 
-#: web/static/js/modules/history.js:196 web/static/js/modules/settings.js:402
+#: web/static/js/modules/history.js:196 web/static/js/modules/settings.js:403
 msgid "DB size:"
 msgstr "DB-Größe:"
 
@@ -567,20 +567,20 @@ msgstr "Top-Tracks konnten nicht geladen werden"
 msgid "No sync data yet"
 msgstr "Noch keine Sync-Daten"
 
-#: web/static/js/modules/history.js:430 web/static/js/modules/history.js:664
+#: web/static/js/modules/history.js:430 web/static/js/modules/history.js:667
 msgid "Success"
 msgstr "Erfolgreich"
 
-#: web/static/js/modules/history.js:431 web/static/js/modules/history.js:665
+#: web/static/js/modules/history.js:431 web/static/js/modules/history.js:668
 #: web/templates/partials/_modals.html:845
 msgid "Error"
 msgstr "Fehler"
 
-#: web/static/js/modules/history.js:432 web/static/js/modules/history.js:666
+#: web/static/js/modules/history.js:432 web/static/js/modules/history.js:669
 msgid "Cache Rate"
 msgstr "Cache-Quote"
 
-#: web/static/js/modules/history.js:433 web/static/js/modules/history.js:667
+#: web/static/js/modules/history.js:433 web/static/js/modules/history.js:670
 #: web/templates/partials/_panel_history.html:34
 msgid "Avg Duration"
 msgstr "Ø Dauer"
@@ -589,35 +589,35 @@ msgstr "Ø Dauer"
 msgid "Failed to load trend data"
 msgstr "Trenddaten konnten nicht geladen werden"
 
-#: web/static/js/modules/history.js:668
+#: web/static/js/modules/history.js:671
 msgid "Avg Resolved"
 msgstr "Ø Aufgelöst"
 
-#: web/static/js/modules/history.js:669
+#: web/static/js/modules/history.js:672
 msgid "Avg Missed"
 msgstr "Ø Verpasst"
 
-#: web/static/js/modules/history.js:847 web/static/js/modules/history.js:853
+#: web/static/js/modules/history.js:854 web/static/js/modules/history.js:860
 msgid "Backfill failed"
 msgstr "Nachbefüllung fehlgeschlagen"
 
-#: web/static/js/modules/history.js:850
+#: web/static/js/modules/history.js:857
 msgid "Backfill complete:"
 msgstr "Nachbefüllung abgeschlossen:"
 
-#: web/static/js/modules/history.js:850
+#: web/static/js/modules/history.js:857
 msgid "cache"
 msgstr "Cache"
 
-#: web/static/js/modules/history.js:850
+#: web/static/js/modules/history.js:857
 msgid "override entries"
 msgstr "Override-Einträge"
 
-#: web/static/js/modules/history.js:874 web/static/js/modules/history.js:882
+#: web/static/js/modules/history.js:881 web/static/js/modules/history.js:889
 msgid "Clear History"
 msgstr "Verlauf löschen"
 
-#: web/static/js/modules/history.js:878
+#: web/static/js/modules/history.js:885
 msgid ""
 "This will permanently delete all history data (tracks, syncs, actions). "
 "Continue?"
@@ -625,7 +625,7 @@ msgstr ""
 "Dadurch werden alle Verlaufsdaten (Tracks, Synchronisierungen, Aktionen) "
 "dauerhaft gelöscht. Fortfahren?"
 
-#: web/static/js/modules/history.js:881 web/templates/partials/_modals.html:122
+#: web/static/js/modules/history.js:888 web/templates/partials/_modals.html:122
 #: web/templates/partials/_modals.html:158
 #: web/templates/partials/_modals.html:196
 #: web/templates/partials/_modals.html:236
@@ -636,23 +636,23 @@ msgstr ""
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: web/static/js/modules/history.js:897 web/static/js/modules/history.js:902
+#: web/static/js/modules/history.js:904 web/static/js/modules/history.js:909
 msgid "Failed to clear history"
 msgstr "Verlauf konnte nicht gelöscht werden"
 
-#: web/static/js/modules/history.js:899
+#: web/static/js/modules/history.js:906
 msgid "History cleared"
 msgstr "Verlauf gelöscht"
 
-#: web/static/js/modules/history.js:943
+#: web/static/js/modules/history.js:950
 msgid "Added override"
 msgstr "Override hinzugefügt"
 
-#: web/static/js/modules/history.js:944
+#: web/static/js/modules/history.js:951
 msgid "Removed override"
 msgstr "Override entfernt"
 
-#: web/static/js/modules/history.js:945 web/static/js/modules/modals.js:276
+#: web/static/js/modules/history.js:952 web/static/js/modules/modals.js:276
 #: web/static/js/modules/modals.js:793
 #: web/templates/partials/_custompl_tracks.html:21
 #: web/templates/partials/_panel_cache.html:22
@@ -663,68 +663,68 @@ msgstr "Override entfernt"
 msgid "Blacklisted"
 msgstr "Auf Sperrliste"
 
-#: web/static/js/modules/history.js:946
+#: web/static/js/modules/history.js:953
 msgid "Unblacklisted"
 msgstr "Von Sperrliste entfernt"
 
-#: web/static/js/modules/history.js:947
+#: web/static/js/modules/history.js:954
 msgid "Cleared cache entry"
 msgstr "Cache-Eintrag geleert"
 
-#: web/static/js/modules/history.js:948
+#: web/static/js/modules/history.js:955
 msgid "Added tag override"
 msgstr "Tag-Override hinzugefügt"
 
-#: web/static/js/modules/history.js:949
+#: web/static/js/modules/history.js:956
 msgid "Removed tag override"
 msgstr "Tag-Override entfernt"
 
-#: web/static/js/modules/history.js:950
+#: web/static/js/modules/history.js:957
 msgid "Cleared tag cache"
 msgstr "Tag-Cache geleert"
 
-#: web/static/js/modules/history.js:951
+#: web/static/js/modules/history.js:958
 msgid "Backfill from cache"
 msgstr "Nachbefüllung aus Cache"
 
-#: web/static/js/modules/history.js:952
+#: web/static/js/modules/history.js:959
 msgid "Backfill from overrides"
 msgstr "Nachbefüllung aus Overrides"
 
-#: web/static/js/modules/history.js:953
+#: web/static/js/modules/history.js:960
 msgid "Sync started"
 msgstr "Synchronisierung gestartet"
 
-#: web/static/js/modules/history.js:954
+#: web/static/js/modules/history.js:961
 msgid "Sync completed"
 msgstr "Synchronisierung abgeschlossen"
 
-#: web/static/js/modules/history.js:955
+#: web/static/js/modules/history.js:962
 msgid "Sync failed"
 msgstr "Synchronisierung fehlgeschlagen"
 
-#: web/static/js/modules/history.js:956
+#: web/static/js/modules/history.js:963
 msgid "Custom playlist synced"
 msgstr "Benutzerdefinierte Playlist synchronisiert"
 
-#: web/static/js/modules/history.js:957
+#: web/static/js/modules/history.js:964
 msgid "Custom playlist failed"
 msgstr "Benutzerdefinierte Playlist fehlgeschlagen"
 
-#: web/static/js/modules/history.js:958
+#: web/static/js/modules/history.js:965
 msgid "YouTube substitution"
 msgstr "YouTube-Ersetzung"
 
-#: web/static/js/modules/history.js:1011
+#: web/static/js/modules/history.js:1018
 msgid "Previous"
 msgstr "Zurück"
 
-#: web/static/js/modules/history.js:1012 web/static/js/modules/setup.js:68
+#: web/static/js/modules/history.js:1019 web/static/js/modules/setup.js:68
 #: web/static/js/modules/setup.js:119 web/templates/partials/_modals.html:90
 msgid "Next"
 msgstr "Weiter"
 
-#: web/static/js/modules/history.js:1017
+#: web/static/js/modules/history.js:1024
 msgid "total"
 msgstr "gesamt"
 
@@ -944,71 +944,71 @@ msgstr "Sync-Details"
 msgid "Error loading sync details"
 msgstr "Fehler beim Laden der Sync-Details"
 
-#: web/static/js/modules/settings.js:56 web/static/js/modules/settings.js:90
+#: web/static/js/modules/settings.js:57 web/static/js/modules/settings.js:91
 msgid "Failed to load settings"
 msgstr "Einstellungen konnten nicht geladen werden"
 
-#: web/static/js/modules/settings.js:147
+#: web/static/js/modules/settings.js:148
 msgid "Settings saved successfully!"
 msgstr "Einstellungen erfolgreich gespeichert!"
 
-#: web/static/js/modules/settings.js:186
+#: web/static/js/modules/settings.js:187
 msgid "Settings saved. Restart the server to apply changes."
 msgstr ""
 "Einstellungen gespeichert. Server neu starten, um Änderungen zu "
 "übernehmen."
 
-#: web/static/js/modules/settings.js:187 web/static/js/modules/settings.js:261
+#: web/static/js/modules/settings.js:188 web/static/js/modules/settings.js:262
 msgid "Restart Now"
 msgstr "Jetzt neu starten"
 
-#: web/static/js/modules/settings.js:210
+#: web/static/js/modules/settings.js:211
 msgid "Display settings changed. Reload the page to update."
 msgstr "Anzeigeeinstellungen geändert. Seite neu laden, um zu aktualisieren."
 
-#: web/static/js/modules/settings.js:211
+#: web/static/js/modules/settings.js:212
 msgid "Reload"
 msgstr "Neu laden"
 
-#: web/static/js/modules/settings.js:226
+#: web/static/js/modules/settings.js:227
 msgid "Enter a webhook URL first"
 msgstr "Zuerst eine Webhook-URL eingeben"
 
-#: web/static/js/modules/settings.js:237
+#: web/static/js/modules/settings.js:238
 msgid "Test webhook sent successfully!"
 msgstr "Test-Webhook erfolgreich gesendet!"
 
-#: web/static/js/modules/settings.js:239 web/static/js/modules/settings.js:242
+#: web/static/js/modules/settings.js:240 web/static/js/modules/settings.js:243
 msgid "Webhook test failed"
 msgstr "Webhook-Test fehlgeschlagen"
 
-#: web/static/js/modules/settings.js:250
+#: web/static/js/modules/settings.js:251
 msgid "Restarting..."
 msgstr "Neustart..."
 
-#: web/static/js/modules/settings.js:255
+#: web/static/js/modules/settings.js:256
 msgid "Server restarting..."
 msgstr "Server startet neu..."
 
-#: web/static/js/modules/settings.js:258
+#: web/static/js/modules/settings.js:259
 msgid "Failed to restart server"
 msgstr "Server-Neustart fehlgeschlagen"
 
-#: web/static/js/modules/settings.js:284
+#: web/static/js/modules/settings.js:285
 msgid "Server may have restarted. Please refresh manually."
 msgstr ""
 "Der Server wurde möglicherweise neu gestartet. Bitte manuell "
 "aktualisieren."
 
-#: web/static/js/modules/settings.js:428
+#: web/static/js/modules/settings.js:429
 msgid "APScheduler not installed"
 msgstr "APScheduler ist nicht installiert"
 
-#: web/static/js/modules/settings.js:441
+#: web/static/js/modules/settings.js:442
 msgid "Automation Active"
 msgstr "Automatisierung aktiv"
 
-#: web/static/js/modules/settings.js:441
+#: web/static/js/modules/settings.js:442
 msgid "Automation Disabled"
 msgstr "Automatisierung deaktiviert"
 
@@ -1281,7 +1281,7 @@ msgstr "Alle löschen"
 #: web/templates/partials/_modals.html:695
 #: web/templates/partials/_modals.html:773
 #: web/templates/partials/_modals.html:851
-#: web/templates/partials/_panel_settings.html:636
+#: web/templates/partials/_panel_settings.html:641
 msgid "Close"
 msgstr "Schließen"
 
@@ -1635,7 +1635,7 @@ msgid "Include as many matching tracks as possible"
 msgstr "So viele passende Tracks wie möglich einschließen"
 
 #: web/templates/partials/_modals.html:334
-#: web/templates/partials/_panel_settings.html:338
+#: web/templates/partials/_panel_settings.html:343
 msgid "Backfill"
 msgstr "Nachbefüllen"
 
@@ -1772,7 +1772,7 @@ msgid "Connect"
 msgstr "Verbinden"
 
 #: web/templates/partials/_modals.html:469
-#: web/templates/partials/_panel_settings.html:615
+#: web/templates/partials/_panel_settings.html:620
 msgid "Export / Import"
 msgstr "Export / Import"
 
@@ -1822,7 +1822,7 @@ msgid "Drop a JSON file here or click to browse"
 msgstr "JSON-Datei hier ablegen oder klicken zum Durchsuchen"
 
 #: web/templates/partials/_modals.html:537
-#: web/templates/partials/_panel_settings.html:625
+#: web/templates/partials/_panel_settings.html:630
 msgid "Teleporter"
 msgstr "Teleporter"
 
@@ -2436,20 +2436,20 @@ msgid "Playlist Visibility"
 msgstr "Playlist-Sichtbarkeit"
 
 #: web/templates/partials/_panel_settings.html:160
-#: web/templates/partials/_panel_settings.html:227
-#: web/templates/partials/_panel_settings.html:276
+#: web/templates/partials/_panel_settings.html:232
+#: web/templates/partials/_panel_settings.html:281
 msgid "Private"
 msgstr "Privat"
 
 #: web/templates/partials/_panel_settings.html:161
-#: web/templates/partials/_panel_settings.html:228
-#: web/templates/partials/_panel_settings.html:277
+#: web/templates/partials/_panel_settings.html:233
+#: web/templates/partials/_panel_settings.html:282
 msgid "Unlisted"
 msgstr "Ungelistet"
 
 #: web/templates/partials/_panel_settings.html:162
-#: web/templates/partials/_panel_settings.html:229
-#: web/templates/partials/_panel_settings.html:278
+#: web/templates/partials/_panel_settings.html:234
+#: web/templates/partials/_panel_settings.html:283
 msgid "Public"
 msgstr "Öffentlich"
 
@@ -2485,199 +2485,211 @@ msgstr "Wiedergabegewichtung (0.0-1.0)"
 msgid "0.0 = pure recency, 1.0 = pure play count"
 msgstr "0.0 = nur Aktualität, 1.0 = nur Wiedergabezahl"
 
-#: web/templates/partials/_panel_settings.html:214
+#: web/templates/partials/_panel_settings.html:203
+msgid "Minimum Plays"
+msgstr "Mindestanzahl Wiedergaben"
+
+#: web/templates/partials/_panel_settings.html:205
+msgid ""
+"Gate tracks: must be scrobbled at least this many times in the fetched "
+"window (1 = no gate)"
+msgstr ""
+"Titel filtern: muss im abgerufenen Zeitfenster mindestens so oft "
+"gescrobbelt worden sein (1 = kein Filter)"
+
+#: web/templates/partials/_panel_settings.html:219
 msgid "Weekly Playlists"
 msgstr "Wöchentliche Playlists"
 
-#: web/templates/partials/_panel_settings.html:220
+#: web/templates/partials/_panel_settings.html:225
 msgid "Enable weekly playlists"
 msgstr "Wöchentliche Playlists aktivieren"
 
-#: web/templates/partials/_panel_settings.html:224
+#: web/templates/partials/_panel_settings.html:229
 msgid "Weekly Playlist Visibility"
 msgstr "Sichtbarkeit wöchentlicher Playlists"
 
-#: web/templates/partials/_panel_settings.html:226
-#: web/templates/partials/_panel_settings.html:275
+#: web/templates/partials/_panel_settings.html:231
+#: web/templates/partials/_panel_settings.html:280
 msgid "Inherit from main"
 msgstr "Von Haupt übernehmen"
 
-#: web/templates/partials/_panel_settings.html:233
+#: web/templates/partials/_panel_settings.html:238
 msgid "Week Start Day"
 msgstr "Wochenstarttag"
 
-#: web/templates/partials/_panel_settings.html:235
+#: web/templates/partials/_panel_settings.html:240
 msgid "Monday"
 msgstr "Montag"
 
-#: web/templates/partials/_panel_settings.html:236
+#: web/templates/partials/_panel_settings.html:241
 msgid "Tuesday"
 msgstr "Dienstag"
 
-#: web/templates/partials/_panel_settings.html:237
+#: web/templates/partials/_panel_settings.html:242
 msgid "Wednesday"
 msgstr "Mittwoch"
 
-#: web/templates/partials/_panel_settings.html:238
+#: web/templates/partials/_panel_settings.html:243
 msgid "Thursday"
 msgstr "Donnerstag"
 
-#: web/templates/partials/_panel_settings.html:239
+#: web/templates/partials/_panel_settings.html:244
 msgid "Friday"
 msgstr "Freitag"
 
-#: web/templates/partials/_panel_settings.html:240
+#: web/templates/partials/_panel_settings.html:245
 msgid "Saturday"
 msgstr "Samstag"
 
-#: web/templates/partials/_panel_settings.html:241
+#: web/templates/partials/_panel_settings.html:246
 msgid "Sunday"
 msgstr "Sonntag"
 
-#: web/templates/partials/_panel_settings.html:245
+#: web/templates/partials/_panel_settings.html:250
 msgid "Keep Weeks"
 msgstr "Wochen behalten"
 
-#: web/templates/partials/_panel_settings.html:247
+#: web/templates/partials/_panel_settings.html:252
 msgid "How many weeks to keep (0 = keep all)"
 msgstr "Wie viele Wochen behalten (0 = alle behalten)"
 
-#: web/templates/partials/_panel_settings.html:250
+#: web/templates/partials/_panel_settings.html:255
 msgid "Playlist Prefix"
 msgstr "Playlist-Präfix"
 
-#: web/templates/partials/_panel_settings.html:251
+#: web/templates/partials/_panel_settings.html:256
 msgid "(derived from main name)"
 msgstr "(abgeleitet vom Hauptnamen)"
 
-#: web/templates/partials/_panel_settings.html:252
+#: web/templates/partials/_panel_settings.html:257
 msgid "Override weekly playlist name prefix"
 msgstr "Präfix für wöchentliche Playlist-Namen überschreiben"
 
-#: web/templates/partials/_panel_settings.html:255
+#: web/templates/partials/_panel_settings.html:260
 msgid "Timezone"
 msgstr "Zeitzone"
 
-#: web/templates/partials/_panel_settings.html:257
+#: web/templates/partials/_panel_settings.html:262
 msgid "E.g., Europe/Berlin, America/New_York"
 msgstr "Z. B. Europe/Berlin, America/New_York"
 
-#: web/templates/partials/_panel_settings.html:269
+#: web/templates/partials/_panel_settings.html:274
 #: web/templates/partials/_tabs.html:9
 msgid "Custom Playlists"
 msgstr "Benutzerdefinierte Playlists"
 
-#: web/templates/partials/_panel_settings.html:273
+#: web/templates/partials/_panel_settings.html:278
 msgid "Custom Playlist Visibility"
 msgstr "Sichtbarkeit benutzerdefinierter Playlists"
 
-#: web/templates/partials/_panel_settings.html:282
+#: web/templates/partials/_panel_settings.html:287
 msgid "Minimum Tag Count"
 msgstr "Minimale Tag-Anzahl"
 
-#: web/templates/partials/_panel_settings.html:284
+#: web/templates/partials/_panel_settings.html:289
 msgid "Minimum Last.fm tag vote count to include"
 msgstr "Minimale Last.fm-Tag-Stimmenzahl, um eingeschlossen zu werden"
 
-#: web/templates/partials/_panel_settings.html:287
+#: web/templates/partials/_panel_settings.html:292
 msgid "Sleep Between Tag Fetches (seconds)"
 msgstr "Pause zwischen Tag-Abrufen (Sekunden)"
 
-#: web/templates/partials/_panel_settings.html:289
+#: web/templates/partials/_panel_settings.html:294
 msgid "Delay between tag API calls to avoid rate limiting"
 msgstr "Verzögerung zwischen Tag-API-Aufrufen, um Rate-Limits zu vermeiden"
 
-#: web/templates/partials/_panel_settings.html:301
+#: web/templates/partials/_panel_settings.html:306
 msgid "Search Behavior"
 msgstr "Suchverhalten"
 
-#: web/templates/partials/_panel_settings.html:307
+#: web/templates/partials/_panel_settings.html:312
 msgid "Use anonymous search"
 msgstr "Anonyme Suche verwenden"
 
-#: web/templates/partials/_panel_settings.html:309
+#: web/templates/partials/_panel_settings.html:314
 msgid "Recommended for better search results"
 msgstr "Empfohlen für bessere Suchergebnisse"
 
-#: web/templates/partials/_panel_settings.html:312
+#: web/templates/partials/_panel_settings.html:317
 msgid "Early Termination Score (0.0-1.0)"
 msgstr "Frühe-Abbruch-Punktzahl (0.0-1.0)"
 
-#: web/templates/partials/_panel_settings.html:314
+#: web/templates/partials/_panel_settings.html:319
 msgid "Stop search early if match score exceeds this"
 msgstr ""
 "Suche frühzeitig beenden, wenn die Trefferpunktzahl diesen Wert "
 "überschreitet"
 
-#: web/templates/partials/_panel_settings.html:317
+#: web/templates/partials/_panel_settings.html:322
 msgid "Sleep Between Searches (seconds)"
 msgstr "Pause zwischen Suchen (Sekunden)"
 
-#: web/templates/partials/_panel_settings.html:319
+#: web/templates/partials/_panel_settings.html:324
 msgid "Delay between searches to avoid rate limiting"
 msgstr "Verzögerung zwischen Suchen, um Rate-Limits zu vermeiden"
 
-#: web/templates/partials/_panel_settings.html:322
+#: web/templates/partials/_panel_settings.html:327
 msgid "Max Search Workers"
 msgstr "Max. Such-Worker"
 
-#: web/templates/partials/_panel_settings.html:324
+#: web/templates/partials/_panel_settings.html:329
 msgid "Parallel search threads (higher = faster but more API load)"
 msgstr "Parallele Such-Threads (höher = schneller, aber mehr API-Last)"
 
-#: web/templates/partials/_panel_settings.html:342
+#: web/templates/partials/_panel_settings.html:347
 msgid "Max Raw Scrobbles"
 msgstr "Max. Roh-Scrobbles"
 
-#: web/templates/partials/_panel_settings.html:344
+#: web/templates/partials/_panel_settings.html:349
 msgid "Max scrobbles to fetch (0 = unlimited)"
 msgstr "Maximale Anzahl abzurufender Scrobbles (0 = unbegrenzt)"
 
-#: web/templates/partials/_panel_settings.html:347
+#: web/templates/partials/_panel_settings.html:352
 msgid "Backfill Passes"
 msgstr "Nachbefüllungs-Durchläufe"
 
-#: web/templates/partials/_panel_settings.html:349
+#: web/templates/partials/_panel_settings.html:354
 msgid "Additional fetch attempts if below LIMIT (0 = disabled)"
 msgstr "Zusätzliche Abrufversuche, wenn unterhalb von LIMIT (0 = deaktiviert)"
 
-#: web/templates/partials/_panel_settings.html:362
+#: web/templates/partials/_panel_settings.html:367
 msgid "Caching"
 msgstr "Caching"
 
-#: web/templates/partials/_panel_settings.html:366
+#: web/templates/partials/_panel_settings.html:371
 msgid "Search Cache TTL (days)"
 msgstr "Such-Cache-TTL (Tage)"
 
-#: web/templates/partials/_panel_settings.html:368
+#: web/templates/partials/_panel_settings.html:373
 msgid "Days before cached searches expire (0 = never)"
 msgstr "Tage, bevor gecachte Suchen ablaufen (0 = nie)"
 
-#: web/templates/partials/_panel_settings.html:371
+#: web/templates/partials/_panel_settings.html:376
 msgid "Not-Found Cache TTL (days)"
 msgstr "„Nicht gefunden“-Cache-TTL (Tage)"
 
-#: web/templates/partials/_panel_settings.html:373
+#: web/templates/partials/_panel_settings.html:378
 msgid "Days before \"not found\" results are retried"
 msgstr "Tage, bevor \"nicht gefunden\"-Ergebnisse erneut versucht werden"
 
-#: web/templates/partials/_panel_settings.html:376
+#: web/templates/partials/_panel_settings.html:381
 msgid "Tag Cache TTL (days)"
 msgstr "Tag-Cache-TTL (Tage)"
 
-#: web/templates/partials/_panel_settings.html:378
+#: web/templates/partials/_panel_settings.html:383
 msgid "Days before cached tags expire (0 = never)"
 msgstr "Tage, bevor gecachte Tags ablaufen (0 = nie)"
 
-#: web/templates/partials/_panel_settings.html:390
+#: web/templates/partials/_panel_settings.html:395
 msgid "History Database"
 msgstr "Verlaufsdatenbank"
 
-#: web/templates/partials/_panel_settings.html:396
+#: web/templates/partials/_panel_settings.html:401
 msgid "Enable history database"
 msgstr "Verlaufsdatenbank aktivieren"
 
-#: web/templates/partials/_panel_settings.html:398
+#: web/templates/partials/_panel_settings.html:403
 msgid ""
 "Store track lookups, sync runs, and actions in a local SQLite database "
 "for analytics"
@@ -2685,15 +2697,15 @@ msgstr ""
 "Track-Lookups, Sync-Läufe und Aktionen für Analysen in einer lokalen "
 "SQLite-Datenbank speichern"
 
-#: web/templates/partials/_panel_settings.html:404
+#: web/templates/partials/_panel_settings.html:409
 msgid "Max DB Size (MB)"
 msgstr "Max. DB-Größe (MB)"
 
-#: web/templates/partials/_panel_settings.html:406
+#: web/templates/partials/_panel_settings.html:411
 msgid "Auto-prune oldest records when exceeded. 0 = unlimited."
 msgstr "Älteste Einträge automatisch löschen, wenn überschritten. 0 = unbegrenzt."
 
-#: web/templates/partials/_panel_settings.html:410
+#: web/templates/partials/_panel_settings.html:415
 msgid ""
 "Import existing data from your search cache and overrides into the "
 "history database."
@@ -2701,23 +2713,23 @@ msgstr ""
 "Vorhandene Daten aus deinem Such-Cache und deinen Overrides in die "
 "Verlaufsdatenbank importieren."
 
-#: web/templates/partials/_panel_settings.html:420
+#: web/templates/partials/_panel_settings.html:425
 msgid "Backfill from Cache"
 msgstr "Aus Cache nachbefüllen"
 
-#: web/templates/partials/_panel_settings.html:428
+#: web/templates/partials/_panel_settings.html:433
 msgid "Clear All History"
 msgstr "Gesamten Verlauf löschen"
 
-#: web/templates/partials/_panel_settings.html:442
+#: web/templates/partials/_panel_settings.html:447
 msgid "Webhooks"
 msgstr "Webhooks"
 
-#: web/templates/partials/_panel_settings.html:446
+#: web/templates/partials/_panel_settings.html:451
 msgid "Webhook URL"
 msgstr "Webhook-URL"
 
-#: web/templates/partials/_panel_settings.html:448
+#: web/templates/partials/_panel_settings.html:453
 msgid ""
 "Receives a JSON POST with sync results. Works with ntfy, Discord, Slack, "
 "or any HTTP endpoint."
@@ -2725,142 +2737,142 @@ msgstr ""
 "Empfängt einen JSON-POST mit Sync-Ergebnissen. Funktioniert mit ntfy, "
 "Discord, Slack oder jedem HTTP-Endpunkt."
 
-#: web/templates/partials/_panel_settings.html:451
+#: web/templates/partials/_panel_settings.html:456
 msgid "Send notifications for"
 msgstr "Benachrichtigungen senden für"
 
-#: web/templates/partials/_panel_settings.html:454
+#: web/templates/partials/_panel_settings.html:459
 msgid "Errors only"
 msgstr "Nur Fehler"
 
-#: web/templates/partials/_panel_settings.html:455
+#: web/templates/partials/_panel_settings.html:460
 msgid "All syncs"
 msgstr "Alle Synchronisierungen"
 
-#: web/templates/partials/_panel_settings.html:463
+#: web/templates/partials/_panel_settings.html:468
 msgid "Test"
 msgstr "Test"
 
-#: web/templates/partials/_panel_settings.html:466
+#: web/templates/partials/_panel_settings.html:471
 msgid "Choose when to send webhook notifications"
 msgstr "Wähle, wann Webhook-Benachrichtigungen gesendet werden sollen"
 
-#: web/templates/partials/_panel_settings.html:477
+#: web/templates/partials/_panel_settings.html:482
 msgid "Reliability & Retries"
 msgstr "Zuverlässigkeit & Wiederholungen"
 
-#: web/templates/partials/_panel_settings.html:481
+#: web/templates/partials/_panel_settings.html:486
 msgid "YTM API Max Retries"
 msgstr "Max. YTM-API-Wiederholungen"
 
-#: web/templates/partials/_panel_settings.html:485
+#: web/templates/partials/_panel_settings.html:490
 msgid "Last.fm Max Retries"
 msgstr "Max. Last.fm-Wiederholungen"
 
-#: web/templates/partials/_panel_settings.html:489
+#: web/templates/partials/_panel_settings.html:494
 msgid "Max Consecutive Empty Pages"
 msgstr "Max. aufeinanderfolgende leere Seiten"
 
-#: web/templates/partials/_panel_settings.html:491
+#: web/templates/partials/_panel_settings.html:496
 msgid "Stop after N pages with no new tracks"
 msgstr "Nach N Seiten ohne neue Tracks stoppen"
 
-#: web/templates/partials/_panel_settings.html:496
+#: web/templates/partials/_panel_settings.html:501
 msgid "Force IPv4 for Last.fm"
 msgstr "IPv4 für Last.fm erzwingen"
 
-#: web/templates/partials/_panel_settings.html:498
+#: web/templates/partials/_panel_settings.html:503
 msgid "Helps with flaky Last.fm IPv6 connections"
 msgstr "Hilft bei instabilen Last.fm-IPv6-Verbindungen"
 
-#: web/templates/partials/_panel_settings.html:510
+#: web/templates/partials/_panel_settings.html:515
 msgid "Automation"
 msgstr "Automatisierung"
 
-#: web/templates/partials/_panel_settings.html:522
+#: web/templates/partials/_panel_settings.html:527
 msgid "Enable automated sync"
 msgstr "Automatisierte Synchronisierung aktivieren"
 
-#: web/templates/partials/_panel_settings.html:524
+#: web/templates/partials/_panel_settings.html:529
 msgid "Automatically run sync at scheduled intervals"
 msgstr "Synchronisierung automatisch in geplanten Intervallen ausführen"
 
-#: web/templates/partials/_panel_settings.html:529
+#: web/templates/partials/_panel_settings.html:534
 msgid "Include tag playlists"
 msgstr "Tag-Playlists einbeziehen"
 
-#: web/templates/partials/_panel_settings.html:531
+#: web/templates/partials/_panel_settings.html:536
 msgid "Also sync custom tag-based playlists after each scheduled run"
 msgstr ""
 "Nach jedem geplanten Lauf auch benutzerdefinierte tag-basierte Playlists "
 "synchronisieren"
 
-#: web/templates/partials/_panel_settings.html:534
+#: web/templates/partials/_panel_settings.html:539
 msgid "Tag sync frequency"
 msgstr "Tag-Sync-Häufigkeit"
 
-#: web/templates/partials/_panel_settings.html:536
+#: web/templates/partials/_panel_settings.html:541
 msgid "Run tag sync every N main syncs (1 = every time, 3 = every 3rd sync)"
 msgstr ""
 "Tag-Sync alle N Haupt-Synchronisierungen ausführen (1 = jedes Mal, 3 = "
 "jede 3. Synchronisierung)"
 
-#: web/templates/partials/_panel_settings.html:539
+#: web/templates/partials/_panel_settings.html:544
 msgid "Schedule Type"
 msgstr "Zeitplan-Typ"
 
-#: web/templates/partials/_panel_settings.html:541
+#: web/templates/partials/_panel_settings.html:546
 msgid "Interval (every N hours)"
 msgstr "Intervall (alle N Stunden)"
 
-#: web/templates/partials/_panel_settings.html:542
-#: web/templates/partials/_panel_settings.html:556
+#: web/templates/partials/_panel_settings.html:547
+#: web/templates/partials/_panel_settings.html:561
 msgid "Cron Expression"
 msgstr "Cron-Ausdruck"
 
-#: web/templates/partials/_panel_settings.html:546
+#: web/templates/partials/_panel_settings.html:551
 msgid "Interval (hours)"
 msgstr "Intervall (Stunden)"
 
-#: web/templates/partials/_panel_settings.html:548
+#: web/templates/partials/_panel_settings.html:553
 msgid "How often to sync (e.g., 6 = every 6 hours)"
 msgstr "Wie oft synchronisiert wird (z. B. 6 = alle 6 Stunden)"
 
-#: web/templates/partials/_panel_settings.html:551
+#: web/templates/partials/_panel_settings.html:556
 msgid "Starting at (optional)"
 msgstr "Beginnend um (optional)"
 
-#: web/templates/partials/_panel_settings.html:553
+#: web/templates/partials/_panel_settings.html:558
 msgid "Anchor time for intervals (e.g., 00:00 → 0, 6, 12, 18h)"
 msgstr "Ankerzeit für Intervalle (z. B. 00:00 → 0, 6, 12, 18 Uhr)"
 
-#: web/templates/partials/_panel_settings.html:558
+#: web/templates/partials/_panel_settings.html:563
 msgid "Standard cron format: minute hour day month weekday (server time)"
 msgstr "Standard-Cron-Format: Minute Stunde Tag Monat Wochentag (Serverzeit)"
 
-#: web/templates/partials/_panel_settings.html:567
+#: web/templates/partials/_panel_settings.html:572
 msgid "Next run:"
 msgstr "Nächster Lauf:"
 
-#: web/templates/partials/_panel_settings.html:581
+#: web/templates/partials/_panel_settings.html:586
 msgid "Logging"
 msgstr "Protokollierung"
 
-#: web/templates/partials/_panel_settings.html:585
+#: web/templates/partials/_panel_settings.html:590
 msgid "Log Level"
 msgstr "Log-Level"
 
-#: web/templates/partials/_panel_settings.html:605
+#: web/templates/partials/_panel_settings.html:610
 msgid "Data Management"
 msgstr "Datenverwaltung"
 
-#: web/templates/partials/_panel_settings.html:607
+#: web/templates/partials/_panel_settings.html:612
 msgid "Export or import your overrides and blacklist data as JSON."
 msgstr ""
 "Exportiere oder importiere deine Overrides- und Sperrlisten-Daten als "
 "JSON."
 
-#: web/templates/partials/_panel_settings.html:645
+#: web/templates/partials/_panel_settings.html:650
 msgid "Save"
 msgstr "Speichern"
 

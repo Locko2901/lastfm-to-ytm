@@ -193,6 +193,7 @@ def run(settings: Settings) -> None:
             recents,
             half_life_hours=settings.recency_half_life_hours,
             play_weight=settings.recency_play_weight,
+            min_plays=settings.recency_min_plays,
         )
         log.info(
             "Aggregated to %d unique tracks (half-life=%.1fh). Resolving on YTM...",
@@ -255,6 +256,7 @@ def run(settings: Settings) -> None:
                 new_scrobbles,
                 half_life_hours=settings.recency_half_life_hours,
                 play_weight=settings.recency_play_weight,
+                min_plays=settings.recency_min_plays,
             )
             new_tracks = [t for t in new_scrobble_tracks if (t.artist.lower(), t.track.lower()) not in seen_track_keys]
         else:
@@ -303,6 +305,7 @@ def run(settings: Settings) -> None:
             recents,
             half_life_hours=settings.recency_half_life_hours,
             play_weight=settings.recency_play_weight,
+            min_plays=settings.recency_min_plays,
         )
 
         reordered_video_ids = []
