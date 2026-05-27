@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-27 10:34+0200\n"
+"POT-Creation-Date: 2026-05-27 11:37+0200\n"
 "PO-Revision-Date: 2026-05-13 11:41+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -71,8 +71,8 @@ msgstr "Ungültiger Cron-Ausdruck: %(error)s"
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr "Ungültige Startzeit: Stunde muss 0-23, Minute 0-59 sein"
 
-#: web/routes/api.py:292 web/static/js/modules/settings.js:130
-#: web/static/js/modules/settings.js:161
+#: web/routes/api.py:292 web/static/js/modules/settings.js:129
+#: web/static/js/modules/settings.js:160
 msgid "Failed to save settings"
 msgstr "Einstellungen konnten nicht gespeichert werden"
 
@@ -510,7 +510,7 @@ msgstr "wiederhergestellt in"
 msgid "Failed to restore track"
 msgstr "Track konnte nicht wiederhergestellt werden"
 
-#: web/static/js/modules/history.js:196 web/static/js/modules/settings.js:403
+#: web/static/js/modules/history.js:196 web/static/js/modules/settings.js:402
 msgid "DB size:"
 msgstr "DB-Größe:"
 
@@ -944,71 +944,71 @@ msgstr "Sync-Details"
 msgid "Error loading sync details"
 msgstr "Fehler beim Laden der Sync-Details"
 
-#: web/static/js/modules/settings.js:57 web/static/js/modules/settings.js:91
+#: web/static/js/modules/settings.js:56 web/static/js/modules/settings.js:90
 msgid "Failed to load settings"
 msgstr "Einstellungen konnten nicht geladen werden"
 
-#: web/static/js/modules/settings.js:148
+#: web/static/js/modules/settings.js:147
 msgid "Settings saved successfully!"
 msgstr "Einstellungen erfolgreich gespeichert!"
 
-#: web/static/js/modules/settings.js:187
+#: web/static/js/modules/settings.js:186
 msgid "Settings saved. Restart the server to apply changes."
 msgstr ""
 "Einstellungen gespeichert. Server neu starten, um Änderungen zu "
 "übernehmen."
 
-#: web/static/js/modules/settings.js:188 web/static/js/modules/settings.js:262
+#: web/static/js/modules/settings.js:187 web/static/js/modules/settings.js:261
 msgid "Restart Now"
 msgstr "Jetzt neu starten"
 
-#: web/static/js/modules/settings.js:211
+#: web/static/js/modules/settings.js:210
 msgid "Display settings changed. Reload the page to update."
 msgstr "Anzeigeeinstellungen geändert. Seite neu laden, um zu aktualisieren."
 
-#: web/static/js/modules/settings.js:212
+#: web/static/js/modules/settings.js:211
 msgid "Reload"
 msgstr "Neu laden"
 
-#: web/static/js/modules/settings.js:227
+#: web/static/js/modules/settings.js:226
 msgid "Enter a webhook URL first"
 msgstr "Zuerst eine Webhook-URL eingeben"
 
-#: web/static/js/modules/settings.js:238
+#: web/static/js/modules/settings.js:237
 msgid "Test webhook sent successfully!"
 msgstr "Test-Webhook erfolgreich gesendet!"
 
-#: web/static/js/modules/settings.js:240 web/static/js/modules/settings.js:243
+#: web/static/js/modules/settings.js:239 web/static/js/modules/settings.js:242
 msgid "Webhook test failed"
 msgstr "Webhook-Test fehlgeschlagen"
 
-#: web/static/js/modules/settings.js:251
+#: web/static/js/modules/settings.js:250
 msgid "Restarting..."
 msgstr "Neustart..."
 
-#: web/static/js/modules/settings.js:256
+#: web/static/js/modules/settings.js:255
 msgid "Server restarting..."
 msgstr "Server startet neu..."
 
-#: web/static/js/modules/settings.js:259
+#: web/static/js/modules/settings.js:258
 msgid "Failed to restart server"
 msgstr "Server-Neustart fehlgeschlagen"
 
-#: web/static/js/modules/settings.js:285
+#: web/static/js/modules/settings.js:284
 msgid "Server may have restarted. Please refresh manually."
 msgstr ""
 "Der Server wurde möglicherweise neu gestartet. Bitte manuell "
 "aktualisieren."
 
-#: web/static/js/modules/settings.js:429
+#: web/static/js/modules/settings.js:428
 msgid "APScheduler not installed"
 msgstr "APScheduler ist nicht installiert"
 
-#: web/static/js/modules/settings.js:442
+#: web/static/js/modules/settings.js:441
 msgid "Automation Active"
 msgstr "Automatisierung aktiv"
 
-#: web/static/js/modules/settings.js:442
+#: web/static/js/modules/settings.js:441
 msgid "Automation Disabled"
 msgstr "Automatisierung deaktiviert"
 
@@ -2990,3 +2990,4 @@ msgstr "Verlauf"
 #: web/templates/partials/_update_pill.html:3
 msgid "Current version"
 msgstr "Aktuelle Version"
+
