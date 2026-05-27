@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.2.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.1.3...v1.2.0) (2026-05-27)
+
+
+### Features
+
+* add RECENCY_MIN_PLAYS gate for recency-weighted playlists ([a239d68](https://github.com/Locko2901/lastfm-to-ytm/commit/a239d6863c0b8eb619d1074fafb16c84005028b3))
+
+
+### Bug Fixes
+
+* anchor trend chart success bars to baseline ([320a071](https://github.com/Locko2901/lastfm-to-ytm/commit/320a0710fc72ce2cc92a6319a241a3aa01d8ee0d))
+* update last sync timestamp on no-op sync runs ([a0d6706](https://github.com/Locko2901/lastfm-to-ytm/commit/a0d67069ca9f581a9dd8eed99b35bb168ceece07))
+
+
+### Styling
+
+* format SVG elements for consistency in settings modal ([9b54eb1](https://github.com/Locko2901/lastfm-to-ytm/commit/9b54eb12f3087600c9e7932ae0c6e226b7851738))
+
+
+### Internationalization
+
+* add german ([a20f7cf](https://github.com/Locko2901/lastfm-to-ytm/commit/a20f7cff5929825a16472e61b2ad5edcbecd3ee2))
+
 ## [1.1.3](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.1.2...v1.1.3) (2026-05-11)
 
 
