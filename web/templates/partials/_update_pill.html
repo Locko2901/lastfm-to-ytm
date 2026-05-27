@@ -1,7 +1,7 @@
 {# j2lint: disable=S7 #}
 <a id="versionPill" class="version-pill" href="https://github.com/Locko2901/lastfm-to-ytm/releases" target="_blank" rel="noopener noreferrer"
   data-tooltip="{{ _('Current version') }}">
-  <span class="version-pill-tag">v<span class="version-pill-current">—</span></span>
+  <span class="version-pill-tag"><span class="version-pill-prefix">v</span><span class="version-pill-current">—</span></span>
   <span class="version-pill-update" hidden>
     <svg class="version-pill-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
       stroke-linecap="round" stroke-linejoin="round">
@@ -19,6 +19,7 @@
     const t = window.__i18n__ || {}
     const tr = (k) => t[k] || k
 
+    const prefixEl = pill.querySelector(".version-pill-prefix")
     const currentEl = pill.querySelector(".version-pill-current")
     const latestEl = pill.querySelector(".version-pill-latest")
     const updateBadge = pill.querySelector(".version-pill-update")
@@ -30,18 +31,48 @@
       .then((data) => {
         if (!data) return
 
-        if (data.current_version) {
+        const buildType = data.build_type || "unknown"
+        const sha = data.current_sha_short || ""
+
+        if (buildType === "dev" && sha) {
+          prefixEl.textContent = ""
+          currentEl.textContent = "dev·" + sha
+          pill.classList.add("is-dev")
+        } else if (data.current_version) {
+          prefixEl.textContent = "v"
           currentEl.textContent = data.current_version
         }
 
-        if (data.update_available && data.latest_version) {
-          latestEl.textContent = "v" + data.latest_version
-          updateBadge.hidden = false
-          pill.classList.add("has-update")
-          if (data.release_url) pill.href = data.release_url
+        if (data.update_available) {
+          if (buildType === "dev") {
+            if (data.latest_version) {
+              latestEl.textContent = "v" + data.latest_version
+            } else if (data.latest_branch_sha_short) {
+              latestEl.textContent = data.latest_branch_sha_short
+            } else {
+              latestEl.textContent = tr("new")
+            }
+            updateBadge.hidden = false
+            pill.classList.add("has-update")
+            if (data.release_url) pill.href = data.release_url
+            pill.setAttribute(
+              "data-tooltip",
+              tr("New commits available on the default branch"),
+            )
+          } else if (data.latest_version) {
+            latestEl.textContent = "v" + data.latest_version
+            updateBadge.hidden = false
+            pill.classList.add("has-update")
+            if (data.release_url) pill.href = data.release_url
+            pill.setAttribute(
+              "data-tooltip",
+              tr("Update available: %(v)s").replace("%(v)s", "v" + data.latest_version),
+            )
+          }
+        } else if (buildType === "dev" && sha) {
           pill.setAttribute(
             "data-tooltip",
-            tr("Update available: %(v)s").replace("%(v)s", "v" + data.latest_version),
+            tr("Development build (%(sha)s)").replace("%(sha)s", sha),
           )
         } else if (data.current_version) {
           pill.setAttribute(
