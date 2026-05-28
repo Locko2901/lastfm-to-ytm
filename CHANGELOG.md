@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.5.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.4.0...v1.5.0) (2026-05-28)
+
+
+### Features
+
+* add commits_url to update status; change recency half-life default to 48h ([9cb7045](https://github.com/Locko2901/lastfm-to-ytm/commit/9cb70458744c491575095990275f53ea69e3c551))
+* add screenshot automation pipeline ([9abc396](https://github.com/Locko2901/lastfm-to-ytm/commit/9abc396bb012ec2891d3ff9a8e0fb6176b2a40b0))
+
+
+### Bug Fixes
+
+* **web:** invalidate update-check cache when build SHA changes ([5352527](https://github.com/Locko2901/lastfm-to-ytm/commit/535252725aeca5152b889e2b1926a7002693259b))
+* **web:** show latest default branch commit instead of release tag in dev update pill ([ec2b371](https://github.com/Locko2901/lastfm-to-ytm/commit/ec2b37156ff5376f3f261c6bdf6ec09c5b9df11f))
+
+
+### Documentation
+
+* fix symlink ([d1d75e1](https://github.com/Locko2901/lastfm-to-ytm/commit/d1d75e1eb1e6b4f5b9c60b02953c288113cdb0da))
+* full documentation overhaul ([00107d3](https://github.com/Locko2901/lastfm-to-ytm/commit/00107d38141edaf0079f4d6447672c060821e3f7))
+* update screenshots ([fddd791](https://github.com/Locko2901/lastfm-to-ytm/commit/fddd7911984d98f991fe6f8d50666361937854f7))
+
+
+### Styling
+
+* make linters happy ([1b29fcb](https://github.com/Locko2901/lastfm-to-ytm/commit/1b29fcbe0a96ad70aef519f29c988b75724c74f6))
+* make linters happy ([8c48edc](https://github.com/Locko2901/lastfm-to-ytm/commit/8c48edc2bc42d047f97c0e4aaf00b0d15476cbe0))
+
 ## [1.4.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.3.1...v1.4.0) (2026-05-27)
 
 
