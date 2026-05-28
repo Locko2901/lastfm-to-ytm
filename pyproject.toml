@@ -18,6 +18,7 @@ dependencies = [
 dev = ["ruff>=0.8.0", "j2lint>=1.2.0"]
 web = ["flask>=3.0.0", "flask-babel>=4.0.0", "apscheduler>=3.10.0", "gunicorn>=21.0.0", "cryptography>=41.0.0", "argon2-cffi>=23.1.0"]
 docs = ["mkdocs-material>=9.0.0"]
+web-docs = ["playwright>=1.40.0"]
 
 [project.scripts]
 lastfm-ytm-sync = "run:run"
@@ -78,6 +79,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "run.py" = ["T20"]                 # allow print in entrypoint
 "src/lastfm/fetch.py" = ["ARG001"] # signature must match socket.getaddrinfo
+"tests/screenshots/*.py" = ["T20", "D", "E501"] # dev-only CLI: prints + literal fixture rows
 
 [tool.ruff.lint.isort]
 known-first-party = ["src"]

@@ -1,0 +1,11 @@
+{
+  "_overrides": {
+    "saturn hours|halo effect": {
+      "artist": "Saturn Hours",
+      "title": "Halo Effect",
+      "tags": ["jazz", "experimental"],
+      "mode": "replace",
+      "reason": "Drop the 'live' tag  it's a studio cut despite the title"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "playlists": [
+    {
+      "name": "Ambient Focus (auto)",
+      "description": "Long-form ambient and drone for deep work",
+      "tags": ["ambient", "drone", "field recording"],
+      "match": "any",
+      "limit": 40,
+      "backfill": true
+    },
+    {
+      "name": "Indie Folk Sundays (auto)",
+      "description": "Acoustic and folk picks",
+      "tags": ["folk", "indie folk", "acoustic"],
+      "match": "any",
+      "limit": 25
+    }
+  ]
+}
