@@ -1,0 +1,125 @@
+{
+  "aurora lights|glass mountain": {
+    "artist": "Aurora Lights",
+    "title": "Glass Mountain",
+    "video_id": "demo_aL_gm_001",
+    "yt_title": "Aurora Lights - Glass Mountain (Official Audio)",
+    "timestamp": "2026-05-26T14:02:11+00:00"
+  },
+  "aurora lights|hollow sky": {
+    "artist": "Aurora Lights",
+    "title": "Hollow Sky",
+    "video_id": "demo_aL_hs_002",
+    "yt_title": "Aurora Lights - Hollow Sky",
+    "timestamp": "2026-05-26T14:02:14+00:00"
+  },
+  "halcyon drift|coral static": {
+    "artist": "Halcyon Drift",
+    "title": "Coral Static",
+    "video_id": "demo_hd_cs_003",
+    "yt_title": "Halcyon Drift  Coral Static (Single)",
+    "timestamp": "2026-05-25T09:48:30+00:00"
+  },
+  "halcyon drift|slow tide": {
+    "artist": "Halcyon Drift",
+    "title": "Slow Tide",
+    "video_id": "demo_hd_st_004",
+    "yt_title": "Halcyon Drift - Slow Tide",
+    "timestamp": "2026-05-25T09:48:33+00:00"
+  },
+  "midnight cartographer|compass rose": {
+    "artist": "Midnight Cartographer",
+    "title": "Compass Rose",
+    "video_id": "demo_mc_cr_005",
+    "yt_title": "Midnight Cartographer - Compass Rose [Official Video]",
+    "timestamp": "2026-05-24T22:11:05+00:00"
+  },
+  "midnight cartographer|northbound": {
+    "artist": "Midnight Cartographer",
+    "title": "Northbound",
+    "video_id": "demo_mc_nb_006",
+    "yt_title": "Midnight Cartographer - Northbound",
+    "timestamp": "2026-05-24T22:11:09+00:00"
+  },
+  "saturn hours|ring theory": {
+    "artist": "Saturn Hours",
+    "title": "Ring Theory",
+    "video_id": "demo_sh_rt_007",
+    "yt_title": "Saturn Hours – Ring Theory",
+    "timestamp": "2026-05-22T17:30:00+00:00"
+  },
+  "saturn hours|halo effect": {
+    "artist": "Saturn Hours",
+    "title": "Halo Effect",
+    "video_id": "demo_sh_he_008",
+    "yt_title": "Saturn Hours - Halo Effect (Live at Pitchfork)",
+    "timestamp": "2026-05-22T17:30:03+00:00"
+  },
+  "paper kites demo|featherweight": {
+    "artist": "Paper Kites Demo",
+    "title": "Featherweight",
+    "video_id": "demo_pk_fw_009",
+    "yt_title": "Paper Kites Demo - Featherweight",
+    "timestamp": "2026-05-20T11:00:00+00:00"
+  },
+  "paper kites demo|origami sun": {
+    "artist": "Paper Kites Demo",
+    "title": "Origami Sun",
+    "video_id": "demo_pk_os_010",
+    "yt_title": "Paper Kites Demo - Origami Sun (Acoustic)",
+    "timestamp": "2026-05-20T11:00:04+00:00"
+  },
+  "the quiet channel|standby mode": {
+    "artist": "The Quiet Channel",
+    "title": "Standby Mode",
+    "video_id": "demo_qc_sm_011",
+    "yt_title": "The Quiet Channel - Standby Mode",
+    "timestamp": "2026-05-18T08:22:17+00:00"
+  },
+  "the quiet channel|test pattern": {
+    "artist": "The Quiet Channel",
+    "title": "Test Pattern",
+    "video_id": "demo_qc_tp_012",
+    "yt_title": "The Quiet Channel - Test Pattern (Demo)",
+    "timestamp": "2026-05-18T08:22:21+00:00"
+  },
+  "lowercase drums|soft margin": {
+    "artist": "Lowercase Drums",
+    "title": "soft margin",
+    "video_id": "demo_ld_sm_013",
+    "yt_title": "lowercase drums  soft margin",
+    "timestamp": "2026-05-16T19:44:00+00:00"
+  },
+  "lowercase drums|blank canvas": {
+    "artist": "Lowercase Drums",
+    "title": "blank canvas",
+    "video_id": "demo_ld_bc_014",
+    "yt_title": "lowercase drums  blank canvas",
+    "timestamp": "2026-05-16T19:44:03+00:00"
+  },
+  "field recordings pro|rainwater on tin": {
+    "artist": "Field Recordings Pro",
+    "title": "Rainwater on Tin",
+    "video_id": "demo_fr_rt_015",
+    "yt_title": "Field Recordings Pro - Rainwater on Tin",
+    "timestamp": "2026-05-15T06:00:00+00:00"
+  },
+  "obscure b-side|untitled sketch 4": {
+    "artist": "Obscure B-Side",
+    "title": "Untitled Sketch 4",
+    "video_id": null,
+    "timestamp": "2026-05-27T13:18:45+00:00"
+  },
+  "tape hiss collective|drone for empty room": {
+    "artist": "Tape Hiss Collective",
+    "title": "Drone for Empty Room",
+    "video_id": null,
+    "timestamp": "2026-05-26T20:05:22+00:00"
+  },
+  "anonymous bootleg|misattributed track": {
+    "artist": "Anonymous Bootleg",
+    "title": "Misattributed Track",
+    "video_id": null,
+    "timestamp": "2026-05-24T11:33:09+00:00"
+  }
+}

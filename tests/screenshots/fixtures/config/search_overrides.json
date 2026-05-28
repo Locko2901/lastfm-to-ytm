@@ -1,0 +1,32 @@
+{
+  "_overrides": {
+    "halcyon drift|slow tide": {
+      "artist": "Halcyon Drift",
+      "title": "Slow Tide",
+      "video_id": "demo_hd_st_004",
+      "reason": "Search kept returning a remix; pinned the album version",
+      "timestamp": "2026-05-10T14:00:00+00:00"
+    },
+    "the quiet channel|test pattern": {
+      "artist": "The Quiet Channel",
+      "title": "Test Pattern",
+      "video_id": "demo_qc_tp_012",
+      "reason": "Demo version not surfaced by default search",
+      "timestamp": "2026-05-12T09:30:00+00:00"
+    }
+  },
+  "_blacklist": {
+    "lowercase drums|blank canvas": {
+      "artist": "Lowercase Drums",
+      "title": "blank canvas",
+      "reason": "Skipped  duplicates 'soft margin' on the EP",
+      "timestamp": "2026-05-14T17:22:00+00:00"
+    },
+    "ad jingles inc|brand anthem": {
+      "artist": "Ad Jingles Inc",
+      "title": "Brand Anthem",
+      "reason": "Accidentally scrobbled from a TV ad",
+      "timestamp": "2026-05-09T08:00:00+00:00"
+    }
+  }
+}

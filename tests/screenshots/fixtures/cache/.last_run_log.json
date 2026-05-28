@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-05-28T09:15:00+00:00",
+  "total": 15,
+  "mappings": [
+    { "artist": "Aurora Lights", "title": "Glass Mountain", "source": "cache" },
+    { "artist": "Aurora Lights", "title": "Hollow Sky", "source": "cache" },
+    { "artist": "Halcyon Drift", "title": "Coral Static", "source": "cache" },
+    { "artist": "Halcyon Drift", "title": "Slow Tide", "source": "override" },
+    { "artist": "Midnight Cartographer", "title": "Compass Rose", "source": "cache" },
+    { "artist": "Midnight Cartographer", "title": "Northbound", "source": "cache" },
+    { "artist": "Saturn Hours", "title": "Ring Theory", "source": "cache" },
+    { "artist": "Saturn Hours", "title": "Halo Effect", "source": "cache" },
+    { "artist": "Paper Kites Demo", "title": "Featherweight", "source": "cache" },
+    { "artist": "Paper Kites Demo", "title": "Origami Sun", "source": "cache" },
+    { "artist": "The Quiet Channel", "title": "Standby Mode", "source": "cache" },
+    { "artist": "The Quiet Channel", "title": "Test Pattern", "source": "override" },
+    { "artist": "Lowercase Drums", "title": "soft margin", "source": "cache" },
+    { "artist": "Lowercase Drums", "title": "blank canvas", "source": "blacklisted" },
+    { "artist": "Field Recordings Pro", "title": "Rainwater on Tin", "source": "cache" }
+  ]
+}
