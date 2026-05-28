@@ -278,6 +278,9 @@ def get_update_status() -> dict[str, Any]:
       branch (used for dev-build update detection)
     - ``update_available``: stable builds compare semver; dev builds compare
       ``current_sha`` to ``latest_branch_sha``
+    - ``commits_url``: GitHub URL pointing at the new commits since the
+      running build (compare view when ``current_sha`` is known, otherwise
+      the default branch commit log). Always populated.
     """
     current = _read_local_version()
     current_sha = _read_commit_sha()
@@ -293,6 +296,7 @@ def get_update_status() -> dict[str, Any]:
         "latest_branch_sha": None,
         "latest_branch_sha_short": None,
         "update_available": False,
+        "commits_url": f"https://github.com/{REPO}/commits/{_DEFAULT_BRANCH}",
     }
 
     remote = _fetch_remote_info(current)
@@ -309,6 +313,8 @@ def get_update_status() -> dict[str, Any]:
     if isinstance(branch_head, str):
         result["latest_branch_sha"] = branch_head
         result["latest_branch_sha_short"] = branch_head[:7]
+        if current_sha and current_sha != branch_head:
+            result["commits_url"] = f"https://github.com/{REPO}/compare/{current_sha}...{branch_head}"
 
     current_tag_sha = remote.get("current_tag_sha")
     if declared_channel is None and current_sha:

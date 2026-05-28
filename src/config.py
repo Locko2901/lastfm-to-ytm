@@ -85,7 +85,7 @@ class Settings:
     use_anon_search: bool = True
     early_termination_score: float = 0.9
     use_recency_weighting: bool = True
-    recency_half_life_hours: float = 24.0
+    recency_half_life_hours: float = 48.0
     recency_play_weight: float = 0.7
     recency_min_plays: int = 1
     max_raw_scrobbles: int = 2000
@@ -145,7 +145,7 @@ class Settings:
         early_termination_score = _str_to_float(os.getenv("EARLY_TERMINATION_SCORE"), 0.9)
 
         use_recency_weighting = _str_to_bool(os.getenv("USE_RECENCY_WEIGHTING"), True)
-        recency_half_life_hours = _str_to_float(os.getenv("RECENCY_HALF_LIFE_HOURS"), 24.0)
+        recency_half_life_hours = _str_to_float(os.getenv("RECENCY_HALF_LIFE_HOURS"), 48.0)
         recency_play_weight = _str_to_float(os.getenv("RECENCY_PLAY_WEIGHT"), 0.7)
         if not 0.0 <= recency_play_weight <= 1.0:
             recency_play_weight = 0.7
