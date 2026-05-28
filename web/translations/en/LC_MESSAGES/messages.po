@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-27 18:20+0200\n"
+"POT-Creation-Date: 2026-05-28 16:22+0200\n"
 "PO-Revision-Date: 2026-03-13 15:44+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -30,8 +30,8 @@ msgstr ""
 msgid "At least one tag is required."
 msgstr ""
 
-#: web/routes/actions.py:220 web/routes/api.py:175 web/routes/api.py:246
-#: web/routes/api.py:811
+#: web/routes/actions.py:220 web/routes/api.py:177 web/routes/api.py:248
+#: web/routes/api.py:813
 msgid "No data provided"
 msgstr ""
 
@@ -40,137 +40,137 @@ msgstr ""
 msgid "Imported"
 msgstr ""
 
-#: web/routes/api.py:155
+#: web/routes/api.py:157
 msgid ".env already exists"
 msgstr ""
 
-#: web/routes/api.py:158
+#: web/routes/api.py:160
 msgid ".env.example not found"
 msgstr ""
 
-#: web/routes/api.py:167
+#: web/routes/api.py:169
 msgid "Failed to create configuration file"
 msgstr ""
 
-#: web/routes/api.py:181
+#: web/routes/api.py:183
 msgid "Username and API key are required"
 msgstr ""
 
-#: web/routes/api.py:193
+#: web/routes/api.py:195
 msgid "Failed to save credentials"
 msgstr ""
 
-#: web/routes/api.py:272 web/routes/api.py:827
+#: web/routes/api.py:274 web/routes/api.py:829
 #, python-format
 msgid "Invalid cron expression: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:281 web/routes/api.py:835
+#: web/routes/api.py:283 web/routes/api.py:837
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr ""
 
-#: web/routes/api.py:293 web/static/js/modules/settings.js:130
+#: web/routes/api.py:295 web/static/js/modules/settings.js:130
 #: web/static/js/modules/settings.js:161
 msgid "Failed to save settings"
 msgstr ""
 
-#: web/routes/api.py:302
+#: web/routes/api.py:304
 msgid "No webhook URL provided"
 msgstr ""
 
-#: web/routes/api.py:315
+#: web/routes/api.py:317
 msgid "Webhook request failed. Check the URL and try again."
 msgstr ""
 
-#: web/routes/api.py:393
+#: web/routes/api.py:395
 msgid "Unknown panel"
 msgstr ""
 
-#: web/routes/api.py:407
+#: web/routes/api.py:409
 msgid "Invalid data: 'playlists' array required"
 msgstr ""
 
-#: web/routes/api.py:411
+#: web/routes/api.py:413
 msgid "'playlists' must be an array"
 msgstr ""
 
-#: web/routes/api.py:460
+#: web/routes/api.py:462
 msgid "Failed to save custom playlists"
 msgstr ""
 
-#: web/routes/api.py:571
+#: web/routes/api.py:573
 msgid "Artist and title are required"
 msgstr ""
 
-#: web/routes/api.py:649
+#: web/routes/api.py:651
 msgid "Last.fm credentials not configured"
 msgstr ""
 
-#: web/routes/api.py:717
+#: web/routes/api.py:719
 msgid "Failed to fetch from Last.fm"
 msgstr ""
 
-#: web/routes/api.py:720
+#: web/routes/api.py:722
 msgid "Internal error"
 msgstr ""
 
-#: web/routes/api.py:837
+#: web/routes/api.py:839
 msgid "Invalid start time format. Use HH:MM."
 msgstr ""
 
-#: web/routes/api.py:862
+#: web/routes/api.py:864
 msgid "Failed to configure scheduler. APScheduler may not be installed."
 msgstr ""
 
-#: web/routes/api.py:865
+#: web/routes/api.py:867
 #, python-format
 msgid "Invalid value: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:868
+#: web/routes/api.py:870
 msgid "Failed to configure scheduler"
 msgstr ""
 
-#: web/routes/api.py:885
+#: web/routes/api.py:887
 msgid "Failed to save theme overrides"
 msgstr ""
 
-#: web/routes/api.py:894 web/routes/api.py:923 web/routes/api.py:945
+#: web/routes/api.py:896 web/routes/api.py:925 web/routes/api.py:947
 msgid "Password is required"
 msgstr ""
 
-#: web/routes/api.py:898
+#: web/routes/api.py:900
 msgid "Password must be at least 4 characters"
 msgstr ""
 
-#: web/routes/api.py:913 web/static/js/modules/modals.js:574
+#: web/routes/api.py:915 web/static/js/modules/modals.js:574
 #: web/static/js/modules/modals.js:585 web/static/js/modules/teleporter.js:91
 #: web/static/js/modules/teleporter.js:104
 msgid "Export failed"
 msgstr ""
 
-#: web/routes/api.py:925 web/routes/api.py:947
+#: web/routes/api.py:927 web/routes/api.py:949
 msgid "No file provided"
 msgstr ""
 
-#: web/routes/api.py:935 web/static/js/modules/teleporter.js:193
+#: web/routes/api.py:937 web/static/js/modules/teleporter.js:193
 #: web/static/js/modules/teleporter.js:205
 msgid "Preview failed"
 msgstr ""
 
-#: web/routes/api.py:957 web/static/js/modules/modals.js:653
+#: web/routes/api.py:959 web/static/js/modules/modals.js:653
 #: web/static/js/modules/modals.js:672 web/static/js/modules/teleporter.js:233
 #: web/static/js/modules/teleporter.js:242
 msgid "Import failed"
 msgstr ""
 
-#: web/routes/api.py:979 web/routes/api.py:1002 web/routes/api.py:1021
-#: web/routes/api.py:1035 web/routes/api.py:1055 web/routes/api.py:1069
-#: web/routes/api.py:1092 web/routes/api.py:1102
+#: web/routes/api.py:981 web/routes/api.py:1004 web/routes/api.py:1023
+#: web/routes/api.py:1037 web/routes/api.py:1057 web/routes/api.py:1071
+#: web/routes/api.py:1094 web/routes/api.py:1104
 msgid "History database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1025
+#: web/routes/api.py:1027
 msgid "Sync record not found"
 msgstr ""
 

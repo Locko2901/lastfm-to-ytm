@@ -54,7 +54,8 @@
             }
             updateBadge.hidden = false
             pill.classList.add("has-update")
-            if (data.release_url) pill.href = data.release_url
+            if (data.commits_url) pill.href = data.commits_url
+            else if (data.release_url) pill.href = data.release_url
             pill.setAttribute(
               "data-tooltip",
               tr("New commits available on the default branch"),

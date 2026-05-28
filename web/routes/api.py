@@ -127,8 +127,10 @@ def update_status():
     """Return the current app version and the latest published release.
 
     Response keys: ``current_version``, ``latest_version``, ``release_url``,
-    ``release_name``, ``update_available``. Remote fields are ``None`` if
-    the GitHub check failed.
+    ``release_name``, ``update_available``, ``commits_url``. Remote fields
+    are ``None`` if the GitHub check failed. ``commits_url`` always points
+    at the new commits on the default branch (compare view when the build
+    SHA is known).
     """
     return jsonify(get_update_status())
 
