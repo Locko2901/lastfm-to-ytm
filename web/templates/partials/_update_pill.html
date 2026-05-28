@@ -1,11 +1,10 @@
 {# j2lint: disable=S7 #}
-<a id="versionPill" class="version-pill" href="https://github.com/Locko2901/lastfm-to-ytm/releases" target="_blank"
-  rel="noopener noreferrer" data-tooltip="{{ _('Current version') }}">
-  <span class="version-pill-tag"><span class="version-pill-prefix">v</span><span
-      class="version-pill-current">—</span></span>
+<a id="versionPill" class="version-pill" href="https://github.com/Locko2901/lastfm-to-ytm/releases" target="_blank" rel="noopener noreferrer"
+  data-tooltip="{{ _('Current version') }}">
+  <span class="version-pill-tag"><span class="version-pill-prefix">v</span><span class="version-pill-current">—</span></span>
   <span class="version-pill-update" hidden>
-    <svg class="version-pill-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <svg class="version-pill-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+      stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 19V5"></path>
       <path d="m5 12 7-7 7 7"></path>
     </svg>
@@ -26,8 +25,8 @@
     const updateBadge = pill.querySelector(".version-pill-update")
 
     fetch("/api/update-status", {
-      credentials: "same-origin"
-    })
+        credentials: "same-origin"
+      })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (!data) return
