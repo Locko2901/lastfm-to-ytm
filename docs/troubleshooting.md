@@ -1,24 +1,23 @@
 # Troubleshooting
 
-## Known Issues
+## Quick Diagnosis
 
-### Chromium: sync console output appears all at once
+Start here. Match your symptom to find the right section.
 
-In Chromium-based browsers (but **not** Chrome, Firefox, Safari, etc.), Server-Sent Events from the sync console may be buffered and only displayed after the sync finishes, rather than streaming in real time. This is a Chromium-specific SSE buffering behavior when the response doesn't meet its internal flush heuristics.
+| Symptom | Go to |
+|---|---|
+| Sync fails with 401/403 from YouTube Music | [YouTube Music auth errors](#youtube-music-auth-errors) |
+| Sync fails with Last.fm error / bad API key | [Last.fm errors](#lastfm-errors-401403invalid-key) |
+| Playlist exists but isn't updating | [Playlist not updating](#playlist-not-updating) |
+| Wrong track / live / remix selected | [Missing or wrong matches](#missing-or-wrong-matches) |
+| Sync is slow | [Search performance issues](#search-performance-issues) |
+| Frequent 429/rate limit errors | [Rate limiting or throttling](#rate-limiting-or-throttling) |
+| Weekly playlist named for the wrong week | [Weekly date mismatches](#weekly-date-mismatches) |
+| A cached match keeps coming back wrong | [Stale cache results](#stale-cache-results) |
+| Sync console doesn't stream in real time (Chromium) | [Known Issues](#chromium-sync-console-output-appears-all-at-once) |
+| Playlist is empty or has `[Deleted video]` ghosts | [Known Issues](#copyright-deleted-videos-linger-in-the-playlist) |
 
-**Workaround:** Use Chrome, Firefox, or another browser for real-time sync output. The sync itself is unaffected - only the live display is delayed in Chromium.
-
-### Copyright-deleted videos linger in the playlist
-
-When YouTube removes a video for copyright reasons, it stays in the playlist as a hidden `[Deleted video]` entry. The YouTube Music API does not expose these ghost entries, so the sync engine cannot detect or remove them. Because we try to keep a single playlist ID, the deleted video remains and the sync simply works around it - emptying what it can and re-adding the current tracks while the orphaned entry stays behind.
-
-**Workaround:** Manually delete the playlist and let the next sync create a fresh one.
-
-### Sync leaves behind an empty playlist
-
-Occasionally the sync can fail mid-run (rate limits, transient API errors, etc.) and leave the playlist in an empty or partially-filled state.
-
-**Workaround:** Run the sync again. If the playlist is still empty after a retry, open the **cache management modal** (database icon in the dashboard header) &rarr; *Playlist cache* tab and remove the affected entry, then run the sync once more so it rebuilds from scratch. As a last resort you can delete `cache/.playlist_cache.json` directly.
+If none of these match, check the sync console (or `./run-docker.sh --logs`) for the first error line.
 
 ---
 
@@ -71,3 +70,25 @@ Occasionally the sync can fail mid-run (rate limits, transient API errors, etc.)
 
 - Cached search results expire after `CACHE_SEARCH_TTL_DAYS` (default: 30). If a video has been removed or a better match exists, open the **cache management modal** (database icon in the dashboard header) &rarr; *Search cache* tab and bulk-delete the affected entries, or delete `cache/.search_cache.json` entirely.
 - "Not found" entries are retried after `CACHE_NOTFOUND_TTL_DAYS` (default: 7). To force an immediate retry, clear the entry from the cache.
+
+---
+
+## Known Issues
+
+### Chromium: sync console output appears all at once
+
+In Chromium-based browsers (but **not** Chrome, Firefox, Safari, etc.), Server-Sent Events from the sync console may be buffered and only displayed after the sync finishes, rather than streaming in real time. This is a Chromium-specific SSE buffering behavior when the response doesn't meet its internal flush heuristics.
+
+**Workaround:** Use Chrome, Firefox, or another browser for real-time sync output. The sync itself is unaffected - only the live display is delayed in Chromium.
+
+### Copyright-deleted videos linger in the playlist
+
+When YouTube removes a video for copyright reasons, it stays in the playlist as a hidden `[Deleted video]` entry. The YouTube Music API does not expose these ghost entries, so the sync engine cannot detect or remove them. Because we try to keep a single playlist ID, the deleted video remains and the sync simply works around it - emptying what it can and re-adding the current tracks while the orphaned entry stays behind.
+
+**Workaround:** Manually delete the playlist and let the next sync create a fresh one.
+
+### Sync leaves behind an empty playlist
+
+Occasionally the sync can fail mid-run (rate limits, transient API errors, etc.) and leave the playlist in an empty or partially-filled state.
+
+**Workaround:** Run the sync again. If the playlist is still empty after a retry, open the **cache management modal** (database icon in the dashboard header) &rarr; *Playlist cache* tab and remove the affected entry, then run the sync once more so it rebuilds from scratch. As a last resort you can delete `cache/.playlist_cache.json` directly.

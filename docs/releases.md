@@ -2,6 +2,9 @@
 
 Versioning, the changelog, and GitHub Releases are fully automated via [release-please](https://github.com/googleapis/release-please).
 
+!!! warning "One-time setup required"
+    Enable **Settings &rarr; Actions &rarr; General &rarr; Workflow permissions &rarr; "Allow GitHub Actions to create and approve pull requests"** in your fork/repo. Without this, release-please cannot open the Release PR and tagging never happens. See [Repository setting required](#repository-setting-required) below.
+
 ## How it works
 
 The `release-please` job in [.github/workflows/ci.yml](https://github.com/Locko2901/lastfm-to-ytm/blob/main/.github/workflows/ci.yml) watches `main`. It only runs after all lint jobs in the same workflow pass, so a broken build can never tag a release. On every successful push to `main` it:
@@ -85,7 +88,7 @@ Note that a plain `git clone` (or `git checkout main`) leaves HEAD attached to t
 
 ## Upgrading
 
-See [Updating](quickstart.md#updating) in the quickstart for the per-install upgrade commands.
+See [Updating](docker-reference.md#updating) for the per-install upgrade commands (CLI users: [CLI Install &rarr; Updating](cli-install.md#updating)).
 
 ## Manual changelog regeneration (rare)
 

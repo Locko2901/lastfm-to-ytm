@@ -6,6 +6,9 @@ Sometimes the automatic search may fail to find a song or may find the wrong ver
 
 **CLI**: Edit `config/search_overrides.json` directly.
 
+??? example "Screenshot: Overrides tab"
+    ![Overrides](screenshots/overrides.png)
+
 ---
 
 ## Setup
@@ -43,11 +46,5 @@ Find the video ID from a YouTube Music URL - it is the part after `v=` (e.g., `h
 
 Blacklisted tracks are excluded entirely from playlist generation. They are checked *before* overrides and the search cache, so a blacklisted track will never appear in any playlist regardless of other entries.
 
-## Key Rules
-
-- Keys must be `artist|title` in **lowercase**
-- The resolution priority is: blacklist &rarr; overrides &rarr; search cache &rarr; YouTube Music API
-- Overrides take priority over both the search cache and API searches
-- Blacklisted tracks are skipped entirely during playlist generation
-- Both persist until you manually remove them (no expiration)
-- Override and blacklist entries also apply to [custom tag playlists](tag-playlists.md)
+!!! info "Resolution order"
+    blacklist &rarr; overrides &rarr; search cache &rarr; YouTube Music API. Overrides and blacklist entries never expire (you remove them manually), and both also apply to [custom tag playlists](tag-playlists.md).

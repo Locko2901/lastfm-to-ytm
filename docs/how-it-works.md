@@ -1,5 +1,7 @@
 # How It Works
 
+This tool has two sync flows: the **main playlist** (covered below) and, optionally, **custom tag playlists**. The Docker dashboard exposes both as separate buttons; on the CLI they are `python run.py` and `python run_tags.py`. The rest of this page describes the main flow - tag playlists are documented in [Custom Tag Playlists](tag-playlists.md).
+
 ## Overview
 
 1. Fetch recent scrobbles from Last.fm (up to `MAX_RAW_SCROBBLES`, default 2000)
@@ -7,11 +9,10 @@
     - If `USE_RECENCY_WEIGHTING=true`, score each track using exponential decay (see [Recency Weighting](#recency-weighting))
     - Otherwise, pick up to `LIMIT` most recent unique tracks
     - If `DEDUPLICATE=true`, ensure the final playlist does not include duplicates
-3. Resolve each track to a YouTube Music video ID using a three-tier priority:
-    1. **Blacklist check** - skip tracks listed in the `_blacklist` section of `config/search_overrides.json`
-    2. **Manual overrides** - check the `_overrides` section of `config/search_overrides.json` (user-specified fixes)
-    3. **Search cache** - check `cache/.search_cache.json` (previously successful searches, 30-day TTL)
-    4. **YouTube Music API** - only query the API if all of the above miss, then cache the result
+3. Resolve each track to a YouTube Music video ID. Tracks listed in the `_blacklist` section of `config/search_overrides.json` are filtered out first. Surviving tracks are resolved using a three-tier priority:
+    1. **Manual overrides** - check the `_overrides` section of `config/search_overrides.json` (user-specified fixes)
+    2. **Search cache** - check `cache/.search_cache.json` (previously successful searches, 30-day TTL)
+    3. **YouTube Music API** - only query the API if both of the above miss, then cache the result
 
     This cache-first approach minimizes API calls and ensures consistent results across runs.
 
@@ -19,6 +20,9 @@
 5. Score and select the best match (see [Search and Matching](#search-and-matching))
 6. Create or update YouTube Music playlist(s) with rate-limit-friendly delays (`SLEEP_BETWEEN_SEARCHES`)
 7. If `WEEKLY_ENABLED=true`, update the weekly playlist snapshot (see [Weekly Playlists](#weekly-playlists))
+
+!!! note "Playlist lifecycle"
+    On the **first** run, the tool creates a new YouTube Music playlist named by `PLAYLIST_NAME`. On every subsequent run it finds the existing playlist by name and updates it in place. The tool manages only the playlist(s) it creates - manual edits to those playlists are reverted on the next run to match the tool's logic. Other playlists in your library are never touched.
 
 ---
 
@@ -37,25 +41,28 @@ The matching algorithm aims to select the "right" track:
 
 If a track cannot be matched reliably, it is cached as "not found" (retried after `CACHE_NOTFOUND_TTL_DAYS`, default 7) and skipped for the current run.
 
-### Scoring Breakdown
+!!! info "Deeper dive"
+    For the full normalization, similarity, and query-building details (with code references), see [Search Internals](search-internals.md).
 
-The base match score is calculated as:
+??? example "Scoring breakdown (advanced)"
 
-| Component | Weight |
-|-----------|--------|
-| Title similarity | 56% |
-| Artist similarity | 32% |
-| Uploader match | 7% |
-| Album bonus | 5% |
+    The base match score is calculated as:
 
-Additional adjustments:
+    | Component | Weight |
+    |-----------|--------|
+    | Title similarity | 56% |
+    | Artist similarity | 32% |
+    | Uploader match | 7% |
+    | Album bonus | 5% |
 
-- **Hard rejects**: "nightcore", "daycore", "sped", "slowed", "8d", "chipmunk", "reverb", "pitch", "bassboosted" in video results (non-Topic channels) &rarr; rejected outright
-- **Soft penalties**: "live", "acoustic", "remix", "cover", "karaoke", "instrumental", etc. &rarr; -8% per term (capped at 25%). Hard negative terms that slip through (e.g., in song results) get -35% per term (capped at 60%).
-- **Result type**: Songs get +6%, Videos get -3%, "Topic" channels with good uploader match get +2%
-- **Style mismatch**: If you actually *want* a nightcore/sped-up version but the candidate lacks it, an additional -12% to -18% penalty is applied
-- **Minimum thresholds**: Artist similarity must be &ge; 0.30, title similarity must be &ge; 0.25, or the candidate is discarded
-- **Acceptance thresholds**: Base threshold of 0.66 (0.68 when album data is available), with an additional +0.05 for video results
+    Additional adjustments:
+
+    - **Hard rejects**: "nightcore", "daycore", "sped", "slowed", "8d", "chipmunk", "reverb", "pitch", "bassboosted" in video results (non-Topic channels) &rarr; rejected outright
+    - **Soft penalties**: "live", "acoustic", "remix", "cover", "karaoke", "instrumental", etc. &rarr; -8% per term (capped at 25%). Hard negative terms that slip through (e.g., in song results) get -35% per term (capped at 60%).
+    - **Result type**: Songs get +6%, Videos get -3%, "Topic" channels with good uploader match get +2%
+    - **Style mismatch**: If you actually *want* a nightcore/sped-up version but the candidate lacks it, an additional -12% to -18% penalty is applied
+    - **Minimum thresholds**: Artist similarity must be &ge; 0.30, title similarity must be &ge; 0.25, or the candidate is discarded
+    - **Acceptance thresholds**: Base threshold of 0.66 (0.68 when album data is available), with an additional +0.05 for video results
 
 ---
 
@@ -67,7 +74,7 @@ When enabled, the tool combines play count and recency to rank tracks:
 - **Recency score**: `0.5 ^ (age_hours / half_life_hours)` based on the most recent play
     - A track played exactly one half-life ago scores 0.5
     - More recent = higher score (up to 1.0)
-    - Default half-life: **24 hours** (`RECENCY_HALF_LIFE_HOURS=24.0`)
+    - Default half-life: **48 hours** (`RECENCY_HALF_LIFE_HOURS=48.0`)
 - **Final score**: `play_weight &times; play_score + (1 - play_weight) &times; recency_score`
     - Default: 70% play count, 30% recency (`RECENCY_PLAY_WEIGHT=0.7`)
 - **Minimum play gate**: tracks with fewer than `RECENCY_MIN_PLAYS` scrobbles inside the fetched window are dropped before scoring (default `1` = no gate). Useful for surfacing only songs you've revisited. Note that the gate counts plays inside the fetched recency window only - raise `MAX_RAW_SCROBBLES` if you need a larger window.

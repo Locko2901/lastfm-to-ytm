@@ -4,6 +4,12 @@ Create automatic YouTube Music playlists based on Last.fm tags and genres. You c
 
 For example, define a "Breakcore Mix" playlist that only includes tracks tagged `breakcore` or `drill and bass` on Last.fm, or a "Chill Electronic" playlist that requires both `electronic` and `ambient` tags.
 
+??? example "Screenshot: Custom Playlists editor"
+    ![Custom Playlists](screenshots/custom_playlists.png)
+
+!!! tip "Related"
+    Tag playlists honor the same `_overrides` and `_blacklist` you set up in [Search Overrides](overrides.md), plus a **per-playlist** `blacklist` field (see [Configuration](#configuration) below). Use tag overrides when Last.fm's tags are wrong; use search overrides when the *matched video* is wrong.
+
 ## How Tags Are Resolved
 
 The tag system follows the same cache-first approach as the main sync:
@@ -57,15 +63,15 @@ cp config/custom_playlists.json.example config/custom_playlists.json
 }
 ```
 
-| Field | Description |
-|-------|-------------|
-| `name` | Playlist name on YouTube Music |
-| `description` | Optional playlist description |
-| `tags` | Last.fm tags to match against |
-| `match` | `"any"` (track has at least one tag) or `"all"` (track has every tag) |
-| `limit` | Target number of tracks |
-| `backfill` | Fetch more scrobbles if filtering doesn't reach the limit |
-| `blacklist` | Per-playlist exclusions as `"artist\|title"` (lowercase) |
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | yes | Playlist name on YouTube Music |
+| `description` | no | Optional playlist description (empty = auto-generated) |
+| `tags` | yes | Last.fm tags to match against |
+| `match` | no | `"any"` (track has at least one tag, default) or `"all"` (track has every tag) |
+| `limit` | no | Target number of tracks (default: `50`) |
+| `backfill` | no | Fetch more scrobbles if filtering doesn't reach the limit (default: `true`) |
+| `blacklist` | no | Per-playlist exclusions as `"artist\|title"` (lowercase) |
 
 ### Environment Variables
 

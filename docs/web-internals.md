@@ -120,6 +120,12 @@ When tag sync is enabled, a file counter (`cache/.tag_sync_counter.json`) tracks
 
 ---
 
+## Theme overrides
+
+CSS variable overrides edited from **Settings &rarr; Display &rarr; Customize colors** are persisted to `cache/.theme_overrides.json` (same folder as the search/playlist/tag caches) via `POST /api/theme`. Overrides are split per base theme (Dark / Light) and injected server-side into every page render, so the first paint already reflects the user's scheme (no flash of default theme). The file is included in the Teleporter cache picker for backup/restore.
+
+---
+
 ## IPv4 Forcing (Dual Implementation)
 
 IPv4-only mode uses two separate mechanisms:

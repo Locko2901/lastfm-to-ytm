@@ -9,20 +9,20 @@ theme:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: indigo
-      accent: amber
+      accent: lavender
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: indigo
-      accent: amber
+      accent: lavender
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
   features:
     - navigation.sections
-    - navigation.expand
+    - navigation.indexes
     - navigation.top
     - content.code.copy
     - search.highlight
@@ -56,25 +56,32 @@ extra_javascript:
 nav:
   - Home: index.md
   - Getting Started:
-      - Quick Start: quickstart.md
-      - Configuration: configuration.md
+      - Quick Start (Docker): quickstart.md
+      - Release Channels: channels.md
   - Features:
       - Web Dashboard: dashboard.md
       - Custom Tag Playlists: tag-playlists.md
       - Search Overrides: overrides.md
-      - Webhooks: webhooks.md
-      - History Database: history.md
-      - Teleporter: teleporter.md
   - How It Works: how-it-works.md
   - Troubleshooting: troubleshooting.md
+  - Advanced:
+      - CLI Install (no Docker): cli-install.md
+      - Webhooks: webhooks.md
+      - History Database: history.md
+      - Teleporter (Backup): teleporter.md
+  - Reference:
+      - Configuration: configuration.md
+      - Docker Reference: docker-reference.md
   - Development:
       - Setup: development.md
       - Contributing: contributing.md
-      - Architecture: architecture.md
-      - Search Internals: search-internals.md
-      - Playlist Sync Internals: playlist-sync-internals.md
-      - Web Dashboard Internals: web-internals.md
-      - Docker Internals: docker-internals.md
+      - Releases & Changelog: releases.md
       - Translations (i18n): i18n.md
       - Linting & Formatting: linting.md
-      - Releases & Changelog: releases.md
+      - Screenshot Automation: screenshot-automation.md
+      - Internals:
+          - Architecture: architecture.md
+          - Search Internals: search-internals.md
+          - Playlist Sync Internals: playlist-sync-internals.md
+          - Web Dashboard Internals: web-internals.md
+          - Docker Internals: docker-internals.md

@@ -2,6 +2,22 @@
 
 The Teleporter lets you export and import your entire configuration as a single encrypted file. Useful for migrating to a new server, creating backups, or cloning your setup.
 
+---
+
+## Usage
+
+1. Open **Settings** &rarr; **Data Management** &rarr; **Teleporter**
+2. **Export**: enter a password (min. 8 characters), optionally select which cache files to include, click **Export Encrypted Backup**. You get back a `.bin` file.
+3. **Import**: drop a `.bin` file, enter the password, click **Preview** to verify contents, then **Restore Backup**.
+
+!!! warning "Security"
+    The backup contains sensitive data (API keys, auth tokens). Store it securely and use a strong password.
+
+??? example "Screenshot: Teleporter modal"
+    ![Teleporter](screenshots/teleporter.png)
+
+---
+
 ## What's Included
 
 **Always exported:**
@@ -21,7 +37,9 @@ The Teleporter lets you export and import your entire configuration as a single 
 
 ---
 
-## Encryption Flow
+## How the encryption works
+
+Skip this section unless you want to verify or audit the format.
 
 ```
 Binary format (v1):
@@ -35,7 +53,7 @@ Binary format (v1):
     3. Derive a 256-bit key using Argon2id (128 MiB memory, 3 iterations, 4 threads)
     4. Build an 18-byte header: 4B magic + version + KDF algorithm + KDF params
     5. Encrypt the JSON bundle with AES-256-GCM, passing the header as AAD
-    6. Output = header ‖ salt ‖ nonce ‖ ciphertext ‖ GCM tag
+    6. Output = header &Vert; salt &Vert; nonce &Vert; ciphertext &Vert; GCM tag
     7. Download as `.bin` file
 
 ??? info "Import details"
@@ -48,14 +66,3 @@ Binary format (v1):
     6. Validate and restore each config file atomically (temp file + rename)
 
 The magic bytes (`TPRT`) identify the file format before any crypto work begins. The full header (magic + KDF params) is authenticated via GCM's AAD mechanism - any modification to the version byte or KDF parameters (e.g. downgrading memory cost) causes decryption to fail. The password is never stored; it exists only in memory during key derivation.
-
----
-
-## Usage
-
-1. Open **Settings** &rarr; **Data Management** &rarr; **Teleporter**
-2. **Export**: enter a password (min. 8 characters), optionally select which cache files to include, click **Export Encrypted Backup**
-3. **Import**: drop a `.bin` file, enter the password, click **Preview** to verify contents, then **Restore Backup**
-
-!!! warning "Security"
-    The backup contains sensitive data (API keys, auth tokens). Store it securely and use a strong password.

@@ -50,7 +50,7 @@ config/search_overrides.json
 config/custom_playlists.json
 config/tag_overrides.json
 
-# Screenshot automation – SQLite DB is regenerated from seed data each run
+# Screenshot automation - SQLite DB is regenerated from seed data each run
 tests/screenshots/fixtures/cache/*.db
 tests/screenshots/fixtures/cache/*.db-shm
 tests/screenshots/fixtures/cache/*.db-wal

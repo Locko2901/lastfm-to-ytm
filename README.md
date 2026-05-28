@@ -1,3 +1,6 @@
+[![CI](https://github.com/Locko2901/lastfm-to-ytm/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Locko2901/lastfm-to-ytm/actions/workflows/ci.yml)
+[![Latest Release](https://img.shields.io/github/v/release/Locko2901/lastfm-to-ytm?logo=github)](https://github.com/Locko2901/lastfm-to-ytm/releases/latest)
+[![GHCR Image](https://img.shields.io/badge/ghcr.io-lastfm--to--ytm-2496ED?logo=docker&logoColor=white)](https://github.com/Locko2901/lastfm-to-ytm/pkgs/container/lastfm-to-ytm)
 [![Made with Python](https://img.shields.io/badge/Made%20with-Python-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Built with ytmusicapi](https://img.shields.io/badge/Built%20with-ytmusicapi-FF0000?logo=youtube&logoColor=white)](https://ytmusicapi.readthedocs.io/)
 [![Uses Last.fm API](https://img.shields.io/badge/Uses-Last.fm%20API-D51007?logo=last.fm&logoColor=white)](https://www.last.fm/api)
@@ -5,7 +8,7 @@
 
 # Last.fm &rarr; YouTube Music Playlist Creator
 
-Create and maintain a YouTube Music playlist from your Last.fm listening history. This tool fetches your recent scrobbles, intelligently finds matches on YouTube Music, and keeps a playlist updated. Optionally, it can snapshot your listening into weekly playlists.
+Keeps a YouTube Music playlist in sync with your Last.fm listening history. Last.fm logs every track you play as a "scrobble" - this tool reads those, finds the right official upload on YouTube Music (skipping live versions, remixes, and nightcore), and updates the playlist automatically. Optional weekly snapshots archive how your taste changes over time.
 
 ![Dashboard Preview](docs/screenshots/dashboard.png)
 
@@ -28,7 +31,7 @@ Create and maintain a YouTube Music playlist from your Last.fm listening history
 
 **Web dashboard** (Docker)
 
-- Real-time sync console with Server-Sent Events
+- Real-time sync console
 - Settings editor, cache browser, override/blacklist management
 - Built-in scheduler (interval or cron)
 - Sync history database with audit trail
@@ -38,10 +41,10 @@ Create and maintain a YouTube Music playlist from your Last.fm listening history
 
 **Infrastructure**
 
-- Cache-first architecture minimizes API calls (search cache, playlist template cache, tag cache)
+- Smart caching minimizes API calls (search results, playlist state, and tag data are all cached)
 - Configurable via environment variables, `.env` file, or the web UI
-- Rate-limit-friendly with configurable delays and exponential backoff
-- Multi-language support (i18n via Flask-Babel)
+- Rate-limit-friendly with automatic retries and configurable delays
+- Multi-language support
 
 ## Quick Start
 
@@ -90,16 +93,6 @@ Full documentation is available at **[locko2901.github.io/lastfm-to-ytm](https:/
 - [How It Works](https://locko2901.github.io/lastfm-to-ytm/how-it-works/) - Search, matching, and recency weighting
 - [Troubleshooting](https://locko2901.github.io/lastfm-to-ytm/troubleshooting/) - Common problems and known issues
 - [Development](https://locko2901.github.io/lastfm-to-ytm/development/) - Architecture, internals, and contributing
-
-## Roadmap
-
-Rough list of things on the radar - no promises, no timelines.
-
-- **Mobile / responsive UI polish** - the dashboard works on phones but it has its kinks.
-
-Done:
-
-- **Prebuilt Docker image** - multi-arch (`linux/amd64`, `linux/arm64`) images are published to `ghcr.io/locko2901/lastfm-to-ytm` on every push to `main` and tagged release. See [Quickstart](https://locko2901.github.io/lastfm-to-ytm/quickstart/#using-the-prebuilt-image).
 
 ## Credits
 
