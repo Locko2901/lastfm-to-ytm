@@ -223,11 +223,7 @@ def _fetch_remote_info(version: str | None, current_sha: str | None) -> dict[str
     of waiting for the TTL to expire.
     """
     cached = _load_cache()
-    if (
-        cached is not None
-        and cached.get("version_at_fetch") == version
-        and cached.get("sha_at_fetch") == current_sha
-    ):
+    if cached is not None and cached.get("version_at_fetch") == version and cached.get("sha_at_fetch") == current_sha:
         return cached
 
     release = _github_get("/releases/latest")
