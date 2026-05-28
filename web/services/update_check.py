@@ -214,13 +214,20 @@ def _github_get(path: str) -> dict[str, Any] | list[Any] | None:
         return None
 
 
-def _fetch_remote_info(version: str | None) -> dict[str, Any] | None:
+def _fetch_remote_info(version: str | None, current_sha: str | None) -> dict[str, Any] | None:
     """Fetch latest release, branch HEAD sha, and the sha of the current version's tag.
 
-    Cached in a single JSON blob.
+    Cached in a single JSON blob. The cache key includes the running build's
+    SHA so pulling a new commit (which changes ``current_sha`` but not
+    ``version``) immediately invalidates a stale dev-channel cache instead
+    of waiting for the TTL to expire.
     """
     cached = _load_cache()
-    if cached is not None and cached.get("version_at_fetch") == version:
+    if (
+        cached is not None
+        and cached.get("version_at_fetch") == version
+        and cached.get("sha_at_fetch") == current_sha
+    ):
         return cached
 
     release = _github_get("/releases/latest")
@@ -253,6 +260,7 @@ def _fetch_remote_info(version: str | None) -> dict[str, Any] | None:
         "branch_head_sha": branch_head_sha,
         "current_tag_sha": current_tag_sha,
         "version_at_fetch": version,
+        "sha_at_fetch": current_sha,
         "fetched_at": time.time(),
     }
     _save_cache(payload)
@@ -299,7 +307,7 @@ def get_update_status() -> dict[str, Any]:
         "commits_url": f"https://github.com/{REPO}/commits/{_DEFAULT_BRANCH}",
     }
 
-    remote = _fetch_remote_info(current)
+    remote = _fetch_remote_info(current, current_sha)
     if not remote:
         return result
 
