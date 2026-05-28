@@ -2,6 +2,19 @@
 
 An optional local SQLite database that tracks all synced songs, actions, and sync runs for audit and visibility.
 
+When enabled, a dedicated **History** tab appears in the web dashboard with five sub-views:
+
+- **Tracks** - every song seen, with how often it was found vs. missed, first/last seen dates, and direct links to the matched video
+- **Syncs** - every sync run with duration, track counts, cache hit rate, and API call totals
+- **Actions** - every user action (override added, blacklist added, cache cleared, etc.)
+- **Top Tracks** - your most-found tracks across the whole history
+- **Trend** - sync activity and match rates over time
+
+Plus a stat-card bar across the top (totals, average sync duration, cache hit rate, API searches, action count) that doubles as a quick filter. You don't need to open the database file directly - everything is browsable in the UI.
+
+??? example "Screenshot: History tab"
+    ![History](screenshots/history.png)
+
 ## What It Tracks
 
 The database stores three types of records:

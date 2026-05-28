@@ -31,7 +31,7 @@ The web dashboard is always included with the Docker setup. It provides a full m
     ![Settings Modal](screenshots/settings_modal.png)
 
 - **Sync console** - Trigger a sync manually and watch real-time output in a resizable terminal drawer. Stop a running sync at any time. If you reload the page mid-sync, the console automatically reattaches to the running stream instead of going idle.
-- **Update pill** - When your running instance is behind the upstream `main` branch on GitHub, a small dismissable pill appears at the top of the dashboard showing how many commits you're behind, with a link to the [Updating](quickstart.md#updating) instructions. The check runs against the GitHub Compare API and is cached on disk for 24h. Dismissals are remembered per-commit, so a fresh release re-shows the pill.
+- **Update pill** - The header shows your current build (`vX.Y.Z` on stable, `dev·<sha>` on dev) and lights up when an update is available. On **stable** that means a newer release tag has been published, and clicking the pill opens the GitHub release/changelog. On **dev** it means the upstream `main` branch has new commits since your build, and clicking the pill opens the GitHub commit compare view (or the branch's commit log when the build SHA isn't known). The check runs against the GitHub API and is cached on disk for 6h. See [Release Channels](channels.md) and [Updating](docker-reference.md#updating).
 
 ??? example "Screenshot: Sync console"
     ![Sync Console](screenshots/sync_console.png)
@@ -64,6 +64,9 @@ The web dashboard includes a built-in scheduler (powered by APScheduler) so you 
 
 The dashboard header shows a "Scheduled" indicator and the next run time when the scheduler is active.
 
+!!! info "For developers"
+    Route handlers, panel endpoints, the scheduler implementation, and the SSE sync stream are documented in [Web Dashboard Internals](web-internals.md).
+
 ## PWA Support
 
 The dashboard is installable as a Progressive Web App. In supported browsers, you can add it to your home screen or install it as a standalone app for quick access.
@@ -72,7 +75,7 @@ The dashboard is installable as a Progressive Web App. In supported browsers, yo
 
 Override any of the dashboard's CSS color tokens to build your own color scheme on top of the built-in **Dark** or **Light** themes.
 
-- Open **Settings → Display → Customize colors** to launch the color picker modal.
+- Open **Settings &rarr; Display &rarr; Customize colors** to launch the color picker modal.
 - Each row exposes a swatch + hex input for one CSS variable (backgrounds, text, accent, semantic, borders).
 - Changes preview live as you edit; nothing is persisted until you click **Save**.
 - The **Use custom colors** checkbox in Settings toggles the entire override layer on or off without losing your saved values.
@@ -85,7 +88,7 @@ The **Reset to parent** button inside the modal clears only the *current* base t
 
 ### Persistence
 
-Overrides are saved to `cache/.theme_overrides.json` (same folder as the search/playlist/tag caches) via `POST /api/theme`, and are injected into every page render server-side - so the first paint already reflects your scheme (no flash of default theme).
+Overrides are saved server-side and applied to every page render, so the first paint already reflects your scheme (no flash of default theme). Per-base override storage paths and the underlying API are documented in [Web Dashboard Internals](web-internals.md#theme-overrides).
 
 ### Backup / restore
 
