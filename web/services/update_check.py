@@ -214,6 +214,26 @@ def _github_get(path: str) -> dict[str, Any] | list[Any] | None:
         return None
 
 
+def _github_sha_exists(sha: str) -> bool | None:
+    """Return True if ``sha`` is reachable on the remote, False if not, None on error."""
+    url = f"https://api.github.com/repos/{REPO}/commits/{sha}"
+    try:
+        response = requests.get(
+            url,
+            timeout=HTTP_TIMEOUT,
+            headers={"Accept": "application/vnd.github+json"},
+        )
+    except requests.RequestException as exc:
+        logger.debug("GitHub sha existence check for %s failed: %s", sha, exc)
+        return None
+    if response.status_code == 200:
+        return True
+    if response.status_code in (404, 422):
+        return False
+    logger.debug("GitHub sha existence check for %s returned HTTP %s", sha, response.status_code)
+    return None
+
+
 def _fetch_remote_info(version: str | None, current_sha: str | None) -> dict[str, Any] | None:
     """Fetch latest release, branch HEAD sha, and the sha of the current version's tag.
 
@@ -249,12 +269,17 @@ def _fetch_remote_info(version: str | None, current_sha: str | None) -> dict[str
             if isinstance(sha, str):
                 current_tag_sha = sha.lower()
 
+    current_sha_on_remote: bool | None = None
+    if current_sha:
+        current_sha_on_remote = _github_sha_exists(current_sha)
+
     payload = {
         "tag": tag,
         "name": release.get("name") or tag,
         "url": release.get("html_url"),
         "branch_head_sha": branch_head_sha,
         "current_tag_sha": current_tag_sha,
+        "current_sha_on_remote": current_sha_on_remote,
         "version_at_fetch": version,
         "sha_at_fetch": current_sha,
         "fetched_at": time.time(),
@@ -275,7 +300,8 @@ def get_update_status() -> dict[str, Any]:
       ``.channel`` pointer file (``"stable"`` or ``"dev"``). When no explicit
       channel is set, falls back to SHA inference: ``"stable"`` if
       ``current_sha`` matches the tag ``v{current_version}``; ``"dev"`` if the
-      SHA is known but doesn't match; ``"unknown"`` otherwise.
+      SHA is known but doesn't match; ``"local"`` if the SHA isn't reachable
+      on the remote at all (unpushed commit); ``"unknown"`` otherwise.
     - ``latest_version`` / ``release_url`` / ``release_name``: latest released
       tag (``None`` on fetch failure)
     - ``latest_branch_sha`` / ``latest_branch_sha_short``: HEAD of the default
@@ -321,11 +347,19 @@ def get_update_status() -> dict[str, Any]:
             result["commits_url"] = f"https://github.com/{REPO}/compare/{current_sha}...{branch_head}"
 
     current_tag_sha = remote.get("current_tag_sha")
+    sha_on_remote = remote.get("current_sha_on_remote")
     if declared_channel is None and current_sha:
         if isinstance(current_tag_sha, str) and current_sha == current_tag_sha:
             result["build_type"] = "stable"
+        elif sha_on_remote is False:
+            result["build_type"] = "local"
         else:
             result["build_type"] = "dev"
+
+    if sha_on_remote is False:
+        result["commits_url"] = f"https://github.com/{REPO}/commits/{_DEFAULT_BRANCH}"
+        result["update_available"] = False
+        return result
 
     if result["build_type"] == "dev":
         if branch_head and current_sha and branch_head != current_sha:
