@@ -521,29 +521,49 @@ def restart_server():
     """Restart the web server gracefully.
 
     In production (Gunicorn): Sends HUP to master process for graceful worker reload.
-    In development (Flask): Sends SIGTERM to trigger dev server restart.
+    In development (Flask + Werkzeug reloader): Exits the child with code 3 so the
+        reloader parent respawns it. Plain `flask run` without a reloader cannot
+        restart itself — we return an error in that case.
     In Docker: Container will auto-restart due to restart: unless-stopped policy.
     """
     import os
     import signal
     import threading
 
+    from dotenv import load_dotenv
+
+    from src.config import PROJECT_ROOT
+
+    load_dotenv(PROJECT_ROOT / ".env", override=True)
+
+    gunicorn_master_pid = os.getenv("GUNICORN_PID") or _get_gunicorn_master_pid()
+    werkzeug_child = os.environ.get("WERKZEUG_RUN_MAIN") == "true"
+
+    if not gunicorn_master_pid and not werkzeug_child:
+        return (
+            jsonify(
+                {
+                    "status": "unsupported",
+                    "error": "Server is not running under Gunicorn or the Werkzeug reloader; restart manually.",
+                }
+            ),
+            409,
+        )
+
     def delayed_restart():
         import time
 
         time.sleep(0.5)
 
-        gunicorn_master_pid = os.getenv("GUNICORN_PID") or _get_gunicorn_master_pid()
-
         if gunicorn_master_pid:
             logger.info(f"Sending HUP to Gunicorn master (PID {gunicorn_master_pid})")
-            os.kill(gunicorn_master_pid, signal.SIGHUP)
+            os.kill(int(gunicorn_master_pid), signal.SIGHUP)
         else:
-            logger.info("Sending SIGTERM to current process")
-            os.kill(os.getpid(), signal.SIGTERM)
+            logger.info("Exiting Werkzeug child with code 3 to trigger reloader restart")
+            os._exit(3)
 
     threading.Thread(target=delayed_restart, daemon=True).start()
-    return jsonify({"status": "restarting"})
+    return jsonify({"status": "restarting", "mode": "gunicorn" if gunicorn_master_pid else "werkzeug"})
 
 
 @api_bp.route("/scheduler/status")

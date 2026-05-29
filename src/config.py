@@ -127,7 +127,13 @@ class Settings:
 
     @staticmethod
     def from_env() -> "Settings":
-        """Load settings from environment variables."""
+        """Load settings from environment variables.
+
+        Re-reads .env with override=True so edits made via the web UI take
+        effect without restarting the server (long-running processes like
+        gunicorn keep os.environ from their initial load otherwise).
+        """
+        load_dotenv(PROJECT_ROOT / ".env", override=True)
         lastfm_user = os.getenv("LASTFM_USER", "").strip()
         lastfm_api_key = os.getenv("LASTFM_API_KEY", "").strip()
         if not lastfm_user or not lastfm_api_key:
