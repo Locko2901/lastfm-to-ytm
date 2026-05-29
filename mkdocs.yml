@@ -71,6 +71,7 @@ nav:
       - Teleporter (Backup): teleporter.md
   - Reference:
       - Configuration: configuration.md
+      - Data & Security Model: security.md
       - Docker Reference: docker-reference.md
   - Development:
       - Setup: development.md
