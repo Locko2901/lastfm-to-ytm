@@ -1,6 +1,6 @@
 """Server-side notification store with SSE fan-out.
 
-Notifications are persisted to ``cache/notifications.json`` so they survive
+Notifications are persisted to ``cache/.notifications.json`` so they survive
 restarts and are shared across browser tabs / devices. Live updates are
 broadcast to connected clients through per-subscriber queues consumed by the
 SSE endpoint in ``web.routes.notifications``.
