@@ -109,7 +109,7 @@ jobs:
         run: |
           set -euo pipefail
           body=$(gh release view "$TAG" --json body --jq .body)
-          printf '%s\n\n---\n\n**Updating?** See the [update guide](https://locko2901.github.io/lastfm-to-ytm/quickstart/#updating).\n' "$body" \
+          printf '%s\n\n---\n\n**Updating?** See the [update guide](https://locko2901.github.io/lastfm-to-ytm/docker-reference/#updating).\n' "$body" \
             | gh release edit "$TAG" --notes-file -
 
   docker-publish:
