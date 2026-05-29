@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.6.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.5.0...v1.6.0) (2026-05-29)
+
+
+### Features
+
+* **update:** detect local (unpushed) commits as build_type=local ([d9bbfad](https://github.com/Locko2901/lastfm-to-ytm/commit/d9bbfadc7ad6118342b2e2682249112065e3468e))
+* **web:** live dashboard via SSE event bus and persistent notifications ([3c01a56](https://github.com/Locko2901/lastfm-to-ytm/commit/3c01a56eb04d37b33968ef645693ce70d74f02d2))
+
+
+### Bug Fixes
+
+* **update:** force build_type=local for unpushed SHAs regardless of declared channel ([60cdf3d](https://github.com/Locko2901/lastfm-to-ytm/commit/60cdf3d0ea42aa98ae7ce99b2cbb56b18b60b4f6))
+* **web:** normalize checkbox and empty values when diffing settings ([45a0a03](https://github.com/Locko2901/lastfm-to-ytm/commit/45a0a0365c46f0592784d4d808de7f33eb69ea39))
+* **web:** refresh .env on settings save and gate /api/restart_server on reloader ([b702d64](https://github.com/Locko2901/lastfm-to-ytm/commit/b702d64a1df45097e59682ca0b3b041a7d0287c3))
+
+
+### Documentation
+
+* **ci:** link release notes 'updating' section to docker-reference ([bf8a3ea](https://github.com/Locko2901/lastfm-to-ytm/commit/bf8a3ead4143b066172e9737a8c6c01fdf48ab56))
+* update readme and index ([0c455cf](https://github.com/Locko2901/lastfm-to-ytm/commit/0c455cf8786c9437f52b7f7feec7fc2a5d85568c))
+
+
+### Miscellaneous
+
+* **i18n:** refresh DE/EN translation catalogs ([ed12d86](https://github.com/Locko2901/lastfm-to-ytm/commit/ed12d86abd8cffbb2c69f17a7a7b4f19aea5c518))
+
 ## [1.5.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.4.0...v1.5.0) (2026-05-28)
 
 
