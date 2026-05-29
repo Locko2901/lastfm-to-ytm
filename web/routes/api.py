@@ -289,6 +289,13 @@ def settings_update():
         if "HISTORY_DB_ENABLED" in updates or "HISTORY_DB_FILE" in updates:
             reset_history_db()
 
+        try:
+            from ..services import events as _events
+
+            _events.publish("scheduler_changed", {"reason": "settings_saved"})
+        except Exception:
+            logger.exception("Failed to publish scheduler_changed event")
+
         return jsonify({"status": "saved", "updated": list(updates.keys())})
     except OSError as e:
         logger.error(f"Failed to update settings: {e}")

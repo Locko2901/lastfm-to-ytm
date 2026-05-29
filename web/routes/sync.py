@@ -39,6 +39,16 @@ def _run_sync_process(script: str = "run.py", db=None, trigger: str = "web"):
         sync_state["finished_at"] = None
 
     try:
+        from ..services import events as _events
+
+        _events.publish(
+            "sync_state",
+            {"running": True, "trigger": trigger, "script": script, "started_at": sync_state["started_at"]},
+        )
+    except Exception:
+        logger.exception("Failed to publish sync_state start event")
+
+    try:
         project_root = Path(__file__).parent.parent.parent
         logger.info(f"Starting sync process in {project_root} (script={script})")
         logger.info(f"Python executable: {sys.executable}")
@@ -112,6 +122,33 @@ def _run_sync_process(script: str = "run.py", db=None, trigger: str = "web"):
                     error_lines = [line for line in output_lines[-20:] if any(kw in line.lower() for kw in error_keywords)]
                     error_msg = "\n".join(error_lines[-5:]) if error_lines else f"Exit code {exit_code}"
                 db.finish_sync(sync_id, status=status, error_message=error_msg)
+
+        try:
+            from ..services import events as _events
+            from ..services import notifications as _notif
+
+            label = "Tag sync" if script == "run_tags.py" else "Sync"
+            if exit_code == 0:
+                _notif.add(f"{label} finished successfully", type_="success", source=f"sync:{trigger}")
+            else:
+                _notif.add(f"{label} failed (exit {exit_code})", type_="error", source=f"sync:{trigger}")
+
+            with sync_lock:
+                finished_at = sync_state["finished_at"]
+            _events.publish(
+                "sync_state",
+                {
+                    "running": False,
+                    "trigger": trigger,
+                    "script": script,
+                    "finished_at": finished_at,
+                    "exit_code": exit_code,
+                },
+            )
+            _events.publish("stats_changed", {"reason": "sync_finished"})
+            _events.publish("scheduler_changed", {"reason": "sync_finished"})
+        except Exception:
+            logger.exception("Failed to record sync notification")
 
 
 @sync_bp.route("/run_sync", methods=["POST"])

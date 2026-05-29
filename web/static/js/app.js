@@ -36,6 +36,7 @@ import {
   triggerImportCustomTheme,
 } from "./modules/customTheme.js"
 import { initDelegation } from "./modules/delegation.js"
+import { initEvents, onEvent } from "./modules/events.js"
 import { filterCache, filterNotFound, filterTags, filterTracks, goToFilter, initFilters } from "./modules/filters.js"
 import { clearHistory, confirmClearHistory, historyBackfill, initHistory, loadHistoryData, switchHistoryView } from "./modules/history.js"
 import {
@@ -243,20 +244,21 @@ window.cacheAdminTogglePlaylist = cacheAdminTogglePlaylist
 initDelegation()
 
 document.addEventListener("DOMContentLoaded", () => {
-  registerPoller("lastSyncDisplay", {
-    callback: updateLastSyncDisplay,
-    intervalMs: 60000,
-  })
-
   registerPoller("systemClock", {
     callback: updateSystemClock,
     intervalMs: 1000,
   })
 
-  registerPoller("autoSyncIndicator", {
-    callback: updateAutoSyncIndicator,
-    intervalMs: 60000,
+  onEvent("stats_changed", () => {
+    updateLastSyncDisplay()
+    if (window.refreshStats) window.refreshStats()
   })
+  onEvent("scheduler_changed", () => {
+    updateAutoSyncIndicator()
+  })
+  updateLastSyncDisplay()
+  updateAutoSyncIndicator()
+  initEvents()
 
   initNowPlaying()
   initNowPlayingScrollHide()

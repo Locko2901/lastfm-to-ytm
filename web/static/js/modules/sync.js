@@ -1,9 +1,8 @@
+import { onEvent } from "./events.js"
 import { _ } from "./i18n.js"
 import { insertBanner, refreshPanel, removeBanner, showToast, updateNowPlayingPosition } from "./utils.js"
-import { registerPoller, unregisterPoller } from "./visibility.js"
 
 let syncEventSource = null
-let lastKnownSyncTime = null
 let manualSyncInProgress = false
 let userScrolledAway = false
 let scrollHandler = null
@@ -106,15 +105,7 @@ function attachSyncStream() {
       showToast(success ? _("Sync completed successfully!") : _("Sync failed. Check output for errors."), success ? "success" : "error")
 
       if (window.refreshStats) window.refreshStats()
-      fetch("/api/stats")
-        .then(r => r.json())
-        .then(stats => {
-          if (stats.last_sync) lastKnownSyncTime = stats.last_sync
-          manualSyncInProgress = false
-        })
-        .catch(() => {
-          manualSyncInProgress = false
-        })
+      manualSyncInProgress = false
 
       if (success) {
         refreshPanel("playlist")
@@ -344,47 +335,20 @@ export function initSyncDrawerResize() {
 }
 
 export function startDataWatcher() {
-  fetch("/api/stats")
-    .then(r => r.json())
-    .then(stats => {
-      lastKnownSyncTime = stats.last_sync || null
-    })
-    .catch(() => {})
-
-  registerPoller("dataWatcher", {
-    callback: checkForDataUpdates,
-    intervalMs: 30000,
-    runOnVisible: true,
-    runImmediately: false,
+  let prevRunning = null
+  onEvent("sync_state", state => {
+    if (!state) return
+    const running = state.running === true
+    const wasRunning = prevRunning === true
+    prevRunning = running
+    if (running || !wasRunning) return
+    if (manualSyncInProgress) return
+    showDataUpdateBanner()
+    if (window.checkFailureLog) window.checkFailureLog()
   })
 }
 
-export function stopDataWatcher() {
-  unregisterPoller("dataWatcher")
-}
-
-async function checkForDataUpdates() {
-  if (lastKnownSyncTime === null || manualSyncInProgress) return
-
-  try {
-    const response = await fetch("/api/stats")
-    if (!response.ok) return
-
-    const stats = await response.json()
-    const newSyncTime = stats.last_sync
-
-    if (newSyncTime && lastKnownSyncTime && newSyncTime !== lastKnownSyncTime) {
-      lastKnownSyncTime = newSyncTime
-      showDataUpdateBanner()
-    } else if (newSyncTime) {
-      lastKnownSyncTime = newSyncTime
-    }
-  } catch (_error) {}
-
-  if (window.checkFailureLog) {
-    window.checkFailureLog()
-  }
-}
+export function stopDataWatcher() {}
 
 function showDataUpdateBanner() {
   insertBanner(

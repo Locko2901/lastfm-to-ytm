@@ -14,7 +14,7 @@ from flask_babel import Babel, get_translations
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from .routes import actions_bp, api_bp, auth_bp, sync_bp
+from .routes import actions_bp, api_bp, auth_bp, events_bp, notifications_bp, sync_bp
 from .services import (
     ENV_FILE,
     get_cache_stats,
@@ -155,6 +155,8 @@ app.register_blueprint(api_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(sync_bp)
 app.register_blueprint(actions_bp)
+app.register_blueprint(notifications_bp)
+app.register_blueprint(events_bp)
 
 
 @app.route("/manifest.json")
