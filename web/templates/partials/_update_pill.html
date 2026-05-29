@@ -38,6 +38,12 @@
           prefixEl.textContent = ""
           currentEl.textContent = "dev·" + sha
           pill.classList.add("is-dev")
+          if (data.commits_url) pill.href = data.commits_url
+        } else if (buildType === "local" && sha) {
+          prefixEl.textContent = ""
+          currentEl.textContent = "local·" + sha
+          pill.classList.add("is-dev")
+          if (data.commits_url) pill.href = data.commits_url
         } else if (data.current_version) {
           prefixEl.textContent = "v"
           currentEl.textContent = data.current_version
@@ -72,6 +78,11 @@
           pill.setAttribute(
             "data-tooltip",
             tr("Development build (%(sha)s)").replace("%(sha)s", sha),
+          )
+        } else if (buildType === "local" && sha) {
+          pill.setAttribute(
+            "data-tooltip",
+            tr("Local build (%(sha)s) - commit not on remote").replace("%(sha)s", sha),
           )
         } else if (data.current_version) {
           pill.setAttribute(
