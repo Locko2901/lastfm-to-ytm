@@ -51,14 +51,26 @@ const NO_RESTART_SETTINGS = [
 
 const UI_RELOAD_SETTINGS = ["USE_24_HOUR_CLOCK", "DATE_FORMAT"]
 
+function readFormSettings(form) {
+  const out = {}
+  for (const input of form.querySelectorAll("input, select")) {
+    if (input.id === "theme-select" || input.id === "locale-select") continue
+    if (!input.name) continue
+    if (input.type === "checkbox") {
+      out[input.name] = input.checked
+    } else {
+      out[input.name] = input.value
+    }
+  }
+  return out
+}
+
 export async function loadSettings() {
   try {
     const response = await fetch("/api/settings")
     if (!response.ok) throw new Error(_("Failed to load settings"))
 
     const settings = await response.json()
-
-    window._originalSettings = { ...settings }
 
     for (const [key, value] of Object.entries(settings)) {
       const input = document.getElementById(key)
@@ -87,6 +99,9 @@ export async function loadSettings() {
     }
 
     refreshHistoryBackfillVisibility()
+
+    const form = document.getElementById("settingsForm")
+    if (form) window._originalSettings = readFormSettings(form)
   } catch (_error) {
     showToast(_("Failed to load settings"), "error")
   }
@@ -96,23 +111,18 @@ export async function saveSettings(event) {
   event.preventDefault()
 
   const form = document.getElementById("settingsForm")
-  const settings = {}
-
-  for (const input of form.querySelectorAll("input, select")) {
-    if (input.id === "theme-select" || input.id === "locale-select") continue
-    if (input.type === "checkbox") {
-      settings[input.name] = input.checked
-    } else {
-      settings[input.name] = input.value
-    }
-  }
+  const settings = readFormSettings(form)
 
   const changedSettings = []
   if (window._originalSettings) {
+    const norm = (val, isCheckbox) => {
+      if (isCheckbox) return val ? "true" : "false"
+      return val === null || val === undefined ? "" : String(val)
+    }
     for (const key of Object.keys(settings)) {
-      const original = window._originalSettings[key]
-      const current = settings[key]
-      if (String(original) !== String(current)) {
+      const input = form.elements[key]
+      const isCheckbox = input && input.type === "checkbox"
+      if (norm(window._originalSettings[key], isCheckbox) !== norm(settings[key], isCheckbox)) {
         changedSettings.push(key)
       }
     }
@@ -131,6 +141,7 @@ export async function saveSettings(event) {
     }
 
     invalidateSettingsCache()
+    window._originalSettings = { ...settings }
 
     if (window.restartNowPlaying) {
       window.restartNowPlaying()
