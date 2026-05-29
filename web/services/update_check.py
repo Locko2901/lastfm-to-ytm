@@ -296,12 +296,10 @@ def get_update_status() -> dict[str, Any]:
     - ``current_version``: version from ``pyproject.toml``
     - ``current_sha`` / ``current_sha_short``: full / 7-char build SHA, or
       ``None`` for non-image installs without a populated ``COMMIT SHA``
-    - ``build_type``: declared channel from ``YTMT_CHANNEL`` env var or the
-      ``.channel`` pointer file (``"stable"`` or ``"dev"``). When no explicit
-      channel is set, falls back to SHA inference: ``"stable"`` if
-      ``current_sha`` matches the tag ``v{current_version}``; ``"dev"`` if the
-      SHA is known but doesn't match; ``"local"`` if the SHA isn't reachable
-      on the remote at all (unpushed commit); ``"unknown"`` otherwise.
+    - ``build_type``: ``"local"`` (unpushed SHA — overrides everything else),
+      ``"stable"`` / ``"dev"`` from ``YTMT_CHANNEL`` or ``.channel``, or
+      inferred from the SHA (tag match → ``"stable"``, otherwise ``"dev"``;
+      ``"unknown"`` if no SHA).
     - ``latest_version`` / ``release_url`` / ``release_name``: latest released
       tag (``None`` on fetch failure)
     - ``latest_branch_sha`` / ``latest_branch_sha_short``: HEAD of the default
@@ -357,6 +355,7 @@ def get_update_status() -> dict[str, Any]:
             result["build_type"] = "dev"
 
     if sha_on_remote is False:
+        result["build_type"] = "local"
         result["commits_url"] = f"https://github.com/{REPO}/commits/{_DEFAULT_BRANCH}"
         result["update_available"] = False
         return result
