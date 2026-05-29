@@ -1,8 +1,10 @@
 # Last.fm &rarr; YouTube Music
 
-**Your Last.fm listening history as a proper YouTube Music playlist.**
+**A self-hosted music dashboard that turns your Last.fm scrobbles into intelligently curated YouTube Music playlists - and keeps them that way.**
 
-YouTube Music's built-in *Replay Mix* can't be shuffled - hit shuffle and you get one random track, then the rest play in their original order. This creates and maintains a real, editable playlist instead: it finds the right official upload for each track in your Last.fm history, and keeps the playlist in sync on a schedule you set. Optional weekly snapshots let you build an archive of your listening habits.
+YouTube Music's built-in *Replay Mix* can't even be shuffled - hit shuffle and you get one random track, then the rest play in their original order. So this tool does the job properly: it reads your Last.fm history, finds the right *official* upload on YouTube Music for each track (skipping live versions, remixes, nightcore, sped-up, 8D, etc.), weights the result by what you've *actually* been playing lately, and keeps the playlist in sync on whatever schedule you set.
+
+On top of that you get **weekly snapshot playlists** that archive your listening habits, **tag-based genre playlists** auto-filled from your Last.fm tags, and a **full web dashboard** with a first-launch setup wizard, built-in scheduler, sync console, history database, webhooks, encrypted backup/restore, and PWA install - so after the initial 5-minute install you never have to touch a terminal or config file again.
 
 ![Dashboard Preview](screenshots/dashboard.png)
 
@@ -27,12 +29,3 @@ YouTube Music's built-in *Replay Mix* can't be shuffled - hit shuffle and you ge
 
 !!! info "Prefer not to use Docker?"
     There's a [standalone CLI install](cli-install.md) too. It runs the same sync engine; you handle scheduling yourself with cron/systemd. The Docker path is recommended for almost everyone.
-
----
-
-<small>
-[![Made with Python](https://img.shields.io/badge/Made%20with-Python-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Built with ytmusicapi](https://img.shields.io/badge/Built%20with-ytmusicapi-FF0000?logo=youtube&logoColor=white)](https://ytmusicapi.readthedocs.io/)
-[![Uses Last.fm API](https://img.shields.io/badge/Uses-Last.fm%20API-D51007?logo=last.fm&logoColor=white)](https://www.last.fm/api)
-[![MIT License](https://img.shields.io/github/license/Locko2901/lastfm-to-ytm)](https://github.com/Locko2901/lastfm-to-ytm/blob/main/LICENSE)
-</small>
