@@ -49,9 +49,9 @@ node_modules/
 !.github/workflows/
 !.github/workflows/**
 # Config files
-config/search_overrides.json
-config/custom_playlists.json
-config/tag_overrides.json
+config/*.json
+!config/*.example
+!config/*.json.example
 
 # Screenshot automation - SQLite DB is regenerated from seed data each run
 tests/screenshots/fixtures/cache/*.db
