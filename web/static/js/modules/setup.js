@@ -1,11 +1,12 @@
 import { checkAuthStatus } from "./auth.js"
+import { onEvent } from "./events.js"
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
 import { escapeHtml, formatDateTime, formatRelativeTime, getDateTimePrefs, insertBanner, removeBanner, showToast } from "./utils.js"
 
 let currentSetupStep = 1
 const totalSetupSteps = 2
-let setupAuthPollInterval = null
+let authEventUnsub = null
 
 export function showSetupWizard() {
   currentSetupStep = 1
@@ -24,9 +25,9 @@ export function closeSetupWizard() {
 }
 
 function stopAuthPolling() {
-  if (setupAuthPollInterval) {
-    clearInterval(setupAuthPollInterval)
-    setupAuthPollInterval = null
+  if (authEventUnsub) {
+    authEventUnsub()
+    authEventUnsub = null
   }
 }
 
@@ -146,14 +147,13 @@ export function openAuthFromSetup() {
 
 function startAuthPolling() {
   stopAuthPolling()
-
-  setupAuthPollInterval = setInterval(async () => {
+  authEventUnsub = onEvent("auth_status", async () => {
     const hasAuth = await checkAuthStatus()
     if (hasAuth) {
       updateAuthStatusDisplay()
       updateSetupUI()
     }
-  }, 1000)
+  })
 }
 
 async function updateAuthStatusDisplay() {

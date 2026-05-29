@@ -49,6 +49,13 @@ def submit():
         return jsonify({"success": False, "error": error or "Auth file validation failed"}), 400
 
     try:
+        from ..services import events as _events
+
+        _events.publish("auth_status", {"valid": True})
+    except Exception:
+        logger.exception("Failed to publish auth_status event")
+
+    try:
         from ytmusicapi import YTMusic
 
         yt = YTMusic(str(BROWSER_JSON_FILE))

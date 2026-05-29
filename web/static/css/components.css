@@ -913,7 +913,7 @@
 }
 
 .notif-close-btn {
-  display: none;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   background: none;
@@ -1008,6 +1008,34 @@
   color: var(--text-muted);
   font-size: 0.6875rem;
   margin-top: 1px;
+}
+
+.notif-delete-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.125rem;
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  transition:
+    opacity var(--transition),
+    color var(--transition),
+    background var(--transition);
+}
+
+.notif-item:hover .notif-delete-btn,
+.notif-delete-btn:focus-visible {
+  opacity: 1;
+}
+
+.notif-delete-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
 }
 
 .notif-empty {
