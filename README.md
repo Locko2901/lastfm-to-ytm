@@ -6,93 +6,36 @@
 [![Uses Last.fm API](https://img.shields.io/badge/Uses-Last.fm%20API-D51007?logo=last.fm&logoColor=white)](https://www.last.fm/api)
 [![MIT License](https://img.shields.io/github/license/Locko2901/lastfm-to-ytm)](LICENSE)
 
-# Last.fm &rarr; YouTube Music Playlist Creator
+# Last.fm &rarr; YouTube Music
 
-Keeps a YouTube Music playlist in sync with your Last.fm listening history. Last.fm logs every track you play as a "scrobble" - this tool reads those, finds the right official upload on YouTube Music (skipping live versions, remixes, and nightcore), and updates the playlist automatically. Optional weekly snapshots archive how your taste changes over time.
+**A self-hosted music dashboard that turns your Last.fm scrobbles into intelligently curated YouTube Music playlists - and keeps them that way.**
+
+YouTube Music's built-in *Replay Mix* can't even be shuffled - hit shuffle and you get one random track, then the rest play in their original order. So this tool does the job properly: it reads your Last.fm history, finds the right *official* upload on YouTube Music for each track (skipping live versions, remixes, nightcore, sped-up, 8D, etc.), weights the result by what you've *actually* been playing lately, and keeps the playlist in sync on whatever schedule you set.
+
+On top of that you get **weekly snapshot playlists** that archive your listening habits, **tag-based genre playlists** auto-filled from your Last.fm tags, and a **full web dashboard** with a first-launch setup wizard, built-in scheduler, sync console, history database, webhooks, encrypted backup/restore, and PWA install - so after the initial 5-minute install you never have to touch a terminal or config file again.
 
 ![Dashboard Preview](docs/screenshots/dashboard.png)
 
-## Features
+## Get started in ~5 minutes
 
-**Playlist sync**
+The Docker setup includes a web dashboard, a setup wizard, and a built-in scheduler. No terminal needed after install.
 
-- Creates/updates a YouTube Music playlist from your Last.fm scrobbles
-- Optional recency-weighted selection to prioritize what you've listened to lately
-- Weekly playlist snapshots (e.g., *"Your Playlist week of 2026-03-09"*)
-- Custom tag playlists - auto-generate genre/tag-based playlists from your Last.fm tags
+&rarr; **[Quick Start (Docker)](https://locko2901.github.io/lastfm-to-ytm/quickstart/)**
 
-**Search & matching**
+Prefer not to use Docker? There's a [standalone CLI install](https://locko2901.github.io/lastfm-to-ytm/cli-install/) too. It runs the same sync engine; you handle scheduling yourself with cron/systemd. The Docker path is recommended for almost everyone.
 
-- Prefers official Songs over user-uploaded Videos
-- Handles artist variations, collaborations, and featuring clauses
-- Avoids common mismatches (covers, remixes, live versions, nightcore, sped up, etc.)
-- Considers title, artist, uploader, and album similarity
-- Two-phase search: exact query first, then parallel fallback with query expansion
+## Highlights
 
-**Web dashboard** (Docker)
-
-- Real-time sync console
-- Settings editor, cache browser, override/blacklist management
-- Built-in scheduler (interval or cron)
-- Sync history database with audit trail
-- Encrypted config backup/restore (Teleporter)
-- Discord and generic webhook notifications
-- Installable as a PWA
-
-**Infrastructure**
-
-- Smart caching minimizes API calls (search results, playlist state, and tag data are all cached)
-- Configurable via environment variables, `.env` file, or the web UI
-- Rate-limit-friendly with automatic retries and configurable delays
-- Multi-language support
-
-## Quick Start
-
-| | Docker (recommended) | CLI-only |
-|---|---|---|
-| **What** | Web dashboard + sync engine | Sync engine only |
-| **Config** | Web UI (or `.env`) | `.env` + JSON files |
-| **Scheduling** | Built-in scheduler | cron / systemd / Task Scheduler |
-| **Get started** | `./run-docker.sh` | `pip install . && python run.py` |
-
-```bash
-# Docker (recommended, prebuilt image - no git/build needed)
-curl -fsSL https://raw.githubusercontent.com/Locko2901/lastfm-to-ytm/main/scripts/install.sh | bash
-cd lastfm-to-ytm && ./run-docker.sh --pull
-
-# Docker (clone & build locally)
-git clone https://github.com/Locko2901/lastfm-to-ytm.git
-cd lastfm-to-ytm && ./run-docker.sh
-
-# CLI-only
-pip install . && python run.py
-```
-
-On first launch, the web dashboard walks you through setup - `.env` creation, Last.fm credentials, and YouTube Music auth.
+- **Web dashboard** to configure everything, browse your playlist, fix wrong matches, and watch syncs run live.
+- **Smart matching** that prefers official Songs over user uploads and rejects nightcore, sped-up, slowed, 8D, etc.
+- **Recency + play-count weighting** so the playlist reflects what you're *actually* listening to right now.
+- **Weekly snapshot playlists** so you build a long-term archive of how your taste evolves.
+- **Tag-based playlists** (e.g. *"Breakcore Mix"*, *"Chill Electronic"*) auto-filled from your Last.fm tags.
+- **Built-in scheduler, webhooks, encrypted backup** - and more in the [full docs](https://locko2901.github.io/lastfm-to-ytm/).
 
 ## Documentation
 
-Full documentation is available at **[locko2901.github.io/lastfm-to-ytm](https://locko2901.github.io/lastfm-to-ytm/)**.
-
-**Getting started**
-
-- [Quick Start](https://locko2901.github.io/lastfm-to-ytm/quickstart/) - Docker and CLI setup
-- [Configuration](https://locko2901.github.io/lastfm-to-ytm/configuration/) - Full settings reference
-
-**Features**
-
-- [Web Dashboard](https://locko2901.github.io/lastfm-to-ytm/dashboard/) - UI features and scheduler
-- [Custom Tag Playlists](https://locko2901.github.io/lastfm-to-ytm/tag-playlists/) - Genre-based auto-playlists
-- [Search Overrides](https://locko2901.github.io/lastfm-to-ytm/overrides/) - Manual fixes and blacklisting
-- [Webhooks](https://locko2901.github.io/lastfm-to-ytm/webhooks/) - Discord and generic notifications
-- [History Database](https://locko2901.github.io/lastfm-to-ytm/history/) - Sync tracking and audit trail
-- [Teleporter](https://locko2901.github.io/lastfm-to-ytm/teleporter/) - Encrypted config backup/restore
-
-**Reference**
-
-- [How It Works](https://locko2901.github.io/lastfm-to-ytm/how-it-works/) - Search, matching, and recency weighting
-- [Troubleshooting](https://locko2901.github.io/lastfm-to-ytm/troubleshooting/) - Common problems and known issues
-- [Development](https://locko2901.github.io/lastfm-to-ytm/development/) - Architecture, internals, and contributing
+Full documentation lives at **[locko2901.github.io/lastfm-to-ytm](https://locko2901.github.io/lastfm-to-ytm/)**.
 
 ## Credits
 
