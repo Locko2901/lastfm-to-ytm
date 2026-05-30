@@ -292,6 +292,8 @@ def run(settings: Settings) -> None:
                 override_hits=override_stats_h.get("total_overrides", 0),
             )
 
+        if settings.history_retention_days > 0:
+            db.prune_by_age(settings.history_retention_days)
         if settings.history_max_size_mb > 0:
             db.prune_if_oversized(settings.history_max_size_mb)
 

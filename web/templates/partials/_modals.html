@@ -524,6 +524,96 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="clearHistoryModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>{{ _('Clear History') }}</h2>
+      <button class="modal-close" data-action="closeModal" data-modal="clearHistoryModal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>{{ _('This will permanently delete all history data (tracks, syncs, actions). Continue?') }}</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="clearHistoryModal">{{ _('Cancel') }}</button>
+      <button type="button" class="btn btn-danger" data-action="confirmClearHistory">{{ _('Clear History') }}</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="historyDataModal">
+  <div class="modal export-import-modal">
+    <div class="modal-header">
+      <h2>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" style="margin-right: 8px; vertical-align: middle;">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        {{ _('History Database') }}
+      </h2>
+      <button class="modal-close" data-action="closeModal" data-modal="historyDataModal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="export-section">
+        <h3>{{ _('Export') }}</h3>
+        <p class="form-hint">
+          {{ _('Download the full history database (tracks, syncs, actions) as a plaintext JSON dump.') }}
+        </p>
+        <div class="export-buttons">
+          <button type="button" class="btn btn-primary" data-action="historyExport">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            {{ _('Download JSON Dump') }}
+          </button>
+        </div>
+      </div>
+      <hr class="modal-divider">
+      <div class="import-section">
+        <h3>{{ _('Import') }}</h3>
+        <p class="form-hint">
+          {{ _('Restore a previously exported history dump. Merge is idempotent (re-importing the same file inserts zero new rows). Replace wipes the existing database first.') }}
+        </p>
+        <div class="import-dropzone" id="history-import-dropzone">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <p>{{ _('Drop a JSON file here or click to browse') }}</p>
+          <input type="file" id="history-import-file-input" accept=".json" style="display: none;">
+        </div>
+        <div class="import-preview" id="history-import-preview" style="display: none;">
+          <div class="import-stats" id="history-import-stats"></div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="btn btn-success" data-action="confirmHistoryImportMerge">{{ _('Merge') }}</button>
+            <button type="button" class="btn btn-danger" data-action="confirmHistoryImportReplace">{{ _('Replace') }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="historyDataModal">{{ _('Close') }}</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="teleporterModal">
   <div class="modal teleporter-modal">
     <div class="modal-header">
@@ -619,6 +709,14 @@
               <div>
                 <span class="teleporter-cache-item-name">{{ _('Theme overrides') }}</span>
                 <span class="teleporter-cache-item-desc">{{ _('Your custom color scheme for the dashboard (per base theme).') }}</span>
+              </div>
+            </label>
+            <label class="teleporter-cache-item">
+              <input type="checkbox" value="history_db">
+              <div>
+                <span class="teleporter-cache-item-name">{{ _('History database') }}</span>
+                <span
+                  class="teleporter-cache-item-desc">{{ _('Track lookups, sync runs, and action log. Merged into the target instance on import.') }}</span>
               </div>
             </label>
           </div>

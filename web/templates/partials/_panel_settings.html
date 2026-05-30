@@ -423,6 +423,11 @@
                 <input type="number" id="HISTORY_MAX_SIZE_MB" name="HISTORY_MAX_SIZE_MB" min="0" step="1" placeholder="0">
                 <span class="form-hint">{{ _('Auto-prune oldest records when exceeded. 0 = unlimited.') }}</span>
               </div>
+              <div class="form-group">
+                <label for="HISTORY_RETENTION_DAYS">{{ _('Retention (days)') }}</label>
+                <input type="number" id="HISTORY_RETENTION_DAYS" name="HISTORY_RETENTION_DAYS" min="0" step="1" placeholder="0">
+                <span class="form-hint">{{ _('Auto-delete syncs &amp; actions older than N days after each sync. 0 = keep forever.') }}</span>
+              </div>
             </div>
             <p class="settings-help">
               {{ _('Import existing data from your search cache and overrides into the history database.') }}
@@ -437,6 +442,14 @@
                 </svg>
                 {{ _('Backfill from Cache') }}
               </button>
+              <button type="button" class="btn btn-secondary" data-action="historyVacuum">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                </svg>
+                {{ _('Vacuum &amp; Prune') }}
+              </button>
               <button type="button" class="btn btn-danger" data-action="clearHistory">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                   stroke-linejoin="round">
@@ -447,6 +460,9 @@
               </button>
               <span id="historyDbSize" class="form-hint"></span>
             </div>
+            <p class="settings-help" style="margin-top: 0.75rem;">
+              {{ _('Backup and restore the history database from Data Management below.') }}
+            </p>
           </div>
         </div>
 
@@ -622,26 +638,57 @@
             </svg>
             {{ _('Data Management') }}
           </h3>
-          <p class="settings-help">{{ _('Export or import your overrides and blacklist data as JSON.') }}</p>
-          <button type="button" class="btn btn-secondary" data-action="showExportImportModal">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-            {{ _('Export / Import') }}
-          </button>
+          <p class="settings-help">
+            {{ _('Back up, restore, or migrate your data. Each option covers a different scope.') }}
+          </p>
 
-          <button type="button" class="btn btn-secondary" data-action="showTeleporterModal" style="margin-top: 0.5rem;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83">
-              </path>
-            </svg>
-            {{ _('Teleporter') }}
-          </button>
+          <div class="data-mgmt-group">
+            <div class="data-mgmt-label">
+              <strong>{{ _('Overrides &amp; Blacklist') }}</strong>
+              <span class="form-hint">{{ _('Manual fixes, tag overrides, and the blacklist (JSON, plaintext).') }}</span>
+            </div>
+            <button type="button" class="btn btn-secondary" data-action="showExportImportModal">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              {{ _('Export / Import') }}
+            </button>
+          </div>
+
+          <div id="historyDataMgmtGroup" class="data-mgmt-group" style="display: none;">
+            <div class="data-mgmt-label">
+              <strong>{{ _('History Database') }}</strong>
+              <span class="form-hint">{{ _('Full track / sync / action log as a JSON dump (plaintext). Import supports merge or replace.') }}</span>
+            </div>
+            <button type="button" class="btn btn-secondary" data-action="showHistoryDataModal">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              {{ _('Export / Import') }}
+            </button>
+          </div>
+
+          <div class="data-mgmt-group">
+            <div class="data-mgmt-label">
+              <strong>{{ _('Teleporter') }}</strong>
+              <span class="form-hint">{{ _('Encrypted bundle (AES-256-GCM) of everything above plus caches - for moving between instances.') }}</span>
+            </div>
+            <button type="button" class="btn btn-secondary" data-action="showTeleporterModal">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83">
+                </path>
+              </svg>
+              {{ _('Open Teleporter') }}
+            </button>
+          </div>
         </div>
 
         <div class="settings-actions">

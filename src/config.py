@@ -117,6 +117,7 @@ class Settings:
     history_db_enabled: bool = False
     history_db_file: str = str(CACHE_DIR / "history.db")
     history_max_size_mb: float = 0
+    history_retention_days: int = 0
     webhook_url: str = ""
     webhook_events: str = "error"
 
@@ -204,6 +205,7 @@ class Settings:
         history_db_enabled = _str_to_bool(os.getenv("HISTORY_DB_ENABLED"), False)
         history_db_file = os.getenv("HISTORY_DB_FILE", str(CACHE_DIR / "history.db"))
         history_max_size_mb = _str_to_float(os.getenv("HISTORY_MAX_SIZE_MB"), 0)
+        history_retention_days = _str_to_int(os.getenv("HISTORY_RETENTION_DAYS"), 0)
         webhook_url = (_strip_inline_comment(os.getenv("WEBHOOK_URL")) or "").strip()
         webhook_events = (_strip_inline_comment(os.getenv("WEBHOOK_EVENTS")) or "error").strip().lower()
         if webhook_events not in {"all", "error"}:
@@ -254,6 +256,7 @@ class Settings:
             history_db_enabled=history_db_enabled,
             history_db_file=history_db_file,
             history_max_size_mb=history_max_size_mb,
+            history_retention_days=history_retention_days,
             webhook_url=webhook_url,
             webhook_events=webhook_events,
         )
