@@ -1123,6 +1123,80 @@ def history_clear():
     return jsonify({"status": "cleared"})
 
 
+@api_bp.route("/history/vacuum", methods=["POST"])
+def history_vacuum():
+    """Apply retention/size pruning and VACUUM the database."""
+    db = get_history_db()
+    if not db:
+        return jsonify({"error": _("History database is not enabled")}), 400
+
+    from src.config import Settings
+
+    settings = Settings.from_env()
+    pruned = {"actions": 0, "syncs": 0}
+    if settings.history_retention_days > 0:
+        pruned = db.prune_by_age(settings.history_retention_days)
+    size_pruned = 0
+    if settings.history_max_size_mb > 0:
+        size_pruned = db.prune_if_oversized(settings.history_max_size_mb)
+    db.vacuum()
+    return jsonify(
+        {
+            "status": "ok",
+            "actions_pruned": pruned.get("actions", 0),
+            "syncs_pruned": pruned.get("syncs", 0),
+            "size_pruned_rows": size_pruned,
+        }
+    )
+
+
+@api_bp.route("/history/export", methods=["GET"])
+def history_export():
+    """Download the history database as a JSON dump."""
+    db = get_history_db()
+    if not db:
+        return jsonify({"error": _("History database is not enabled")}), 400
+
+    from datetime import UTC, datetime
+
+    payload = db.export_to_dict()
+    body = json.dumps(payload, ensure_ascii=False, indent=2)
+    stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
+    filename = f"history-{stamp}.json"
+    return Response(
+        body,
+        mimetype="application/json",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@api_bp.route("/history/import", methods=["POST"])
+def history_import():
+    """Import a previously exported history JSON dump."""
+    db = get_history_db()
+    if not db:
+        return jsonify({"error": _("History database is not enabled")}), 400
+
+    file = request.files.get("file")
+    if file is None:
+        return jsonify({"error": _("No file uploaded")}), 400
+    mode = (request.form.get("mode") or "merge").strip().lower()
+    if mode not in {"merge", "replace"}:
+        return jsonify({"error": _("Invalid import mode")}), 400
+
+    try:
+        payload = json.loads(file.read().decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as e:
+        return jsonify({"error": _("Invalid JSON file: %(err)s", err=str(e))}), 400
+
+    try:
+        counts = db.import_from_dict(payload, mode=mode)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+    return jsonify({"status": "ok", "mode": mode, **counts})
+
+
 @api_bp.route("/history/trend")
 def history_trend():
     """Get daily sync trend data for charting."""

@@ -38,7 +38,19 @@ import {
 import { initDelegation } from "./modules/delegation.js"
 import { initEvents, onEvent } from "./modules/events.js"
 import { filterCache, filterNotFound, filterTags, filterTracks, goToFilter, initFilters } from "./modules/filters.js"
-import { clearHistory, confirmClearHistory, historyBackfill, initHistory, loadHistoryData, switchHistoryView } from "./modules/history.js"
+import {
+  clearHistory,
+  confirmClearHistory,
+  confirmHistoryImportMerge,
+  confirmHistoryImportReplace,
+  historyBackfill,
+  historyExport,
+  historyVacuum,
+  initHistory,
+  loadHistoryData,
+  showHistoryDataModal,
+  switchHistoryView,
+} from "./modules/history.js"
 import {
   clearCacheEntry,
   clearTagCacheEntry,
@@ -224,8 +236,13 @@ window.restartNowPlaying = restartNowPlaying
 window.hideNowPlaying = hideNowPlaying
 
 window.historyBackfill = historyBackfill
+window.historyVacuum = historyVacuum
+window.historyExport = historyExport
+window.showHistoryDataModal = showHistoryDataModal
 window.clearHistory = clearHistory
 window.confirmClearHistory = confirmClearHistory
+window.confirmHistoryImportMerge = confirmHistoryImportMerge
+window.confirmHistoryImportReplace = confirmHistoryImportReplace
 window.loadHistoryData = loadHistoryData
 window.switchHistoryView = switchHistoryView
 

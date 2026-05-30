@@ -410,6 +410,8 @@ function refreshHistoryBackfillVisibility() {
   const backfillSection = document.getElementById("historyBackfillSection")
   if (!checkbox || !backfillSection) return
   backfillSection.style.display = checkbox.checked ? "" : "none"
+  const dataMgmtGroup = document.getElementById("historyDataMgmtGroup")
+  if (dataMgmtGroup) dataMgmtGroup.style.display = checkbox.checked ? "" : "none"
   if (checkbox.checked) loadHistoryDbSize()
 }
 

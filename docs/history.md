@@ -23,7 +23,24 @@ The database stores three types of records:
 - **Syncs** - a record of every sync run with timestamps, duration, track counts, API usage stats (searches, playlist operations, cache hits/misses, override hits), and final status
 - **Actions** - user-initiated actions like adding overrides, blacklisting, or clearing cache entries (logged by the web dashboard)
 
-When `HISTORY_MAX_SIZE_MB` is set to a non-zero value, the database auto-prunes the oldest records when the file exceeds the specified size.
+When `HISTORY_MAX_SIZE_MB` is set to a non-zero value, the database auto-prunes the oldest records when the file exceeds the specified size. When `HISTORY_RETENTION_DAYS` is set, every successful main sync also deletes any `syncs` and `actions` rows older than the cutoff and `VACUUM`s the file to reclaim space. Track rows are kept (they are cumulative lookup state, not history).
+
+## Maintenance
+
+The **History Database** section in **Settings** exposes the DB-only maintenance actions:
+
+- **Backfill from Cache** - one-shot import of your existing search cache and overrides as `cache_backfill` / `override_backfill` rows so old lookups show up in the dashboard.
+- **Vacuum &amp; Prune** - runs `prune_by_age()` (if `HISTORY_RETENTION_DAYS > 0`), then `prune_if_oversized()` (if `HISTORY_MAX_SIZE_MB > 0`), then a final `VACUUM` to reclaim disk space. Useful after lowering either limit, or as a manual housekeeping trigger between syncs. A `history_vacuum` action is logged with the row counts that were removed.
+- **Clear All History** - wipes every row from `tracks`, `syncs`, and `actions`, then `VACUUM`s. Irreversible.
+
+Backup and restore live one section down in **Settings &rarr; Data Management &rarr; History Database** (visible only when the DB is enabled):
+
+- **Export** - downloads the entire database as a JSON dump (`history-export-YYYYMMDDTHHMMSS.json`) containing every row of `tracks`, `syncs`, and `actions`. Plain text JSON, no encryption - treat it like a personal listening journal.
+- **Import** - uploads a previously exported JSON dump. A modal asks whether to **Merge** or **Replace**:
+    - **Merge** is idempotent. `tracks` are upserted on `(artist, title)` - counters take the `MAX` of both sides and `first_seen` / `last_seen` widen to cover both sides. `syncs` are deduped on `(started_at, sync_type)` and `actions` are deduped on `(timestamp, action_type, artist, title, video_id, detail)`, so importing the same file twice will insert zero new rows the second time and counters won't double. The toast reports rows actually inserted.
+    - **Replace** wipes the existing database first, then inserts everything from the file.
+
+The same JSON dump is what the [Teleporter](teleporter.md) embeds when you tick the **History database** checkbox - import is always done in `merge` mode there to avoid wiping a working instance.
 
 ## Configuration
 
@@ -35,10 +52,12 @@ When `HISTORY_MAX_SIZE_MB` is set to a non-zero value, the database auto-prunes 
 HISTORY_DB_ENABLED=false               # Enable/disable the history database
 HISTORY_DB_FILE=cache/history.db       # Path to the database file
 HISTORY_MAX_SIZE_MB=0                  # Auto-prune oldest records when exceeded (0 = unlimited)
+HISTORY_RETENTION_DAYS=0               # Auto-delete syncs & actions older than N days after each sync (0 = keep forever)
 ```
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `HISTORY_DB_ENABLED` | `false` | Track all songs, syncs, and actions in a local SQLite DB |
 | `HISTORY_DB_FILE` | `cache/history.db` | Path to the history database file |
-| `HISTORY_MAX_SIZE_MB` | `0` | Auto-prune oldest records when exceeded (`0` = unlimited) |
+| `HISTORY_MAX_SIZE_MB` | `0` | Auto-prune oldest records when the file exceeds this size (`0` = unlimited) |
+| `HISTORY_RETENTION_DAYS` | `0` | After each sync, delete `syncs` &amp; `actions` rows older than N days (`0` = keep forever). `tracks` are always retained. |

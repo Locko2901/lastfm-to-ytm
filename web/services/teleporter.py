@@ -146,6 +146,19 @@ def export_config(password: str, *, cache_keys: list[str] | None = None) -> byte
             except OSError:
                 logger.warning("Teleporter: could not read %s", path)
 
+    if cache_keys and "history_db" in cache_keys:
+        try:
+            from src.config import Settings
+            from src.history.db import HistoryDB
+
+            settings = Settings.from_env()
+            if settings.history_db_enabled and Path(settings.history_db_file).exists():
+                db = HistoryDB(settings.history_db_file)
+                bundle["files"]["history_db"] = json.dumps(db.export_to_dict(), ensure_ascii=False)
+                db.close()
+        except Exception as e:
+            logger.warning("Teleporter: history_db export failed: %s", e)
+
     plaintext = json.dumps(bundle, ensure_ascii=False).encode("utf-8")
 
     salt = os.urandom(_SALT_LEN)
@@ -184,6 +197,25 @@ def import_config(data: bytes, password: str) -> dict:
     files = bundle.get("files", {})
     restored = []
     skipped = []
+
+    if "history_db" in files:
+        try:
+            from src.config import Settings
+            from src.history.db import HistoryDB
+
+            settings = Settings.from_env()
+            if settings.history_db_enabled:
+                payload = json.loads(files["history_db"])
+                db = HistoryDB(settings.history_db_file)
+                db.import_from_dict(payload, mode="merge")
+                db.close()
+                restored.append("history_db")
+            else:
+                skipped.append("history_db")
+                logger.warning("Teleporter: history_db skipped (history DB not enabled)")
+        except Exception as e:
+            skipped.append("history_db")
+            logger.warning("Teleporter: history_db import failed: %s", e)
 
     all_known_files = list(_CONFIG_FILES) + list(_CACHE_FILES.items())
     for key, path in all_known_files:
@@ -238,6 +270,7 @@ def preview_config(data: bytes, password: str) -> dict:
         "tag_cache": "tag_cache.json",
         "playlist_cache": "playlist_cache.json",
         "theme_overrides": "theme_overrides.json",
+        "history_db": "history.db",
     }
 
     included = []

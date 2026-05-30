@@ -21,6 +21,7 @@ export function initHistory() {
     currentSubtab = activeSubtab.dataset.historyTab
   }
 
+  initHistoryImportDropzone()
   const activeFilter = document.querySelector("[data-history-filter].active")
   if (activeFilter?.dataset.historyFilter) {
     trackFoundFilter = activeFilter.dataset.historyFilter
@@ -870,28 +871,6 @@ export async function refreshHistoryPanelState() {
 }
 
 export async function clearHistory() {
-  let modal = document.getElementById("clearHistoryModal")
-  if (!modal) {
-    modal = document.createElement("div")
-    modal.id = "clearHistoryModal"
-    modal.className = "modal-overlay"
-    modal.innerHTML = `
-      <div class="modal">
-        <div class="modal-header">
-          <h2>${_("Clear History")}</h2>
-          <button class="modal-close" data-action="closeModal" data-modal="clearHistoryModal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-        </div>
-        <div class="modal-body">
-          <p>${_("This will permanently delete all history data (tracks, syncs, actions). Continue?")}</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="clearHistoryModal">${_("Cancel")}</button>
-          <button type="button" class="btn btn-danger" data-action="confirmClearHistory">${_("Clear History")}</button>
-        </div>
-      </div>
-    `
-    document.body.appendChild(modal)
-  }
   showModal("clearHistoryModal")
 }
 
@@ -907,6 +886,125 @@ export async function confirmClearHistory() {
     await refreshHistoryPanelState()
   } catch (e) {
     showToast(e.message || _("Failed to clear history"), "error")
+  }
+}
+
+export async function historyVacuum() {
+  try {
+    const r = await fetch("/api/history/vacuum", { method: "POST" })
+    if (!r.ok) {
+      const data = await r.json()
+      throw new Error(data.error || _("Vacuum failed"))
+    }
+    const data = await r.json()
+    const total = (data.actions_pruned || 0) + (data.syncs_pruned || 0) + (data.size_pruned_rows || 0)
+    showToast(`${_("Vacuum complete:")} ${total} ${_("rows pruned")}`, "success")
+    await refreshHistoryPanelState()
+  } catch (e) {
+    showToast(e.message || _("Vacuum failed"), "error")
+  }
+}
+
+export function historyExport() {
+  window.location.href = "/api/history/export"
+}
+
+export function showHistoryDataModal() {
+  pendingHistoryImportFile = null
+  const preview = document.getElementById("history-import-preview")
+  if (preview) preview.style.display = "none"
+  const dropzone = document.getElementById("history-import-dropzone")
+  if (dropzone) dropzone.classList.remove("dragover")
+  showModal("historyDataModal")
+}
+
+let pendingHistoryImportFile = null
+let _historyDropzoneInited = false
+
+export function initHistoryImportDropzone() {
+  if (_historyDropzoneInited) return
+  const dropzone = document.getElementById("history-import-dropzone")
+  const fileInput = document.getElementById("history-import-file-input")
+  if (!dropzone || !fileInput) return
+  _historyDropzoneInited = true
+
+  dropzone.addEventListener("click", () => fileInput.click())
+  dropzone.addEventListener("dragover", e => {
+    e.preventDefault()
+    dropzone.classList.add("dragover")
+  })
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"))
+  dropzone.addEventListener("drop", e => {
+    e.preventDefault()
+    dropzone.classList.remove("dragover")
+    const file = e.dataTransfer?.files?.[0]
+    if (file) _previewHistoryImportFile(file)
+  })
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files?.[0]
+    if (file) _previewHistoryImportFile(file)
+    fileInput.value = ""
+  })
+}
+
+function _previewHistoryImportFile(file) {
+  if (!file.name.endsWith(".json")) {
+    showToast(_("Please select a JSON file"), "error")
+    return
+  }
+  const reader = new FileReader()
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result)
+      const tables = data?.tables || {}
+      const tCount = tables.tracks?.length || 0
+      const sCount = tables.syncs?.length || 0
+      const aCount = tables.actions?.length || 0
+      pendingHistoryImportFile = file
+      const statsEl = document.getElementById("history-import-stats")
+      if (statsEl) {
+        statsEl.innerHTML = `
+          <p><strong>${esc(file.name)}</strong></p>
+          <p>${_("Tracks")}: <strong>${tCount}</strong> &middot; ${_("Syncs")}: <strong>${sCount}</strong> &middot; ${_("Actions")}: <strong>${aCount}</strong></p>
+        `
+      }
+      const preview = document.getElementById("history-import-preview")
+      if (preview) preview.style.display = ""
+    } catch (_err) {
+      showToast(_("Invalid JSON file"), "error")
+    }
+  }
+  reader.readAsText(file)
+}
+
+export async function confirmHistoryImportMerge() {
+  await submitHistoryImport("merge")
+}
+
+export async function confirmHistoryImportReplace() {
+  await submitHistoryImport("replace")
+}
+
+async function submitHistoryImport(mode) {
+  const file = pendingHistoryImportFile
+  if (!file) return
+  try {
+    const fd = new FormData()
+    fd.append("file", file)
+    fd.append("mode", mode)
+    const r = await fetch("/api/history/import", { method: "POST", body: fd })
+    const data = await r.json()
+    if (!r.ok) {
+      throw new Error(data.error || _("Import failed"))
+    }
+    showToast(`${_("Imported:")} ${data.tracks} ${_("tracks")} + ${data.syncs} ${_("syncs")} + ${data.actions} ${_("actions")}`, "success")
+    pendingHistoryImportFile = null
+    const preview = document.getElementById("history-import-preview")
+    if (preview) preview.style.display = "none"
+    closeModal("historyDataModal")
+    await refreshHistoryPanelState()
+  } catch (e) {
+    showToast(e.message || _("Import failed"), "error")
   }
 }
 

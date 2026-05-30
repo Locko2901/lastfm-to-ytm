@@ -96,11 +96,19 @@ The theme override file is included in the [Teleporter](teleporter.md) cache pic
 
 ## Data Export &amp; Import
 
-The dashboard supports two ways to back up your data:
+**Settings &rarr; Data Management** is the single place to back up or move data, organised by scope:
+
+| Group | Format | Covers |
+|-------|--------|--------|
+| **Overrides &amp; Blacklist** | Plain JSON | Manual fixes, tag overrides, blacklist |
+| **History Database** | Plain JSON dump | All of `tracks`, `syncs`, `actions` (only shown when `HISTORY_DB_ENABLED=true`) |
+| **Teleporter** | Encrypted bundle (AES-256-GCM) | Everything above plus caches - for migrating between instances |
+
+The two plain-JSON options are unencrypted - use Teleporter when crossing trust boundaries. History-database **Import** asks whether to **Merge** (idempotent: re-importing the same file inserts zero new rows) or **Replace** (wipes the DB first).
 
 ### Plain JSON Export &amp; Import
 
-Export overrides, blacklist, and/or tag overrides as plain JSON. Useful for quick backups or sharing configuration between instances. Available under **Settings &rarr; Data Management**.
+Export overrides, blacklist, and/or tag overrides as plain JSON. Useful for quick backups or sharing configuration between instances.
 
 **Export** returns a JSON file with an `_export_meta` header and one or more data sections:
 
@@ -118,6 +126,10 @@ Export overrides, blacklist, and/or tag overrides as plain JSON. Useful for quic
 - Tag override entries must have `artist`, `title`, and a non-empty `tags` list.
 
 Duplicate keys are overwritten (last write wins). Existing entries not present in the import file are left untouched.
+
+### History Database Export &amp; Import
+
+When `HISTORY_DB_ENABLED=true`, a **History Database** row appears with **Export** and **Import** buttons. Export downloads the full DB as a JSON dump; import opens a modal to choose **Merge** (idempotent - safe to re-run) or **Replace** (wipes existing data first). Full details in [History Database](history.md#maintenance).
 
 ### Encrypted Export (Teleporter)
 

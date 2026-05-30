@@ -678,6 +678,172 @@ class HistoryDB:
         conn = self._get_conn()
         conn.execute("VACUUM")
 
+    def prune_by_age(self, retention_days: int) -> dict[str, int]:
+        """Delete actions and syncs older than *retention_days* days.
+
+        Tracks are kept (they are cumulative lookup state, not history).
+        Runs VACUUM if anything was deleted. Returns counts of deleted rows.
+        """
+        if retention_days <= 0:
+            return {"actions": 0, "syncs": 0}
+        cutoff = (datetime.now(UTC) - timedelta(days=retention_days)).isoformat()
+        with self._cursor() as cur:
+            cur.execute("DELETE FROM actions WHERE timestamp < ?", (cutoff,))
+            actions_deleted = cur.rowcount
+            cur.execute("DELETE FROM syncs WHERE started_at < ?", (cutoff,))
+            syncs_deleted = cur.rowcount
+        total = actions_deleted + syncs_deleted
+        if total:
+            self.vacuum()
+            log.info(
+                "Pruned %d actions and %d syncs older than %d days",
+                actions_deleted,
+                syncs_deleted,
+                retention_days,
+            )
+        return {"actions": actions_deleted, "syncs": syncs_deleted}
+
+    def export_to_dict(self) -> dict[str, Any]:
+        """Export all rows as a JSON-serialisable dict.
+
+        Format: {"schema_version": N, "exported_at": iso, "tables": {name: [rows]}}.
+        """
+        tables = ("tracks", "syncs", "actions")
+        out: dict[str, list[dict]] = {}
+        with self._cursor() as cur:
+            for table in tables:
+                cur.execute(f"SELECT * FROM {table}")
+                out[table] = [dict(row) for row in cur.fetchall()]
+        return {
+            "schema_version": _SCHEMA_VERSION,
+            "exported_at": datetime.now(UTC).isoformat(),
+            "tables": out,
+        }
+
+    def import_from_dict(self, data: dict[str, Any], *, mode: str = "merge") -> dict[str, int]:
+        """Import rows from an export dict.
+
+        mode='merge' upserts tracks (summing counts) and appends new syncs/actions.
+        mode='replace' wipes existing data first, then inserts everything as-is.
+        Returns counts of imported rows per table.
+        """
+        if mode not in {"merge", "replace"}:
+            raise ValueError(f"Unsupported import mode: {mode}")
+        version = data.get("schema_version", 0)
+        if version > _SCHEMA_VERSION:
+            raise ValueError(f"Unsupported export schema version {version}")
+        tables = data.get("tables", {})
+        if not isinstance(tables, dict):
+            raise ValueError("Malformed export: missing 'tables'")
+
+        counts = {"tracks": 0, "syncs": 0, "actions": 0}
+        with self._cursor() as cur:
+            if mode == "replace":
+                cur.execute("DELETE FROM actions")
+                cur.execute("DELETE FROM syncs")
+                cur.execute("DELETE FROM tracks")
+
+            for row in tables.get("tracks", []):
+                cur.execute(
+                    """INSERT INTO tracks (artist, title, video_id, yt_title, source,
+                                           first_seen, last_seen, times_found, times_missed, best_score)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                       ON CONFLICT(artist, title) DO UPDATE SET
+                           video_id     = COALESCE(video_id, excluded.video_id),
+                           yt_title     = COALESCE(yt_title, excluded.yt_title),
+                           source       = source,
+                           first_seen   = MIN(first_seen, excluded.first_seen),
+                           last_seen    = MAX(last_seen, excluded.last_seen),
+                           times_found  = MAX(times_found, excluded.times_found),
+                           times_missed = MAX(times_missed, excluded.times_missed),
+                           best_score   = MAX(COALESCE(best_score, 0), COALESCE(excluded.best_score, 0))""",
+                    (
+                        row.get("artist"),
+                        row.get("title"),
+                        row.get("video_id"),
+                        row.get("yt_title"),
+                        row.get("source") or "search",
+                        row.get("first_seen"),
+                        row.get("last_seen"),
+                        row.get("times_found") or 0,
+                        row.get("times_missed") or 0,
+                        row.get("best_score"),
+                    ),
+                )
+                counts["tracks"] += 1
+
+            for row in tables.get("syncs", []):
+                cur.execute(
+                    """INSERT INTO syncs (started_at, finished_at, duration_secs, sync_type, trigger,
+                                          status, tracks_total, tracks_resolved, tracks_missed,
+                                          api_searches, api_playlist_ops, cache_hits, cache_misses,
+                                          override_hits, error_message)
+                       SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                       WHERE NOT EXISTS (
+                           SELECT 1 FROM syncs WHERE started_at = ? AND sync_type = ?
+                       )""",
+                    (
+                        row.get("started_at"),
+                        row.get("finished_at"),
+                        row.get("duration_secs"),
+                        row.get("sync_type") or "main",
+                        row.get("trigger") or "manual",
+                        row.get("status") or "success",
+                        row.get("tracks_total") or 0,
+                        row.get("tracks_resolved") or 0,
+                        row.get("tracks_missed") or 0,
+                        row.get("api_searches") or 0,
+                        row.get("api_playlist_ops") or 0,
+                        row.get("cache_hits") or 0,
+                        row.get("cache_misses") or 0,
+                        row.get("override_hits") or 0,
+                        row.get("error_message"),
+                        row.get("started_at"),
+                        row.get("sync_type") or "main",
+                    ),
+                )
+                counts["syncs"] += cur.rowcount
+
+            for row in tables.get("actions", []):
+                cur.execute(
+                    """INSERT INTO actions (timestamp, action_type, artist, title, video_id, detail, source)
+                       SELECT ?, ?, ?, ?, ?, ?, ?
+                       WHERE NOT EXISTS (
+                           SELECT 1 FROM actions
+                           WHERE timestamp   = ?
+                             AND action_type = ?
+                             AND IFNULL(artist, '')   = IFNULL(?, '')
+                             AND IFNULL(title, '')    = IFNULL(?, '')
+                             AND IFNULL(video_id, '') = IFNULL(?, '')
+                             AND IFNULL(detail, '')   = IFNULL(?, '')
+                       )""",
+                    (
+                        row.get("timestamp"),
+                        row.get("action_type"),
+                        row.get("artist"),
+                        row.get("title"),
+                        row.get("video_id"),
+                        row.get("detail"),
+                        row.get("source") or "import",
+                        row.get("timestamp"),
+                        row.get("action_type"),
+                        row.get("artist"),
+                        row.get("title"),
+                        row.get("video_id"),
+                        row.get("detail"),
+                    ),
+                )
+                counts["actions"] += cur.rowcount
+
+        log.info(
+            "Imported history (%s): tracks=%d syncs=%d actions=%d",
+            mode,
+            counts["tracks"],
+            counts["syncs"],
+            counts["actions"],
+        )
+        return counts
+
     def clear_all(self) -> None:
         """Delete all data from tracks, syncs, and actions."""
         with self._cursor() as cur:

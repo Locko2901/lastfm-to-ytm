@@ -110,9 +110,34 @@ SQLite with WAL mode, foreign keys, thread-local connections - implemented in
 This DB is the most PII-rich artefact in the project: it's a full listening and
 operator-action log. Treat it like a personal journal.
 
-There is no built-in retention or `VACUUM` job - set `HISTORY_MAX_SIZE_MB` if you
-want the app to refuse further writes past a size, and back the file up
-periodically if it matters.
+**Retention and vacuum.** Two opt-in knobs keep the file from growing without
+bound, both enforced after every successful main sync (and also exposed via the
+**Vacuum &amp; Prune** button in **Settings &rarr; History Database**):
+
+- `HISTORY_RETENTION_DAYS` (default `0` = disabled) - deletes any `syncs` and
+  `actions` rows older than the cutoff, then runs `VACUUM` to release the
+  freed pages back to the filesystem. `tracks` rows are deliberately preserved
+  because they are cumulative lookup state, not audit history.
+- `HISTORY_MAX_SIZE_MB` (default `0` = unlimited) - if the file is larger than
+  the limit, deletes the oldest 100 `actions` and 50 `syncs` per pass until the
+  file fits, then `VACUUM`s. `tracks` are also preserved here.
+
+There is no automatic encryption of the file on disk - rely on filesystem-level
+controls (LUKS, APFS FileVault, host permissions) if confidentiality matters.
+
+**Export / import.** The full database can be dumped as JSON via
+`GET /api/history/export` (or **Settings &rarr; Data Management &rarr; History
+Database &rarr; Export**), and re-imported via `POST /api/history/import`
+(multipart upload with a `mode=merge|replace` field, exposed in the UI as the
+**Import** button + a confirmation modal). Both endpoints require
+`HISTORY_DB_ENABLED=true` on the target instance. **Merge** is idempotent
+(syncs deduped on `(started_at, sync_type)`, actions on the full content
+tuple, tracks upserted on `(artist, title)`), so re-importing the same dump
+is safe. **Replace** wipes the existing DB first. The exported JSON file is
+**plaintext** - treat it with the same care as the raw DB. To carry it
+encrypted, include the **History database** option inside a
+[Teleporter](teleporter.md) bundle instead, which wraps the same JSON dump in
+AES-256-GCM.
 
 ## 5. Encrypted backup / restore (Teleporter)
 
