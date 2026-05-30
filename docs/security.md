@@ -16,10 +16,10 @@ exposing the app outside a trusted network.
 
 | Asset | Location | Encryption at rest | In git? |
 |---|---|---|---|
-| YouTube Music auth headers | [browser.json](browser.json) | None | No |
-| Last.fm API key + username | [.env](.env) | None | No |
-| Flask session secret | [.env](.env) (`FLASK_SECRET_KEY`) | None | No |
-| Webhook URL | [.env](.env) (`WEBHOOK_URL`) | None | No |
+| YouTube Music auth headers | [`browser.json`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/browser.json) | None | No |
+| Last.fm API key + username | `.env` | None | No |
+| Flask session secret | `.env` (`FLASK_SECRET_KEY`) | None | No |
+| Webhook URL | `.env` (`WEBHOOK_URL`) | None | No |
 | Search / playlist / tag caches | `cache/*.json` | None | No |
 | History database (opt-in) | `cache/history.db` (SQLite, WAL) | None | No |
 | User overrides & custom playlists | `config/*.json` | None | No (`.example` only) |
@@ -29,47 +29,47 @@ exposing the app outside a trusted network.
 
 ## 1. YouTube Music authentication
 
-**File:** [browser.json](browser.json) (configurable via `YTM_AUTH_PATH`,
-see [src/config.py](src/config.py))
+**File:** [`browser.json`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/browser.json) (configurable via `YTM_AUTH_PATH`,
+see [`src/config.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/config.py))
 
 `ytmusicapi` browser auth is used, which means the file contains a JSON object of
 **raw browser request headers**: `Authorization`, `SAPISIDHASH`, the `__Secure-*`
 cookies, `Cookie`, `User-Agent`, `x-goog-*` identifiers, etc.
 
-- **Loaded by:** [src/ytm/client.py](src/ytm/client.py) via the upstream
+- **Loaded by:** [`src/ytm/client.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/ytm/client.py) via the upstream
   `YTMusic()` constructor; orchestrated in
-  [src/workflows/_common.py](src/workflows/_common.py).
+  [`src/workflows/_common.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/workflows/_common.py).
 - **Submission UI:** the dashboard's "Setup" flow accepts pasted browser headers
-  and writes them to disk ([web/routes/auth.py](web/routes/auth.py)). The route is
+  and writes them to disk ([`web/routes/auth.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/web/routes/auth.py)). The route is
   **not authenticated**.
 - **Encryption:** none. Anyone with read access to the file can act as your
   Google account against YouTube Music until the cookies expire.
 - **Rotation:** manual. Cookies expire periodically; re-paste headers when the
   dashboard reports auth errors.
 - **Permissions (Docker):** the entrypoint normalises ownership to the `lastfm`
-  user and `664` mode ([devops/docker-entrypoint.sh](devops/docker-entrypoint.sh)).
+  user and `664` mode ([`devops/docker-entrypoint.sh`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/devops/docker-entrypoint.sh)).
   On the host you should keep the file `600` if running outside the container.
-- **Git:** excluded via [.gitignore](.gitignore).
+- **Git:** excluded via `.gitignore`.
 
 ## 2. Last.fm credentials
 
-Stored as environment variables in [.env](.env):
+Stored as environment variables in `.env`:
 
 - `LASTFM_USER` - username (not sensitive).
 - `LASTFM_API_KEY` - API key. The dataclass field is marked `repr=False` in
-  [src/config.py](src/config.py) so it is **excluded from log output and
+  [`src/config.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/config.py) so it is **excluded from log output and
   tracebacks**.
 
 There is no Last.fm session key - the app only reads public scrobbles, so
 write-scope auth is never requested. The setup wizard can write these values via
 the unauthenticated `/api/setup/lastfm` endpoint
-([web/routes/api.py](web/routes/api.py)).
+([`web/routes/api.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/web/routes/api.py)).
 
 ## 3. Cache directory
 
 All runtime state lives under `cache/` (overridable via `CACHE_DIR`). Every cache
 file is plain JSON written through `JSONCache` in
-[src/cache/__init__.py](src/cache/__init__.py), which uses:
+[`src/cache/__init__.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/cache/__init__.py), which uses:
 
 - atomic writes (temp file + `os.replace`), and
 - `fcntl.flock()` for cross-process safety.
@@ -91,11 +91,11 @@ None of these are encrypted. None contain Last.fm or Google credentials.
 ## 4. History database (optional)
 
 **Disabled by default.** Enable with `HISTORY_DB_ENABLED=true`
-([src/config.py](src/config.py)). Path: `HISTORY_DB_FILE` (default
+([`src/config.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/config.py)). Path: `HISTORY_DB_FILE` (default
 `cache/history.db`).
 
 SQLite with WAL mode, foreign keys, thread-local connections - implemented in
-[src/history/db.py](src/history/db.py). Schema (v3):
+[`src/history/db.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/history/db.py). Schema (v3):
 
 - **`tracks`** - every resolved/missed `artist|title`, the chosen `video_id`,
   resolution `source` (search / cache / override / not_found / *_backfill),
@@ -143,7 +143,7 @@ AES-256-GCM.
 
 The only place the app encrypts anything at rest. See
 [Teleporter docs](teleporter.md) and
-[web/services/teleporter.py](web/services/teleporter.py).
+[`web/services/teleporter.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/web/services/teleporter.py).
 
 - **Cipher:** AES-256-GCM (AEAD).
 - **KDF:** Argon2id - 128 MiB memory, 3 iterations, 4 threads.
@@ -166,7 +166,7 @@ any password vault export.
   accept any same-origin (or cross-origin, depending on browser) POST.
 - **Flask session secret** (`FLASK_SECRET_KEY`): generated once via
   `secrets.token_hex(32)` and appended to `.env` under an `AUTO-GENERATED`
-  section by [web/app.py](web/app.py). It persists across restarts; deleting it
+  section by [`web/app.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/web/app.py). It persists across restarts; deleting it
   invalidates any open sessions.
 - **Cookies:** Flask defaults (HTTPOnly). Mark them `Secure` by terminating TLS
   at a reverse proxy.
@@ -177,7 +177,7 @@ Authelia, Tailscale ACLs, or similar.
 
 ## 7. Docker
 
-[devops/docker-compose.yml](devops/docker-compose.yml) mounts host paths
+[`devops/docker-compose.yml`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/devops/docker-compose.yml) mounts host paths
 read-write so the container can persist state back to the host:
 
 ```yaml
@@ -192,7 +192,7 @@ volumes:
 
 - The container runs as a non-root `lastfm` user; the entrypoint matches its
   UID/GID to the owner of `/app/config` so host-side files keep sensible
-  permissions ([devops/docker-entrypoint.sh](devops/docker-entrypoint.sh)).
+  permissions ([`devops/docker-entrypoint.sh`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/devops/docker-entrypoint.sh)).
 - **No Docker secrets are used.** Credentials are bind-mounted from the host
   `.env` / `browser.json`. If you prefer Docker/Swarm/K8s secrets, mount them at
   the same in-container paths.
@@ -201,7 +201,7 @@ volumes:
 
 ## 8. Webhooks
 
-Configured via `WEBHOOK_URL` and `WEBHOOK_EVENTS` ([src/webhook.py](src/webhook.py)).
+Configured via `WEBHOOK_URL` and `WEBHOOK_EVENTS` ([`src/webhook.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/webhook.py)).
 
 - The outbound payload is **not signed**; the receiver has no way to verify it
   came from this app. If you need authenticity, embed a shared secret in the URL
@@ -237,7 +237,7 @@ Anything else controls behaviour, not access.
 
 ## 11. What's excluded from git
 
-[.gitignore](.gitignore) keeps the following out of the repository:
+`.gitignore` keeps the following out of the repository:
 
 - `.env`, `browser.json`, `.channel`
 - `/cache/` (entire directory, including `history.db`)
