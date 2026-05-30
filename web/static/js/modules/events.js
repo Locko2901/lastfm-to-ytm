@@ -84,4 +84,16 @@ export function initEvents() {
   if (started) return
   started = true
   connect()
+  window.addEventListener("pagehide", () => {
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer)
+      reconnectTimer = null
+    }
+    if (eventSource) {
+      try {
+        eventSource.close()
+      } catch (_e) {}
+      eventSource = null
+    }
+  })
 }

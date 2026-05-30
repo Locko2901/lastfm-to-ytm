@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/cache-admin.css') }}">
   {% endif %}
   <script nonce="{{ csp_nonce }}">
-    window.__i18n__ = {{ js_translations | tojson }};;
+    window.__i18n__ = {{ js_translations | tojson }};
     window.__themeOverrides__ = {{ initial_theme_overrides | tojson }};
     (() => {
       let theme = localStorage.getItem("ytm-theme")
@@ -120,9 +120,9 @@
   <div class="toast-container" id="toastContainer"></div>
 
   {% if use_minified %}
-  <script type="module" src="{{ url_for('static', filename='dist/app.min.js') }}"></script>
+  <script type="module" nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='dist/app.min.js') }}"></script>
   {% else %}
-  <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script type="module" nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/app.js') }}"></script>
   {% endif %}
   {% block extra_scripts %}
   {% endblock %}

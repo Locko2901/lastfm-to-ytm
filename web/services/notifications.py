@@ -112,6 +112,15 @@ def add(message: str, type_: str = "info", source: str | None = None) -> dict[st
     }
     with _lock:
         data = _load()
+        if data["notifications"]:
+            prev = data["notifications"][0]
+            if prev.get("message") == entry["message"] and prev.get("type") == entry["type"] and prev.get("source") == entry["source"]:
+                try:
+                    prev_ts = datetime.fromisoformat(prev["created_at"]).timestamp()
+                    if time.time() - prev_ts < 5:
+                        return prev
+                except (KeyError, ValueError, TypeError):
+                    pass
         data["notifications"].insert(0, entry)
         data["notifications"] = _prune(data["notifications"])
         _save(data)

@@ -54,7 +54,7 @@ def resolve_tracks_to_video_ids(
                 reason = search_overrides.get_blacklist_reason(artist, title)
                 reason_str = f" (reason: {reason})" if reason else ""
                 log.info("Blacklisted track skipped: %s - %s%s", artist, title, reason_str)
-            run_log_mappings.append({"artist": artist, "title": title, "source": "blacklisted"})
+                run_log_mappings.append({"artist": artist, "title": title, "source": "blacklisted"})
             continue
 
         vid = search_overrides.get(artist, title)
@@ -68,7 +68,7 @@ def resolve_tracks_to_video_ids(
                 if nf_key not in not_found_seen:
                     not_found_seen.add(nf_key)
                     log.info("%s [not found, cached]", title)
-                run_log_mappings.append({"artist": artist, "title": title, "source": "not_found_cached"})
+                    run_log_mappings.append({"artist": artist, "title": title, "source": "not_found_cached"})
                 continue
             vid = cached
             if vid:
@@ -122,7 +122,10 @@ def resolve_tracks_to_video_ids(
         else:
             misses += 1
             log.warning("Not found: %s - %s", artist, title)
-            run_log_mappings.append({"artist": artist, "title": title, "source": "not_found"})
+            nf_key = (artist.lower(), title.lower())
+            if nf_key not in not_found_seen:
+                not_found_seen.add(nf_key)
+                run_log_mappings.append({"artist": artist, "title": title, "source": "not_found"})
 
     if duplicate_count > 0:
         log.info("Skipped %d duplicates", duplicate_count)

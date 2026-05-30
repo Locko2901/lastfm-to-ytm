@@ -6,7 +6,7 @@ import logging
 import sqlite3
 import threading
 from contextlib import contextmanager
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -294,9 +294,25 @@ class HistoryDB:
             return result
 
     def start_sync(self, sync_type: str = "main", trigger: str = "manual") -> int:
-        """Record sync start and return its row ID."""
-        now = datetime.now(UTC).isoformat()
+        """Record sync start and return its row ID.
+
+        If a non-finished sync of the same type was started within the last 5 seconds,
+        return its ID instead of inserting a duplicate (handles scheduler + manual
+        race conditions firing in the same second).
+        """
+        now_dt = datetime.now(UTC)
+        now = now_dt.isoformat()
+        recent_cutoff = (now_dt - timedelta(seconds=5)).isoformat()
         with self._cursor() as cur:
+            cur.execute(
+                """SELECT id FROM syncs
+                   WHERE sync_type = ? AND status = 'running' AND started_at >= ?
+                   ORDER BY started_at DESC LIMIT 1""",
+                (sync_type, recent_cutoff),
+            )
+            row = cur.fetchone()
+            if row is not None:
+                return row["id"]
             cur.execute(
                 "INSERT INTO syncs (started_at, sync_type, trigger, status) VALUES (?, ?, ?, 'running')",
                 (now, sync_type, trigger),
@@ -403,9 +419,31 @@ class HistoryDB:
         detail: str | None = None,
         source: str = "web",
     ) -> None:
-        """Record a user or system action."""
-        now = datetime.now(UTC).isoformat()
+        """Record a user or system action.
+
+        Deduplicates against an identical action recorded in the last 5 seconds
+        (same action_type, artist, title, video_id, detail, source). Protects
+        against webhook double-fire, SSE reconnect re-emit, and scheduler +
+        manual trigger races.
+        """
+        now_dt = datetime.now(UTC)
+        now = now_dt.isoformat()
+        recent_cutoff = (now_dt - timedelta(seconds=5)).isoformat()
         with self._cursor() as cur:
+            cur.execute(
+                """SELECT 1 FROM actions
+                   WHERE timestamp >= ?
+                     AND action_type = ?
+                     AND IFNULL(artist, '')   = IFNULL(?, '')
+                     AND IFNULL(title, '')    = IFNULL(?, '')
+                     AND IFNULL(video_id, '') = IFNULL(?, '')
+                     AND IFNULL(detail, '')   = IFNULL(?, '')
+                     AND source = ?
+                   LIMIT 1""",
+                (recent_cutoff, action_type, artist, title, video_id, detail, source),
+            )
+            if cur.fetchone() is not None:
+                return
             cur.execute(
                 "INSERT INTO actions (timestamp, action_type, artist, title, video_id, detail, source) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 (now, action_type, artist, title, video_id, detail, source),
@@ -565,8 +603,8 @@ class HistoryDB:
                     """INSERT INTO tracks (artist, title, video_id, yt_title, source, first_seen, last_seen, times_found)
                        VALUES (?, ?, ?, ?, 'cache_backfill', ?, ?, 1)
                        ON CONFLICT(artist, title) DO UPDATE SET
-                           video_id  = COALESCE(excluded.video_id, video_id),
-                           yt_title  = COALESCE(excluded.yt_title, yt_title)""",
+                           video_id  = COALESCE(video_id, excluded.video_id),
+                           yt_title  = COALESCE(yt_title, excluded.yt_title)""",
                     (artist, title, video_id, yt_title, timestamp, timestamp),
                 )
                 count += 1
@@ -591,8 +629,7 @@ class HistoryDB:
                     """INSERT INTO tracks (artist, title, video_id, source, first_seen, last_seen, times_found)
                        VALUES (?, ?, ?, 'override_backfill', ?, ?, 1)
                        ON CONFLICT(artist, title) DO UPDATE SET
-                           video_id = COALESCE(excluded.video_id, video_id),
-                           source   = 'override_backfill'""",
+                           video_id = COALESCE(video_id, excluded.video_id)""",
                     (artist, title, video_id, now, now),
                 )
                 count += 1
