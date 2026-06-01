@@ -4,6 +4,44 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.7.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.6.0...v1.7.0) (2026-06-01)
+
+
+### Features
+
+* **history:** add retention, vacuum, and JSON export/import ([f3e7a89](https://github.com/Locko2901/lastfm-to-ytm/commit/f3e7a899123f19e61c38b9ea2503847279c56c96))
+
+
+### Bug Fixes
+
+* deduplicate concurrent history rows, notifications, and run-log entries ([be603d3](https://github.com/Locko2901/lastfm-to-ytm/commit/be603d383ab6a054a9c67b12903b4bf300e4a7cd))
+* **playlist:** preserve track order in weekly playlist sync ([62102d2](https://github.com/Locko2901/lastfm-to-ytm/commit/62102d2e33fa2d3bc72126f31247fedcf95f661a))
+
+
+### Refactor
+
+* extract workflows and observability from main.py ([8849bee](https://github.com/Locko2901/lastfm-to-ytm/commit/8849bee273b62a80ac00aef4ce17f3a2dd2f5216))
+
+
+### Documentation
+
+* add data & security model reference page ([50413b6](https://github.com/Locko2901/lastfm-to-ytm/commit/50413b67427642681323b89fcd89f8b8c4d8627e))
+* fix stale notifications store path in docstring ([c787127](https://github.com/Locko2901/lastfm-to-ytm/commit/c7871273a36efdcf9a6596de0587bb3f3bab0d16))
+* use absolute GitHub URLs for source-file links in security.md ([5c47302](https://github.com/Locko2901/lastfm-to-ytm/commit/5c47302a00e3c1fe3a5ede681f9118cae29bd209))
+
+
+### Build
+
+* track package.json version in release-please ([c5971db](https://github.com/Locko2901/lastfm-to-ytm/commit/c5971dbfedabe278b74fc3ffe92a6fdbda50cf64))
+
+
+### Miscellaneous
+
+* **i18n:** refresh DE/EN translation catalogs ([9b20c11](https://github.com/Locko2901/lastfm-to-ytm/commit/9b20c119b26f88c31a0add1aca319a933429bb96))
+* **i18n:** refresh POT-Creation-Date timestamp ([8b20b87](https://github.com/Locko2901/lastfm-to-ytm/commit/8b20b878a98a686fb2aa2df4998400b02c54ef44))
+* ignore .bak backup files ([1d9cf88](https://github.com/Locko2901/lastfm-to-ytm/commit/1d9cf88d878f5b51c52fac1d67bda944940a2120))
+* ignore all config/*.json except .example files ([db26265](https://github.com/Locko2901/lastfm-to-ytm/commit/db26265c6e00880381ab042d2abb118bfc8c991c))
+
 ## [1.6.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.5.0...v1.6.0) (2026-05-29)
 
 
