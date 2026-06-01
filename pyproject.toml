@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lastfm-to-ytm"
-version = "1.6.0"
+version = "1.7.0"
 description = "Sync Last.fm listening history to YouTube Music playlists"
 requires-python = ">=3.11"
 dependencies = [
