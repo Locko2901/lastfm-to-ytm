@@ -2,12 +2,20 @@
 
 ## Sync Strategy (`src/playlist/sync.py`)
 
-`sync_playlist()` uses a **replace-then-verify** approach rather than incremental diffing:
+`sync_playlist()` uses a **pre-check, then replace-or-reorder, then verify** approach:
 
-1. **Replace content** - `_replace_playlist_content()` removes all tracks, then adds the desired list
-2. **Verify** - re-fetch the playlist and compare against desired state
-3. **Detect substitutions** - if mismatches exist, check whether YouTube replaced videos with equivalent ones
-4. **Retry** - up to `verify_attempts` (default 2) if verification fails
+1. **Pre-check current state** - fetch the playlist and compare against the desired list:
+    - Exact match &rarr; return immediately (no writes).
+    - Same content, different order &rarr; call `_reorder_playlist()` to align order in place via `edit_playlist(moveItem=...)` and return.
+2. **Replace content** - otherwise `_replace_playlist_content()` removes all tracks, then adds the desired list.
+3. **Verify** - re-fetch the playlist and compare against desired state.
+4. **Reorder after replace** - if the result has the right content but wrong order (YouTube does not always preserve add order for bulk inserts), `_reorder_playlist()` fixes it.
+5. **Detect substitutions** - if mismatches remain, check whether YouTube replaced videos with equivalent ones.
+6. **Retry** - up to `verify_attempts` (default 2) if verification fails.
+
+### In-place Reorder (`_reorder_playlist`)
+
+Walks the desired list and, for each mismatched position, issues `ytm.edit_playlist(playlist_id, moveItem=(setVideoId, successor_setVideoId))` to move the right track into place. Uses `setVideoId` values from `get_playlist()` and updates its local mirror after every move. Worst case is O(n) moves; typical case after a same-content replace is a handful.
 
 ### Precondition Retry
 
@@ -96,7 +104,7 @@ Creates a rolling weekly copy of the main playlist.
 
 ### Template Caching
 
-Weekly playlists use the same `PlaylistCache` template system - sync is skipped if the video ID list hasn't changed since last run.
+Weekly playlists use the same `PlaylistCache` template system. The change check compares against the **weekly's own** cached template (not the main playlist's), so a per-week snapshot is detected as stale on its first run of the week even when the main playlist hasn't changed. When the weekly already exists, `sync_playlist()` is always invoked - its pre-check makes this a cheap no-op when the playlist is already in order, and a `moveItem`-based reorder when it isn't (e.g. when YTM's bulk add at creation time didn't preserve order).
 
 ---
 

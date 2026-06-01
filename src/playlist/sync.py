@@ -247,6 +247,65 @@ def _replace_playlist_content(ytm: YTMusic, playlist_id: str, video_ids: list[st
                 raise
 
 
+def _reorder_playlist(ytm: YTMusic, playlist_id: str, desired_video_ids: list[str], max_retries: int = 3) -> int:
+    """Reorder an existing playlist (same content, possibly different order) to match desired_video_ids.
+
+    Returns the number of move operations performed. Uses YTM's moveItem edit operation
+    so no tracks are removed/re-added.
+    """
+    _query_counter.increment("get_playlist")
+    log.debug(
+        "API Query #%d: get_playlist(%s) for reorder",
+        _query_counter.get_count(),
+        playlist_id,
+    )
+    playlist = _retry_with_backoff(ytm.get_playlist, playlist_id, limit=None, max_retries=max_retries, operation="get_playlist")
+    tracks = playlist.get("tracks", []) or []
+
+    current: list[tuple[str, str]] = []
+    for t in tracks:
+        vid = t.get("videoId")
+        svid = t.get("setVideoId")
+        if vid and svid and len(vid) == 11:
+            current.append((vid, svid))
+
+    moves = 0
+    for i, desired_vid in enumerate(desired_video_ids):
+        if i >= len(current):
+            break
+        if current[i][0] == desired_vid:
+            continue
+        j = next((k for k in range(i + 1, len(current)) if current[k][0] == desired_vid), None)
+        if j is None:
+            continue
+        move_setvid = current[j][1]
+        succ_setvid = current[i][1]
+        try:
+            _query_counter.increment("edit_playlist")
+            log.debug(
+                "API Query #%d: edit_playlist(%s, moveItem) %d->%d",
+                _query_counter.get_count(),
+                playlist_id,
+                j,
+                i,
+            )
+            _retry_with_backoff(
+                ytm.edit_playlist,
+                playlist_id,
+                moveItem=(move_setvid, succ_setvid),
+                max_retries=max_retries,
+                operation="reorder",
+            )
+            moves += 1
+        except Exception as e:
+            log.warning("Failed to reorder item %s: %s", desired_vid, e)
+            continue
+        item = current.pop(j)
+        current.insert(i, item)
+
+    return moves
+
+
 def _do_replace_playlist_content(ytm: YTMusic, playlist_id: str, video_ids: list[str], max_retries: int = 3) -> None:
     """Fetch current playlist state, remove all tracks, then add desired tracks."""
     _query_counter.increment("get_playlist")
@@ -350,6 +409,34 @@ def sync_playlist(
 
     log.debug("Syncing playlist with %d desired videos", len(desired_video_ids))
 
+    try:
+        existing_video_ids = _get_playlist_video_ids(ytm, playlist_id, max_retries)
+    except Exception as e:
+        log.debug("Pre-sync state check failed: %s", e)
+        existing_video_ids = None
+
+    if existing_video_ids is not None:
+        if existing_video_ids == desired_video_ids:
+            log.info("✓ Playlist already in sync (no changes needed)")
+            final_count = _query_counter.get_count()
+            log.info(
+                "Completed using %d API queries (total: %d)",
+                final_count - initial_count,
+                final_count,
+            )
+            return {}
+        if set(existing_video_ids) == set(desired_video_ids):
+            log.info("Content matches but order differs - reordering %d tracks", len(desired_video_ids))
+            moves = _reorder_playlist(ytm, playlist_id, desired_video_ids, max_retries)
+            log.info("✓ Playlist reordered with %d move operations", moves)
+            final_count = _query_counter.get_count()
+            log.info(
+                "Completed using %d API queries (total: %d)",
+                final_count - initial_count,
+                final_count,
+            )
+            return {}
+
     _replace_playlist_content(ytm, playlist_id, desired_video_ids, max_retries)
 
     substitutions: dict[str, str] = {}
@@ -371,8 +458,9 @@ def sync_playlist(
         current_set = set(current_video_ids)
 
         if desired_set == current_set:
-            log.info("✓ Playlist sync successful (same content, different order)")
-            log.debug("Order mismatch is acceptable for this use case")
+            log.info("Content matches after replace but order differs - reordering...")
+            moves = _reorder_playlist(ytm, playlist_id, desired_video_ids, max_retries)
+            log.info("✓ Playlist sync successful (reordered with %d moves)", moves)
             final_count = _query_counter.get_count()
             log.info(
                 "Completed using %d API queries (total: %d)",
