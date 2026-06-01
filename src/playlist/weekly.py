@@ -149,8 +149,8 @@ def update_weekly_playlist(
 
     weekly_id = get_existing_playlist_by_name(ytm, weekly_name, cache=cache)
 
-    main_template = cache.get_template(settings.playlist_name) if cache else None
-    template_changed = main_template != valid_video_ids if main_template else True
+    weekly_template = cache.get_template(weekly_name) if cache else None
+    template_changed = weekly_template != valid_video_ids if weekly_template is not None else True
 
     if weekly_id:
         log.info("Found existing weekly playlist '%s' (%s)", weekly_name, weekly_id)
@@ -166,13 +166,13 @@ def update_weekly_playlist(
 
         if template_changed:
             log.info("Weekly template changed, syncing...")
-            try:
-                sync_playlist(ytm, weekly_id, valid_video_ids)
-            except Exception as e:
-                log.error("Weekly update failed: %s", e)
-                return weekly_id
         else:
-            log.info("Weekly unchanged (matches main), skipping sync")
+            log.info("Weekly template matches main, verifying order...")
+        try:
+            sync_playlist(ytm, weekly_id, valid_video_ids)
+        except Exception as e:
+            log.error("Weekly update failed: %s", e)
+            return weekly_id
     else:
         log.info("Creating weekly playlist '%s' (privacy=%s)", weekly_name, weekly_privacy)
         try:
