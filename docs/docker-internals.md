@@ -77,7 +77,9 @@ After forking, `post_fork()` initializes the APScheduler instance from env setti
 The `image:` field in compose defaults to `lastfm-to-ytm-web:local` (the
 locally built tag) but can be overridden via the `YTMT_IMAGE` environment
 variable to use a prebuilt image instead - this is what
-`./run-docker.sh --pull` does.
+`./run-docker.sh --pull` does. By default `--pull` targets GHCR; pass
+`--registry=dockerhub` (or set `YTMT_REGISTRY=dockerhub`) to pull the Docker Hub
+mirror instead. Setting `YTMT_IMAGE` directly bypasses the registry selection.
 
 ---
 
