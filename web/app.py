@@ -17,22 +17,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from .routes import actions_bp, api_bp, auth_bp, events_bp, notifications_bp, sync_bp
 from .services import (
     ENV_FILE,
-    get_cache_stats,
-    get_cached_tracks,
-    get_last_sync_time,
-    get_not_found_tracks,
-    get_overrides_data,
-    get_playlist_links,
-    get_playlist_mappings,
-    get_setup_status,
-    get_tag_cache_tracks,
-    get_tag_overrides_data,
-    get_tag_stats,
-    get_track_tag_overrides_map,
-    get_track_tags_map,
-    is_history_enabled,
-    load_custom_playlists_config,
-    sync_state,
+    DashboardContext,
 )
 from .services.scheduler import init_scheduler_from_env
 
@@ -168,55 +153,8 @@ def manifest():
 @app.route("/")
 def index():
     """Main dashboard page."""
-    playlist_mappings, run_log = get_playlist_mappings()
-
-    override_list, blacklist = get_overrides_data()
-    cache_stats = get_cache_stats()
-    cached_tracks = get_cached_tracks()
-    last_sync = get_last_sync_time()
-    playlist_links = get_playlist_links()
-    tag_cache_tracks = get_tag_cache_tracks()
-    tag_stats = get_tag_stats()
-    tag_overrides_data = get_tag_overrides_data()
-    custom_playlists = load_custom_playlists_config()
-    track_tags_map = get_track_tags_map()
-    tag_overrides_map = get_track_tag_overrides_map()
-
-    setup = get_setup_status()
-
-    from .services.env import parse_env_file
-
-    env_settings = parse_env_file()
-    display_tips_raw = env_settings.get("DISPLAY_TIPS", "true").strip().lower()
-    display_tips = display_tips_raw not in ("false", "0", "no", "off", "f", "n")
-
-    return render_template(
-        "dashboard.html",
-        mappings=playlist_mappings,
-        limit=run_log["limit"],
-        timestamp=run_log["timestamp"],
-        total=run_log["total"],
-        resolved=len(playlist_mappings),
-        overrides=override_list,
-        blacklist=blacklist,
-        cache_stats=cache_stats,
-        cached_tracks=cached_tracks,
-        not_found_tracks=get_not_found_tracks(),
-        sync_running=sync_state["running"],
-        last_sync=last_sync,
-        playlist_links=playlist_links,
-        needs_setup=setup["needs_setup"],
-        needs_auth=setup["needs_auth"],
-        tag_cache_tracks=tag_cache_tracks,
-        tag_stats=tag_stats,
-        tag_overrides=tag_overrides_data,
-        custom_playlists=custom_playlists,
-        track_tags_map=track_tags_map,
-        tag_overrides_map=tag_overrides_map,
-        history_enabled=is_history_enabled(),
-        display_tips=display_tips,
-        docs_url="https://locko2901.github.io/lastfm-to-ytm/",
-    )
+    context = DashboardContext.build()
+    return render_template("dashboard.html", **context.to_template_context())
 
 
 def main():
