@@ -98,6 +98,13 @@ docker pull ghcr.io/locko2901/lastfm-to-ytm:latest    # GitHub Container Registr
 docker pull lockooo/lastfm-to-ytm:latest              # Docker Hub mirror
 ```
 
+By default `--pull` uses GHCR. To pull from Docker Hub instead, pass `--registry=dockerhub` (or set `YTMT_REGISTRY=dockerhub` once in your environment):
+
+```bash
+./run-docker.sh --pull --registry=dockerhub          # pulls lockooo/lastfm-to-ytm:latest
+./run-docker.sh --pull=v1.2.0 --registry=ghcr        # explicit GHCR (the default)
+```
+
 Available tags:
 
 | Tag | Tracks | Channel |

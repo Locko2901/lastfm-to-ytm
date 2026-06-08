@@ -31,8 +31,10 @@ IMAGE_NAME="lastfm-to-ytm-web"
 CONTAINER_NAME="lastfm-to-ytm"
 PORT="${YTMT_PORT:-2002}"
 HEALTH_TIMEOUT="${YTMT_HEALTH_TIMEOUT:-30}"
-PREBUILT_IMAGE_REPO="ghcr.io/locko2901/lastfm-to-ytm"
+PREBUILT_IMAGE_REPO_GHCR="ghcr.io/locko2901/lastfm-to-ytm"
+PREBUILT_IMAGE_REPO_DOCKERHUB="lockooo/lastfm-to-ytm"
 PREBUILT_TAG_DEFAULT="latest"
+REGISTRY="${YTMT_REGISTRY:-ghcr}"
 
 REBUILD=false
 NO_CACHE=false
@@ -74,6 +76,9 @@ for arg in "$@"; do
             PULL=true
             PULL_TAG="${arg#--pull=}"
             ;;
+        --registry=*)
+            REGISTRY="${arg#--registry=}"
+            ;;
         --channel=*)
             CHANNEL_OVERRIDE="${arg#--channel=}"
             ;;
@@ -89,8 +94,10 @@ for arg in "$@"; do
             echo "  --prune          Remove dangling images and old project images"
             echo "  --prune-all      Aggressive cleanup: also clear build cache and unused images"
             echo "                   Can be combined with --rebuild/--no-cache"
-            echo "  --pull, -p       Use prebuilt image from GHCR instead of building locally"
+            echo "  --pull, -p       Use prebuilt image from a registry instead of building locally"
             echo "                   (--pull=TAG to pin a specific tag, default: latest)"
+            echo "  --registry=REG   Registry to pull prebuilt images from: ghcr (default) or"
+            echo "                   dockerhub. Only used with --pull."
             echo "  --channel=CH     Force update channel for the version pill (stable|dev)"
             echo "                   Sticky: only needed once to switch channels"
             echo "  --help, -h       Show this help message"
@@ -98,6 +105,7 @@ for arg in "$@"; do
             echo "Environment variables:"
             echo "  YTMT_PORT            Port to expose (default: 2002)"
             echo "  YTMT_HEALTH_TIMEOUT  Seconds to wait for health check (default: 30)"
+            echo "  YTMT_REGISTRY        Default registry for --pull: ghcr or dockerhub (default: ghcr)"
             echo "  YTMT_IMAGE           Override full image ref (e.g. ghcr.io/locko2901/lastfm-to-ytm:v1.2.0)"
             exit 0
             ;;
@@ -113,6 +121,19 @@ if [[ -n "$CHANNEL_OVERRIDE" && "$CHANNEL_OVERRIDE" != "stable" && "$CHANNEL_OVE
     echo -e "${RED}✗ --channel must be 'stable' or 'dev' (got: $CHANNEL_OVERRIDE)${NC}"
     exit 1
 fi
+
+case "${REGISTRY,,}" in
+    ghcr|github)
+        PREBUILT_IMAGE_REPO="$PREBUILT_IMAGE_REPO_GHCR"
+        ;;
+    dockerhub|docker|dockerio|hub)
+        PREBUILT_IMAGE_REPO="$PREBUILT_IMAGE_REPO_DOCKERHUB"
+        ;;
+    *)
+        echo -e "${RED}✗ --registry must be 'ghcr' or 'dockerhub' (got: $REGISTRY)${NC}"
+        exit 1
+        ;;
+esac
 
 do_prune() {
     if [[ "$PRUNE_ALL" == true ]]; then
