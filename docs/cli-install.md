@@ -10,6 +10,7 @@ Run the sync engine (and optionally the web dashboard) without Docker. You manag
 - Python 3.10+
 - A Last.fm API key - [create one here](https://www.last.fm/api/account/create)
 - YouTube Music auth exported for `ytmusicapi` - see the [browser setup guide](https://ytmusicapi.readthedocs.io/en/stable/setup/browser.html)
+- _Optional but recommended:_ [uv](https://docs.astral.sh/uv/) - a fast Python package/venv manager that replaces `python -m venv` + `pip`. Install it with `curl -LsSf https://astral.sh/uv/install.sh | sh` (macOS/Linux) or `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"` (Windows). You can also `pipx install uv` or `pip install uv`.
 
 !!! warning
     Keep `browser.json` private. Never commit it.
@@ -20,40 +21,71 @@ Run the sync engine (and optionally the web dashboard) without Docker. You manag
 
 === "Stable channel"
 
-    ```bash
-    git clone https://github.com/Locko2901/lastfm-to-ytm.git
-    cd lastfm-to-ytm
-    git checkout "$(git tag --sort=-v:refname | head -1)"   # latest release tag
+    === "uv (recommended)"
 
-    python -m venv .venv
-    source .venv/bin/activate      # macOS/Linux
-    # .venv\Scripts\activate       # Windows
+        ```bash
+        git clone https://github.com/Locko2901/lastfm-to-ytm.git
+        cd lastfm-to-ytm
+        git checkout "$(git tag --sort=-v:refname | head -1)"   # latest release tag
 
-    python -m pip install --upgrade pip
-    pip install .
-    ```
+        uv venv                        # creates .venv
+        source .venv/bin/activate      # macOS/Linux
+        # .venv\Scripts\activate       # Windows
+
+        uv pip install .
+        ```
+
+    === "pip"
+
+        ```bash
+        git clone https://github.com/Locko2901/lastfm-to-ytm.git
+        cd lastfm-to-ytm
+        git checkout "$(git tag --sort=-v:refname | head -1)"   # latest release tag
+
+        python -m venv .venv
+        source .venv/bin/activate      # macOS/Linux
+        # .venv\Scripts\activate       # Windows
+
+        python -m pip install --upgrade pip
+        pip install .
+        ```
 
     !!! note "About `git checkout <tag>`"
         Checking out a tag leaves you in **detached HEAD** state. That's expected - you're pinning to a specific release. To update later, re-run the `git fetch --tags` + `git checkout` lines from the [Updating](#updating) section below.
 
 === "Dev channel"
 
-    ```bash
-    git clone https://github.com/Locko2901/lastfm-to-ytm.git
-    cd lastfm-to-ytm
+    === "uv (recommended)"
 
-    python -m venv .venv
-    source .venv/bin/activate      # macOS/Linux
-    # .venv\Scripts\activate       # Windows
+        ```bash
+        git clone https://github.com/Locko2901/lastfm-to-ytm.git
+        cd lastfm-to-ytm
 
-    python -m pip install --upgrade pip
-    pip install .
-    ```
+        uv venv                        # creates .venv
+        source .venv/bin/activate      # macOS/Linux
+        # .venv\Scripts\activate       # Windows
+
+        uv pip install .
+        ```
+
+    === "pip"
+
+        ```bash
+        git clone https://github.com/Locko2901/lastfm-to-ytm.git
+        cd lastfm-to-ytm
+
+        python -m venv .venv
+        source .venv/bin/activate      # macOS/Linux
+        # .venv\Scripts\activate       # Windows
+
+        python -m pip install --upgrade pip
+        pip install .
+        ```
 
 See [Release Channels](channels.md) if you're unsure which to pick.
 
 !!! tip "Want the web dashboard too?"
-    Replace `pip install .` with `pip install ".[web]"`, then run `pybabel compile -d web/translations` before starting the dashboard. Start it with `lastfm-ytm-web` (binds to `http://localhost:2002`).
+    Replace `pip install .` with `pip install ".[web]"` (or `uv pip install ".[web]"`), then run `pybabel compile -d web/translations` before starting the dashboard. Start it with `lastfm-ytm-web` (binds to `http://localhost:2002`).
 
     The `pybabel compile` step is required because the compiled `.mo` translation files are gitignored - skip it and the language dropdown won't switch locales.
 
@@ -91,12 +123,14 @@ ytmusicapi browser   # interactive setup, writes browser.json
 
 ```bash
 python run.py     # or just: lastfm-ytm-sync
+# uv users: uv run run.py   (no need to activate .venv first)
 ```
 
 To sync your [custom tag playlists](tag-playlists.md) instead, run:
 
 ```bash
 python run_tags.py    # or just: lastfm-ytm-tags
+# uv users: uv run run_tags.py
 ```
 
 For what actually happens during a sync, see [How It Works](how-it-works.md).
@@ -148,6 +182,9 @@ Without the web dashboard, set up scheduling yourself.
     - **Start in**: `C:\path\to\repo`
     - **Trigger**: Daily at a time you prefer
 
+!!! tip "Using uv for scheduled runs"
+    You can skip the venv path entirely with `uv run`. Use an absolute path to `uv` (cron/systemd have a minimal `PATH`), e.g. `cd /path/to/repo && /path/to/uv run run.py`, or in a systemd unit `ExecStart=/path/to/uv run /path/to/repo/run.py` with `WorkingDirectory=/path/to/repo`.
+
 ---
 
 ## Updating
@@ -157,6 +194,7 @@ git fetch --tags
 git checkout "$(git tag --sort=-v:refname | head -1)"   # stable; or `git checkout main` for dev
 source .venv/bin/activate
 pip install --upgrade ".[web]"        # drop [web] if installed without it
+# uv users: uv pip install --upgrade ".[web]"
 ```
 
 !!! warning "Web dashboard users: compile translations"
