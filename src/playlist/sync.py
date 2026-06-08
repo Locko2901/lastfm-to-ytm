@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any
 from ytmusicapi import YTMusic
 from ytmusicapi.exceptions import YTMusicServerError
 
+from ..observability.http_status import extract_http_status, is_rate_limited, is_retryable
 from ..ytm import create_playlist_with_items, get_existing_playlist_by_name
 from .metrics import _query_counter
 
@@ -36,21 +37,17 @@ def _retry_with_backoff(func, *args, max_retries: int = 3, initial_delay: float 
         except (RuntimeError, ValueError, OSError, YTMusicServerError) as e:
             last_exception = e
             error_msg = str(e)
+            status = extract_http_status(error_msg)
 
-            is_precondition = "400" in error_msg and "Precondition" in error_msg
-            if is_precondition:
+            # Terminal client errors (bad request / conflict) will never succeed.
+            if status in (400, 409):
                 raise
 
-            is_conflict = "409" in error_msg
-            if is_conflict:
-                raise
-
-            is_retryable = "403" in error_msg or "Forbidden" in error_msg or ("Expecting value" in error_msg and attempt < max_retries - 1)
-
-            if is_retryable and attempt < max_retries - 1:
+            if is_retryable(error_msg) and attempt < max_retries - 1:
                 log.warning(
-                    "%s: rate limit (retry %d/%d in %.1fs)",
+                    "%s: %s (retry %d/%d in %.1fs)",
                     operation,
+                    f"HTTP {status}" if status else "transient error",
                     attempt + 1,
                     max_retries - 1,
                     delay,
@@ -71,8 +68,8 @@ def _get_playlist_video_ids(ytm: YTMusic, playlist_id: str, max_retries: int = 3
         playlist = _retry_with_backoff(ytm.get_playlist, playlist_id, limit=None, max_retries=max_retries, operation="get_playlist")
     except Exception as e:
         error_msg = str(e)
-        if "403" in error_msg or "Forbidden" in error_msg:
-            log.error("Failed to get playlist after retries: HTTP 403 - Likely rate limited")
+        if is_rate_limited(error_msg):
+            log.error("Failed to get playlist after retries: HTTP %s - likely rate limited", extract_http_status(error_msg) or "403/429")
         elif "Expecting value" in error_msg:
             log.error("Failed to get playlist after retries: Invalid JSON response from API")
         else:

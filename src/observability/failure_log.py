@@ -5,6 +5,7 @@ import logging
 from datetime import UTC, datetime
 
 from ..config import CACHE_DIR
+from .http_status import extract_http_status
 
 log = logging.getLogger(__name__)
 
@@ -29,13 +30,14 @@ def save_failure_log(error_message: str, traceback_str: str | None = None, *, sy
     log_file = CACHE_DIR / ".last_failure.json"
 
     hint = None
+    status = extract_http_status(error_message)
     error_lower = error_message.lower()
-    if "401" in error_message or "unauthorized" in error_lower:
+    if status == 401 or "unauthorized" in error_lower:
         hint = "Authentication expired. Try regenerating YouTube Music auth or check your Last.fm API key."
-    elif "403" in error_message or "forbidden" in error_lower:
-        hint = "Access denied. You may need to regenerate YouTube Music auth, or you've been rate-limited."
-    elif "rate limit" in error_lower:
+    elif status == 429 or "rate limit" in error_lower:
         hint = "Rate limited by YouTube Music. Wait a few minutes before trying again."
+    elif status == 403 or "forbidden" in error_lower:
+        hint = "Access denied. You may need to regenerate YouTube Music auth, or you've been rate-limited."
 
     data = {
         "timestamp": datetime.now(UTC).isoformat(),
