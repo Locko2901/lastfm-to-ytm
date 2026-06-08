@@ -1,3 +1,5 @@
+"""Settings from environment variables."""
+
 import json
 import logging
 import os

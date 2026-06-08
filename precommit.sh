@@ -55,5 +55,10 @@ step "Babel: compile catalogs"
 .venv/bin/pybabel compile -d web/translations \
   && pass "pybabel compile" || fail "pybabel compile"
 
+# docs
+step "Docs: regenerate project structure tree"
+.venv/bin/python scripts/gen_structure.py \
+  && pass "gen_structure" || fail "gen_structure"
+
 # end
 printf "\n${GREEN}${BOLD}All checks passed!${RESET}\n"

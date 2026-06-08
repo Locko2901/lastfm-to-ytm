@@ -1,3 +1,5 @@
+"""CLI entrypoint (tag playlist sync)."""
+
 import traceback
 
 from src.config import Settings, configure_logging

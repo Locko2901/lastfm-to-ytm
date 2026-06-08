@@ -1,3 +1,5 @@
+"""YouTube Music search, scoring, and matching."""
+
 from .executor import find_on_ytm
 from .metrics import (
     get_search_statistics,

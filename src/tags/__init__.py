@@ -1,3 +1,5 @@
+"""Tag resolution, filtering, and tag playlist sync."""
+
 from .filter import filter_tracks_by_tags
 from .resolver import resolve_tags_for_tracks
 from .sync import sync_custom_playlists
