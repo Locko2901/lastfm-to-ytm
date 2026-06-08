@@ -83,12 +83,19 @@ See available tags on the [releases page](https://github.com/Locko2901/lastfm-to
 
 ## Using the prebuilt image
 
-Multi-arch images (`linux/amd64`, `linux/arm64`) are published to GitHub Container Registry on every push to `main` and on every tagged release.
+Multi-arch images (`linux/amd64`, `linux/arm64`) are published to GitHub Container Registry on every push to `main` and on every tagged release. The same tags are mirrored to Docker Hub (`docker.io/lockooo/lastfm-to-ytm`).
 
 ```bash
 ./run-docker.sh --pull              # pulls ghcr.io/locko2901/lastfm-to-ytm:latest
 ./run-docker.sh --pull=v1.2.0       # pin a specific version
 ./run-docker.sh --pull=main         # always-fresh main branch build
+```
+
+Both registries carry identical images, so you can pull from whichever you prefer:
+
+```bash
+docker pull ghcr.io/locko2901/lastfm-to-ytm:latest    # GitHub Container Registry
+docker pull lockooo/lastfm-to-ytm:latest              # Docker Hub mirror
 ```
 
 Available tags:
