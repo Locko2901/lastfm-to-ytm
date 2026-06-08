@@ -4,7 +4,19 @@ from .normalization import RE_DASH, clean_uploader_name, match_key, normalize_ba
 from .queries import candidate_artists, clean_title_for_match, split_artist_aliases
 from .similarity import best_similarity, coverage, jaccard
 
-NEGATIVE_TERMS = {
+HARD_NEGATIVE_TERMS = {
+    "nightcore",
+    "daycore",
+    "sped",
+    "slowed",
+    "8d",
+    "chipmunk",
+    "reverb",
+    "pitch",
+    "bassboosted",
+}
+
+SOFT_NEGATIVE_TERMS = {
     "live",
     "acoustic",
     "cover",
@@ -12,25 +24,16 @@ NEGATIVE_TERMS = {
     "instrumental",
     "remix",
     "edit",
-    "nightcore",
-    "sped",
-    "slowed",
-    "8d",
     "loop",
     "mashup",
     "mix",
     "medley",
     "tribute",
     "parody",
-    "reverb",
-    "pitch",
-    "chipmunk",
     "fanmade",
     "speed",
     "rework",
     "bootleg",
-    "daycore",
-    "bassboosted",
     "bass",
     "boosted",
     "tiktok",
@@ -46,17 +49,7 @@ NEGATIVE_TERMS = {
     "demo",
 }
 
-HARD_NEGATIVE_TERMS = {
-    "nightcore",
-    "daycore",
-    "sped",
-    "slowed",
-    "8d",
-    "chipmunk",
-    "reverb",
-    "pitch",
-    "bassboosted",
-}
+ALL_NEGATIVE_TERMS = HARD_NEGATIVE_TERMS | SOFT_NEGATIVE_TERMS
 
 
 def artist_similarity(target_artist: str, r: dict) -> float:
@@ -113,11 +106,11 @@ def negative_penalty(candidate_title: str, user_title: str) -> float:
     """Calculate penalty for unwanted terms (live, remix, cover, etc.) in candidate."""
     cand_tokens = tokens(candidate_title)
     user_tokens = tokens(user_title)
-    undesired = (cand_tokens & NEGATIVE_TERMS) - user_tokens
+    soft_hits = (cand_tokens & SOFT_NEGATIVE_TERMS) - user_tokens
     hard_hits = (cand_tokens & HARD_NEGATIVE_TERMS) - user_tokens
-    if not undesired:
+    if not soft_hits and not hard_hits:
         return 0.0
-    light = len(undesired - hard_hits)
+    light = len(soft_hits)
     hard = len(hard_hits)
     light_penalty = min(0.25, 0.08 * light)
     hard_penalty = min(0.60, 0.35 * hard)
