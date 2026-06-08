@@ -2,12 +2,16 @@
 
 from .failure_log import clear_failure_log, save_failure_log, save_run_log
 from .history_recording import get_history_db, record_sync_error, record_tracks_to_history
+from .http_status import extract_http_status, is_rate_limited, is_retryable
 from .webhooks import fire_webhook
 
 __all__ = [
     "clear_failure_log",
+    "extract_http_status",
     "fire_webhook",
     "get_history_db",
+    "is_rate_limited",
+    "is_retryable",
     "record_sync_error",
     "record_tracks_to_history",
     "save_failure_log",

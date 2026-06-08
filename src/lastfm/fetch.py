@@ -48,16 +48,20 @@ def _make_api_request(
         try:
             resp = requests.get(LASTFM_API_URL, params=params, timeout=30)
 
-            if resp.status_code >= 500:
+            if resp.status_code == 429 or resp.status_code >= 500:
                 if attempt < max_retries - 1:
+                    wait = retry_delay
+                    retry_after = resp.headers.get("Retry-After", "")
+                    if retry_after.isdigit():
+                        wait = max(wait, int(retry_after))
                     log.warning(
                         "Last.fm %d error, retrying in %ds (%d/%d)",
                         resp.status_code,
-                        retry_delay,
+                        wait,
                         attempt + 1,
                         max_retries,
                     )
-                    time.sleep(retry_delay)
+                    time.sleep(wait)
                     retry_delay *= 2
                     continue
                 log.error("Last.fm API error %d, max retries reached", resp.status_code)
