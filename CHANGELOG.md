@@ -4,6 +4,51 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.0.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.7.0...v2.0.0) (2026-06-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop private backward-compat aliases from src.main facade
+
+### Features
+
+* let users choose image registry (GHCR or Docker Hub) for --pull ([7f6167f](https://github.com/Locko2901/lastfm-to-ytm/commit/7f6167f2e1edb93677cd7d02fbe82e4dbbbc5f33))
+
+
+### Bug Fixes
+
+* **observability:** harden rate-limit / HTTP error detection ([2fad8a0](https://github.com/Locko2901/lastfm-to-ytm/commit/2fad8a0c3d9e9df897909d8933911923df6031d3))
+
+
+### Refactor
+
+* drop private backward-compat aliases from src.main facade ([e06157e](https://github.com/Locko2901/lastfm-to-ytm/commit/e06157ee2abd5b6fa768e64f098839ec826e3d79))
+* hoist non-circular inline imports to module level ([265931d](https://github.com/Locko2901/lastfm-to-ytm/commit/265931dc577b2db7c89480a42cea59165946ac9f))
+* replace magic numbers in recency weighting with named constants ([d99ae06](https://github.com/Locko2901/lastfm-to-ytm/commit/d99ae0661e792ad8a942bdf5129592b3d0ce94e5))
+* **search:** make negative term sets disjoint ([70d72ee](https://github.com/Locko2901/lastfm-to-ytm/commit/70d72ee65e9ff67bf08ab7071496fbf0b0c09ab0))
+* **web:** extract dashboard index data into DashboardContext builder ([d233637](https://github.com/Locko2901/lastfm-to-ytm/commit/d2336370b1ee37868ea2e3e9898c2ad0dc89297a))
+
+
+### Documentation
+
+* add uv install instructions to CLI manual install ([af69f57](https://github.com/Locko2901/lastfm-to-ytm/commit/af69f57bb1dc46653815dee12e69a7f598e46c31))
+* auto-generate project structure tree from docstrings ([bd136ac](https://github.com/Locko2901/lastfm-to-ytm/commit/bd136ac3c84541209d259e71e9399b596c38ff33))
+* document Docker Hub image mirror and required credentials ([b57cae3](https://github.com/Locko2901/lastfm-to-ytm/commit/b57cae3dabc54d35bedfca9d8cd4a146c1ce710f))
+* document Docker Hub vs GHCR registry selection for --pull ([2b4bd30](https://github.com/Locko2901/lastfm-to-ytm/commit/2b4bd301d734c47ee3a1c982ad452dc8960efe05))
+* rename security.md ([d4d1b06](https://github.com/Locko2901/lastfm-to-ytm/commit/d4d1b0602ee84ace8afa0b36b833e518a78a0f93))
+
+
+### CI/CD
+
+* mirror GHCR docker images to Docker Hub ([1942eb5](https://github.com/Locko2901/lastfm-to-ytm/commit/1942eb5f9f043cf817ab96fdd30df114d71003f0))
+* mirror trimmed README to Docker Hub on release ([8f4f35f](https://github.com/Locko2901/lastfm-to-ytm/commit/8f4f35fcd7148daaeaaf341a7f0fa797bc6bafb6))
+
+
+### Miscellaneous
+
+* **i18n:** refresh DE/EN translation catalogs ([83d1398](https://github.com/Locko2901/lastfm-to-ytm/commit/83d13986e4eb6053c67ca331e3abee902eb5c0cc))
+
 ## [1.7.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.6.0...v1.7.0) (2026-06-01)
 
 
