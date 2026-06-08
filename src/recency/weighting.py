@@ -4,6 +4,15 @@ from typing import Any
 
 from ..lastfm import Scrobble
 
+# Exponential half-life decay base: score halves every ``half_life_hours``.
+_DECAY_BASE = 0.5
+# Seconds in one hour, used to convert scrobble age to hours.
+_SECONDS_PER_HOUR = 3600.0
+# Number of top tracks to emit in the debug timestamp dump.
+_DEBUG_TOP_N = 50
+# Max characters of a track title shown in the debug dump.
+_DEBUG_TITLE_WIDTH = 25
+
 
 @dataclass(frozen=True, slots=True)
 class WeightedTrack:
@@ -75,8 +84,8 @@ def collapse_recency_weighted(
 
         play_score = plays / max_plays
 
-        age_hours = max(0.0, (now - ts_latest) / 3600.0)
-        recency_score = 0.5 ** (age_hours / float(half_life_hours)) if half_life_hours > 0 else 1.0
+        age_hours = max(0.0, (now - ts_latest) / _SECONDS_PER_HOUR)
+        recency_score = _DECAY_BASE ** (age_hours / float(half_life_hours)) if half_life_hours > 0 else 1.0
 
         recency_weight = 1.0 - play_weight
         score = play_weight * play_score + recency_weight * recency_score
@@ -97,16 +106,18 @@ def collapse_recency_weighted(
     from datetime import UTC, datetime
 
     log = __import__("logging").getLogger(__name__)
-    log.debug("=== Top 50 track timestamps (play_weight=%.2f, half_life=%.1fh, max_plays=%d) ===", play_weight, half_life_hours, max_plays)
-    for i, t in enumerate(items[:50], 1):
-        age_hours = (now - t.ts) / 3600.0
-        recency_score = 0.5 ** (age_hours / float(half_life_hours)) if half_life_hours > 0 else 1.0
+    log.debug(
+        "=== Top %d track timestamps (play_weight=%.2f, half_life=%.1fh, max_plays=%d) ===", _DEBUG_TOP_N, play_weight, half_life_hours, max_plays
+    )
+    for i, t in enumerate(items[:_DEBUG_TOP_N], 1):
+        age_hours = (now - t.ts) / _SECONDS_PER_HOUR
+        recency_score = _DECAY_BASE ** (age_hours / float(half_life_hours)) if half_life_hours > 0 else 1.0
         play_score = t.plays / max_plays
         dt = datetime.fromtimestamp(t.ts, tz=UTC)
         log.debug(
             "  %2d. %-25s | plays=%2d (%.2f) | last=%s (%.1fh ago, rec=%.3f) | score=%.4f",
             i,
-            t.track[:25],
+            t.track[:_DEBUG_TITLE_WIDTH],
             t.plays,
             play_score,
             dt.strftime("%m-%d %H:%M"),
