@@ -16,6 +16,7 @@ from ..observability import (
 from ..playlist import get_playlist_statistics, log_playlist_statistics
 from ..playlist import reset_query_counter as reset_playlist_counter
 from ..search import get_search_statistics, log_search_statistics, reset_search_statistics
+from ..tags.sync import sync_custom_playlists
 from ._common import build_context, fetch_scrobbles
 
 log = logging.getLogger(__name__)
@@ -23,8 +24,6 @@ log = logging.getLogger(__name__)
 
 def run_tags(settings: Settings) -> None:
     """Run only the custom tag-based playlist sync."""
-    from ..tags.sync import sync_custom_playlists
-
     _start = time.monotonic()
     ctx = build_context(settings)
 

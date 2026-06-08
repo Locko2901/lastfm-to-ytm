@@ -1,5 +1,7 @@
+import logging
 import time
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import Any
 
 from ..lastfm import Scrobble
@@ -12,6 +14,8 @@ _SECONDS_PER_HOUR = 3600.0
 _DEBUG_TOP_N = 50
 # Max characters of a track title shown in the debug dump.
 _DEBUG_TITLE_WIDTH = 25
+
+log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
@@ -72,7 +76,6 @@ def collapse_recency_weighted(
     if min_plays > 1:
         before = len(agg)
         agg = {k: v for k, v in agg.items() if int(v["plays"]) >= min_plays}
-        log = __import__("logging").getLogger(__name__)
         log.info("min_plays=%d filter: %d/%d tracks kept", min_plays, len(agg), before)
 
     max_plays = max((int(a["plays"]) for a in agg.values()), default=1)
@@ -103,9 +106,6 @@ def collapse_recency_weighted(
 
     items.sort(key=lambda x: (-x.score, -x.ts, -x.plays))
 
-    from datetime import UTC, datetime
-
-    log = __import__("logging").getLogger(__name__)
     log.debug(
         "=== Top %d track timestamps (play_weight=%.2f, half_life=%.1fh, max_plays=%d) ===", _DEBUG_TOP_N, play_weight, half_life_hours, max_plays
     )
