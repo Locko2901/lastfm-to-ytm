@@ -1,5 +1,6 @@
 """Web dashboard services."""
 
+from .dashboard import DashboardContext
 from .data import (
     bulk_delete_search_cache,
     bulk_delete_tag_cache,
@@ -73,6 +74,7 @@ __all__ = [
     "ENV_EXAMPLE_FILE",
     "ENV_FILE",
     "PRIVACY_SETTINGS",
+    "DashboardContext",
     "bulk_delete_search_cache",
     "bulk_delete_tag_cache",
     "clear_failure_log",
