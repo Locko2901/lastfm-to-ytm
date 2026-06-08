@@ -1,4 +1,6 @@
-from .normalization import RE_DASH, normalize_base, tokens
+from difflib import SequenceMatcher
+
+from .normalization import RE_DASH, clean_uploader_name, match_key, normalize_base, tokens
 from .queries import candidate_artists, clean_title_for_match, split_artist_aliases
 from .similarity import best_similarity, coverage, jaccard
 
@@ -73,8 +75,6 @@ def uploader_similarity(target_artist: str, r: dict) -> float:
     author = r.get("author") or ""
     if not author:
         return 0.0
-    from .normalization import clean_uploader_name
-
     uploader = clean_uploader_name(author)
     best = 0.0
     for alias in split_artist_aliases(target_artist):
@@ -87,10 +87,6 @@ def title_similarity(target_title: str, r: dict, artist_tokens: set[str]) -> flo
     candidate_title = r.get("title") or ""
     core_target = clean_title_for_match(target_title, artist_tokens)
     core_candidate = clean_title_for_match(candidate_title, artist_tokens)
-    from difflib import SequenceMatcher
-
-    from .normalization import match_key
-
     j = jaccard(tokens(core_target), tokens(core_candidate))
     rratio = SequenceMatcher(None, match_key(core_target), match_key(core_candidate)).ratio()
     return 0.7 * j + 0.3 * rratio
