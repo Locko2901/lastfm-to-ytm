@@ -1,3 +1,5 @@
+"""Playlist sync, diffing, weekly snapshots."""
+
 from .metrics import (
     get_playlist_statistics,
     get_query_count,

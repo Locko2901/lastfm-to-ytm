@@ -1,4 +1,4 @@
-"""Flask web dashboard for Last.fm → YouTube Music sync."""
+"""Flask web dashboard application."""
 
 from __future__ import annotations
 

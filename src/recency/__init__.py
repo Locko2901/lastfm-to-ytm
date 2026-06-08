@@ -1,3 +1,5 @@
+"""Recency weighting algorithm."""
+
 from .weighting import (
     WeightedTrack,
     collapse_recency_weighted,

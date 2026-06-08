@@ -16,11 +16,13 @@ pip install -e ".[dev,web]"
 npm install
 ```
 
+uv users: `uv pip install -e ".[dev,web]"` (after `uv venv`) works just the same.
+
 ## Pull requests
 
 - Fork, branch off `main`, open a PR against `main`.
 - Keep PRs focused - one logical change per PR.
-- Run [`./precommit.sh`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/precommit.sh) before pushing. It runs Ruff, Biome, and template formatting.
+- Run [`./precommit.sh`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/precommit.sh) before pushing. It runs Ruff, Biome, template formatting, updates translation catalogs, and regenerates the project structure tree in the docs.
 - No tests exist yet; manual verification via `python run.py` or the web dashboard is expected.
 
 ## Commit messages - required format

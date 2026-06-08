@@ -78,6 +78,7 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "run.py" = ["T20"]                 # allow print in entrypoint
+"scripts/*.py" = ["T20"]           # dev-only CLI helpers: allow print
 "src/lastfm/fetch.py" = ["ARG001"] # signature must match socket.getaddrinfo
 "tests/screenshots/*.py" = ["T20", "D", "E501"] # dev-only CLI: prints + literal fixture rows
 

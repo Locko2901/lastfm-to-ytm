@@ -1,3 +1,5 @@
+"""YouTube Music API wrapper."""
+
 from .client import build_oauth_client
 from .operations import (
     add_items_fallback,

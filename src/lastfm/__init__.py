@@ -1,3 +1,5 @@
+"""Last.fm API client and scrobble fetching."""
+
 from .fetch import (
     disable_ipv4_only,
     enable_ipv4_only,
