@@ -12,7 +12,8 @@ Detailed reference for `run-docker.sh`, the prebuilt image, updating, and releas
 |--------|-------|-------------|
 | `--rebuild` | `-r` | Force rebuild the Docker image |
 | `--no-cache` | | Rebuild without Docker cache (implies `--rebuild`) |
-| `--pull` | `-p` | Use the prebuilt image from GHCR instead of building locally (`--pull=TAG` to pin a tag) |
+| `--pull` | `-p` | Use the prebuilt image instead of building locally (`--pull=TAG` to pin a tag) |
+| `--registry=REG` | | Registry to pull from with `--pull`: `ghcr` (default) or `dockerhub` |
 | `--channel=CH` | | One-shot override of the auto-detected channel (`stable` or `dev`) for this run only. Normally not needed - channel is inferred from `--pull` / git state and written to `.channel` in the project root |
 | `--stop` | | Stop the running container |
 | `--logs` | `-l` | Follow container logs |
@@ -50,6 +51,7 @@ These are set on the host shell, not in `.env`:
 |----------|---------|-------------|
 | `YTMT_PORT` | `2002` | Port to expose the web dashboard |
 | `YTMT_HEALTH_TIMEOUT` | `30` | Seconds to wait for health check |
+| `YTMT_REGISTRY` | `ghcr` | Default registry for `--pull`: `ghcr` or `dockerhub` |
 | `YTMT_IMAGE` | `lastfm-to-ytm-web:local` | Full image reference compose uses (override to pin a prebuilt tag) |
 
 ---
