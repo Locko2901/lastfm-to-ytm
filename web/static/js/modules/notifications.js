@@ -123,7 +123,7 @@ function scheduleRender() {
 }
 
 function applyEvent(event) {
-  if (!event || !event.event) return
+  if (!event?.event) return
   if (event.event === "add" && event.notification) {
     const existing = notifications.findIndex(n => n.id === event.notification.id)
     if (existing >= 0) {
