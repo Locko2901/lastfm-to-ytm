@@ -1,0 +1,40 @@
+name: Feature request
+description: Suggest an idea or improvement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Got an idea? Great. This is a hobby project, so I can't promise
+        anything will be built - but well-scoped suggestions that fit the
+        project are always welcome.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched [existing issues](https://github.com/Locko2901/lastfm-to-ytm/issues) and this isn't already requested.
+          required: true
+        - label: I checked the [docs](https://locko2901.github.io/lastfm-to-ytm/) and this isn't already possible.
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: The pain point or use case behind the request. "I want X" is fine, but "I keep hitting X and wish Y" is better.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: What would you like to happen?
+      description: Describe the feature or change you have in mind.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Anything you've already tried, or other ways this could be solved.
+    validations:
+      required: false

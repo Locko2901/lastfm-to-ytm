@@ -1,0 +1,80 @@
+name: Bug report
+description: Something isn't working the way it should
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. A clear, reproducible report
+        is worth its weight in gold - it's usually the difference between a fix
+        and a "can't reproduce".
+
+        Before filing, please skim the
+        [Troubleshooting docs](https://locko2901.github.io/lastfm-to-ytm/troubleshooting/) -
+        many common symptoms (auth errors, playlists not updating, wrong
+        matches) are covered there.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I checked the [Troubleshooting docs](https://locko2901.github.io/lastfm-to-ytm/troubleshooting/) and didn't find a fix.
+          required: true
+        - label: I searched [existing issues](https://github.com/Locko2901/lastfm-to-ytm/issues) and this isn't a duplicate.
+          required: true
+        - label: I'm on the latest release (or `main`).
+          required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you tried, what actually happened, and what you expected instead.
+      placeholder: |
+        I ran a sync from the dashboard. The playlist stayed empty.
+        I expected it to fill with my recent scrobbles.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The exact steps that trigger the bug.
+      placeholder: |
+        1. Open the dashboard
+        2. Click "Sync now"
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: >
+        Relevant log lines from the sync console or `./run-docker.sh --logs`.
+        Start with the first error line. **Redact any secrets.**
+      render: text
+    validations:
+      required: false
+  - type: dropdown
+    id: install
+    attributes:
+      label: How are you running it?
+      options:
+        - Docker (recommended)
+        - Standalone CLI install
+        - From source
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: >
+        App version/commit, OS, and any relevant `.env` settings
+        (**secrets redacted**).
+      placeholder: |
+        Version: v1.4.0
+        OS: Ubuntu 24.04 (Docker)
+        Relevant settings: RECENCY_PLAY_WEIGHT=0.7, WEEKLY_ENABLED=true
+    validations:
+      required: true
