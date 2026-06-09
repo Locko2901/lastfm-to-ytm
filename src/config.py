@@ -53,6 +53,7 @@ def _str_to_int(val: str | None, default: int) -> int:
 
 
 _VALID_PRIVACY = {"PUBLIC", "UNLISTED", "PRIVATE"}
+_BOOLEAN_PRIVACY_TOKENS = {"1", "true", "t", "yes", "y", "on", "0", "false", "f", "no", "n", "off"}
 
 
 def _parse_privacy(val: str | None, default: str = "PRIVATE") -> str:
@@ -69,6 +70,43 @@ def _parse_privacy(val: str | None, default: str = "PRIVATE") -> str:
     if val.lower() in {"0", "false", "f", "no", "n", "off"}:
         return "PRIVATE"
     return default
+
+
+def _resolve_privacy_setting(
+    preferred_var: str,
+    legacy_var: str,
+    *,
+    default: str = "PRIVATE",
+    inherit: bool = False,
+) -> str | None:
+    """Resolve a privacy setting from a preferred and a legacy env var.
+
+    ``preferred_var`` wins when set. ``legacy_var`` is still honoured for
+    backward compatibility, but its legacy boolean form (``true``/``false``)
+    is deprecated and emits a warning. When ``inherit`` is True and neither
+    var is set, returns ``None`` so the caller can fall back to another value.
+    """
+    preferred = _strip_inline_comment(os.getenv(preferred_var))
+    if preferred is not None:
+        return _parse_privacy(preferred, default)
+
+    legacy_raw = os.getenv(legacy_var)
+    legacy = _strip_inline_comment(legacy_raw)
+    if legacy is None:
+        return None if inherit else default
+    if legacy.lower() in _BOOLEAN_PRIVACY_TOKENS:
+        logging.getLogger(__name__).warning(
+            "%s is set to a boolean value (%r); this form is deprecated. Use %s=PRIVATE|UNLISTED|PUBLIC instead.",
+            legacy_var,
+            legacy,
+            preferred_var,
+        )
+    return _parse_privacy(legacy_raw, default)
+
+
+def _resolve_main_privacy() -> str:
+    """Resolve the main playlist privacy (PLAYLIST_PRIVACY, legacy MAKE_PUBLIC)."""
+    return _resolve_privacy_setting("PLAYLIST_PRIVACY", "MAKE_PUBLIC", default="PRIVATE")
 
 
 @dataclass(frozen=True)
@@ -145,7 +183,7 @@ class Settings:
         ytm_auth_path = os.getenv("YTM_AUTH_PATH", str(PROJECT_ROOT / "browser.json"))
         playlist_name = os.getenv("PLAYLIST_NAME", "Last.fm Recents (auto)")
         playlist_description = (_strip_inline_comment(os.getenv("PLAYLIST_DESCRIPTION")) or "").strip()
-        privacy = _parse_privacy(os.getenv("MAKE_PUBLIC"), "PRIVATE")
+        privacy = _resolve_main_privacy()
 
         limit = _str_to_int(os.getenv("LIMIT"), 100)
         deduplicate = _str_to_bool(os.getenv("DEDUPLICATE"), True)
@@ -173,10 +211,7 @@ class Settings:
 
         weekly_playlist_prefix = _strip_inline_comment(os.getenv("WEEKLY_PLAYLIST_PREFIX"))
 
-        weekly_make_public_env = _strip_inline_comment(os.getenv("WEEKLY_MAKE_PUBLIC"))
-        weekly_privacy_status: str | None = None
-        if weekly_make_public_env is not None:
-            weekly_privacy_status = _parse_privacy(weekly_make_public_env, "PRIVATE")
+        weekly_privacy_status = _resolve_privacy_setting("WEEKLY_PLAYLIST_PRIVACY", "WEEKLY_MAKE_PUBLIC", default="PRIVATE", inherit=True)
 
         weekly_week_start = _strip_inline_comment(os.getenv("WEEKLY_WEEK_START")) or "MON"
         weekly_timezone = _strip_inline_comment(os.getenv("WEEKLY_TIMEZONE")) or "UTC"

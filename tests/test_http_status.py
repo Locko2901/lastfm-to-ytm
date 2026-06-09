@@ -2,6 +2,7 @@ from src.observability.http_status import (
     RATE_LIMIT_STATUSES,
     RETRYABLE_STATUSES,
     TERMINAL_STATUSES,
+    describe_sync_error,
     extract_http_status,
     is_rate_limited,
     is_retryable,
@@ -56,6 +57,30 @@ def test_is_retryable_json_decode_fallback():
 
 def test_is_retryable_unknown_message_false():
     assert is_retryable("totally unrelated failure") is False
+
+
+def test_describe_sync_error_401():
+    assert describe_sync_error("Server returned HTTP 401: Unauthorized.") == "HTTP 401 - Unauthorized"
+
+
+def test_describe_sync_error_403():
+    assert describe_sync_error("Server returned HTTP 403: Forbidden.") == "HTTP 403 - rate limit or auth expired"
+
+
+def test_describe_sync_error_other_status():
+    assert describe_sync_error("Server returned HTTP 500: error") == "HTTP 500"
+
+
+def test_describe_sync_error_json_decode():
+    assert describe_sync_error("Expecting value: line 1 column 1 (char 0)") == "Invalid API response (likely rate limited)"
+
+
+def test_describe_sync_error_falls_back_to_raw_message():
+    assert describe_sync_error("connection reset by peer") == "connection reset by peer"
+
+
+def test_describe_sync_error_ignores_bare_digits():
+    assert describe_sync_error("failed for video dQw403WgXcQ") == "failed for video dQw403WgXcQ"
 
 
 def test_is_rate_limited_by_status():

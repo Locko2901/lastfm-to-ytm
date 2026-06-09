@@ -95,4 +95,4 @@ If the main playlist name ends with `(auto)`, the prefix strips it automatically
 
 The date corresponds to the start of the week (determined by `WEEKLY_WEEK_START` and `WEEKLY_TIMEZONE`). Over time, you build a library of weekly snapshots. Old weeks are automatically pruned based on `WEEKLY_KEEP_WEEKS` (default: 2). Set to `0` to keep all weekly playlists indefinitely.
 
-Weekly playlists inherit the main playlist's privacy setting unless overridden with `WEEKLY_MAKE_PUBLIC`.
+Weekly playlists inherit the main playlist's privacy setting unless overridden with `WEEKLY_PLAYLIST_PRIVACY` (or the deprecated `WEEKLY_MAKE_PUBLIC` alias).

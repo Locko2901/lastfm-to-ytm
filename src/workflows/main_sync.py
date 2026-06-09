@@ -4,10 +4,12 @@ import logging
 import os
 import time
 import traceback
+from dataclasses import dataclass
 
 from ..config import Settings
 from ..observability import (
     clear_failure_log,
+    describe_sync_error,
     fire_webhook,
     get_history_db,
     record_sync_error,
@@ -31,6 +33,120 @@ from ._common import build_context, fetch_scrobbles
 from .backfill import reorder_after_backfill, run_backfill
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class _PlaylistSyncResult:
+    """Outcome of updating or creating the main playlist."""
+
+    playlist_id: str
+    valid_video_ids: list[str]
+    substitutions: dict[str, str]
+    misses: int
+    run_log_mappings: list
+
+
+def _sync_or_create_playlist(
+    ctx,
+    settings: Settings,
+    *,
+    tracks,
+    valid_video_ids: list[str],
+    target_count: int,
+    desc: str,
+    misses: int,
+    run_log_mappings: list,
+    start_time: float,
+) -> _PlaylistSyncResult:
+    """Update the existing main playlist or create it, returning the sync outcome."""
+    existing_id = get_existing_playlist_by_name(ctx.ytm, settings.playlist_name, cache=ctx.playlist_cache)
+    template_changed = ctx.playlist_cache.template_changed(settings.playlist_name, valid_video_ids)
+    substitutions: dict[str, str] = {}
+
+    if existing_id:
+        log.info("Updating playlist '%s'...", settings.playlist_name)
+        try:
+            _retry_with_backoff(
+                ctx.ytm.edit_playlist,
+                existing_id,
+                title=settings.playlist_name,
+                description=desc,
+                privacyStatus=settings.privacy_status,
+                max_retries=settings.api_max_retries,
+                operation="edit_playlist",
+            )
+        except Exception as e:
+            log.warning("Failed to edit playlist metadata: %s", e)
+        if template_changed:
+            log.info("Syncing playlist...")
+            try:
+                substitutions = sync_playlist(ctx.ytm, existing_id, valid_video_ids, max_retries=settings.api_max_retries)
+                ctx.playlist_cache.set_template(settings.playlist_name, existing_id, valid_video_ids)
+            except InvalidVideoIDsError as e:
+                _evict_from_cache(ctx.search_cache, e.invalid_ids)
+                log.info("Re-resolving tracks after evicting %d invalid video IDs...", len(e.invalid_ids))
+                video_ids, misses, _track_to_vid, run_log_mappings = resolve_tracks_to_video_ids(
+                    ctx.ytm_search,
+                    tracks,
+                    settings.sleep_between_searches,
+                    settings.early_termination_score,
+                    ctx.search_cache,
+                    ctx.search_overrides,
+                    settings.api_max_retries,
+                    settings.search_max_workers,
+                )
+                valid_video_ids = list(dict.fromkeys(video_ids))
+                if len(valid_video_ids) > target_count:
+                    valid_video_ids = valid_video_ids[:target_count]
+                log.info("Retrying sync with %d tracks...", len(valid_video_ids))
+                substitutions = sync_playlist(ctx.ytm, existing_id, valid_video_ids, max_retries=settings.api_max_retries)
+                ctx.playlist_cache.set_template(settings.playlist_name, existing_id, valid_video_ids)
+            except Exception as e:
+                summary = describe_sync_error(str(e))
+                log.exception("Sync failed: %s", summary)
+                save_failure_log(summary, traceback.format_exc())
+                record_sync_error(settings, e)
+                fire_webhook(
+                    settings,
+                    status="error",
+                    sync_type="main",
+                    error=str(e),
+                    tracks_resolved=len(valid_video_ids),
+                    tracks_missed=misses,
+                    duration_secs=time.monotonic() - start_time,
+                )
+                raise
+        else:
+            log.info("Playlist already up to date")
+            ctx.playlist_cache.touch(settings.playlist_name)
+
+        pl_id = existing_id
+    else:
+        log.info("Creating playlist '%s'...", settings.playlist_name)
+        try:
+            pl_id = create_playlist_with_items(
+                ctx.ytm,
+                settings.playlist_name,
+                desc,
+                settings.privacy_status,
+                valid_video_ids,
+                cache=ctx.playlist_cache,
+            )
+            log.info("Created playlist with %d tracks", len(valid_video_ids))
+        except Exception as e:
+            log.exception("Create failed: %s", e)
+            save_failure_log(f"Create failed: {e}", traceback.format_exc())
+            record_sync_error(settings, e)
+            fire_webhook(settings, status="error", sync_type="main", error=str(e), duration_secs=time.monotonic() - start_time)
+            raise
+
+    return _PlaylistSyncResult(
+        playlist_id=pl_id,
+        valid_video_ids=valid_video_ids,
+        substitutions=substitutions,
+        misses=misses,
+        run_log_mappings=run_log_mappings,
+    )
 
 
 def run(settings: Settings) -> None:
@@ -132,96 +248,22 @@ def run(settings: Settings) -> None:
     ordering = "recency-weighted" if settings.use_recency_weighting else "most recent first"
     desc = settings.playlist_description or f"Autogenerated from Last.fm for {settings.lastfm_user} ({ordering})"
 
-    existing_id = get_existing_playlist_by_name(ctx.ytm, settings.playlist_name, cache=ctx.playlist_cache)
-    template_changed = ctx.playlist_cache.template_changed(settings.playlist_name, valid_video_ids)
-    substitutions: dict[str, str] = {}
-
-    if existing_id:
-        log.info("Updating playlist '%s'...", settings.playlist_name)
-        try:
-            _retry_with_backoff(
-                ctx.ytm.edit_playlist,
-                existing_id,
-                title=settings.playlist_name,
-                description=desc,
-                privacyStatus=settings.privacy_status,
-                max_retries=settings.api_max_retries,
-                operation="edit_playlist",
-            )
-        except Exception as e:
-            log.warning("Failed to edit playlist metadata: %s", e)
-        if template_changed:
-            log.info("Syncing playlist...")
-            try:
-                substitutions = sync_playlist(ctx.ytm, existing_id, valid_video_ids, max_retries=settings.api_max_retries)
-                ctx.playlist_cache.set_template(settings.playlist_name, existing_id, valid_video_ids)
-            except InvalidVideoIDsError as e:
-                _evict_from_cache(ctx.search_cache, e.invalid_ids)
-                log.info("Re-resolving tracks after evicting %d invalid video IDs...", len(e.invalid_ids))
-                video_ids, misses, track_to_vid, run_log_mappings = resolve_tracks_to_video_ids(
-                    ctx.ytm_search,
-                    tracks,
-                    settings.sleep_between_searches,
-                    settings.early_termination_score,
-                    ctx.search_cache,
-                    ctx.search_overrides,
-                    settings.api_max_retries,
-                    settings.search_max_workers,
-                )
-                valid_video_ids = list(dict.fromkeys(video_ids))
-                if len(valid_video_ids) > target_count:
-                    valid_video_ids = valid_video_ids[:target_count]
-                log.info("Retrying sync with %d tracks...", len(valid_video_ids))
-                substitutions = sync_playlist(ctx.ytm, existing_id, valid_video_ids, max_retries=settings.api_max_retries)
-                ctx.playlist_cache.set_template(settings.playlist_name, existing_id, valid_video_ids)
-            except Exception as e:
-                error_msg = str(e)
-                if "401" in error_msg or "Unauthorized" in error_msg:
-                    log.exception("Sync failed: HTTP 401 - authentication expired")
-                    save_failure_log("HTTP 401 - Unauthorized", traceback.format_exc())
-                elif "403" in error_msg or "Forbidden" in error_msg:
-                    log.exception("Sync failed: HTTP 403 - rate limit or auth expired")
-                    save_failure_log("HTTP 403 - rate limit or auth expired", traceback.format_exc())
-                elif "Expecting value" in error_msg:
-                    log.exception("Sync failed: Invalid API response (likely rate limited)")
-                    save_failure_log("Invalid API response (likely rate limited)", traceback.format_exc())
-                else:
-                    log.exception("Sync failed: %s", e)
-                    save_failure_log(str(e), traceback.format_exc())
-                record_sync_error(settings, e)
-                fire_webhook(
-                    settings,
-                    status="error",
-                    sync_type="main",
-                    error=str(e),
-                    tracks_resolved=len(valid_video_ids),
-                    tracks_missed=misses,
-                    duration_secs=time.monotonic() - _start,
-                )
-                raise
-        else:
-            log.info("Playlist already up to date")
-            ctx.playlist_cache.touch(settings.playlist_name)
-
-        pl_id = existing_id
-    else:
-        log.info("Creating playlist '%s'...", settings.playlist_name)
-        try:
-            pl_id = create_playlist_with_items(
-                ctx.ytm,
-                settings.playlist_name,
-                desc,
-                settings.privacy_status,
-                valid_video_ids,
-                cache=ctx.playlist_cache,
-            )
-            log.info("Created playlist with %d tracks", len(valid_video_ids))
-        except Exception as e:
-            log.exception("Create failed: %s", e)
-            save_failure_log(f"Create failed: {e}", traceback.format_exc())
-            record_sync_error(settings, e)
-            fire_webhook(settings, status="error", sync_type="main", error=str(e), duration_secs=time.monotonic() - _start)
-            raise
+    sync_result = _sync_or_create_playlist(
+        ctx,
+        settings,
+        tracks=tracks,
+        valid_video_ids=valid_video_ids,
+        target_count=target_count,
+        desc=desc,
+        misses=misses,
+        run_log_mappings=run_log_mappings,
+        start_time=_start,
+    )
+    pl_id = sync_result.playlist_id
+    valid_video_ids = sync_result.valid_video_ids
+    substitutions = sync_result.substitutions
+    misses = sync_result.misses
+    run_log_mappings = sync_result.run_log_mappings
 
     weekly_id = update_weekly_playlist(
         ctx.ytm,
@@ -253,50 +295,102 @@ def run(settings: Settings) -> None:
     if override_stats["total_overrides"] > 0 or override_stats["total_blacklisted"] > 0:
         log.info("Overrides: %d, Blacklisted: %d", override_stats["total_overrides"], override_stats["total_blacklisted"])
 
-    cache_stats = ctx.search_cache._metrics.get_stats()
+    cache_stats = ctx.search_cache.get_stats()
     search_stats = get_search_statistics()
 
+    _record_to_history(
+        ctx,
+        settings,
+        run_log_mappings=run_log_mappings,
+        valid_video_ids=valid_video_ids,
+        misses=misses,
+        tracks=tracks,
+        substitutions=substitutions,
+        cache_stats=cache_stats,
+        search_stats=search_stats,
+    )
+
+    _fire_completion_events(
+        settings,
+        playlist_id=pl_id,
+        valid_video_ids=valid_video_ids,
+        misses=misses,
+        tracks=tracks,
+        start_time=_start,
+        cache_stats=cache_stats,
+        search_stats=search_stats,
+    )
+
+
+def _record_to_history(
+    ctx,
+    settings: Settings,
+    *,
+    run_log_mappings: list,
+    valid_video_ids: list[str],
+    misses: int,
+    tracks,
+    substitutions: dict[str, str],
+    cache_stats: dict,
+    search_stats: dict,
+) -> None:
+    """Persist this run's track resolutions and metrics to the history DB, if enabled."""
     db = get_history_db(settings)
-    if db:
-        record_tracks_to_history(db, run_log_mappings, ctx.search_cache)
-        source = os.environ.get("SYNC_TRIGGER", "cli")
+    if not db:
+        return
 
-        for original_id, replaced_id in substitutions.items():
-            db.record_action(
-                "substitution",
-                video_id=replaced_id,
-                detail=f"YTM substituted {original_id} → {replaced_id}",
-                source=source,
-            )
+    record_tracks_to_history(db, run_log_mappings, ctx.search_cache)
+    source = os.environ.get("SYNC_TRIGGER", "cli")
 
+    for original_id, replaced_id in substitutions.items():
         db.record_action(
-            "sync_complete",
-            detail=f"resolved={len(valid_video_ids)}, missed={misses}, cache_hits={cache_stats['hits']}",
+            "substitution",
+            video_id=replaced_id,
+            detail=f"YTM substituted {original_id} → {replaced_id}",
             source=source,
         )
 
-        sync_id_str = os.environ.get("HISTORY_SYNC_ID")
-        if sync_id_str:
-            playlist_stats = get_playlist_statistics()
-            override_stats_h = ctx.search_overrides.stats()
-            db.finish_sync(
-                int(sync_id_str),
-                status="success",
-                tracks_total=len(tracks),
-                tracks_resolved=len(valid_video_ids),
-                tracks_missed=misses,
-                api_searches=search_stats.get("total_queries", 0),
-                api_playlist_ops=playlist_stats.get("total_queries", 0),
-                cache_hits=cache_stats["hits"],
-                cache_misses=cache_stats["misses"],
-                override_hits=override_stats_h.get("total_overrides", 0),
-            )
+    db.record_action(
+        "sync_complete",
+        detail=f"resolved={len(valid_video_ids)}, missed={misses}, cache_hits={cache_stats['hits']}",
+        source=source,
+    )
 
-        if settings.history_retention_days > 0:
-            db.prune_by_age(settings.history_retention_days)
-        if settings.history_max_size_mb > 0:
-            db.prune_if_oversized(settings.history_max_size_mb)
+    sync_id_str = os.environ.get("HISTORY_SYNC_ID")
+    if sync_id_str:
+        playlist_stats = get_playlist_statistics()
+        override_stats_h = ctx.search_overrides.stats()
+        db.finish_sync(
+            int(sync_id_str),
+            status="success",
+            tracks_total=len(tracks),
+            tracks_resolved=len(valid_video_ids),
+            tracks_missed=misses,
+            api_searches=search_stats.get("total_queries", 0),
+            api_playlist_ops=playlist_stats.get("total_queries", 0),
+            cache_hits=cache_stats["hits"],
+            cache_misses=cache_stats["misses"],
+            override_hits=override_stats_h.get("total_overrides", 0),
+        )
 
+    if settings.history_retention_days > 0:
+        db.prune_by_age(settings.history_retention_days)
+    if settings.history_max_size_mb > 0:
+        db.prune_if_oversized(settings.history_max_size_mb)
+
+
+def _fire_completion_events(
+    settings: Settings,
+    *,
+    playlist_id: str,
+    valid_video_ids: list[str],
+    misses: int,
+    tracks,
+    start_time: float,
+    cache_stats: dict,
+    search_stats: dict,
+) -> None:
+    """Fire the success webhook summarising a completed main sync."""
     fire_webhook(
         settings,
         status="success",
@@ -304,9 +398,9 @@ def run(settings: Settings) -> None:
         tracks_resolved=len(valid_video_ids),
         tracks_missed=misses,
         tracks_total=len(tracks),
-        duration_secs=time.monotonic() - _start,
+        duration_secs=time.monotonic() - start_time,
         cache_hits=cache_stats["hits"],
         cache_misses=cache_stats["misses"],
         api_searches=search_stats.get("total_queries", 0),
-        playlist_url=f"https://music.youtube.com/playlist?list={pl_id}",
+        playlist_url=f"https://music.youtube.com/playlist?list={playlist_id}",
     )
