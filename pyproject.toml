@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["ruff>=0.8.0", "j2lint>=1.2.0"]
+dev = ["ruff>=0.8.0", "j2lint>=1.2.0", "pytest>=8.0.0", "pytest-cov>=5.0.0"]
 web = ["flask>=3.0.0", "flask-babel>=4.0.0", "apscheduler>=3.10.0", "gunicorn>=21.0.0", "cryptography>=41.0.0", "argon2-cffi>=23.1.0"]
 docs = ["mkdocs-material>=9.0.0"]
 web-docs = ["playwright>=1.40.0"]
@@ -81,6 +81,8 @@ ignore = [
 "scripts/*.py" = ["T20"]           # dev-only CLI helpers: allow print
 "src/lastfm/fetch.py" = ["ARG001"] # signature must match socket.getaddrinfo
 "tests/screenshots/*.py" = ["T20", "D", "E501"] # dev-only CLI: prints + literal fixture rows
+"tests/test_*.py" = ["D", "PLR2004"]            # tests: no docstrings, allow literal assertions
+"tests/frontend/*.py" = ["D", "PLR2004", "SLF001"] # frontend tests: no docstrings, literal assertions, reuse fixture-server helpers
 
 [tool.ruff.lint.isort]
 known-first-party = ["src"]
@@ -90,3 +92,23 @@ max-args = 10
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q"
+markers = [
+  "frontend: end-to-end dashboard tests that require Playwright + a browser",
+]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+]

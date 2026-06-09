@@ -79,6 +79,7 @@ nav:
       - Releases & Changelog: releases.md
       - Translations (i18n): i18n.md
       - Linting & Formatting: linting.md
+      - Testing: testing.md
       - Screenshot Automation: screenshot-automation.md
       - Internals:
           - Architecture: architecture.md

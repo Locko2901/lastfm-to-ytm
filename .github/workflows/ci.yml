@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   python:
-    name: Ruff (Python)
+    name: Lint · Ruff (Python)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
         run: ruff format --check .
 
   js-css:
-    name: Biome (JS / CSS)
+    name: Lint · Biome (JS / CSS)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +47,7 @@ jobs:
         run: npm run lint
 
   templates:
-    name: j2lint (HTML templates)
+    name: Lint · j2lint (HTML templates)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -63,7 +63,7 @@ jobs:
         run: j2lint web/templates --extensions html --ignore jinja-statements-indentation
 
   templates-format:
-    name: js-beautify (HTML format check)
+    name: Lint · js-beautify (HTML format check)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -79,10 +79,52 @@ jobs:
       - name: Format check
         run: npm run format:templates && git diff --exit-code -- 'web/templates/**/*.html'
 
+  tests:
+    name: Test · Pytest (unit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Run unit tests with coverage
+        run: pytest --ignore=tests/frontend --cov --cov-report=xml --cov-report=term
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+  frontend:
+    name: Test · Playwright (frontend e2e)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev,web,web-docs]"
+
+      - name: Install Playwright Chromium
+        run: python -m playwright install --with-deps chromium
+
+      - name: Run frontend tests
+        run: pytest tests/frontend --no-cov
+
   release-please:
     name: release-please
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    needs: [python, js-css, templates, templates-format, docker-publish]
+    needs: [python, tests, frontend, js-css, templates, templates-format, docker-publish]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -115,7 +157,7 @@ jobs:
   docker-publish:
     name: Docker publish (GHCR + Docker Hub - dev)
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    needs: [python, js-css, templates, templates-format]
+    needs: [python, tests, frontend, js-css, templates, templates-format]
     runs-on: ubuntu-latest
     permissions:
       contents: read
