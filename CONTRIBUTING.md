@@ -12,18 +12,21 @@ Contributions are welcome. The process is intentionally lightweight.
 See [Development docs](https://locko2901.github.io/lastfm-to-ytm/development/) for the full setup. Short version:
 
 ```bash
-pip install -e ".[dev,web]"
+pip install -e ".[dev,web,web-docs]"
 npm install
+python -m playwright install chromium
 ```
 
-uv users: `uv pip install -e ".[dev,web]"` (after `uv venv`) works just the same.
+The `web-docs` extra and the Chromium download are what let `./precommit.sh` run the frontend (Playwright) layer; without them those tests skip rather than run.
+
+uv users: `uv pip install -e ".[dev,web,web-docs]"` (after `uv venv`) works just the same.
 
 ## Pull requests
 
 - Fork, branch off `main`, open a PR against `main`.
 - Keep PRs focused - one logical change per PR.
-- Run [`./precommit.sh`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/precommit.sh) before pushing. It runs Ruff, Biome, template formatting, updates translation catalogs, and regenerates the project structure tree in the docs.
-- No tests exist yet; manual verification via `python run.py` or the web dashboard is expected.
+- Run [`./precommit.sh`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/precommit.sh) before pushing. It runs Ruff, Biome, template formatting, both pytest layers (unit + frontend), updates translation catalogs, and regenerates the project structure tree in the docs.
+- Add or update tests for logic changes where practical. See the [Testing docs](https://locko2901.github.io/lastfm-to-ytm/testing/) for what's covered and how the suite is laid out; pure-logic and cache/DB changes should come with unit tests, while API/network glue is still verified manually via `python run.py` or the web dashboard.
 
 ## Commit messages - required format
 

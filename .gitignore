@@ -8,6 +8,12 @@ __pycache__/
 *$py.class
 .ruff_cache/
 
+# Test / coverage artifacts
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
 # Distribution / packaging
 *.egg-info/
 dist/

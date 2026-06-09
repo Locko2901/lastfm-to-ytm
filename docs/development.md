@@ -52,6 +52,26 @@ Prefer [uv](https://docs.astral.sh/uv/)? Use `uv pip install -e ".[dev,web]"` (a
 
 ---
 
+## Testing
+
+Unit tests are fast, offline, and need no browser:
+
+```bash
+.venv/bin/python -m pytest --ignore=tests/frontend
+```
+
+Frontend e2e tests drive the dashboard with Playwright. The Playwright Python package lives in the `web-docs` extra, so install it (plus `web`) and a browser first:
+
+```bash
+pip install -e ".[dev,web,web-docs]"
+python -m playwright install chromium
+.venv/bin/python -m pytest tests/frontend
+```
+
+Both layers run automatically in CI and via `./precommit.sh`. See the [Testing docs](testing.md) for the full layout, coverage policy, and conventions for writing new tests.
+
+---
+
 ## Credits
 
 - [ytmusicapi](https://ytmusicapi.readthedocs.io/) - YouTube Music API wrapper

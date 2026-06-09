@@ -1,6 +1,8 @@
 [![CI](https://github.com/Locko2901/lastfm-to-ytm/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Locko2901/lastfm-to-ytm/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/Locko2901/lastfm-to-ytm/branch/main/graph/badge.svg)](https://codecov.io/gh/Locko2901/lastfm-to-ytm)
 [![Latest Release](https://img.shields.io/github/v/release/Locko2901/lastfm-to-ytm?logo=github)](https://github.com/Locko2901/lastfm-to-ytm/releases/latest)
 [![GHCR Image](https://img.shields.io/badge/ghcr.io-lastfm--to--ytm-2496ED?logo=docker&logoColor=white)](https://github.com/Locko2901/lastfm-to-ytm/pkgs/container/lastfm-to-ytm)
+[![Docker Hub](https://img.shields.io/badge/docker.io-lastfm--to--ytm-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/r/lockooo/lastfm-to-ytm)
 [![Made with Python](https://img.shields.io/badge/Made%20with-Python-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Built with ytmusicapi](https://img.shields.io/badge/Built%20with-ytmusicapi-FF0000?logo=youtube&logoColor=white)](https://ytmusicapi.readthedocs.io/)
 [![Uses Last.fm API](https://img.shields.io/badge/Uses-Last.fm%20API-D51007?logo=last.fm&logoColor=white)](https://www.last.fm/api)

@@ -42,6 +42,15 @@ step "j2lint: template lint"
 .venv/bin/j2lint web/templates --extensions html --ignore jinja-statements-indentation \
   && pass "j2lint" || fail "j2lint"
 
+# tests
+step "Pytest: unit tests with coverage"
+.venv/bin/python -m pytest --ignore=tests/frontend --cov --cov-report=term \
+  && pass "pytest (unit)" || fail "pytest (unit)"
+
+step "Pytest: frontend (Playwright)"
+.venv/bin/python -m pytest tests/frontend --no-cov \
+  && pass "pytest (frontend)" || fail "pytest (frontend)"
+
 # translations
 step "Babel: extract strings"
 .venv/bin/pybabel extract -F babel.cfg -o web/translations/messages.pot . \
