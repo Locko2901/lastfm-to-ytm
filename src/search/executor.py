@@ -13,6 +13,17 @@ from .scoring import score_candidate
 
 log = logging.getLogger(__name__)
 
+SEARCH_RESULT_LIMIT = 25
+YOUTUBE_VIDEO_ID_LENGTH = 11
+SEARCH_FILTERS = ["songs", "videos", None]
+NUM_SEARCH_FILTERS = len(SEARCH_FILTERS)
+BASE_THRESHOLD_NO_ALBUM = 0.66
+BASE_THRESHOLD_WITH_ALBUM = 0.68
+VIDEO_EXTRA_THRESHOLD = 0.05
+BELOW_THRESHOLD_MARGIN = 0.06
+INITIAL_RETRY_DELAY = 0.5
+RETRY_BACKOFF_FACTOR = 2
+
 
 def _try_exact_query(
     ytm,
@@ -24,23 +35,23 @@ def _try_exact_query(
     early_termination_score: float,
 ) -> tuple[str, str | None, float, int] | None:
     """Try exact query with all three filters. Returns (vid, yt_title, score, query_count) if good match found."""
-    filters = ["songs", "videos", None]
+    filters = SEARCH_FILTERS
     best_vid: str | None = None
     yt_title: str | None = None
     best_score = 0.0
     query_count = 0
     seen: set[str] = set()
 
-    base_threshold = 0.66 if not album else 0.68
-    video_extra = 0.05
+    base_threshold = BASE_THRESHOLD_NO_ALBUM if not album else BASE_THRESHOLD_WITH_ALBUM
+    video_extra = VIDEO_EXTRA_THRESHOLD
     early_termination_threshold = max(early_termination_score, base_threshold + video_extra)
 
     for flt in filters:
-        delay = 0.5
+        delay = INITIAL_RETRY_DELAY
         for attempt in range(max_retries):
             try:
                 log.debug("Exact query='%s' with filter='%s'", query, flt or "None")
-                results = ytm.search(query, filter=flt, limit=25)
+                results = ytm.search(query, filter=flt, limit=SEARCH_RESULT_LIMIT)
                 query_count += 1
 
                 for r in results:
@@ -49,7 +60,7 @@ def _try_exact_query(
                         continue
 
                     vid = r.get("videoId")
-                    if not (isinstance(vid, str) and len(vid) == 11):
+                    if not (isinstance(vid, str) and len(vid) == YOUTUBE_VIDEO_ID_LENGTH):
                         continue
                     if vid in seen:
                         continue
@@ -83,14 +94,14 @@ def _try_exact_query(
                         delay,
                     )
                     time.sleep(delay)
-                    delay *= 2
+                    delay *= RETRY_BACKOFF_FACTOR
                     continue
 
                 log.debug("Exact query failed for filter='%s': %s", flt or "None", error_msg)
                 query_count += 1
                 break
 
-    if best_vid and best_score >= (base_threshold - 0.06):
+    if best_vid and best_score >= (base_threshold - BELOW_THRESHOLD_MARGIN):
         return (best_vid, yt_title, best_score, query_count)
 
     return None
@@ -126,11 +137,11 @@ def find_on_ytm(
         )
         return (vid, yt_title)
 
-    song_query_count += 3
+    song_query_count += NUM_SEARCH_FILTERS
 
     already_tried = {exact_query}
     queries = build_queries(artist, title, album, already_tried=already_tried)
-    filters = ["songs", "videos", None]
+    filters = SEARCH_FILTERS
 
     best_vid: str | None = None
     yt_title: str | None = None
@@ -138,20 +149,20 @@ def find_on_ytm(
     best_rt = ""
     seen: set[str] = set()
 
-    base_threshold = 0.66 if not album else 0.68
-    video_extra = 0.05
+    base_threshold = BASE_THRESHOLD_NO_ALBUM if not album else BASE_THRESHOLD_WITH_ALBUM
+    video_extra = VIDEO_EXTRA_THRESHOLD
 
     early_termination_enabled = early_termination_score < 1.0
     early_termination_threshold = max(early_termination_score, base_threshold + video_extra)
 
     def search_with_filter(query_filter_pair):
         query, flt = query_filter_pair
-        delay = 0.5
+        delay = INITIAL_RETRY_DELAY
 
         for attempt in range(max_retries):
             try:
                 log.debug("Searching query='%s' with filter='%s'", query, flt or "None")
-                results = ytm.search(query, filter=flt, limit=25)
+                results = ytm.search(query, filter=flt, limit=SEARCH_RESULT_LIMIT)
                 return results, 1, None
             except Exception as e:
                 error_msg = str(e)
@@ -165,7 +176,7 @@ def find_on_ytm(
                         delay,
                     )
                     time.sleep(delay)
-                    delay *= 2
+                    delay *= RETRY_BACKOFF_FACTOR
                     continue
 
                 if "403" in error_msg or "Forbidden" in error_msg:
@@ -287,7 +298,7 @@ def find_on_ytm(
     threshold = base_threshold + (video_extra if best_rt == "video" else 0.0)
     if best_score >= threshold:
         return (best_vid, yt_title)
-    if best_score >= (threshold - 0.06):
+    if best_score >= (threshold - BELOW_THRESHOLD_MARGIN):
         log.debug("Accepting below threshold: score %.3f", best_score)
         return (best_vid, yt_title)
 

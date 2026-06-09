@@ -2,7 +2,43 @@ from difflib import SequenceMatcher
 
 from .normalization import RE_DASH, clean_uploader_name, match_key, normalize_base, tokens
 from .queries import candidate_artists, clean_title_for_match, split_artist_aliases
-from .similarity import best_similarity, coverage, jaccard
+from .similarity import (
+    JACCARD_WEIGHT,
+    SEQUENCE_RATIO_WEIGHT,
+    best_similarity,
+    coverage,
+    jaccard,
+)
+
+TITLE_SCORE_WEIGHT = 0.56
+ARTIST_SCORE_WEIGHT = 0.32
+UPLOADER_SCORE_WEIGHT = 0.07
+ALBUM_SCORE_WEIGHT = 0.05
+
+MIN_ARTIST_SIMILARITY = 0.30
+MIN_TITLE_SIMILARITY = 0.25
+
+SOFT_PENALTY_PER_HIT = 0.08
+SOFT_PENALTY_CAP = 0.25
+HARD_PENALTY_PER_HIT = 0.35
+HARD_PENALTY_CAP = 0.60
+
+VIDEO_MISMATCH_PENALTY = 0.10
+VIDEO_MISMATCH_JACCARD_THRESHOLD = 0.3
+STYLE_MISMATCH_VIDEO_PENALTY = 0.18
+STYLE_MISMATCH_SONG_PENALTY = 0.12
+
+PRESENCE_BONUS_MIN_COVERAGE = 0.2
+PRESENCE_BONUS_STRONG_COVERAGE = 0.5
+PRESENCE_BONUS_CAP = 0.07
+PRESENCE_BONUS_STRONG_SLOPE = 0.10
+PRESENCE_BONUS_STRONG_OFFSET = 0.02
+PRESENCE_BONUS_WEAK_SLOPE = 0.04
+
+SONG_TYPE_BONUS = 0.06
+VIDEO_TYPE_PENALTY = 0.03
+TOPIC_CHANNEL_BONUS = 0.02
+TOPIC_CHANNEL_MIN_UPLOADER_SIM = 0.6
 
 HARD_NEGATIVE_TERMS = {
     "nightcore",
@@ -82,7 +118,7 @@ def title_similarity(target_title: str, r: dict, artist_tokens: set[str]) -> flo
     core_candidate = clean_title_for_match(candidate_title, artist_tokens)
     j = jaccard(tokens(core_target), tokens(core_candidate))
     rratio = SequenceMatcher(None, match_key(core_target), match_key(core_candidate)).ratio()
-    return 0.7 * j + 0.3 * rratio
+    return JACCARD_WEIGHT * j + SEQUENCE_RATIO_WEIGHT * rratio
 
 
 def album_name_from_result(r: dict) -> str | None:
@@ -112,8 +148,8 @@ def negative_penalty(candidate_title: str, user_title: str) -> float:
         return 0.0
     light = len(soft_hits)
     hard = len(hard_hits)
-    light_penalty = min(0.25, 0.08 * light)
-    hard_penalty = min(0.60, 0.35 * hard)
+    light_penalty = min(SOFT_PENALTY_CAP, SOFT_PENALTY_PER_HIT * light)
+    hard_penalty = min(HARD_PENALTY_CAP, HARD_PENALTY_PER_HIT * hard)
     return light_penalty + hard_penalty
 
 
@@ -134,7 +170,7 @@ def video_mismatch_penalty(r: dict) -> float:
     if not left_tokens or not cand_artist_tokens:
         return 0.0
     j = jaccard(left_tokens, cand_artist_tokens)
-    return 0.10 if j < 0.3 else 0.0
+    return VIDEO_MISMATCH_PENALTY if j < VIDEO_MISMATCH_JACCARD_THRESHOLD else 0.0
 
 
 def style_mismatch_penalty(user_title: str, candidate_title: str, result_type: str) -> float:
@@ -145,7 +181,7 @@ def style_mismatch_penalty(user_title: str, candidate_title: str, result_type: s
     cand_styles = tokens(candidate_title) & HARD_NEGATIVE_TERMS
     if user_styles.issubset(cand_styles):
         return 0.0
-    return 0.18 if (result_type or "").lower() == "video" else 0.12
+    return STYLE_MISMATCH_VIDEO_PENALTY if (result_type or "").lower() == "video" else STYLE_MISMATCH_SONG_PENALTY
 
 
 def artist_title_presence_bonus(artist: str, title: str, candidate_title: str) -> float:
@@ -166,9 +202,14 @@ def artist_title_presence_bonus(artist: str, title: str, candidate_title: str) -
     title_cov = coverage(title_tokens, cand_tokens)
 
     both = min(artist_cov, title_cov)
-    if both <= 0.2:
+    if both <= PRESENCE_BONUS_MIN_COVERAGE:
         return 0.0
-    return min(0.07, 0.10 * both + 0.02 if both >= 0.5 else 0.04 * both)
+    return min(
+        PRESENCE_BONUS_CAP,
+        PRESENCE_BONUS_STRONG_SLOPE * both + PRESENCE_BONUS_STRONG_OFFSET
+        if both >= PRESENCE_BONUS_STRONG_COVERAGE
+        else PRESENCE_BONUS_WEAK_SLOPE * both,
+    )
 
 
 def score_candidate(r: dict, artist: str, title: str, album: str | None) -> float:
@@ -190,14 +231,17 @@ def score_candidate(r: dict, artist: str, title: str, album: str | None) -> floa
     album_name = album_name_from_result(r)
     album_score = best_similarity(album, album_name) if (album and album_name) else 0.0
 
-    MIN_ARTIST_SIMILARITY = 0.30
-    MIN_TITLE_SIMILARITY = 0.25
     if artist_score < MIN_ARTIST_SIMILARITY and uploader_score < MIN_ARTIST_SIMILARITY:
         return 0.0
     if title_score < MIN_TITLE_SIMILARITY:
         return 0.0
 
-    score = 0.56 * title_score + 0.32 * artist_score + 0.07 * uploader_score + 0.05 * album_score
+    score = (
+        TITLE_SCORE_WEIGHT * title_score
+        + ARTIST_SCORE_WEIGHT * artist_score
+        + UPLOADER_SCORE_WEIGHT * uploader_score
+        + ALBUM_SCORE_WEIGHT * album_score
+    )
 
     score += artist_title_presence_bonus(artist, title, candidate_title)
     score -= negative_penalty(candidate_title, title)
@@ -205,9 +249,9 @@ def score_candidate(r: dict, artist: str, title: str, album: str | None) -> floa
     score -= video_mismatch_penalty(r)
 
     if rt == "song":
-        score += 0.06
+        score += SONG_TYPE_BONUS
     elif rt == "video":
-        score -= 0.03
-    if "topic" in author_cf and uploader_score >= 0.6:
-        score += 0.02
+        score -= VIDEO_TYPE_PENALTY
+    if "topic" in author_cf and uploader_score >= TOPIC_CHANNEL_MIN_UPLOADER_SIM:
+        score += TOPIC_CHANNEL_BONUS
     return max(0.0, min(1.0, score))

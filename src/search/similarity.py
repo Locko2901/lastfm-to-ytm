@@ -2,6 +2,9 @@ from difflib import SequenceMatcher
 
 from .normalization import match_key, tokens
 
+JACCARD_WEIGHT = 0.7
+SEQUENCE_RATIO_WEIGHT = 0.3
+
 
 def jaccard(a: set[str], b: set[str]) -> float:
     """Calculate Jaccard similarity between two token sets."""
@@ -20,7 +23,7 @@ def best_similarity(a: str, b: str) -> float:
     a_tokens, b_tokens = tokens(a), tokens(b)
     j = jaccard(a_tokens, b_tokens)
     r = SequenceMatcher(None, match_key(a), match_key(b)).ratio()
-    return 0.7 * j + 0.3 * r
+    return JACCARD_WEIGHT * j + SEQUENCE_RATIO_WEIGHT * r
 
 
 def coverage(sub: set[str], sup: set[str]) -> float:
