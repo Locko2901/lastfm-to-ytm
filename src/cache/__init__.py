@@ -171,6 +171,10 @@ class JSONCache(Generic[T]):
         """Return cache metrics tracker."""
         return self._metrics
 
+    def get_stats(self) -> dict[str, Any]:
+        """Return cache performance statistics (hits, misses, hit rate, writes)."""
+        return self._metrics.get_stats()
+
     def log_metrics(self, cache_name: str) -> None:
         """Log cache performance metrics."""
         self._metrics.log_stats(cache_name)

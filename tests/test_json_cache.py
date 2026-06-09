@@ -66,6 +66,17 @@ def test_save_records_write_metric(tmp_path):
     assert c.get_metrics().writes == before + 1
 
 
+def test_get_stats_exposes_metrics_snapshot(tmp_path):
+    c = _cache(tmp_path)
+    c.get_metrics().record_hit()
+    c.get_metrics().record_miss()
+    stats = c.get_stats()
+    assert stats["hits"] == 1
+    assert stats["misses"] == 1
+    assert stats["total_reads"] == 2
+    assert stats["hit_rate_percent"] == 50.0
+
+
 def test_save_writes_indented_json(tmp_path):
     path = tmp_path / ".cache.json"
     c = JSONCache(str(path))

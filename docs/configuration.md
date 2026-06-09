@@ -44,12 +44,13 @@ These two are the only settings you *have* to configure. Everything else has sen
 |----------|---------|-------------|
 | `PLAYLIST_NAME` | `Last.fm Recents (auto)` | Name for the synced playlist on YouTube Music |
 | `PLAYLIST_DESCRIPTION` | *(auto-generated)* | Custom description (empty = auto-generated) |
-| `MAKE_PUBLIC` | `PRIVATE` | Playlist visibility. One of `PRIVATE`, `UNLISTED`, or `PUBLIC`. |
+| `PLAYLIST_PRIVACY` | `PRIVATE` | Playlist visibility. One of `PRIVATE`, `UNLISTED`, or `PUBLIC`. Preferred over `MAKE_PUBLIC`. |
+| `MAKE_PUBLIC` | *(unset)* | Deprecated alias for `PLAYLIST_PRIVACY`. Still honoured when `PLAYLIST_PRIVACY` is unset. |
 | `LIMIT` | `100` | Target number of tracks |
 | `DEDUPLICATE` | `true` | Remove duplicate tracks |
 
-!!! note "Naming heads-up: `MAKE_PUBLIC`"
-    Despite the name, `MAKE_PUBLIC` accepts a privacy string (`PRIVATE` / `UNLISTED` / `PUBLIC`), not a boolean. Legacy `true`/`false` values are still accepted (`true` &rarr; `PUBLIC`, `false` &rarr; `PRIVATE`) for backward compatibility.
+!!! note "Naming heads-up: `MAKE_PUBLIC` is deprecated"
+    Prefer `PLAYLIST_PRIVACY` (`PRIVATE` / `UNLISTED` / `PUBLIC`). The older `MAKE_PUBLIC` variable is still honoured when `PLAYLIST_PRIVACY` is unset, and accepts the same privacy strings. Legacy boolean values (`true` &rarr; `PUBLIC`, `false` &rarr; `PRIVATE`) continue to work for backward compatibility but log a deprecation warning - switch to `PLAYLIST_PRIVACY` to silence it.
 
 ### Track Ranking
 
@@ -75,7 +76,8 @@ These two are the only settings you *have* to configure. Everything else has sen
 | `WEEKLY_TIMEZONE` | `UTC` | Timezone for week boundary calculation |
 | `WEEKLY_KEEP_WEEKS` | `2` | How many weeks to keep (`0` = keep all) |
 | `WEEKLY_PLAYLIST_PREFIX` | *(from playlist name)* | Override name prefix (empty = derive from `PLAYLIST_NAME`) |
-| `WEEKLY_MAKE_PUBLIC` | *(inherit)* | `PRIVATE`/`UNLISTED`/`PUBLIC` (empty = inherit `MAKE_PUBLIC`) |
+| `WEEKLY_PLAYLIST_PRIVACY` | *(inherit)* | `PRIVATE`/`UNLISTED`/`PUBLIC` (empty = inherit `PLAYLIST_PRIVACY`). Preferred over `WEEKLY_MAKE_PUBLIC`. |
+| `WEEKLY_MAKE_PUBLIC` | *(inherit)* | Deprecated alias for `WEEKLY_PLAYLIST_PRIVACY`. Still honoured when the preferred var is unset. |
 
 ### Auto-Sync (Web Dashboard)
 
@@ -142,7 +144,7 @@ These are rarely changed. Most users can ignore everything below.
     | Variable | Default | Description |
     |----------|---------|-------------|
     | `CUSTOM_PLAYLISTS_FILE` | `config/custom_playlists.json` | Path to custom playlist config |
-    | `CUSTOM_PLAYLISTS_PRIVACY` | *(inherit)* | `PRIVATE`/`UNLISTED`/`PUBLIC` (empty = inherit `MAKE_PUBLIC`) |
+    | `CUSTOM_PLAYLISTS_PRIVACY` | *(inherit)* | `PRIVATE`/`UNLISTED`/`PUBLIC` (empty = inherit `PLAYLIST_PRIVACY`) |
     | `TAG_CACHE_FILE` | `cache/.tag_cache.json` | Path to tag cache file |
     | `TAG_CACHE_TTL_DAYS` | `90` | Days before cached tags expire |
     | `TAG_MIN_COUNT` | `10` | Minimum Last.fm tag vote count to consider valid |

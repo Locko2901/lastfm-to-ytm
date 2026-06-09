@@ -44,7 +44,7 @@ Unit tests are pure and deterministic - no network, no real YouTube Music / Last
 | Web backend | `test_env_file.py`, `test_theme_overrides.py`, `test_update_check.py` | `.env` round-tripping, theme sanitising, version parsing |
 
 !!! note "Web-backend tests guard on Flask"
-    `tests/test_env_file.py`, `tests/test_theme_overrides.py`, and `tests/test_update_check.py` exercise `web/services/*`, which imports Flask. Because the CI unit job installs only `.[dev]` (no `web` extra), each file starts with `pytest.importorskip("flask")` so it skips cleanly there and runs locally where the `web` extra is present — the same pattern the frontend suite uses for Playwright.
+    `tests/test_env_file.py`, `tests/test_theme_overrides.py`, and `tests/test_update_check.py` exercise `web/services/*`, which imports Flask. Because the CI unit job installs only `.[dev]` (no `web` extra), each file starts with `pytest.importorskip("flask")` so it skips cleanly there and runs locally where the `web` extra is present - the same pattern the frontend suite uses for Playwright.
 
 ## Frontend e2e tests
 

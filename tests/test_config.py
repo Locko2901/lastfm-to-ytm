@@ -170,6 +170,31 @@ def test_from_env_make_public_sets_privacy(clean_env):
     assert Settings.from_env().privacy_status == "PUBLIC"
 
 
+def test_from_env_playlist_privacy_sets_privacy(clean_env):
+    clean_env.setenv("PLAYLIST_PRIVACY", "unlisted")
+    assert Settings.from_env().privacy_status == "UNLISTED"
+
+
+def test_from_env_playlist_privacy_takes_precedence_over_make_public(clean_env):
+    clean_env.setenv("PLAYLIST_PRIVACY", "PUBLIC")
+    clean_env.setenv("MAKE_PUBLIC", "PRIVATE")
+    assert Settings.from_env().privacy_status == "PUBLIC"
+
+
+def test_from_env_make_public_boolean_warns(clean_env, caplog):
+    clean_env.setenv("MAKE_PUBLIC", "true")
+    with caplog.at_level("WARNING"):
+        Settings.from_env()
+    assert any("deprecated" in r.message.lower() for r in caplog.records)
+
+
+def test_from_env_make_public_string_does_not_warn(clean_env, caplog):
+    clean_env.setenv("MAKE_PUBLIC", "PUBLIC")
+    with caplog.at_level("WARNING"):
+        Settings.from_env()
+    assert not any("deprecated" in r.message.lower() for r in caplog.records)
+
+
 def test_from_env_recency_play_weight_clamped(clean_env):
     clean_env.setenv("RECENCY_PLAY_WEIGHT", "5.0")
     assert Settings.from_env().recency_play_weight == 0.7
@@ -203,6 +228,24 @@ def test_from_env_weekly_make_public_unset_is_none():
 def test_from_env_weekly_make_public_set(clean_env):
     clean_env.setenv("WEEKLY_MAKE_PUBLIC", "false")
     assert Settings.from_env().weekly_privacy_status == "PRIVATE"
+
+
+def test_from_env_weekly_playlist_privacy_set(clean_env):
+    clean_env.setenv("WEEKLY_PLAYLIST_PRIVACY", "unlisted")
+    assert Settings.from_env().weekly_privacy_status == "UNLISTED"
+
+
+def test_from_env_weekly_playlist_privacy_takes_precedence(clean_env):
+    clean_env.setenv("WEEKLY_PLAYLIST_PRIVACY", "PUBLIC")
+    clean_env.setenv("WEEKLY_MAKE_PUBLIC", "PRIVATE")
+    assert Settings.from_env().weekly_privacy_status == "PUBLIC"
+
+
+def test_from_env_weekly_make_public_boolean_warns(clean_env, caplog):
+    clean_env.setenv("WEEKLY_MAKE_PUBLIC", "true")
+    with caplog.at_level("WARNING"):
+        Settings.from_env()
+    assert any("deprecated" in r.message.lower() for r in caplog.records)
 
 
 def test_load_custom_playlists_missing_file(tmp_path):

@@ -41,3 +41,22 @@ def is_rate_limited(error_msg: str) -> bool:
     if extract_http_status(error_msg) in RATE_LIMIT_STATUSES:
         return True
     return "rate limit" in error_msg.lower()
+
+
+def describe_sync_error(error_msg: str) -> str:
+    """Return a concise, human-readable summary of an upstream sync error.
+
+    Classification is based on the parsed HTTP status code rather than fragile
+    substring matching, so a reworded upstream message still maps to the right
+    category. Falls back to the raw message for unrecognised errors.
+    """
+    status = extract_http_status(error_msg)
+    if status == 401:
+        return "HTTP 401 - Unauthorized"
+    if status == 403:
+        return "HTTP 403 - rate limit or auth expired"
+    if status is not None:
+        return f"HTTP {status}"
+    if "Expecting value" in error_msg:
+        return "Invalid API response (likely rate limited)"
+    return error_msg
