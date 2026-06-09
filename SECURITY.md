@@ -23,7 +23,7 @@ design:
 
 Keep the app on `localhost` or behind an authenticating reverse proxy before
 exposing it to the internet. The full data and threat model is documented in
-[docs/security-model.md](docs/security-model.md).
+[Data & Security Model](https://locko2901.github.io/lastfm-to-ytm/security-model/).
 
 Issues that simply restate these documented design limitations are **not**
 considered vulnerabilities.
