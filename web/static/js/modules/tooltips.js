@@ -110,7 +110,7 @@ export function initTooltips() {
   document.addEventListener(
     "mouseenter",
     e => {
-      if (!e.target || !e.target.closest) return
+      if (!e.target?.closest) return
       const target = e.target.closest("[data-tooltip]")
       if (target) {
         showTooltip(target)
@@ -122,7 +122,7 @@ export function initTooltips() {
   document.addEventListener(
     "mouseleave",
     e => {
-      if (!e.target || !e.target.closest) return
+      if (!e.target?.closest) return
       const target = e.target.closest("[data-tooltip]")
       if (target) {
         hideTooltip()
