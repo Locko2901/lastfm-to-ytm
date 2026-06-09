@@ -4,6 +4,57 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.1.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.0.0...v2.1.0) (2026-06-09)
+
+
+### Features
+
+* add GitHub social preview card generator ([4f5bd7e](https://github.com/Locko2901/lastfm-to-ytm/commit/4f5bd7ea1f525d16fabb1f8b4352cc4165f0b631))
+
+
+### Bug Fixes
+
+* **web:** use optional chaining in notifications applyEvent ([2ef1ec5](https://github.com/Locko2901/lastfm-to-ytm/commit/2ef1ec5156dc0471c5d62fd7becc650627e40cbe))
+* **web:** use optional chaining in tooltip event handlers ([dab4900](https://github.com/Locko2901/lastfm-to-ytm/commit/dab4900920f3822f9d1f8485826f4ba365718c54))
+
+
+### Refactor
+
+* extract sync helpers and add PLAYLIST_PRIVACY config ([c8f744a](https://github.com/Locko2901/lastfm-to-ytm/commit/c8f744af29d03abde1b3eb8b6eaeaa551da31506))
+* **search:** extract magic numbers into named constants ([60e9b2d](https://github.com/Locko2901/lastfm-to-ytm/commit/60e9b2d2a1fc654aaf497d3e73939ada67645ff7))
+
+
+### Documentation
+
+* add security policy ([534f271](https://github.com/Locko2901/lastfm-to-ytm/commit/534f2713fcdd0d19d0dd9edeb6ce9148e8b9105b))
+* update link to Data & Security Model in security policy ([6974903](https://github.com/Locko2901/lastfm-to-ytm/commit/697490376f9b4430dc6bb94d23a79441ef51765e))
+
+
+### Tests
+
+* add unit and frontend e2e test suite ([7def5f8](https://github.com/Locko2901/lastfm-to-ytm/commit/7def5f8873bb3e58b947be479aaab2b31b67aa69))
+
+
+### Build
+
+* **deps-dev:** bump @biomejs/biome ([#20](https://github.com/Locko2901/lastfm-to-ytm/issues/20)) ([cc3122f](https://github.com/Locko2901/lastfm-to-ytm/commit/cc3122fc6529ddfcc0addd555d31b23d46d1955a))
+* **deps-dev:** bump js-cookie from 3.0.5 to 3.0.8 ([207cf8b](https://github.com/Locko2901/lastfm-to-ytm/commit/207cf8b797bb55c0d28b88c42afdf2120f9e5d39))
+* **deps-dev:** bump js-cookie from 3.0.5 to 3.0.8 ([8c1661f](https://github.com/Locko2901/lastfm-to-ytm/commit/8c1661fcf923cc8038bb24bf3b57ccd745f1878a))
+* **deps:** bump python from 3.11-slim to 3.14-slim in /devops ([#21](https://github.com/Locko2901/lastfm-to-ytm/issues/21)) ([989fa6d](https://github.com/Locko2901/lastfm-to-ytm/commit/989fa6d7feebcfd7bffe161d9cab89cb072cd852))
+* **deps:** bump the python-prod group with 3 updates ([#22](https://github.com/Locko2901/lastfm-to-ytm/issues/22)) ([9b1ea18](https://github.com/Locko2901/lastfm-to-ytm/commit/9b1ea18f41651a0b70f79d92efa9d3b727c89cd6))
+
+
+### CI/CD
+
+* **deps:** bump the github-actions group with 13 updates ([b1f5fbc](https://github.com/Locko2901/lastfm-to-ytm/commit/b1f5fbce62b687b3618e094a82f611e6ac0f2482))
+* **deps:** bump the github-actions group with 13 updates ([af73fa9](https://github.com/Locko2901/lastfm-to-ytm/commit/af73fa9f2d56dcbd297a7f137f2e6a8f2e562fe1))
+
+
+### Miscellaneous
+
+* add community health files and ignore-rule negations ([5e43991](https://github.com/Locko2901/lastfm-to-ytm/commit/5e43991e4c89a7a540c3cac9b8188f7472a46d6c))
+* remove support documentation and security vulnerability reporting link ([0834a1c](https://github.com/Locko2901/lastfm-to-ytm/commit/0834a1ccaf6fb8c736fb1756ff8d2c4e176b5595))
+
 ## [2.0.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v1.7.0...v2.0.0) (2026-06-08)
 
 
