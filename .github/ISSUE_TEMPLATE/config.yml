@@ -6,6 +6,3 @@ contact_links:
   - name: Questions & usage help
     url: https://github.com/Locko2901/lastfm-to-ytm/discussions
     about: For "how do I…" questions and general usage, start a discussion instead of an issue.
-  - name: Report a security vulnerability
-    url: https://github.com/Locko2901/lastfm-to-ytm/security/advisories/new
-    about: Please report security issues privately - do not open a public issue.
