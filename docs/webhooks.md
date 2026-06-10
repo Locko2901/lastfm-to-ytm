@@ -21,6 +21,21 @@ WEBHOOK_EVENTS=all    # "all" = success + error, "error" = failures only
 |----------|---------|-------------|
 | `WEBHOOK_URL` | *(empty)* | Webhook endpoint URL. Leave empty to disable. |
 | `WEBHOOK_EVENTS` | `error` | When to send: `all` (every sync) or `error` (failures only) |
+| `WEBHOOK_ALLOW_PRIVATE` | `false` | Allow URLs resolving to private/LAN/localhost addresses. Off by default to prevent SSRF. |
+
+---
+
+## Private / LAN receivers
+
+Before sending, the URL is validated: it must be `http`/`https` and, by default,
+must resolve to a **public** IP address. This blocks server-side request forgery
+(SSRF) where a crafted URL could probe internal services.
+
+If your receiver runs on your own network - a self-hosted
+[ntfy](https://ntfy.sh/) or [Gotify](https://gotify.net/) instance, a container
+name, `localhost`, `192.168.x.x`, etc. - set `WEBHOOK_ALLOW_PRIVATE=true`
+(or tick **Allow private/LAN webhook URLs** in **Settings &rarr; Webhooks**).
+Leave it off when pointing at public services like Discord or ntfy.sh.
 
 ---
 

@@ -201,14 +201,27 @@ volumes:
 
 ## 8. Webhooks
 
-Configured via `WEBHOOK_URL` and `WEBHOOK_EVENTS` ([`src/webhook.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/webhook.py)).
+Configured via `WEBHOOK_URL`, `WEBHOOK_EVENTS`, and `WEBHOOK_ALLOW_PRIVATE`
+([`src/webhook.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/webhook.py)).
 
+- **SSRF guard.** Before sending, the URL must use `http`/`https` and - unless
+  `WEBHOOK_ALLOW_PRIVATE=true` - must resolve to a **public** IP. Private,
+  loopback, link-local, reserved, multicast, and unspecified addresses are
+  rejected, so a crafted `WEBHOOK_URL` cannot be used to probe internal
+  services. Self-hosted LAN/localhost receivers require the opt-in flag.
 - The outbound payload is **not signed**; the receiver has no way to verify it
   came from this app. If you need authenticity, embed a shared secret in the URL
   (Discord-style) and validate on the receiver.
 - Payloads include sync status, track counts, API/cache metrics, the playlist
   URL, and truncated error messages - no credentials.
 - Timeout 10s, no retries.
+
+!!! note "Why CodeQL may still flag this"
+    `WEBHOOK_URL` is operator-supplied configuration, so a SAST tool sees a
+    user-controlled value reaching an HTTP client and reports SSRF. The
+    resolve-and-block guard above is the mitigation; the alert is expected and
+    can be dismissed as *used in tests / won't fix* (it is the feature's whole
+    purpose to POST to an operator-chosen URL).
 
 ## 9. Configuration overrides
 
@@ -234,6 +247,14 @@ The canonical list lives in `.env.example` and is documented on the
 - `WEBHOOK_URL` (if it embeds a token)
 
 Anything else controls behaviour, not access.
+
+!!! info "`.env` file permissions"
+    The dashboard writes `.env` with `0600` (owner read/write only) whenever it
+    updates settings ([`web/services/env.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/web/services/env.py)).
+    The file is still **plaintext** - a static analyser will flag
+    "clear-text storage of sensitive information" because secrets live in it by
+    design. That alert is expected: there is no key-management layer, and the
+    threat model already assumes a trusted single-user host.
 
 ## 11. What's excluded from git
 

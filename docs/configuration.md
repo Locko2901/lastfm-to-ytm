@@ -104,6 +104,7 @@ These settings only apply when running the web dashboard.
 |----------|---------|-------------|
 | `WEBHOOK_URL` | *(empty)* | Webhook endpoint URL (leave empty to disable) |
 | `WEBHOOK_EVENTS` | `error` | When to send: `all` (every sync) or `error` (failures only) |
+| `WEBHOOK_ALLOW_PRIVATE` | `false` | Allow webhook URLs that resolve to private/LAN/localhost addresses (enable only for self-hosted receivers) |
 
 ---
 

@@ -44,6 +44,10 @@ considered vulnerabilities.
 - Lack of authentication on the web dashboard.
 - Absence of CSRF protection on dashboard endpoints.
 - Credentials stored in plaintext on the local disk.
+- Operator-supplied outbound URLs (e.g. `WEBHOOK_URL`) reaching an HTTP
+  client. This is the feature's purpose; requests are still restricted to
+  `http`/`https` and, by default, to public IPs (SSRF guard), with private/LAN
+  targets gated behind `WEBHOOK_ALLOW_PRIVATE`.
 - Issues that require an already-compromised host or local filesystem access.
 - Findings from automated scanners without a demonstrated, reproducible impact.
 

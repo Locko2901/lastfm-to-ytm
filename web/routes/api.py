@@ -756,11 +756,20 @@ _image_cache_lock = threading.Lock()
 _IMAGE_CACHE_MAX_SIZE = 50
 _IMAGE_CACHE_TTL = 3600
 
+_ALLOWED_IMAGE_DOMAINS = frozenset(
+    {
+        "lastfm.freetls.fastly.net",
+        "lastfm-img2.akamaized.net",
+        "i.scdn.co",
+    }
+)
+
 
 @api_bp.route("/image-proxy")
 def image_proxy():
     """Proxy external images to enable CORS for canvas color extraction."""
     import time
+    from urllib.parse import urlparse, urlunparse
 
     from flask import Response
 
@@ -769,20 +778,22 @@ def image_proxy():
     if not url:
         return Response("Missing url parameter", status=400)
 
-    allowed_domains = ["lastfm.freetls.fastly.net", "lastfm-img2.akamaized.net", "i.scdn.co"]
     try:
-        from urllib.parse import urlparse
-
         parsed = urlparse(url)
-        if parsed.hostname not in allowed_domains:
-            return Response("Domain not allowed", status=403)
     except Exception:
         return Response("Invalid URL", status=400)
 
+    host = parsed.hostname
+    if parsed.scheme not in ("http", "https") or host not in _ALLOWED_IMAGE_DOMAINS:
+        return Response("Domain not allowed", status=403)
+
+    netloc = f"{host}:{parsed.port}" if parsed.port else host
+    safe_url = urlunparse(("https", netloc, parsed.path, "", parsed.query, ""))
+
     now = time.time()
     with _image_cache_lock:
-        if url in _image_cache:
-            cached = _image_cache[url]
+        if safe_url in _image_cache:
+            cached = _image_cache[safe_url]
             if now - cached["time"] < _IMAGE_CACHE_TTL:
                 return Response(
                     cached["data"],
@@ -793,11 +804,11 @@ def image_proxy():
                         "X-Cache": "HIT",
                     },
                 )
-            del _image_cache[url]
+            del _image_cache[safe_url]
 
     try:
         resp = ipv4_session().get(
-            url,
+            safe_url,
             timeout=15,
             headers={"User-Agent": "Mozilla/5.0 (compatible; LastFM-YTM-Sync/1.0)"},
             allow_redirects=False,
@@ -812,7 +823,7 @@ def image_proxy():
                 oldest_key = min(_image_cache.keys(), key=lambda k: _image_cache[k]["time"])
                 del _image_cache[oldest_key]
 
-            _image_cache[url] = {
+            _image_cache[safe_url] = {
                 "data": data,
                 "content_type": content_type,
                 "time": now,
@@ -828,7 +839,7 @@ def image_proxy():
             },
         )
     except requests.exceptions.RequestException as e:
-        logger.warning(f"Image proxy failed for {url}: {e}")
+        logger.warning(f"Image proxy failed for {safe_url}: {e}")
         return Response("Failed to fetch image", status=502)
     except Exception as e:
         logger.error(f"Image proxy error: {e}")
