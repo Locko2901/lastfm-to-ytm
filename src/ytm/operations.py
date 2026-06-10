@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from ytmusicapi import YTMusic
@@ -47,7 +47,7 @@ def get_existing_playlist_by_name(
 
             if matches:
                 found_id = matches[0]
-                if cache:
+                if found_id and cache:
                     cached_template = cache.get_template(name)
                     if cached_template:
                         cache.set_template(name, found_id, cached_template)
@@ -83,14 +83,14 @@ def create_playlist_with_items(
 ) -> str:
     """Create a playlist and cache its template (ID + video IDs)."""
     try:
-        pl_id = ytm.create_playlist(name, desc, privacy_status=privacy, video_ids=video_ids)
+        pl_id = cast("str", ytm.create_playlist(name, desc, privacy_status=privacy, video_ids=video_ids))
     except TypeError:
         log.warning("create_playlist with video_ids not supported, using fallback")
-        pl_id = ytm.create_playlist(name, desc, privacy_status=privacy)
+        pl_id = cast("str", ytm.create_playlist(name, desc, privacy_status=privacy))
         add_items_fallback(ytm, pl_id, video_ids)
     except Exception as e:
         log.warning("create_playlist with video_ids failed: %s, using fallback", e)
-        pl_id = ytm.create_playlist(name, desc, privacy_status=privacy)
+        pl_id = cast("str", ytm.create_playlist(name, desc, privacy_status=privacy))
         add_items_fallback(ytm, pl_id, video_ids)
 
     log.info("Created playlist '%s' with ID: %s", name, pl_id)

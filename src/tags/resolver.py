@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 from ..lastfm import fetch_track_tags
@@ -15,7 +16,7 @@ log = logging.getLogger(__name__)
 
 
 def resolve_tags_for_tracks(
-    tracks: list[Scrobble | WeightedTrack],
+    tracks: Sequence[Scrobble | WeightedTrack],
     tag_cache: TagCache,
     api_key: str,
     min_count: int = 10,

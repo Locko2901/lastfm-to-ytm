@@ -6,6 +6,7 @@ import ipaddress
 import logging
 import socket
 from datetime import UTC, datetime
+from typing import Any
 from urllib.parse import urlparse
 
 import requests
@@ -65,7 +66,7 @@ def _build_discord_payload(
     cache_misses: int | None = None,
     api_searches: int | None = None,
     tracks_total: int | None = None,
-) -> dict:
+) -> dict[str, Any]:
     """Format webhook data as a Discord embed."""
     color = 0x57F287 if status == "success" else 0xED4245 if status == "error" else 0x5865F2
     title = {
@@ -119,7 +120,7 @@ def _build_generic_payload(
     cache_misses: int | None = None,
     api_searches: int | None = None,
     tracks_total: int | None = None,
-) -> dict:
+) -> dict[str, Any]:
     """Build a plain JSON payload for generic HTTP endpoints."""
     payload = {
         "status": status,
@@ -169,21 +170,20 @@ def send_webhook(
         log.warning("Webhook URL rejected: must be http(s) and resolve to a public address")
         return False
 
-    kwargs = {
-        "status": status,
-        "sync_type": sync_type,
-        "tracks_resolved": tracks_resolved,
-        "tracks_missed": tracks_missed,
-        "duration_secs": duration_secs,
-        "error": error,
-        "playlist_url": playlist_url,
-        "cache_hits": cache_hits,
-        "cache_misses": cache_misses,
-        "api_searches": api_searches,
-        "tracks_total": tracks_total,
-    }
-
-    payload = _build_discord_payload(**kwargs) if _is_discord(url) else _build_generic_payload(**kwargs)
+    build_payload = _build_discord_payload if _is_discord(url) else _build_generic_payload
+    payload = build_payload(
+        status=status,
+        sync_type=sync_type,
+        tracks_resolved=tracks_resolved,
+        tracks_missed=tracks_missed,
+        duration_secs=duration_secs,
+        error=error,
+        playlist_url=playlist_url,
+        cache_hits=cache_hits,
+        cache_misses=cache_misses,
+        api_searches=api_searches,
+        tracks_total=tracks_total,
+    )
 
     try:
         resp = requests.post(url, json=payload, timeout=_TIMEOUT)

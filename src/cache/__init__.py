@@ -5,9 +5,10 @@ from __future__ import annotations
 import fcntl
 import json
 import logging
+from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Generic, TypeVar
+from typing import IO, Any, Generic, TypeVar
 
 log = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ T = TypeVar("T")
 class CacheMetrics:
     """Track cache performance metrics."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.hits = 0
         self.misses = 0
         self.writes = 0
@@ -77,7 +78,7 @@ class JSONCache(Generic[T]):
         self._metrics = CacheMetrics()
 
     @contextmanager
-    def _file_lock(self, mode: str = "r"):
+    def _file_lock(self, mode: str = "r") -> Iterator[IO[Any] | None]:
         if not self.enable_locking:
             if (mode == "r" and self.cache_file.exists()) or mode == "w":
                 with self.cache_file.open(mode) as f:

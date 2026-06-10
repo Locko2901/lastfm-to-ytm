@@ -69,7 +69,7 @@ def nfkc_casefold(s: str) -> str:
 
 def ascii_fold(s: str) -> str:
     """Normalize to ASCII via unidecode."""
-    return _unidecode(unicodedata.normalize("NFKC", s).casefold())
+    return str(_unidecode(unicodedata.normalize("NFKC", s).casefold()))
 
 
 def alnum_space(s: str) -> str:

@@ -1,15 +1,25 @@
+from __future__ import annotations
+
 import logging
-from datetime import UTC, date, datetime, timedelta
+from collections.abc import Callable
+from datetime import UTC, date, datetime, timedelta, tzinfo
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from ytmusicapi import YTMusic
+
+    from ..cache.playlist import PlaylistCache
+    from ..config import Settings
 
 try:
     from zoneinfo import ZoneInfo
 except ImportError:
-    ZoneInfo = None
+    ZoneInfo = None  # type: ignore[assignment, misc]
 
 log = logging.getLogger(__name__)
 
 
-def _tz_from_name(name: str):
+def _tz_from_name(name: str) -> tzinfo:
     if ZoneInfo is None:
         return UTC
     try:
@@ -51,7 +61,7 @@ def _weekly_playlist_name(base_prefix: str, week_start_date: date) -> str:
     return f"{base_prefix} week of {week_start_date.isoformat()}"
 
 
-def _find_weekly_playlists(ytm, base_prefix: str) -> list[dict[str, str]]:
+def _find_weekly_playlists(ytm: YTMusic, base_prefix: str) -> list[dict[str, str]]:
     marker = f"{base_prefix} week of "
     pls = ytm.get_library_playlists(limit=1000) or []
     out: list[dict[str, str]] = []
@@ -79,7 +89,7 @@ def _parse_week_date_from_title(title: str, base_prefix: str) -> date | None:
         return None
 
 
-def _prune_old_weeklies(ytm, base_prefix: str, keep_weeks: int) -> list[tuple[str, str]]:
+def _prune_old_weeklies(ytm: YTMusic, base_prefix: str, keep_weeks: int) -> list[tuple[str, str]]:
     if keep_weeks is None or keep_weeks <= 0:
         return []
     found = _find_weekly_playlists(ytm, base_prefix)
@@ -108,15 +118,15 @@ def _build_weekly_desc(
 
 
 def update_weekly_playlist(
-    ytm,
-    get_existing_playlist_by_name,
-    create_playlist_with_items,
-    sync_playlist,
+    ytm: YTMusic,
+    get_existing_playlist_by_name: Callable[..., Any],
+    create_playlist_with_items: Callable[..., Any],
+    sync_playlist: Callable[..., Any],
     *,
-    settings,
+    settings: Settings,
     valid_video_ids: list[str],
     base_desc: str,
-    cache=None,
+    cache: PlaylistCache | None = None,
 ) -> str | None:
     """Create or update the weekly playlist snapshot."""
     weekly_enabled = bool(getattr(settings, "weekly_enabled", True))
@@ -147,8 +157,7 @@ def update_weekly_playlist(
         week_start_label=week_start_label,
     )
 
-    weekly_id = get_existing_playlist_by_name(ytm, weekly_name, cache=cache)
-
+    weekly_id: str | None = get_existing_playlist_by_name(ytm, weekly_name, cache=cache)
     weekly_template = cache.get_template(weekly_name) if cache else None
     template_changed = weekly_template != valid_video_ids if weekly_template is not None else True
 

@@ -85,7 +85,7 @@ mirror instead. Setting `YTMT_IMAGE` directly bypasses the registry selection.
 
 ## Published Images (GHCR + Docker Hub)
 
-The `docker-publish` job in [`ci.yml`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/.github/workflows/ci.yml) builds and pushes multi-arch images to GitHub Container Registry. It runs after every linter job (`python`, `js-css`, `templates`, `templates-format`) passes, and `release-please` in turn depends on it - so a failed publish blocks the release tag.
+The `docker-publish` job in [`ci.yml`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/.github/workflows/ci.yml) builds and pushes multi-arch images to GitHub Container Registry. It runs after every linter job (`python`, `types`, `js-css`, `templates`, `templates-format`) passes, and `release-please` in turn depends on it - so a failed publish blocks the release tag.
 
 - **Registry**: `ghcr.io/locko2901/lastfm-to-ytm` (primary), mirrored to `docker.io/lockooo/lastfm-to-ytm`
 - **Architectures**: `linux/amd64`, `linux/arm64` (via QEMU + Buildx)

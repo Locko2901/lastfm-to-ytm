@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 from ytmusicapi import YTMusic
@@ -26,10 +27,12 @@ class InvalidVideoIDsError(Exception):
         super().__init__(f"{len(invalid_ids)} invalid video ID(s) detected: {invalid_ids}")
 
 
-def _retry_with_backoff(func, *args, max_retries: int = 3, initial_delay: float = 1.0, operation: str = "operation", **kwargs) -> Any:
+def _retry_with_backoff(
+    func: Callable[..., Any], *args: Any, max_retries: int = 3, initial_delay: float = 1.0, operation: str = "operation", **kwargs: Any
+) -> Any:
     """Retry with exponential backoff on rate limit errors."""
     delay = initial_delay
-    last_exception = None
+    last_exception: Exception | None = None
 
     for attempt in range(max_retries):
         try:
@@ -57,6 +60,7 @@ def _retry_with_backoff(func, *args, max_retries: int = 3, initial_delay: float 
             else:
                 raise
 
+    assert last_exception is not None
     raise last_exception
 
 
@@ -123,7 +127,7 @@ def _are_same_song(ytm: YTMusic, vid1: str, vid2: str) -> bool:
             if author:
                 artists2 = [author]
 
-        def normalize_title(title, artists):
+        def normalize_title(title: str, artists: list[str]) -> str:
             normalized = title
             for artist in artists:
                 if normalized.startswith(artist + " - "):

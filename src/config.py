@@ -106,7 +106,9 @@ def _resolve_privacy_setting(
 
 def _resolve_main_privacy() -> str:
     """Resolve the main playlist privacy (PLAYLIST_PRIVACY, legacy MAKE_PUBLIC)."""
-    return _resolve_privacy_setting("PLAYLIST_PRIVACY", "MAKE_PUBLIC", default="PRIVATE")
+    resolved = _resolve_privacy_setting("PLAYLIST_PRIVACY", "MAKE_PUBLIC", default="PRIVATE")
+    assert resolved is not None  # inherit=False guarantees a concrete value
+    return resolved
 
 
 @dataclass(frozen=True)

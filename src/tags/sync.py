@@ -16,8 +16,10 @@ from .filter import filter_tracks_by_tags
 from .resolver import resolve_tags_for_tracks
 
 if TYPE_CHECKING:
+    from ..config import Settings
     from ..context import RuntimeContext
     from ..lastfm import Scrobble
+    from ..recency import WeightedTrack
 
 log = logging.getLogger(__name__)
 
@@ -195,10 +197,10 @@ def sync_custom_playlists(
             seen = set(video_ids)
             for t in new_matching:
                 key = (t.artist.lower(), t.track.lower())
-                vid = track_to_vid.get(key)
-                if vid and vid not in seen:
-                    video_ids.append(vid)
-                    seen.add(vid)
+                mapped_vid = track_to_vid.get(key)
+                if mapped_vid and mapped_vid not in seen:
+                    video_ids.append(mapped_vid)
+                    seen.add(mapped_vid)
 
         if config.limit > 0 and len(video_ids) > config.limit:
             video_ids = video_ids[: config.limit]
@@ -214,9 +216,9 @@ def sync_custom_playlists(
         vid_to_track: dict[str, tuple[str, str]] = {}
         for t in all_recents:
             key = (t.artist.lower(), t.track.lower())
-            vid = track_to_vid.get(key)
-            if vid and vid not in vid_to_track:
-                vid_to_track[vid] = (t.artist, t.track)
+            mapped_vid = track_to_vid.get(key)
+            if mapped_vid and mapped_vid not in vid_to_track:
+                vid_to_track[mapped_vid] = (t.artist, t.track)
         log.info("Final playlist for '%s':", config.name)
         for i, vid in enumerate(video_ids, 1):
             artist, track_name = vid_to_track.get(vid, ("?", "?"))
@@ -299,7 +301,7 @@ def sync_custom_playlists(
 
 
 def _resolve_from_existing(
-    tracks: list,
+    tracks: list[Scrobble | WeightedTrack],
     track_to_vid: dict[tuple[str, str], str],
 ) -> list[str]:
     """Resolve tracks using existing video ID mappings."""
@@ -317,7 +319,7 @@ def _resolve_from_existing(
 
 
 def _save_tag_failure(
-    settings,
+    settings: Settings,
     playlist_name: str,
     error: Exception,
 ) -> None:
@@ -371,7 +373,7 @@ def _save_tag_failure(
 
 
 def _record_custom_playlist_sync(
-    settings,
+    settings: Settings,
     name: str,
     track_count: int,
     limit: int,

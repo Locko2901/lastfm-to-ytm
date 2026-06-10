@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from . import JSONCache
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-class PlaylistCache(JSONCache):
+class PlaylistCache(JSONCache[Any]):
     """Persistent cache for playlist IDs and desired state (template)."""
 
     def __init__(self, cache_file: str):
@@ -30,7 +30,7 @@ class PlaylistCache(JSONCache):
             if playlist_id:
                 log.debug("Cache hit: '%s' -> %s", playlist_name, playlist_id)
                 self._metrics.record_hit()
-                return playlist_id
+                return str(playlist_id)
 
         log.debug("Cache miss: '%s'", playlist_name)
         self._metrics.record_miss()
@@ -47,7 +47,7 @@ class PlaylistCache(JSONCache):
                     playlist_name,
                     len(video_ids),
                 )
-                return video_ids
+                return list(video_ids)
         return None
 
     def set_template(self, playlist_name: str, playlist_id: str, video_ids: list[str]) -> None:
@@ -120,9 +120,9 @@ class PlaylistCache(JSONCache):
         log.info("Removed video %s from cached template '%s'", video_id, playlist_name)
         return True
 
-    def summary(self) -> list[dict]:
+    def summary(self) -> list[dict[str, Any]]:
         """List cached playlists with id, video_count, last_updated."""
-        out: list[dict] = []
+        out: list[dict[str, Any]] = []
         for name, entry in self._cache.items():
             if not isinstance(entry, dict):
                 continue

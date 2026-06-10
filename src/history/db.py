@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import sqlite3
 import threading
+from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -96,7 +97,7 @@ class HistoryDB:
         return conn
 
     @contextmanager
-    def _cursor(self):
+    def _cursor(self) -> Iterator[sqlite3.Cursor]:
         conn = self._get_conn()
         cur = conn.cursor()
         try:
@@ -213,7 +214,7 @@ class HistoryDB:
         search: str | None = None,
         source_filter: str | None = None,
         found_filter: str | None = None,
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
         """Return paginated tracks with optional search, source, and found filters."""
         sort_columns = {
             "last_seen": "last_seen",
@@ -275,9 +276,9 @@ class HistoryDB:
 
         with self._cursor() as cur:
             cur.execute(f"SELECT COUNT(*) FROM tracks {where}", params)
-            return cur.fetchone()[0]
+            return int(cur.fetchone()[0])
 
-    def get_track_history(self, artist: str, title: str) -> dict | None:
+    def get_track_history(self, artist: str, title: str) -> dict[str, Any] | None:
         """Return history summary for a specific track, if available."""
         with self._cursor() as cur:
             cur.execute(
@@ -318,11 +319,12 @@ class HistoryDB:
             )
             row = cur.fetchone()
             if row is not None:
-                return row["id"]
+                return int(row["id"])
             cur.execute(
                 "INSERT INTO syncs (started_at, sync_type, trigger, status) VALUES (?, ?, ?, 'running')",
                 (now, sync_type, trigger),
             )
+            assert cur.lastrowid is not None
             return cur.lastrowid
 
     def finish_sync(
@@ -385,7 +387,7 @@ class HistoryDB:
         date_from: str | None = None,
         date_to: str | None = None,
         status: str | None = None,
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
         """Return paginated sync records, newest first, with optional date range and status."""
         conditions: list[str] = []
         params: list[Any] = []
@@ -404,7 +406,7 @@ class HistoryDB:
             cur.execute(f"SELECT * FROM syncs {where} ORDER BY started_at DESC LIMIT ? OFFSET ?", params)
             return [dict(row) for row in cur.fetchall()]
 
-    def get_sync(self, sync_id: int) -> dict | None:
+    def get_sync(self, sync_id: int) -> dict[str, Any] | None:
         """Return a single sync record by ID."""
         with self._cursor() as cur:
             cur.execute("SELECT * FROM syncs WHERE id = ?", (sync_id,))
@@ -427,7 +429,7 @@ class HistoryDB:
         where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
         with self._cursor() as cur:
             cur.execute(f"SELECT COUNT(*) FROM syncs {where}", params)
-            return cur.fetchone()[0]
+            return int(cur.fetchone()[0])
 
     def record_action(
         self,
@@ -475,7 +477,7 @@ class HistoryDB:
         action_type: str | None = None,
         date_from: str | None = None,
         date_to: str | None = None,
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
         """Return paginated actions, optionally filtered by type and date range."""
         conditions: list[str] = []
         params: list[Any] = []
@@ -510,9 +512,9 @@ class HistoryDB:
         where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
         with self._cursor() as cur:
             cur.execute(f"SELECT COUNT(*) FROM actions {where}", params)
-            return cur.fetchone()[0]
+            return int(cur.fetchone()[0])
 
-    def get_overview_stats(self) -> dict:
+    def get_overview_stats(self) -> dict[str, Any]:
         """Return aggregate statistics across tracks, syncs, and actions."""
         with self._cursor() as cur:
             cur.execute("SELECT COUNT(*) FROM tracks")
@@ -577,7 +579,7 @@ class HistoryDB:
                 "total_lookups": total_lookups,
             }
 
-    def get_top_tracks(self, limit: int = 20) -> list[dict]:
+    def get_top_tracks(self, limit: int = 20) -> list[dict[str, Any]]:
         """Return tracks ordered by times_found descending."""
         with self._cursor() as cur:
             cur.execute(
@@ -586,7 +588,7 @@ class HistoryDB:
             )
             return [dict(row) for row in cur.fetchall()]
 
-    def get_recent_actions(self, limit: int = 20) -> list[dict]:
+    def get_recent_actions(self, limit: int = 20) -> list[dict[str, Any]]:
         """Return most recent actions."""
         with self._cursor() as cur:
             cur.execute("SELECT * FROM actions ORDER BY timestamp DESC LIMIT ?", (limit,))
@@ -604,7 +606,7 @@ class HistoryDB:
             cur.execute("SELECT source, COUNT(*) as cnt FROM tracks GROUP BY source ORDER BY cnt DESC")
             return {row["source"]: row["cnt"] for row in cur.fetchall()}
 
-    def backfill_from_search_cache(self, cache_data: dict) -> int:
+    def backfill_from_search_cache(self, cache_data: dict[str, Any]) -> int:
         """Import tracks from search cache data into the history DB."""
         count = 0
         now = datetime.now(UTC).isoformat()
@@ -632,7 +634,7 @@ class HistoryDB:
         log.info("Backfilled %d entries from search cache into history DB", count)
         return count
 
-    def backfill_from_overrides(self, overrides_data: dict) -> int:
+    def backfill_from_overrides(self, overrides_data: dict[str, Any]) -> int:
         """Import tracks from override data into the history DB."""
         count = 0
         now = datetime.now(UTC).isoformat()
@@ -728,7 +730,7 @@ class HistoryDB:
         Format: {"schema_version": N, "exported_at": iso, "tables": {name: [rows]}}.
         """
         tables = ("tracks", "syncs", "actions")
-        out: dict[str, list[dict]] = {}
+        out: dict[str, list[dict[str, Any]]] = {}
         with self._cursor() as cur:
             for table in tables:
                 cur.execute(f"SELECT * FROM {table}")
@@ -872,7 +874,7 @@ class HistoryDB:
         self.vacuum()
         log.info("Cleared all history data")
 
-    def get_sync_trend(self, days: int = 30) -> list[dict]:
+    def get_sync_trend(self, days: int = 30) -> list[dict[str, Any]]:
         """Return daily sync stats for the last *days* days.
 
         Each entry: {date, total, success, error, avg_duration,
