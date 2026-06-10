@@ -65,6 +65,15 @@ def test_get_tracks_invalid_sort_falls_back(db):
     assert db.get_tracks(sort="; DROP TABLE tracks") != []
 
 
+def test_get_tracks_valid_sort_and_order(db):
+    db.record_track("Aaa", "First", video_id="vid00000001")
+    db.record_track("Zzz", "Second", video_id="vid00000002")
+    asc = db.get_tracks(sort="artist", order="asc")
+    desc = db.get_tracks(sort="artist", order="desc")
+    assert [t["artist"] for t in asc] == ["Aaa", "Zzz"]
+    assert [t["artist"] for t in desc] == ["Zzz", "Aaa"]
+
+
 def test_get_track_count_with_source_filter(db):
     db.record_track("A", "B", source="search", video_id="v1")
     db.record_track("C", "D", source="override", video_id="v2")
