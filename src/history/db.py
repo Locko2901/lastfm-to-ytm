@@ -372,8 +372,15 @@ class HistoryDB:
                 ),
             )
 
-    def get_syncs(self, limit: int = 50, offset: int = 0, date_from: str | None = None, date_to: str | None = None) -> list[dict]:
-        """Return paginated sync records, newest first, with optional date range."""
+    def get_syncs(
+        self,
+        limit: int = 50,
+        offset: int = 0,
+        date_from: str | None = None,
+        date_to: str | None = None,
+        status: str | None = None,
+    ) -> list[dict]:
+        """Return paginated sync records, newest first, with optional date range and status."""
         conditions: list[str] = []
         params: list[Any] = []
         if date_from:
@@ -382,6 +389,9 @@ class HistoryDB:
         if date_to:
             conditions.append("started_at <= ?")
             params.append(date_to)
+        if status:
+            conditions.append("status = ?")
+            params.append(status)
         where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
         params.extend([limit, offset])
         with self._cursor() as cur:
@@ -395,8 +405,8 @@ class HistoryDB:
             row = cur.fetchone()
             return dict(row) if row else None
 
-    def get_sync_count(self, date_from: str | None = None, date_to: str | None = None) -> int:
-        """Return total number of sync records, with optional date range."""
+    def get_sync_count(self, date_from: str | None = None, date_to: str | None = None, status: str | None = None) -> int:
+        """Return total number of sync records, with optional date range and status."""
         conditions: list[str] = []
         params: list[Any] = []
         if date_from:
@@ -405,6 +415,9 @@ class HistoryDB:
         if date_to:
             conditions.append("started_at <= ?")
             params.append(date_to)
+        if status:
+            conditions.append("status = ?")
+            params.append(status)
         where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
         with self._cursor() as cur:
             cur.execute(f"SELECT COUNT(*) FROM syncs {where}", params)

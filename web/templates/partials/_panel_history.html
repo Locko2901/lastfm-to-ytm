@@ -75,6 +75,11 @@
 
   <div class="history-subpanel" id="history-syncs">
     <div class="filter-bar">
+      <div class="filter-chips">
+        <button class="filter-chip active" data-history-sync-filter="all">{{ _('All') }}</button>
+        <button class="filter-chip" data-history-sync-filter="success">{{ _('Success') }}</button>
+        <button class="filter-chip" data-history-sync-filter="error">{{ _('Failed') }}</button>
+      </div>
       <div class="date-range-filter">
         <label>{{ _('From') }}</label>
         <input type="date" id="historySyncDateFrom" class="date-input">

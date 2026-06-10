@@ -1037,8 +1037,9 @@ def history_syncs():
         limit, offset = 50, 0
     date_from = request.args.get("from", "").strip() or None
     date_to = request.args.get("to", "").strip() or None
-    syncs = db.get_syncs(limit, offset, date_from, date_to)
-    total = db.get_sync_count(date_from, date_to)
+    status = request.args.get("status", "").strip() or None
+    syncs = db.get_syncs(limit, offset, date_from, date_to, status)
+    total = db.get_sync_count(date_from, date_to, status)
     return jsonify({"syncs": syncs, "total": total, "limit": limit, "offset": offset})
 
 
