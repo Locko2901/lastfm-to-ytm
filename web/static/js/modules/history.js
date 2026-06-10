@@ -11,6 +11,7 @@ let trackFoundFilter = "all"
 let trendDays = 7
 let syncDateFrom = ""
 let syncDateTo = ""
+let syncStatusFilter = "all"
 let actionDateFrom = ""
 let actionDateTo = ""
 const PAGE_SIZE = 50
@@ -38,6 +39,16 @@ export function initHistory() {
       trackFoundFilter = chip.dataset.historyFilter
       trackPage = 0
       loadHistoryTracks()
+    })
+  }
+
+  for (const chip of document.querySelectorAll("[data-history-sync-filter]")) {
+    chip.addEventListener("click", () => {
+      for (const c of document.querySelectorAll("[data-history-sync-filter]")) c.classList.remove("active")
+      chip.classList.add("active")
+      syncStatusFilter = chip.dataset.historySyncFilter
+      syncPage = 0
+      loadHistorySyncs()
     })
   }
 
@@ -265,6 +276,7 @@ async function loadHistorySyncs() {
     const syncParams = new URLSearchParams({ limit: PAGE_SIZE, offset: syncPage * PAGE_SIZE })
     if (syncDateFrom) syncParams.set("from", syncDateFrom)
     if (syncDateTo) syncParams.set("to", syncDateTo)
+    if (syncStatusFilter !== "all") syncParams.set("status", syncStatusFilter)
     const r = await fetch(`/api/history/syncs?${syncParams}`)
     if (!r.ok) return
     const data = await r.json()

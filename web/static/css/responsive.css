@@ -184,6 +184,11 @@
     margin-bottom: 0.75rem;
   }
 
+  .date-range-filter {
+    margin-left: 0;
+    width: 100%;
+  }
+
   .search-wrapper {
     width: 100%;
     max-width: none;
