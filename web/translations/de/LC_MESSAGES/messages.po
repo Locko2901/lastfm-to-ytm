@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-10 13:29+0200\n"
+"POT-Creation-Date: 2026-06-10 14:40+0200\n"
 "PO-Revision-Date: 2026-05-13 11:41+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -31,7 +31,7 @@ msgid "At least one tag is required."
 msgstr ""
 
 #: web/routes/actions.py:220 web/routes/api.py:177 web/routes/api.py:248
-#: web/routes/api.py:840
+#: web/routes/api.py:847
 msgid "No data provided"
 msgstr ""
 
@@ -60,17 +60,17 @@ msgstr ""
 msgid "Failed to save credentials"
 msgstr ""
 
-#: web/routes/api.py:274 web/routes/api.py:856
+#: web/routes/api.py:274 web/routes/api.py:863
 #, python-format
 msgid "Invalid cron expression: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:283 web/routes/api.py:864
+#: web/routes/api.py:283 web/routes/api.py:871
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr ""
 
-#: web/routes/api.py:302 web/static/js/modules/settings.js:140
-#: web/static/js/modules/settings.js:172
+#: web/routes/api.py:302 web/static/js/modules/settings.js:141
+#: web/static/js/modules/settings.js:173
 msgid "Failed to save settings"
 msgstr ""
 
@@ -78,115 +78,123 @@ msgstr ""
 msgid "No webhook URL provided"
 msgstr ""
 
-#: web/routes/api.py:324
+#: web/routes/api.py:326
 msgid "Webhook request failed. Check the URL and try again."
 msgstr ""
 
-#: web/routes/api.py:402
+#: web/routes/api.py:404
 msgid "Unknown panel"
 msgstr ""
 
-#: web/routes/api.py:416
+#: web/routes/api.py:418
 msgid "Invalid data: 'playlists' array required"
 msgstr ""
 
-#: web/routes/api.py:420
+#: web/routes/api.py:422
 msgid "'playlists' must be an array"
 msgstr ""
 
-#: web/routes/api.py:469
+#: web/routes/api.py:471
 msgid "Failed to save custom playlists"
 msgstr ""
 
-#: web/routes/api.py:600
+#: web/routes/api.py:602
 msgid "Artist and title are required"
 msgstr ""
 
-#: web/routes/api.py:678
+#: web/routes/api.py:680
 msgid "Last.fm credentials not configured"
 msgstr ""
 
-#: web/routes/api.py:746
+#: web/routes/api.py:748
 msgid "Failed to fetch from Last.fm"
 msgstr ""
 
-#: web/routes/api.py:749
+#: web/routes/api.py:751
 msgid "Internal error"
 msgstr ""
 
-#: web/routes/api.py:866
+#: web/routes/api.py:873
 msgid "Invalid start time format. Use HH:MM."
 msgstr ""
 
-#: web/routes/api.py:891
+#: web/routes/api.py:898
 msgid "Failed to configure scheduler. APScheduler may not be installed."
 msgstr ""
 
-#: web/routes/api.py:894
+#: web/routes/api.py:901
 #, python-format
 msgid "Invalid value: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:897
+#: web/routes/api.py:904
 msgid "Failed to configure scheduler"
 msgstr ""
 
-#: web/routes/api.py:914
+#: web/routes/api.py:921
 msgid "Failed to save theme overrides"
 msgstr ""
 
-#: web/routes/api.py:923 web/routes/api.py:952 web/routes/api.py:974
+#: web/routes/api.py:930 web/routes/api.py:959 web/routes/api.py:982
 msgid "Password is required"
 msgstr ""
 
-#: web/routes/api.py:927
+#: web/routes/api.py:934
 msgid "Password must be at least 4 characters"
 msgstr ""
 
-#: web/routes/api.py:942 web/static/js/modules/modals.js:574
-#: web/static/js/modules/modals.js:585 web/static/js/modules/teleporter.js:91
+#: web/routes/api.py:949 web/static/js/modules/modals.js:580
+#: web/static/js/modules/modals.js:591 web/static/js/modules/teleporter.js:91
 #: web/static/js/modules/teleporter.js:104
 msgid "Export failed"
 msgstr ""
 
-#: web/routes/api.py:954 web/routes/api.py:976
+#: web/routes/api.py:961 web/routes/api.py:984
 msgid "No file provided"
 msgstr ""
 
-#: web/routes/api.py:964 web/static/js/modules/teleporter.js:193
+#: web/routes/api.py:969 web/routes/api.py:992
+msgid "Could not read file - check your password and try again"
+msgstr ""
+
+#: web/routes/api.py:972 web/static/js/modules/teleporter.js:193
 #: web/static/js/modules/teleporter.js:205
 msgid "Preview failed"
 msgstr ""
 
-#: web/routes/api.py:986 web/static/js/modules/history.js:1010
-#: web/static/js/modules/history.js:1019 web/static/js/modules/modals.js:653
-#: web/static/js/modules/modals.js:672 web/static/js/modules/teleporter.js:233
+#: web/routes/api.py:995 web/static/js/modules/history.js:1010
+#: web/static/js/modules/history.js:1019 web/static/js/modules/modals.js:659
+#: web/static/js/modules/modals.js:678 web/static/js/modules/teleporter.js:233
 #: web/static/js/modules/teleporter.js:242
 msgid "Import failed"
 msgstr ""
 
-#: web/routes/api.py:1008 web/routes/api.py:1031 web/routes/api.py:1051
-#: web/routes/api.py:1065 web/routes/api.py:1085 web/routes/api.py:1099
-#: web/routes/api.py:1122 web/routes/api.py:1132 web/routes/api.py:1159
-#: web/routes/api.py:1179 web/routes/api.py:1206
+#: web/routes/api.py:1017 web/routes/api.py:1040 web/routes/api.py:1060
+#: web/routes/api.py:1074 web/routes/api.py:1094 web/routes/api.py:1108
+#: web/routes/api.py:1131 web/routes/api.py:1141 web/routes/api.py:1168
+#: web/routes/api.py:1188 web/routes/api.py:1216
 msgid "History database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1055
+#: web/routes/api.py:1064
 msgid "Sync record not found"
 msgstr ""
 
-#: web/routes/api.py:1183
+#: web/routes/api.py:1192
 msgid "No file uploaded"
 msgstr ""
 
-#: web/routes/api.py:1186
+#: web/routes/api.py:1195
 msgid "Invalid import mode"
 msgstr ""
 
-#: web/routes/api.py:1191
+#: web/routes/api.py:1200
 #, python-format
 msgid "Invalid JSON file: %(err)s"
+msgstr ""
+
+#: web/routes/api.py:1206
+msgid "Invalid import file"
 msgstr ""
 
 #: web/routes/auth.py:27
@@ -242,6 +250,10 @@ msgstr ""
 
 #: web/routes/notifications.py:33
 msgid "Message is required"
+msgstr ""
+
+#: web/routes/notifications.py:39
+msgid "Invalid notification data"
 msgstr ""
 
 #: web/routes/notifications.py:60
@@ -329,7 +341,7 @@ msgstr ""
 msgid "selected"
 msgstr ""
 
-#: web/static/js/modules/cacheAdmin.js:222 web/static/js/modules/modals.js:787
+#: web/static/js/modules/cacheAdmin.js:222 web/static/js/modules/modals.js:793
 msgid "No tags"
 msgstr ""
 
@@ -358,7 +370,7 @@ msgstr ""
 #: web/templates/partials/_panel_history.html:109
 #: web/templates/partials/_panel_history.html:118
 #: web/templates/partials/_panel_history.html:134
-#: web/templates/partials/_panel_settings.html:549
+#: web/templates/partials/_panel_settings.html:557
 msgid "Loading..."
 msgstr ""
 
@@ -469,7 +481,7 @@ msgid "Please enter a playlist name"
 msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:69
-#: web/static/js/modules/modals.js:467
+#: web/static/js/modules/modals.js:473
 msgid "Please enter at least one tag"
 msgstr ""
 
@@ -508,7 +520,7 @@ msgid "blacklisted from"
 msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:242
-#: web/static/js/modules/modals.js:442 web/static/js/modules/modals.js:451
+#: web/static/js/modules/modals.js:448 web/static/js/modules/modals.js:457
 msgid "Failed to blacklist track"
 msgstr ""
 
@@ -520,36 +532,36 @@ msgstr ""
 msgid "Failed to restore track"
 msgstr ""
 
-#: web/static/js/modules/customTheme.js:233
+#: web/static/js/modules/customTheme.js:258
 msgid "Light theme"
 msgstr ""
 
-#: web/static/js/modules/customTheme.js:233
+#: web/static/js/modules/customTheme.js:258
 msgid "Dark theme"
 msgstr ""
 
-#: web/static/js/modules/customTheme.js:234
+#: web/static/js/modules/customTheme.js:259
 #, python-format
 msgid "Editing: %(parent)s"
 msgstr ""
 
-#: web/static/js/modules/customTheme.js:274
+#: web/static/js/modules/customTheme.js:299
 msgid "Custom theme saved"
 msgstr ""
 
-#: web/static/js/modules/customTheme.js:288
+#: web/static/js/modules/customTheme.js:313
 msgid "Reset to base theme"
 msgstr ""
 
-#: web/static/js/modules/customTheme.js:318
+#: web/static/js/modules/customTheme.js:343
 msgid "Theme imported"
 msgstr ""
 
-#: web/static/js/modules/customTheme.js:320
+#: web/static/js/modules/customTheme.js:345
 msgid "Invalid theme file"
 msgstr ""
 
-#: web/static/js/modules/history.js:208 web/static/js/modules/settings.js:432
+#: web/static/js/modules/history.js:208 web/static/js/modules/settings.js:433
 msgid "DB size:"
 msgstr ""
 
@@ -673,7 +685,7 @@ msgstr ""
 msgid "rows pruned"
 msgstr ""
 
-#: web/static/js/modules/history.js:964 web/static/js/modules/modals.js:617
+#: web/static/js/modules/history.js:964 web/static/js/modules/modals.js:623
 msgid "Please select a JSON file"
 msgstr ""
 
@@ -693,7 +705,7 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: web/static/js/modules/history.js:986 web/static/js/modules/modals.js:636
+#: web/static/js/modules/history.js:986 web/static/js/modules/modals.js:642
 msgid "Invalid JSON file"
 msgstr ""
 
@@ -718,7 +730,7 @@ msgid "Removed override"
 msgstr ""
 
 #: web/static/js/modules/history.js:1062 web/static/js/modules/modals.js:276
-#: web/static/js/modules/modals.js:793
+#: web/static/js/modules/modals.js:799
 #: web/templates/partials/_custompl_tracks.html:21
 #: web/templates/partials/_panel_cache.html:22
 #: web/templates/partials/_panel_cache.html:51
@@ -821,8 +833,8 @@ msgid "Pending Retry"
 msgstr ""
 
 #: web/static/js/modules/modals.js:189 web/static/js/modules/modals.js:340
-#: web/static/js/modules/modals.js:352 web/static/js/modules/modals.js:784
-#: web/static/js/modules/modals.js:792
+#: web/static/js/modules/modals.js:352 web/static/js/modules/modals.js:790
+#: web/static/js/modules/modals.js:798
 #: web/templates/macros/_track_actions.html:30
 #: web/templates/partials/_custompl_tracks.html:20
 #: web/templates/partials/_modals.html:879
@@ -835,7 +847,7 @@ msgid "Override"
 msgstr ""
 
 #: web/static/js/modules/modals.js:191 web/static/js/modules/modals.js:225
-#: web/static/js/modules/modals.js:281 web/static/js/modules/modals.js:632
+#: web/static/js/modules/modals.js:281 web/static/js/modules/modals.js:638
 #: web/templates/macros/_track_actions.html:45
 #: web/templates/partials/_custompl_tracks.html:38
 #: web/templates/partials/_modals.html:123
@@ -856,7 +868,7 @@ msgstr ""
 msgid "Failed to unblacklist"
 msgstr ""
 
-#: web/static/js/modules/modals.js:250 web/static/js/modules/modals.js:424
+#: web/static/js/modules/modals.js:250 web/static/js/modules/modals.js:430
 msgid "Blacklisted via web dashboard"
 msgstr ""
 
@@ -879,8 +891,8 @@ msgstr ""
 msgid "Override via web dashboard"
 msgstr ""
 
-#: web/static/js/modules/modals.js:313 web/static/js/modules/modals.js:434
-#: web/static/js/modules/modals.js:502 web/static/js/modules/setup.js:100
+#: web/static/js/modules/modals.js:313 web/static/js/modules/modals.js:440
+#: web/static/js/modules/modals.js:508 web/static/js/modules/setup.js:100
 msgid "Saving..."
 msgstr ""
 
@@ -888,176 +900,176 @@ msgstr ""
 msgid "Invalid input"
 msgstr ""
 
-#: web/static/js/modules/modals.js:327 web/static/js/modules/modals.js:375
+#: web/static/js/modules/modals.js:327 web/static/js/modules/modals.js:381
 msgid "Failed to save override"
 msgstr ""
 
-#: web/static/js/modules/modals.js:361
+#: web/static/js/modules/modals.js:367
 #: web/templates/macros/_track_actions.html:39
 #: web/templates/partials/_modals.html:278
 msgid "Remove Override"
 msgstr ""
 
-#: web/static/js/modules/modals.js:369
+#: web/static/js/modules/modals.js:375
 msgid "Override saved!"
 msgstr ""
 
-#: web/static/js/modules/modals.js:388
+#: web/static/js/modules/modals.js:394
 msgid "Please fill in all required fields"
 msgstr ""
 
-#: web/static/js/modules/modals.js:404 web/static/js/modules/modals.js:413
+#: web/static/js/modules/modals.js:410 web/static/js/modules/modals.js:419
 msgid "Failed to add override"
 msgstr ""
 
-#: web/static/js/modules/modals.js:407
+#: web/static/js/modules/modals.js:413
 msgid "Override added!"
 msgstr ""
 
-#: web/static/js/modules/modals.js:427
+#: web/static/js/modules/modals.js:433
 msgid "Please fill in artist and title"
 msgstr ""
 
-#: web/static/js/modules/modals.js:445
+#: web/static/js/modules/modals.js:451
 msgid "Track blacklisted!"
 msgstr ""
 
-#: web/static/js/modules/modals.js:492
+#: web/static/js/modules/modals.js:498
 msgid "No tag changes detected"
 msgstr ""
 
-#: web/static/js/modules/modals.js:512 web/static/js/modules/modals.js:524
+#: web/static/js/modules/modals.js:518 web/static/js/modules/modals.js:530
 msgid "Failed to save tag override"
 msgstr ""
 
-#: web/static/js/modules/modals.js:515
+#: web/static/js/modules/modals.js:521
 msgid "Tag override saved!"
 msgstr ""
 
-#: web/static/js/modules/modals.js:583
+#: web/static/js/modules/modals.js:589
 msgid "Export downloaded"
 msgstr ""
 
-#: web/static/js/modules/modals.js:632 web/templates/partials/_modals.html:938
+#: web/static/js/modules/modals.js:638 web/templates/partials/_modals.html:938
 #: web/templates/partials/_panel_playlist.html:22
 #: web/templates/partials/_stats.html:9 web/templates/partials/_tabs.html:4
 msgid "Overrides"
 msgstr ""
 
-#: web/static/js/modules/modals.js:632
+#: web/static/js/modules/modals.js:638
 msgid "Tag Overrides"
 msgstr ""
 
-#: web/static/js/modules/modals.js:646
+#: web/static/js/modules/modals.js:652
 msgid "Importing..."
 msgstr ""
 
-#: web/static/js/modules/modals.js:658
+#: web/static/js/modules/modals.js:664
 #, python-format
 msgid ""
 "Imported %(overrides)s overrides, %(blacklist)s blacklist, and "
 "%(tag_overrides)s tag override entries"
 msgstr ""
 
-#: web/static/js/modules/modals.js:764
+#: web/static/js/modules/modals.js:770
 msgid "Failed to load details"
 msgstr ""
 
-#: web/static/js/modules/modals.js:794
+#: web/static/js/modules/modals.js:800
 #: web/templates/partials/_panel_notfound.html:33
 msgid "Cached:"
 msgstr ""
 
-#: web/static/js/modules/modals.js:806
+#: web/static/js/modules/modals.js:812
 #: web/templates/partials/_panel_custompl.html:33
 msgid "Open in YouTube Music"
 msgstr ""
 
-#: web/static/js/modules/modals.js:810
+#: web/static/js/modules/modals.js:816
 msgid "View on Last.fm"
 msgstr ""
 
-#: web/static/js/modules/modals.js:819
+#: web/static/js/modules/modals.js:825
 msgid "Error loading details"
 msgstr ""
 
-#: web/static/js/modules/modals.js:878
+#: web/static/js/modules/modals.js:884
 msgid "Loading sync details..."
 msgstr ""
 
-#: web/static/js/modules/modals.js:886
+#: web/static/js/modules/modals.js:892
 msgid "Failed to load sync details"
 msgstr ""
 
-#: web/static/js/modules/modals.js:916
+#: web/static/js/modules/modals.js:922
 msgid "Sync details"
 msgstr ""
 
-#: web/static/js/modules/modals.js:917
+#: web/static/js/modules/modals.js:923
 msgid "Error loading sync details"
 msgstr ""
 
-#: web/static/js/modules/settings.js:71 web/static/js/modules/settings.js:106
+#: web/static/js/modules/settings.js:72 web/static/js/modules/settings.js:107
 msgid "Failed to load settings"
 msgstr ""
 
-#: web/static/js/modules/settings.js:159
+#: web/static/js/modules/settings.js:160
 msgid "Settings saved successfully!"
 msgstr ""
 
-#: web/static/js/modules/settings.js:198
+#: web/static/js/modules/settings.js:199
 msgid "Settings saved. Restart the server to apply changes."
 msgstr ""
 
-#: web/static/js/modules/settings.js:199 web/static/js/modules/settings.js:273
+#: web/static/js/modules/settings.js:200 web/static/js/modules/settings.js:274
 msgid "Restart Now"
 msgstr ""
 
-#: web/static/js/modules/settings.js:222
+#: web/static/js/modules/settings.js:223
 msgid "Display settings changed. Reload the page to update."
 msgstr ""
 
-#: web/static/js/modules/settings.js:223
+#: web/static/js/modules/settings.js:224
 msgid "Reload"
 msgstr ""
 
-#: web/static/js/modules/settings.js:238
+#: web/static/js/modules/settings.js:239
 msgid "Enter a webhook URL first"
 msgstr ""
 
-#: web/static/js/modules/settings.js:249
+#: web/static/js/modules/settings.js:250
 msgid "Test webhook sent successfully!"
 msgstr ""
 
-#: web/static/js/modules/settings.js:251 web/static/js/modules/settings.js:254
+#: web/static/js/modules/settings.js:252 web/static/js/modules/settings.js:255
 msgid "Webhook test failed"
 msgstr ""
 
-#: web/static/js/modules/settings.js:262
+#: web/static/js/modules/settings.js:263
 msgid "Restarting..."
 msgstr ""
 
-#: web/static/js/modules/settings.js:267
+#: web/static/js/modules/settings.js:268
 msgid "Server restarting..."
 msgstr ""
 
-#: web/static/js/modules/settings.js:270
+#: web/static/js/modules/settings.js:271
 msgid "Failed to restart server"
 msgstr ""
 
-#: web/static/js/modules/settings.js:296
+#: web/static/js/modules/settings.js:297
 msgid "Server may have restarted. Please refresh manually."
 msgstr ""
 
-#: web/static/js/modules/settings.js:458
+#: web/static/js/modules/settings.js:459
 msgid "APScheduler not installed"
 msgstr ""
 
-#: web/static/js/modules/settings.js:471
+#: web/static/js/modules/settings.js:472
 msgid "Automation Active"
 msgstr ""
 
-#: web/static/js/modules/settings.js:471
+#: web/static/js/modules/settings.js:472
 msgid "Automation Disabled"
 msgstr ""
 
@@ -1324,7 +1336,7 @@ msgstr ""
 #: web/templates/partials/_modals.html:800
 #: web/templates/partials/_modals.html:878
 #: web/templates/partials/_modals.html:956
-#: web/templates/partials/_panel_settings.html:701
+#: web/templates/partials/_panel_settings.html:709
 msgid "Close"
 msgstr ""
 
@@ -1817,8 +1829,8 @@ msgid "Connect"
 msgstr ""
 
 #: web/templates/partials/_modals.html:469
-#: web/templates/partials/_panel_settings.html:657
-#: web/templates/partials/_panel_settings.html:673
+#: web/templates/partials/_panel_settings.html:665
+#: web/templates/partials/_panel_settings.html:681
 msgid "Export / Import"
 msgstr ""
 
@@ -1881,7 +1893,7 @@ msgstr ""
 
 #: web/templates/partials/_modals.html:558
 #: web/templates/partials/_panel_settings.html:408
-#: web/templates/partials/_panel_settings.html:663
+#: web/templates/partials/_panel_settings.html:671
 msgid "History Database"
 msgstr ""
 
@@ -1911,7 +1923,7 @@ msgid "Replace"
 msgstr ""
 
 #: web/templates/partials/_modals.html:627
-#: web/templates/partials/_panel_settings.html:679
+#: web/templates/partials/_panel_settings.html:687
 msgid "Teleporter"
 msgstr ""
 
@@ -2103,7 +2115,7 @@ msgid "Reset to parent"
 msgstr ""
 
 #: web/templates/partials/_modals.html:991
-#: web/templates/partials/_panel_settings.html:710
+#: web/templates/partials/_panel_settings.html:718
 msgid "Save"
 msgstr ""
 
@@ -2841,138 +2853,149 @@ msgstr ""
 msgid "Choose when to send webhook notifications"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:511
-msgid "Reliability & Retries"
+#: web/templates/partials/_panel_settings.html:505
+msgid "Allow private/LAN webhook URLs"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:515
-msgid "YTM API Max Retries"
+#: web/templates/partials/_panel_settings.html:508
+msgid ""
+"Enable only if your webhook points to a local address (e.g. a self-hosted"
+" ntfy or Gotify on your network). Off by default to prevent server-side "
+"request forgery."
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:519
-msgid "Last.fm Max Retries"
+msgid "Reliability & Retries"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:523
+msgid "YTM API Max Retries"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:527
+msgid "Last.fm Max Retries"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:531
 msgid "Max Consecutive Empty Pages"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:525
+#: web/templates/partials/_panel_settings.html:533
 msgid "Stop after N pages with no new tracks"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:530
+#: web/templates/partials/_panel_settings.html:538
 msgid "Force IPv4 for Last.fm"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:532
+#: web/templates/partials/_panel_settings.html:540
 msgid "Helps with flaky Last.fm IPv6 connections"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:544
+#: web/templates/partials/_panel_settings.html:552
 msgid "Automation"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:556
+#: web/templates/partials/_panel_settings.html:564
 msgid "Enable automated sync"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:558
+#: web/templates/partials/_panel_settings.html:566
 msgid "Automatically run sync at scheduled intervals"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:563
+#: web/templates/partials/_panel_settings.html:571
 msgid "Include tag playlists"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:565
+#: web/templates/partials/_panel_settings.html:573
 msgid "Also sync custom tag-based playlists after each scheduled run"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:568
+#: web/templates/partials/_panel_settings.html:576
 msgid "Tag sync frequency"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:570
+#: web/templates/partials/_panel_settings.html:578
 msgid "Run tag sync every N main syncs (1 = every time, 3 = every 3rd sync)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:573
+#: web/templates/partials/_panel_settings.html:581
 msgid "Schedule Type"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:575
+#: web/templates/partials/_panel_settings.html:583
 msgid "Interval (every N hours)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:576
-#: web/templates/partials/_panel_settings.html:590
+#: web/templates/partials/_panel_settings.html:584
+#: web/templates/partials/_panel_settings.html:598
 msgid "Cron Expression"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:580
+#: web/templates/partials/_panel_settings.html:588
 msgid "Interval (hours)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:582
+#: web/templates/partials/_panel_settings.html:590
 msgid "How often to sync (e.g., 6 = every 6 hours)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:585
+#: web/templates/partials/_panel_settings.html:593
 msgid "Starting at (optional)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:587
+#: web/templates/partials/_panel_settings.html:595
 msgid "Anchor time for intervals (e.g., 00:00 → 0, 6, 12, 18h)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:592
+#: web/templates/partials/_panel_settings.html:600
 msgid "Standard cron format: minute hour day month weekday (server time)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:601
+#: web/templates/partials/_panel_settings.html:609
 msgid "Next run:"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:615
+#: web/templates/partials/_panel_settings.html:623
 msgid "Logging"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:619
+#: web/templates/partials/_panel_settings.html:627
 msgid "Log Level"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:639
+#: web/templates/partials/_panel_settings.html:647
 msgid "Data Management"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:642
+#: web/templates/partials/_panel_settings.html:650
 msgid ""
 "Back up, restore, or migrate your data. Each option covers a different "
 "scope."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:647
+#: web/templates/partials/_panel_settings.html:655
 msgid "Overrides &amp; Blacklist"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:648
+#: web/templates/partials/_panel_settings.html:656
 msgid "Manual fixes, tag overrides, and the blacklist (JSON, plaintext)."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:664
+#: web/templates/partials/_panel_settings.html:672
 msgid ""
 "Full track / sync / action log as a JSON dump (plaintext). Import "
 "supports merge or replace."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:680
+#: web/templates/partials/_panel_settings.html:688
 msgid ""
 "Encrypted bundle (AES-256-GCM) of everything above plus caches - for "
 "moving between instances."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:689
+#: web/templates/partials/_panel_settings.html:697
 msgid "Open Teleporter"
 msgstr ""
 
@@ -5733,5 +5756,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Import an existing playlist file to curate tracks by hand."
+#~ msgstr ""
+
+#~ msgid "Could not read file — check your password and try again"
 #~ msgstr ""
 

@@ -499,6 +499,14 @@
               </div>
               <span class="form-hint">{{ _('Choose when to send webhook notifications') }}</span>
             </div>
+            <div class="form-group form-group-checkbox" style="grid-column: 1 / -1;">
+              <label>
+                <input type="checkbox" id="WEBHOOK_ALLOW_PRIVATE" name="WEBHOOK_ALLOW_PRIVATE">
+                <span>{{ _('Allow private/LAN webhook URLs') }}</span>
+              </label>
+              <span
+                class="form-hint">{{ _('Enable only if your webhook points to a local address (e.g. a self-hosted ntfy or Gotify on your network). Off by default to prevent server-side request forgery.') }}</span>
+            </div>
           </div>
         </div>
 

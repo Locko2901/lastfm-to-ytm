@@ -366,6 +366,7 @@ def _save_tag_failure(
                     status="error",
                     sync_type="tags",
                     error=str(error),
+                    allow_private=getattr(settings, "webhook_allow_private", False),
                 )
 
 

@@ -310,6 +310,7 @@ def webhook_test():
     if not url:
         return jsonify({"error": _("No webhook URL provided")}), 400
 
+    from src.config import Settings
     from src.webhook import send_webhook
 
     ok = send_webhook(
@@ -318,6 +319,7 @@ def webhook_test():
         sync_type="test",
         tracks_resolved=42,
         tracks_missed=3,
+        allow_private=Settings.from_env().webhook_allow_private,
     )
     if ok:
         return jsonify({"status": "ok"})
@@ -794,7 +796,12 @@ def image_proxy():
             del _image_cache[url]
 
     try:
-        resp = ipv4_session().get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0 (compatible; LastFM-YTM-Sync/1.0)"})
+        resp = ipv4_session().get(
+            url,
+            timeout=15,
+            headers={"User-Agent": "Mozilla/5.0 (compatible; LastFM-YTM-Sync/1.0)"},
+            allow_redirects=False,
+        )
         resp.raise_for_status()
 
         content_type = resp.headers.get("Content-Type", "image/jpeg")
@@ -957,8 +964,9 @@ def teleporter_preview():
         file_data = file.read()
         summary = preview_config(file_data, password)
         return jsonify(summary)
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+    except ValueError:
+        logger.warning("Teleporter preview failed", exc_info=True)
+        return jsonify({"error": _("Could not read file - check your password and try again")}), 400
     except Exception as e:
         logger.error(f"Teleporter preview failed: {e}")
         return jsonify({"error": _("Preview failed")}), 500
@@ -979,8 +987,9 @@ def teleporter_import():
         file_data = file.read()
         result = import_config(file_data, password)
         return jsonify({"status": "ok", **result})
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+    except ValueError:
+        logger.warning("Teleporter import failed", exc_info=True)
+        return jsonify({"error": _("Could not read file - check your password and try again")}), 400
     except Exception as e:
         logger.error(f"Teleporter import failed: {e}")
         return jsonify({"error": _("Import failed")}), 500
@@ -1192,8 +1201,9 @@ def history_import():
 
     try:
         counts = db.import_from_dict(payload, mode=mode)
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+    except ValueError:
+        logger.warning("History import failed", exc_info=True)
+        return jsonify({"error": _("Invalid import file")}), 400
 
     return jsonify({"status": "ok", "mode": mode, **counts})
 

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import contextlib
+
 from src.config import PROJECT_ROOT
 
 ENV_FILE = PROJECT_ROOT / ".env"
@@ -20,6 +22,7 @@ BOOL_SETTINGS = {
     "NOW_PLAYING_ENABLED",
     "HISTORY_DB_ENABLED",
     "DISPLAY_TIPS",
+    "WEBHOOK_ALLOW_PRIVATE",
 }
 
 PRIVACY_SETTINGS = {
@@ -80,6 +83,7 @@ ALL_SETTINGS = [
     "HISTORY_RETENTION_DAYS",
     "WEBHOOK_URL",
     "WEBHOOK_EVENTS",
+    "WEBHOOK_ALLOW_PRIVATE",
 ]
 
 
@@ -143,3 +147,7 @@ def update_env_file(updates: dict[str, str]) -> None:
 
     with ENV_FILE.open("w") as f:
         f.writelines(new_lines)
+
+    # Restrict permissions: the .env may hold secrets (API keys, passwords).
+    with contextlib.suppress(OSError):
+        ENV_FILE.chmod(0o600)
