@@ -215,10 +215,16 @@ class HistoryDB:
         found_filter: str | None = None,
     ) -> list[dict]:
         """Return paginated tracks with optional search, source, and found filters."""
-        allowed_sorts = {"last_seen", "first_seen", "times_found", "times_missed", "artist", "title"}
-        if sort not in allowed_sorts:
-            sort = "last_seen"
-        order = "ASC" if order.lower() == "asc" else "DESC"
+        sort_columns = {
+            "last_seen": "last_seen",
+            "first_seen": "first_seen",
+            "times_found": "times_found",
+            "times_missed": "times_missed",
+            "artist": "artist",
+            "title": "title",
+        }
+        sort_col = sort_columns.get(sort, "last_seen")
+        order_sql = "ASC" if order.lower() == "asc" else "DESC"
 
         conditions: list[str] = []
         params: list[Any] = []
@@ -239,7 +245,7 @@ class HistoryDB:
         if conditions:
             where = "WHERE " + " AND ".join(conditions)
 
-        query = f"SELECT * FROM tracks {where} ORDER BY {sort} {order} LIMIT ? OFFSET ?"
+        query = f"SELECT * FROM tracks {where} ORDER BY {sort_col} {order_sql} LIMIT ? OFFSET ?"
         params.extend([limit, offset])
 
         with self._cursor() as cur:

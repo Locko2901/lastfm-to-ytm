@@ -160,6 +160,7 @@ class Settings:
     history_retention_days: int = 0
     webhook_url: str = ""
     webhook_events: str = "error"
+    webhook_allow_private: bool = False
 
     @property
     def privacy_status(self) -> str:
@@ -247,6 +248,7 @@ class Settings:
         webhook_events = (_strip_inline_comment(os.getenv("WEBHOOK_EVENTS")) or "error").strip().lower()
         if webhook_events not in {"all", "error"}:
             webhook_events = "error"
+        webhook_allow_private = _str_to_bool(os.getenv("WEBHOOK_ALLOW_PRIVATE"), False)
 
         return Settings(
             lastfm_user=lastfm_user,
@@ -296,6 +298,7 @@ class Settings:
             history_retention_days=history_retention_days,
             webhook_url=webhook_url,
             webhook_events=webhook_events,
+            webhook_allow_private=webhook_allow_private,
         )
 
 

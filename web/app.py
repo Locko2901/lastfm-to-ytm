@@ -164,7 +164,8 @@ def main():
         init_scheduler_from_env()
     except Exception as e:
         logger.warning(f"Could not initialize scheduler: {e}")
-    app.run(debug=True, port=2002, threaded=True)
+    debug = os.getenv("FLASK_DEBUG", "").strip().lower() in ("1", "true", "yes", "on")
+    app.run(debug=debug, port=2002, threaded=True)
 
 
 if __name__ == "__main__":

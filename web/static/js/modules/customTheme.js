@@ -185,26 +185,51 @@ let _previewOverrides = null
 function renderModalBody() {
   const body = document.getElementById("customThemeBody")
   if (!body) return
-  body.innerHTML = CUSTOM_THEME_GROUPS.map(group => {
-    const rows = group.vars
-      .map(meta => {
-        const val = getEffectiveValue(meta, _previewOverrides)
-        return `
-          <div class="custom-theme-row">
-            <label class="custom-theme-row-label" for="ct-${meta.var}">${_(meta.label)}</label>
-            <div class="custom-theme-row-controls">
-              <input type="color" id="ct-${meta.var}" data-var="${meta.var}" data-type="${meta.type}" value="${val}">
-              <input type="text" class="custom-theme-hex" data-var="${meta.var}" value="${val}" maxlength="7" spellcheck="false">
-            </div>
-          </div>`
-      })
-      .join("")
-    return `
-        <div class="custom-theme-group">
-          <h4>${_(group.title)}</h4>
-          ${rows}
-        </div>`
-  }).join("")
+  body.replaceChildren()
+  for (const group of CUSTOM_THEME_GROUPS) {
+    const groupEl = document.createElement("div")
+    groupEl.className = "custom-theme-group"
+
+    const heading = document.createElement("h4")
+    heading.textContent = _(group.title)
+    groupEl.appendChild(heading)
+
+    for (const meta of group.vars) {
+      const val = getEffectiveValue(meta, _previewOverrides)
+
+      const row = document.createElement("div")
+      row.className = "custom-theme-row"
+
+      const label = document.createElement("label")
+      label.className = "custom-theme-row-label"
+      label.htmlFor = `ct-${meta.var}`
+      label.textContent = _(meta.label)
+
+      const controls = document.createElement("div")
+      controls.className = "custom-theme-row-controls"
+
+      const colorInput = document.createElement("input")
+      colorInput.type = "color"
+      colorInput.id = `ct-${meta.var}`
+      colorInput.dataset.var = meta.var
+      colorInput.dataset.type = meta.type
+      colorInput.value = val
+
+      const hexInput = document.createElement("input")
+      hexInput.type = "text"
+      hexInput.className = "custom-theme-hex"
+      hexInput.dataset.var = meta.var
+      hexInput.value = val
+      hexInput.maxLength = 7
+      hexInput.spellcheck = false
+
+      controls.append(colorInput, hexInput)
+      row.append(label, controls)
+      groupEl.appendChild(row)
+    }
+
+    body.appendChild(groupEl)
+  }
 
   for (const input of body.querySelectorAll("input[type=color]")) {
     input.addEventListener("input", e => {

@@ -35,8 +35,8 @@ def create_notification():
     source = payload.get("source")
     try:
         entry = store.add(message, type_=type_, source=source if isinstance(source, str) else None)
-    except ValueError as exc:
-        return jsonify({"error": str(exc)}), 400
+    except ValueError:
+        return jsonify({"error": _("Invalid notification data")}), 400
     return jsonify(entry), 201
 
 

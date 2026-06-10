@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import ipaddress
 import logging
+import socket
 from datetime import UTC, datetime
+from urllib.parse import urlparse
 
 import requests
 
@@ -14,6 +17,39 @@ _TIMEOUT = 10
 
 def _is_discord(url: str) -> bool:
     return "discord.com/api/webhooks/" in url or "discordapp.com/api/webhooks/" in url
+
+
+def _is_safe_webhook_url(url: str, *, allow_private: bool = False) -> bool:
+    """SSRF guard: allow only http(s) URLs.
+
+    By default the host must resolve to public addresses. Set ``allow_private``
+    (self-hosted opt-in) to permit private/loopback targets such as a LAN ntfy
+    or Gotify instance.
+    """
+    try:
+        parsed = urlparse(url)
+    except Exception:
+        return False
+    if parsed.scheme not in ("http", "https"):
+        return False
+    host = parsed.hostname
+    if not host:
+        return False
+    if allow_private:
+        return True
+    port = parsed.port or (443 if parsed.scheme == "https" else 80)
+    try:
+        infos = socket.getaddrinfo(host, port, proto=socket.IPPROTO_TCP)
+    except socket.gaierror:
+        return False
+    for info in infos:
+        try:
+            ip = ipaddress.ip_address(info[4][0])
+        except ValueError:
+            return False
+        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast or ip.is_unspecified:
+            return False
+    return True
 
 
 def _build_discord_payload(
@@ -123,9 +159,14 @@ def send_webhook(
     cache_misses: int | None = None,
     api_searches: int | None = None,
     tracks_total: int | None = None,
+    allow_private: bool = False,
 ) -> bool:
     """Send a webhook notification. Returns True on success."""
     if not url:
+        return False
+
+    if not _is_safe_webhook_url(url, allow_private=allow_private):
+        log.warning("Webhook URL rejected: must be http(s) and resolve to a public address")
         return False
 
     kwargs = {

@@ -763,7 +763,7 @@ def delete_custom_playlist_data(index: int, delete_from_ytm: bool = False) -> di
                 temp_file.replace(cache_file)
         except Exception as e:
             log.warning("Failed to remove '%s' from playlist cache: %s", name, e)
-            warnings.append(f"Failed to remove from playlist cache: {e}")
+            warnings.append("Failed to remove from playlist cache")
 
     if delete_from_ytm and ytm_playlist_id:
         try:
@@ -773,7 +773,7 @@ def delete_custom_playlist_data(index: int, delete_from_ytm: bool = False) -> di
             yt.delete_playlist(ytm_playlist_id)
         except Exception as e:
             log.warning("Failed to delete playlist '%s' from YTM: %s", name, e)
-            warnings.append(f"Failed to delete from YouTube Music: {e}")
+            warnings.append("Failed to delete from YouTube Music")
 
     updated = [p for i, p in enumerate(playlists) if i != index]
     save_custom_playlists_config(updated)

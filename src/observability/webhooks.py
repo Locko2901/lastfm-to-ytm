@@ -15,6 +15,12 @@ def fire_webhook(settings: Settings, *, status: str, sync_type: str = "main", **
     if status == "success" and settings.webhook_events == "error":
         return
     try:
-        send_webhook(settings.webhook_url, status=status, sync_type=sync_type, **kwargs)
+        send_webhook(
+            settings.webhook_url,
+            status=status,
+            sync_type=sync_type,
+            allow_private=settings.webhook_allow_private,
+            **kwargs,
+        )
     except Exception as e:
         log.debug("Webhook dispatch failed: %s", e)

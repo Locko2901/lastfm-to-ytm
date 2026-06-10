@@ -354,12 +354,18 @@ function initOverrideForms() {
               form.method = "POST"
               form.action = "/remove_override"
               form.style.display = "inline"
-              form.innerHTML = `
-                <input type="hidden" name="artist" value="${artist}">
-                <input type="hidden" name="title" value="${title}">
-                <input type="hidden" name="redirect_tab" value="${redirectTab}">
-                <button type="submit" class="btn btn-secondary btn-sm">${_("Remove Override")}</button>
-              `
+              const makeHidden = (name, value) => {
+                const input = document.createElement("input")
+                input.type = "hidden"
+                input.name = name
+                input.value = value
+                return input
+              }
+              const submitBtn = document.createElement("button")
+              submitBtn.type = "submit"
+              submitBtn.className = "btn btn-secondary btn-sm"
+              submitBtn.textContent = _("Remove Override")
+              form.append(makeHidden("artist", artist), makeHidden("title", title), makeHidden("redirect_tab", redirectTab), submitBtn)
               overrideBtn.replaceWith(form)
             }
           }
