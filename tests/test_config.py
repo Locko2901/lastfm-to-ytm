@@ -220,6 +220,16 @@ def test_from_env_invalid_webhook_events_falls_back(clean_env):
     assert Settings.from_env().webhook_events == "error"
 
 
+def test_from_env_webhook_allow_private_default_false(clean_env):
+    clean_env.delenv("WEBHOOK_ALLOW_PRIVATE", raising=False)
+    assert Settings.from_env().webhook_allow_private is False
+
+
+def test_from_env_webhook_allow_private_true(clean_env):
+    clean_env.setenv("WEBHOOK_ALLOW_PRIVATE", "true")
+    assert Settings.from_env().webhook_allow_private is True
+
+
 @pytest.mark.usefixtures("clean_env")
 def test_from_env_weekly_make_public_unset_is_none():
     assert Settings.from_env().weekly_privacy_status is None

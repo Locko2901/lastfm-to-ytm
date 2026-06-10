@@ -82,6 +82,7 @@ ignore = [
 "src/lastfm/fetch.py" = ["ARG001"] # signature must match socket.getaddrinfo
 "tests/screenshots/*.py" = ["T20", "D", "E501"] # dev-only CLI: prints + literal fixture rows
 "tests/test_*.py" = ["D", "PLR2004"]            # tests: no docstrings, allow literal assertions
+"tests/test_webhook.py" = ["D", "PLR2004", "ARG001"] # + stub signatures must match socket.getaddrinfo / requests.post
 "tests/frontend/*.py" = ["D", "PLR2004", "SLF001"] # frontend tests: no docstrings, literal assertions, reuse fixture-server helpers
 
 [tool.ruff.lint.isort]
