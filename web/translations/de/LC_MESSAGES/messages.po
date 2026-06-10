@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-10 15:14+0200\n"
+"POT-Creation-Date: 2026-06-10 17:10+0200\n"
 "PO-Revision-Date: 2026-05-13 11:41+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -31,7 +31,7 @@ msgid "At least one tag is required."
 msgstr ""
 
 #: web/routes/actions.py:220 web/routes/api.py:177 web/routes/api.py:248
-#: web/routes/api.py:864
+#: web/routes/api.py:858
 msgid "No data provided"
 msgstr ""
 
@@ -60,12 +60,12 @@ msgstr ""
 msgid "Failed to save credentials"
 msgstr ""
 
-#: web/routes/api.py:274 web/routes/api.py:880
+#: web/routes/api.py:274 web/routes/api.py:874
 #, python-format
 msgid "Invalid cron expression: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:283 web/routes/api.py:888
+#: web/routes/api.py:283 web/routes/api.py:882
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr ""
 
@@ -114,86 +114,86 @@ msgstr ""
 msgid "Internal error"
 msgstr ""
 
-#: web/routes/api.py:890
+#: web/routes/api.py:884
 msgid "Invalid start time format. Use HH:MM."
 msgstr ""
 
-#: web/routes/api.py:915
+#: web/routes/api.py:909
 msgid "Failed to configure scheduler. APScheduler may not be installed."
 msgstr ""
 
-#: web/routes/api.py:918
+#: web/routes/api.py:912
 #, python-format
 msgid "Invalid value: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:921
+#: web/routes/api.py:915
 msgid "Failed to configure scheduler"
 msgstr ""
 
-#: web/routes/api.py:938
+#: web/routes/api.py:932
 msgid "Failed to save theme overrides"
 msgstr ""
 
-#: web/routes/api.py:947 web/routes/api.py:976 web/routes/api.py:999
+#: web/routes/api.py:941 web/routes/api.py:970 web/routes/api.py:993
 msgid "Password is required"
 msgstr ""
 
-#: web/routes/api.py:951
+#: web/routes/api.py:945
 msgid "Password must be at least 4 characters"
 msgstr ""
 
-#: web/routes/api.py:966 web/static/js/modules/modals.js:580
+#: web/routes/api.py:960 web/static/js/modules/modals.js:580
 #: web/static/js/modules/modals.js:591 web/static/js/modules/teleporter.js:91
 #: web/static/js/modules/teleporter.js:104
 msgid "Export failed"
 msgstr ""
 
-#: web/routes/api.py:978 web/routes/api.py:1001
+#: web/routes/api.py:972 web/routes/api.py:995
 msgid "No file provided"
 msgstr ""
 
-#: web/routes/api.py:986 web/routes/api.py:1009
+#: web/routes/api.py:980 web/routes/api.py:1003
 msgid "Could not read file - check your password and try again"
 msgstr ""
 
-#: web/routes/api.py:989 web/static/js/modules/teleporter.js:193
+#: web/routes/api.py:983 web/static/js/modules/teleporter.js:193
 #: web/static/js/modules/teleporter.js:205
 msgid "Preview failed"
 msgstr ""
 
-#: web/routes/api.py:1012 web/static/js/modules/history.js:1010
+#: web/routes/api.py:1006 web/static/js/modules/history.js:1010
 #: web/static/js/modules/history.js:1019 web/static/js/modules/modals.js:659
 #: web/static/js/modules/modals.js:678 web/static/js/modules/teleporter.js:233
 #: web/static/js/modules/teleporter.js:242
 msgid "Import failed"
 msgstr ""
 
-#: web/routes/api.py:1034 web/routes/api.py:1057 web/routes/api.py:1077
-#: web/routes/api.py:1091 web/routes/api.py:1111 web/routes/api.py:1125
-#: web/routes/api.py:1148 web/routes/api.py:1158 web/routes/api.py:1185
-#: web/routes/api.py:1205 web/routes/api.py:1233
+#: web/routes/api.py:1028 web/routes/api.py:1051 web/routes/api.py:1071
+#: web/routes/api.py:1085 web/routes/api.py:1105 web/routes/api.py:1119
+#: web/routes/api.py:1142 web/routes/api.py:1152 web/routes/api.py:1179
+#: web/routes/api.py:1199 web/routes/api.py:1227
 msgid "History database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1081
+#: web/routes/api.py:1075
 msgid "Sync record not found"
 msgstr ""
 
-#: web/routes/api.py:1209
+#: web/routes/api.py:1203
 msgid "No file uploaded"
 msgstr ""
 
-#: web/routes/api.py:1212
+#: web/routes/api.py:1206
 msgid "Invalid import mode"
 msgstr ""
 
-#: web/routes/api.py:1217
+#: web/routes/api.py:1211
 #, python-format
 msgid "Invalid JSON file: %(err)s"
 msgstr ""
 
-#: web/routes/api.py:1223
+#: web/routes/api.py:1217
 msgid "Invalid import file"
 msgstr ""
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -11,7 +12,7 @@ log = logging.getLogger(__name__)
 
 
 def filter_tracks_by_tags(
-    tracks: list[Scrobble | WeightedTrack],
+    tracks: Sequence[Scrobble | WeightedTrack],
     tag_map: dict[tuple[str, str], list[dict[str, Any]]],
     wanted_tags: set[str],
     match: str = "any",

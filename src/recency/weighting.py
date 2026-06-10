@@ -109,21 +109,21 @@ def collapse_recency_weighted(
     log.debug(
         "=== Top %d track timestamps (play_weight=%.2f, half_life=%.1fh, max_plays=%d) ===", _DEBUG_TOP_N, play_weight, half_life_hours, max_plays
     )
-    for i, t in enumerate(items[:_DEBUG_TOP_N], 1):
-        age_hours = (now - t.ts) / _SECONDS_PER_HOUR
+    for i, wt in enumerate(items[:_DEBUG_TOP_N], 1):
+        age_hours = (now - wt.ts) / _SECONDS_PER_HOUR
         recency_score = _DECAY_BASE ** (age_hours / float(half_life_hours)) if half_life_hours > 0 else 1.0
-        play_score = t.plays / max_plays
-        dt = datetime.fromtimestamp(t.ts, tz=UTC)
+        play_score = wt.plays / max_plays
+        dt = datetime.fromtimestamp(wt.ts, tz=UTC)
         log.debug(
             "  %2d. %-25s | plays=%2d (%.2f) | last=%s (%.1fh ago, rec=%.3f) | score=%.4f",
             i,
-            t.track[:_DEBUG_TITLE_WIDTH],
-            t.plays,
+            wt.track[:_DEBUG_TITLE_WIDTH],
+            wt.plays,
             play_score,
             dt.strftime("%m-%d %H:%M"),
             age_hours,
             recency_score,
-            t.score,
+            wt.score,
         )
 
     return items

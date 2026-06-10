@@ -3,13 +3,14 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 from . import JSONCache
 
 log = logging.getLogger(__name__)
 
 
-class TagCache(JSONCache):
+class TagCache(JSONCache[Any]):
     """Persistent cache for artist/title -> Last.fm tag mappings."""
 
     def __init__(self, cache_file: str, ttl_days: int = 90):
@@ -50,7 +51,7 @@ class TagCache(JSONCache):
     def _make_key(self, artist: str, title: str) -> str:
         return f"{artist.lower()}|{title.lower()}"
 
-    def get(self, artist: str, title: str) -> list[dict] | None:
+    def get(self, artist: str, title: str) -> list[dict[str, Any]] | None:
         """Get tags or None if expired."""
         key = self._make_key(artist, title)
         entry = self._cache.get(key)
@@ -72,9 +73,9 @@ class TagCache(JSONCache):
                 return None
 
         self._metrics.record_hit()
-        return entry.get("tags", [])
+        return list(entry.get("tags", []))
 
-    def set(self, artist: str, title: str, tags: list[dict]) -> None:
+    def set(self, artist: str, title: str, tags: list[dict[str, Any]]) -> None:
         """Cache tags for a track."""
         key = self._make_key(artist, title)
         self._cache[key] = {
@@ -85,7 +86,7 @@ class TagCache(JSONCache):
         }
         self._save()
 
-    def items(self) -> list[tuple[str, dict]]:
+    def items(self) -> list[tuple[str, dict[str, Any]]]:
         """Return all cache entries."""
         return list(self._cache.items())
 
@@ -116,7 +117,7 @@ class TagCache(JSONCache):
         return {"total": total, "with_tags": with_tags, "empty": total - with_tags}
 
 
-class TagOverrides(JSONCache):
+class TagOverrides(JSONCache[Any]):
     """Manual tag overrides for tracks where Last.fm tags are missing or wrong."""
 
     def __init__(self, overrides_file: str):
@@ -127,15 +128,13 @@ class TagOverrides(JSONCache):
         self._ensure_sections()
 
     def _ensure_sections(self) -> None:
-        if not isinstance(self._cache, dict):
-            self._cache = {}
         if "_overrides" not in self._cache:
             self._cache["_overrides"] = {}
 
     def _make_key(self, artist: str, title: str) -> str:
         return f"{artist.lower()}|{title.lower()}"
 
-    def get(self, artist: str, title: str) -> tuple[list[dict], str] | None:
+    def get(self, artist: str, title: str) -> tuple[list[dict[str, Any]], str] | None:
         """Get tag override for a track. Returns (tags, mode) or None."""
         key = self._make_key(artist, title)
         entry = self._cache.get("_overrides", {}).get(key)
@@ -152,7 +151,7 @@ class TagOverrides(JSONCache):
 
         return None
 
-    def apply(self, artist: str, title: str, api_tags: list[dict]) -> list[dict]:
+    def apply(self, artist: str, title: str, api_tags: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Apply override to API-fetched tags, returning the final tag list."""
         result = self.get(artist, title)
         if result is None:
@@ -194,7 +193,7 @@ class TagOverrides(JSONCache):
             return True
         return False
 
-    def items(self) -> list[tuple[str, dict]]:
+    def items(self) -> list[tuple[str, dict[str, Any]]]:
         """Return all override entries."""
         return list(self._cache.get("_overrides", {}).items())
 

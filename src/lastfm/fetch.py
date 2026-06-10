@@ -13,7 +13,7 @@ _orig_getaddrinfo = socket.getaddrinfo
 _ipv4_enabled = False
 
 
-def _getaddrinfo_ipv4_only(host, port, family=0, type=0, proto=0, flags=0):
+def _getaddrinfo_ipv4_only(host: Any, port: Any, family: int = 0, type: int = 0, proto: int = 0, flags: int = 0) -> Any:
     return _orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
 
 
@@ -68,7 +68,8 @@ def _make_api_request(
                 return None
 
             resp.raise_for_status()
-            return resp.json()
+            data: dict[str, Any] = resp.json()
+            return data
 
         except requests.exceptions.RequestException as e:
             if attempt < max_retries - 1:

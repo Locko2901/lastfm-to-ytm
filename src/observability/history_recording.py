@@ -1,10 +1,16 @@
 """History DB recording helpers."""
 
+from __future__ import annotations
+
 import logging
 import os
+from typing import TYPE_CHECKING, Any
 
 from ..config import Settings
 from ..history import HistoryDB
+
+if TYPE_CHECKING:
+    from ..cache.search import SearchCache
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +26,7 @@ def get_history_db(settings: Settings) -> HistoryDB | None:
         return None
 
 
-def record_tracks_to_history(db: HistoryDB, run_log_mappings: list[dict], search_cache) -> None:
+def record_tracks_to_history(db: HistoryDB, run_log_mappings: list[dict[str, Any]], search_cache: SearchCache) -> None:
     """Record all resolved tracks into the history database."""
     for m in run_log_mappings:
         artist = m.get("artist", "")

@@ -4,9 +4,13 @@ import logging
 import os
 import time
 import traceback
+from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Any
 
 from ..config import Settings
+from ..context import RuntimeContext
+from ..lastfm import Scrobble
 from ..observability import (
     clear_failure_log,
     describe_sync_error,
@@ -43,19 +47,19 @@ class _PlaylistSyncResult:
     valid_video_ids: list[str]
     substitutions: dict[str, str]
     misses: int
-    run_log_mappings: list
+    run_log_mappings: list[dict[str, Any]]
 
 
 def _sync_or_create_playlist(
-    ctx,
+    ctx: RuntimeContext,
     settings: Settings,
     *,
-    tracks,
+    tracks: Sequence[Scrobble | WeightedTrack],
     valid_video_ids: list[str],
     target_count: int,
     desc: str,
     misses: int,
-    run_log_mappings: list,
+    run_log_mappings: list[dict[str, Any]],
     start_time: float,
 ) -> _PlaylistSyncResult:
     """Update the existing main playlist or create it, returning the sync outcome."""
@@ -163,7 +167,7 @@ def run(settings: Settings) -> None:
         return
 
     if settings.use_recency_weighting:
-        tracks: list[WeightedTrack] = collapse_recency_weighted(
+        tracks: Sequence[Scrobble | WeightedTrack] = collapse_recency_weighted(
             recents,
             half_life_hours=settings.recency_half_life_hours,
             play_weight=settings.recency_play_weight,
@@ -176,7 +180,7 @@ def run(settings: Settings) -> None:
         )
     else:
         ordered = sorted(recents, key=lambda x: x.ts, reverse=True)
-        tracks = dedupe_keep_latest(ordered) if settings.deduplicate else ordered  # type: ignore[assignment]
+        tracks = dedupe_keep_latest(ordered) if settings.deduplicate else ordered
         log.info(
             "Prepared %d tracks (%s).",
             len(tracks),
@@ -323,16 +327,16 @@ def run(settings: Settings) -> None:
 
 
 def _record_to_history(
-    ctx,
+    ctx: RuntimeContext,
     settings: Settings,
     *,
-    run_log_mappings: list,
+    run_log_mappings: list[dict[str, Any]],
     valid_video_ids: list[str],
     misses: int,
-    tracks,
+    tracks: Sequence[Scrobble | WeightedTrack],
     substitutions: dict[str, str],
-    cache_stats: dict,
-    search_stats: dict,
+    cache_stats: dict[str, Any],
+    search_stats: dict[str, Any],
 ) -> None:
     """Persist this run's track resolutions and metrics to the history DB, if enabled."""
     db = get_history_db(settings)
@@ -385,10 +389,10 @@ def _fire_completion_events(
     playlist_id: str,
     valid_video_ids: list[str],
     misses: int,
-    tracks,
+    tracks: Sequence[Scrobble | WeightedTrack],
     start_time: float,
-    cache_stats: dict,
-    search_stats: dict,
+    cache_stats: dict[str, Any],
+    search_stats: dict[str, Any],
 ) -> None:
     """Fire the success webhook summarising a completed main sync."""
     fire_webhook(

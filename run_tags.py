@@ -7,7 +7,7 @@ from src.main import run_tags as _run_tags
 from src.observability import extract_http_status, save_failure_log
 
 
-def run():
+def run() -> None:
     """Entry point for tag-based custom playlist sync only."""
     settings = Settings.from_env()
     configure_logging(settings.log_level)

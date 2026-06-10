@@ -1,4 +1,5 @@
 from difflib import SequenceMatcher
+from typing import Any
 
 from .normalization import RE_DASH, clean_uploader_name, match_key, normalize_base, tokens
 from .queries import candidate_artists, clean_title_for_match, split_artist_aliases
@@ -88,7 +89,7 @@ SOFT_NEGATIVE_TERMS = {
 ALL_NEGATIVE_TERMS = HARD_NEGATIVE_TERMS | SOFT_NEGATIVE_TERMS
 
 
-def artist_similarity(target_artist: str, r: dict) -> float:
+def artist_similarity(target_artist: str, r: dict[str, Any]) -> float:
     """Calculate similarity between target artist and search result artists."""
     aliases = split_artist_aliases(target_artist)
     cands = candidate_artists(r)
@@ -99,7 +100,7 @@ def artist_similarity(target_artist: str, r: dict) -> float:
     return best
 
 
-def uploader_similarity(target_artist: str, r: dict) -> float:
+def uploader_similarity(target_artist: str, r: dict[str, Any]) -> float:
     """Calculate similarity between target artist and video uploader name."""
     author = r.get("author") or ""
     if not author:
@@ -111,7 +112,7 @@ def uploader_similarity(target_artist: str, r: dict) -> float:
     return best
 
 
-def title_similarity(target_title: str, r: dict, artist_tokens: set[str]) -> float:
+def title_similarity(target_title: str, r: dict[str, Any], artist_tokens: set[str]) -> float:
     """Calculate similarity between target title and search result title."""
     candidate_title = r.get("title") or ""
     core_target = clean_title_for_match(target_title, artist_tokens)
@@ -121,7 +122,7 @@ def title_similarity(target_title: str, r: dict, artist_tokens: set[str]) -> flo
     return JACCARD_WEIGHT * j + SEQUENCE_RATIO_WEIGHT * rratio
 
 
-def album_name_from_result(r: dict) -> str | None:
+def album_name_from_result(r: dict[str, Any]) -> str | None:
     """Extract album name from search result (handles dict or string format)."""
     album = r.get("album")
     if isinstance(album, dict):
@@ -153,7 +154,7 @@ def negative_penalty(candidate_title: str, user_title: str) -> float:
     return light_penalty + hard_penalty
 
 
-def video_mismatch_penalty(r: dict) -> float:
+def video_mismatch_penalty(r: dict[str, Any]) -> float:
     """Penalize videos where title prefix doesn't match artist (user uploads)."""
     rt = (r.get("resultType") or "").lower()
     if rt != "video":
@@ -212,7 +213,7 @@ def artist_title_presence_bonus(artist: str, title: str, candidate_title: str) -
     )
 
 
-def score_candidate(r: dict, artist: str, title: str, album: str | None) -> float:
+def score_candidate(r: dict[str, Any], artist: str, title: str, album: str | None) -> float:
     """Calculate match score for a YouTube Music search result."""
     rt = (r.get("resultType") or "").lower()
     if rt not in ("song", "video", ""):

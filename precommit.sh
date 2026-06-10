@@ -35,6 +35,9 @@ step "Ruff: lint check"
 step "Ruff: format check"
 .venv/bin/ruff format . --check && pass "ruff format --check" || fail "ruff format --check"
 
+step "mypy: static type check"
+.venv/bin/mypy && pass "mypy" || fail "mypy"
+
 step "Biome: lint check"
 npm run lint && pass "biome check" || fail "biome check"
 

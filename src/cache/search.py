@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import builtins
 import logging
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 from . import JSONCache
 
@@ -12,7 +14,7 @@ log = logging.getLogger(__name__)
 NOT_FOUND = "__NOT_FOUND__"
 
 
-class SearchCache(JSONCache):
+class SearchCache(JSONCache[Any]):
     """Persistent cache for artist/title -> video ID mappings."""
 
     def __init__(self, cache_file: str, ttl_days: int = 30, notfound_ttl_days: int = 7):
@@ -88,7 +90,7 @@ class SearchCache(JSONCache):
                         self._metrics.record_miss()
                         return None
                 self._metrics.record_hit()
-                return video_id
+                return str(video_id)
             if self.notfound_ttl_days > 0:
                 cutoff = now - timedelta(days=self.notfound_ttl_days)
                 if timestamp < cutoff:
@@ -102,13 +104,13 @@ class SearchCache(JSONCache):
         self._metrics.record_miss()
         return None
 
-    def get_entry(self, artist: str, title: str) -> dict | None:
+    def get_entry(self, artist: str, title: str) -> dict[str, Any] | None:
         """Get full cache entry including yt_title."""
         key = self._make_key(artist, title)
         entry = self._cache.get(key)
         if not entry:
             return None
-        return entry
+        return entry  # type: ignore[no-any-return]
 
     def set(self, artist: str, title: str, video_id: str | None, yt_title: str | None = None) -> None:
         """Cache video ID and optional YouTube title."""
@@ -127,11 +129,11 @@ class SearchCache(JSONCache):
         self._cache[key] = entry
         self._save()
 
-    def items(self) -> list[tuple[str, dict]]:
+    def items(self) -> list[tuple[str, dict[str, Any]]]:
         """Return all cache entries."""
         return list(self._cache.items())
 
-    def values(self) -> list[dict]:
+    def values(self) -> list[dict[str, Any]]:
         """Return all cache entry values."""
         return list(self._cache.values())
 
@@ -168,7 +170,7 @@ class SearchCache(JSONCache):
         return {"total": total, "found": found, "notfound": notfound}
 
 
-class SearchOverrides(JSONCache):
+class SearchOverrides(JSONCache[Any]):
     """Manual overrides and blacklist for search results."""
 
     def __init__(self, overrides_file: str):
@@ -179,9 +181,6 @@ class SearchOverrides(JSONCache):
         self._ensure_sections()
 
     def _ensure_sections(self) -> None:
-        if not isinstance(self._cache, dict):
-            self._cache = {}
-
         if "_overrides" not in self._cache:
             self._cache["_overrides"] = {}
         if "_blacklist" not in self._cache:
@@ -203,7 +202,7 @@ class SearchOverrides(JSONCache):
         if video_id:
             log.debug("Search override hit: %s - %s -> %s", artist, title, video_id)
             self._metrics.record_hit()
-            return video_id
+            return str(video_id)
 
         return None
 
@@ -220,7 +219,7 @@ class SearchOverrides(JSONCache):
         blacklist = self._cache.get("_blacklist", {})
         entry = blacklist.get(key)
         if entry:
-            return entry.get("reason", "no reason given")
+            return str(entry.get("reason", "no reason given"))
         return None
 
     def set(self, artist: str, title: str, video_id: str, reason: str = "") -> None:
@@ -278,19 +277,19 @@ class SearchOverrides(JSONCache):
             return True
         return False
 
-    def override_keys(self) -> set[str]:
+    def override_keys(self) -> builtins.set[str]:
         """Return the set of override keys (lowercase 'artist|title')."""
         return set(self._cache.get("_overrides", {}).keys())
 
-    def blacklist_keys(self) -> set[str]:
+    def blacklist_keys(self) -> builtins.set[str]:
         """Return the set of blacklist keys (lowercase 'artist|title')."""
         return set(self._cache.get("_blacklist", {}).keys())
 
-    def override_items(self) -> list[tuple[str, dict]]:
+    def override_items(self) -> list[tuple[str, dict[str, Any]]]:
         """Return all override entries as (key, data) pairs."""
         return list(self._cache.get("_overrides", {}).items())
 
-    def blacklist_items(self) -> list[tuple[str, dict]]:
+    def blacklist_items(self) -> list[tuple[str, dict[str, Any]]]:
         """Return all blacklist entries as (key, data) pairs."""
         return list(self._cache.get("_blacklist", {}).items())
 

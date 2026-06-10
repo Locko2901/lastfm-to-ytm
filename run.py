@@ -7,7 +7,7 @@ from src.main import run as _run
 from src.observability import extract_http_status, save_failure_log
 
 
-def run():
+def run() -> None:
     """Entry point for lastfm-ytm-sync command."""
     settings = Settings.from_env()
     configure_logging(settings.log_level)

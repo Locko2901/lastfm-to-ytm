@@ -1,3 +1,5 @@
+from typing import Any
+
 from .normalization import (
     RE_ARTIST_SPLIT,
     RE_DASH,
@@ -58,7 +60,7 @@ def clean_title_for_match(title: str, artist_tokens: set[str]) -> str:
     return s
 
 
-def candidate_artists(r: dict) -> list[str]:
+def candidate_artists(r: dict[str, Any]) -> list[str]:
     """Extract artist names from search result."""
     names: list[str] = []
     for a in r.get("artists") or []:

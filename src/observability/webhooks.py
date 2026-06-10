@@ -1,6 +1,7 @@
 """Webhook dispatch wrapper that respects settings filter."""
 
 import logging
+from typing import Any
 
 from ..config import Settings
 from ..webhook import send_webhook
@@ -8,7 +9,7 @@ from ..webhook import send_webhook
 log = logging.getLogger(__name__)
 
 
-def fire_webhook(settings: Settings, *, status: str, sync_type: str = "main", **kwargs) -> None:
+def fire_webhook(settings: Settings, *, status: str, sync_type: str = "main", **kwargs: Any) -> None:
     """Send webhook if configured and event matches filter."""
     if not settings.webhook_url:
         return

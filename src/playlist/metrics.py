@@ -1,5 +1,6 @@
 import logging
 import time
+from typing import Any
 
 log = logging.getLogger(__name__)
 
@@ -7,9 +8,9 @@ log = logging.getLogger(__name__)
 class _QueryCounter:
     """Track API metrics."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.count = 0
-        self.session_start = None
+        self.session_start: float | None = None
         self.operation_counts = {
             "get_playlist": 0,
             "add_playlist_items": 0,
@@ -17,7 +18,7 @@ class _QueryCounter:
             "get_song": 0,
         }
 
-    def increment(self, operation_type: str = "unknown"):
+    def increment(self, operation_type: str = "unknown") -> None:
         if self.session_start is None:
             self.session_start = time.time()
 
@@ -25,15 +26,15 @@ class _QueryCounter:
         if operation_type in self.operation_counts:
             self.operation_counts[operation_type] += 1
 
-    def reset(self):
+    def reset(self) -> None:
         self.count = 0
         self.session_start = time.time()
         self.operation_counts = dict.fromkeys(self.operation_counts, 0)
 
-    def get_count(self):
+    def get_count(self) -> int:
         return self.count
 
-    def get_session_duration(self):
+    def get_session_duration(self) -> float:
         if self.session_start is None:
             return 0.0
         return time.time() - self.session_start
@@ -42,17 +43,17 @@ class _QueryCounter:
 _query_counter = _QueryCounter()
 
 
-def reset_query_counter():
+def reset_query_counter() -> None:
     """Reset query counter."""
     _query_counter.reset()
 
 
-def get_query_count():
+def get_query_count() -> int:
     """Get total API queries."""
     return _query_counter.get_count()
 
 
-def log_playlist_statistics():
+def log_playlist_statistics() -> None:
     """Log playlist statistics."""
     if _query_counter.session_start is None:
         return
@@ -76,7 +77,7 @@ def log_playlist_statistics():
     log.info("=====================================")
 
 
-def get_playlist_statistics():
+def get_playlist_statistics() -> dict[str, Any]:
     """Get playlist statistics."""
     return {
         "total_queries": _query_counter.get_count(),

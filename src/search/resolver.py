@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import TYPE_CHECKING
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any
 
-from ..cache.search import NOT_FOUND
+from ..cache.search import NOT_FOUND, SearchCache, SearchOverrides
 from ..recency import WeightedTrack
 from .executor import find_on_ytm
 
@@ -18,21 +19,21 @@ log = logging.getLogger(__name__)
 
 def resolve_tracks_to_video_ids(
     ytm_search: YTMusic,
-    tracks: list[Scrobble | WeightedTrack],
+    tracks: Sequence[Scrobble | WeightedTrack],
     sleep_between: float,
     early_termination_score: float,
-    search_cache,
-    search_overrides,
+    search_cache: SearchCache,
+    search_overrides: SearchOverrides,
     max_retries: int = 3,
     max_workers: int = 2,
-) -> tuple[list[str], int, dict[tuple[str, str], str], list[dict]]:
+) -> tuple[list[str], int, dict[tuple[str, str], str], list[dict[str, Any]]]:
     """Resolve tracks to video IDs using the three-tier search priority.
 
     Returns (video_ids, misses, track_to_vid mapping, run_log_mappings).
     """
     track_metadata: list[tuple[str, Scrobble | WeightedTrack]] = []
     track_to_vid: dict[tuple[str, str], str] = {}
-    run_log_mappings: list[dict] = []
+    run_log_mappings: list[dict[str, Any]] = []
     misses = 0
     total_tracks = len(tracks)
     seen_vids: set[str] = set()

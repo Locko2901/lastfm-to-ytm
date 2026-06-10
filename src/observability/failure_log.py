@@ -3,6 +3,7 @@
 import json
 import logging
 from datetime import UTC, datetime
+from typing import Any
 
 from ..config import CACHE_DIR
 from .http_status import extract_http_status
@@ -10,7 +11,7 @@ from .http_status import extract_http_status
 log = logging.getLogger(__name__)
 
 
-def save_run_log(mappings: list[dict]) -> None:
+def save_run_log(mappings: list[dict[str, Any]]) -> None:
     """Save the run log for the web dashboard."""
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     log_file = CACHE_DIR / ".last_run_log.json"

@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import logging
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
+from typing import TYPE_CHECKING, Any, Literal
 
 from .metrics import (
     increment_early_terminations,
@@ -11,11 +14,14 @@ from .metrics import (
 from .queries import build_queries
 from .scoring import score_candidate
 
+if TYPE_CHECKING:
+    from ytmusicapi import YTMusic
+
 log = logging.getLogger(__name__)
 
 SEARCH_RESULT_LIMIT = 25
 YOUTUBE_VIDEO_ID_LENGTH = 11
-SEARCH_FILTERS = ["songs", "videos", None]
+SEARCH_FILTERS: list[Literal["songs", "videos"] | None] = ["songs", "videos", None]
 NUM_SEARCH_FILTERS = len(SEARCH_FILTERS)
 BASE_THRESHOLD_NO_ALBUM = 0.66
 BASE_THRESHOLD_WITH_ALBUM = 0.68
@@ -26,7 +32,7 @@ RETRY_BACKOFF_FACTOR = 2
 
 
 def _try_exact_query(
-    ytm,
+    ytm: YTMusic,
     query: str,
     artist: str,
     title: str,
@@ -108,7 +114,7 @@ def _try_exact_query(
 
 
 def find_on_ytm(
-    ytm,
+    ytm: YTMusic,
     artist: str,
     title: str,
     album: str | None = None,
@@ -126,16 +132,16 @@ def find_on_ytm(
     exact_query = f"{artist} - {title}"
     exact_result = _try_exact_query(ytm, exact_query, artist, title, album, max_retries, early_termination_score)
     if exact_result:
-        vid, yt_title, score, query_count = exact_result
+        exact_vid, exact_title, score, query_count = exact_result
         song_query_count += query_count
         increment_queries(song_query_count)
         log.debug(
             "Found via exact query: %s (score: %.3f, queries: %d)",
-            vid,
+            exact_vid,
             score,
             song_query_count,
         )
-        return (vid, yt_title)
+        return (exact_vid, exact_title)
 
     song_query_count += NUM_SEARCH_FILTERS
 
@@ -155,7 +161,7 @@ def find_on_ytm(
     early_termination_enabled = early_termination_score < 1.0
     early_termination_threshold = max(early_termination_score, base_threshold + video_extra)
 
-    def search_with_filter(query_filter_pair):
+    def search_with_filter(query_filter_pair: tuple[str, Literal["songs", "videos"] | None]) -> tuple[list[dict[str, Any]], int, str | None]:
         query, flt = query_filter_pair
         delay = INITIAL_RETRY_DELAY
 
