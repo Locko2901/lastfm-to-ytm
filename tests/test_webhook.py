@@ -55,7 +55,6 @@ def test_safe_url_rejects_dns_failure(monkeypatch):
 
 
 def test_allow_private_bypasses_ip_check(monkeypatch):
-    # getaddrinfo must not even be called when allow_private is set.
     def _should_not_call(*args, **kwargs):
         raise AssertionError("getaddrinfo should not be called when allow_private=True")
 
