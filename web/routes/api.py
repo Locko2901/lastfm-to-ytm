@@ -6,9 +6,11 @@ import json
 import logging
 import socket
 import threading
+from typing import Any, cast
 
 import requests
 from flask import Blueprint, Response, jsonify, render_template, request
+from flask.typing import ResponseReturnValue
 from flask_babel import gettext as _
 from requests.adapters import HTTPAdapter
 
@@ -74,7 +76,7 @@ logger = logging.getLogger(__name__)
 class IPv4Adapter(HTTPAdapter):
     """HTTP adapter that forces IPv4 connections."""
 
-    def init_poolmanager(self, *args, **kwargs):
+    def init_poolmanager(self, *args: Any, **kwargs: Any) -> None:
         """Initialize pool with IPv4-only options."""
         kwargs["socket_options"] = [(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)]
         import urllib3.util.connection
@@ -85,7 +87,7 @@ class IPv4Adapter(HTTPAdapter):
         urllib3.util.connection.allowed_gai_family = _orig_allowed
 
 
-def get_ipv4_session():
+def get_ipv4_session() -> requests.Session:
     """Create IPv4-only session."""
     session = requests.Session()
     session.mount("http://", IPv4Adapter())
@@ -93,11 +95,11 @@ def get_ipv4_session():
     return session
 
 
-_ipv4_session = None
+_ipv4_session: requests.Session | None = None
 _ipv4_session_lock = threading.Lock()
 
 
-def ipv4_session():
+def ipv4_session() -> requests.Session:
     """Get shared IPv4-only session."""
     global _ipv4_session
     if _ipv4_session is None:
@@ -108,7 +110,7 @@ def ipv4_session():
 
 
 @api_bp.route("/status")
-def status():
+def status() -> ResponseReturnValue:
     """Get current sync status."""
     with sync_lock:
         return jsonify(
@@ -123,7 +125,7 @@ def status():
 
 
 @api_bp.route("/update-status")
-def update_status():
+def update_status() -> ResponseReturnValue:
     """Return the current app version and the latest published release.
 
     Response keys: ``current_version``, ``latest_version``, ``release_url``,
@@ -136,7 +138,7 @@ def update_status():
 
 
 @api_bp.route("/setup/status")
-def setup_status():
+def setup_status() -> ResponseReturnValue:
     """Check if first-time setup is needed."""
     setup = get_setup_status()
     return jsonify(
@@ -149,7 +151,7 @@ def setup_status():
 
 
 @api_bp.route("/setup/init", methods=["POST"])
-def setup_init():
+def setup_init() -> ResponseReturnValue:
     """Initialize .env from .env.example."""
     env_exists = ENV_FILE.exists()
     env_empty = env_exists and ENV_FILE.stat().st_size == 0
@@ -170,7 +172,7 @@ def setup_init():
 
 
 @api_bp.route("/setup/lastfm", methods=["POST"])
-def setup_lastfm():
+def setup_lastfm() -> ResponseReturnValue:
     """Save Last.fm credentials during setup."""
     data = request.get_json()
     if not data:
@@ -196,30 +198,30 @@ def setup_lastfm():
 
 
 @api_bp.route("/mappings")
-def mappings():
+def mappings() -> ResponseReturnValue:
     """JSON API for mappings."""
     run_log = load_run_log()
     return jsonify(run_log)
 
 
 @api_bp.route("/overrides")
-def overrides():
+def overrides() -> ResponseReturnValue:
     """JSON API for overrides and blacklist."""
     override_list, blacklist = get_overrides_data()
     return jsonify({"overrides": override_list, "blacklist": blacklist})
 
 
 @api_bp.route("/cache-stats")
-def cache_stats():
+def cache_stats() -> ResponseReturnValue:
     """JSON API for cache statistics."""
     return jsonify(get_cache_stats())
 
 
 @api_bp.route("/settings")
-def settings_get():
+def settings_get() -> ResponseReturnValue:
     """Get current settings from .env file."""
     settings = parse_env_file()
-    result = {}
+    result: dict[str, Any] = {}
     for key in ALL_SETTINGS:
         value = settings.get(key, "")
         if key in BOOL_SETTINGS:
@@ -240,7 +242,7 @@ def settings_get():
 
 
 @api_bp.route("/settings", methods=["POST"])
-def settings_update():
+def settings_update() -> ResponseReturnValue:
     """Update settings in .env file."""
     try:
         data = request.get_json()
@@ -303,7 +305,7 @@ def settings_update():
 
 
 @api_bp.route("/webhook/test", methods=["POST"])
-def webhook_test():
+def webhook_test() -> ResponseReturnValue:
     """Send a test webhook to verify the URL works."""
     data = request.get_json() or {}
     url = (data.get("url") or "").strip()
@@ -327,7 +329,7 @@ def webhook_test():
 
 
 @api_bp.route("/stats")
-def stats():
+def stats() -> ResponseReturnValue:
     """Get all stats for updating the UI dynamically."""
     run_log = load_run_log()
     override_list, blacklist = get_overrides_data()
@@ -356,10 +358,10 @@ def stats():
 
 
 @api_bp.route("/panel/<panel_name>")
-def panel_html(panel_name):
+def panel_html(panel_name: str) -> ResponseReturnValue:
     """Get rendered HTML for a specific panel."""
     if panel_name == "playlist":
-        playlist_mappings, _ = get_playlist_mappings()
+        playlist_mappings, _run = get_playlist_mappings()
         return render_template(
             "partials/_panel_playlist.html",
             mappings=playlist_mappings,
@@ -367,10 +369,10 @@ def panel_html(panel_name):
             tag_overrides_map=get_track_tag_overrides_map(),
         )
     if panel_name == "blacklist":
-        _, blacklist = get_overrides_data()
+        _overrides, blacklist = get_overrides_data()
         return render_template("partials/_panel_blacklist.html", blacklist=blacklist)
     if panel_name == "overrides":
-        override_list, _ = get_overrides_data()
+        override_list, _blacklist = get_overrides_data()
         return render_template(
             "partials/_panel_overrides.html",
             overrides=override_list,
@@ -405,13 +407,13 @@ def panel_html(panel_name):
 
 
 @api_bp.route("/custom-playlists")
-def custom_playlists_get():
+def custom_playlists_get() -> ResponseReturnValue:
     """Get custom playlist configurations."""
     return jsonify({"playlists": load_custom_playlists_config()})
 
 
 @api_bp.route("/custom-playlists", methods=["POST"])
-def custom_playlists_save():
+def custom_playlists_save() -> ResponseReturnValue:
     """Save custom playlist configurations."""
     data = request.get_json()
     if not data or "playlists" not in data:
@@ -472,19 +474,19 @@ def custom_playlists_save():
 
 
 @api_bp.route("/tag-overrides")
-def tag_overrides_get():
+def tag_overrides_get() -> ResponseReturnValue:
     """Get tag overrides list."""
     return jsonify({"overrides": get_tag_overrides_data()})
 
 
 @api_bp.route("/tags/suggestions")
-def tag_suggestions():
+def tag_suggestions() -> ResponseReturnValue:
     """Get unique tag names from the tag cache for autocomplete."""
     return jsonify({"tags": get_tag_suggestions()})
 
 
 @api_bp.route("/custom-playlists/<int:index>", methods=["DELETE"])
-def custom_playlist_delete(index: int):
+def custom_playlist_delete(index: int) -> ResponseReturnValue:
     """Delete a custom playlist, its cache entry, and optionally from YTM."""
     data = request.get_json(silent=True) or {}
     delete_from_ytm = data.get("delete_from_ytm", False)
@@ -495,14 +497,14 @@ def custom_playlist_delete(index: int):
 
 
 @api_bp.route("/custom-playlists/<int:index>/tracks")
-def custom_playlist_tracks(index: int):
+def custom_playlist_tracks(index: int) -> ResponseReturnValue:
     """Get tracks matching a custom playlist's tag filter, rendered as HTML."""
     tracks = get_custom_playlist_tracks(index)
     return render_template("partials/_custompl_tracks.html", tracks=tracks, pl_index=index, tag_overrides_map=get_track_tag_overrides_map())
 
 
 @api_bp.route("/failure_log")
-def failure_log():
+def failure_log() -> ResponseReturnValue:
     """Get the last failure log if one exists."""
     log = load_failure_log()
     if log:
@@ -511,7 +513,7 @@ def failure_log():
 
 
 @api_bp.route("/failure_log", methods=["DELETE"])
-def clear_failure():
+def clear_failure() -> ResponseReturnValue:
     """Clear/dismiss the failure log."""
     if clear_failure_log():
         return jsonify({"status": "cleared"})
@@ -519,13 +521,13 @@ def clear_failure():
 
 
 @api_bp.route("/restart", methods=["POST"])
-def restart_server():
+def restart_server() -> ResponseReturnValue:
     """Restart the web server gracefully.
 
     In production (Gunicorn): Sends HUP to master process for graceful worker reload.
     In development (Flask + Werkzeug reloader): Exits the child with code 3 so the
         reloader parent respawns it. Plain `flask run` without a reloader cannot
-        restart itself — we return an error in that case.
+        restart itself - we return an error in that case.
     In Docker: Container will auto-restart due to restart: unless-stopped policy.
     """
     import os
@@ -552,7 +554,7 @@ def restart_server():
             409,
         )
 
-    def delayed_restart():
+    def delayed_restart() -> None:
         import time
 
         time.sleep(0.5)
@@ -569,7 +571,7 @@ def restart_server():
 
 
 @api_bp.route("/scheduler/status")
-def scheduler_status():
+def scheduler_status() -> ResponseReturnValue:
     """Get current scheduler status."""
     return jsonify(get_scheduler_status())
 
@@ -586,14 +588,14 @@ def _get_run_log_source(artist: str, title: str) -> str | None:
         a_lower, t_lower = artist.lower(), title.lower()
         for m in data.get("mappings", []):
             if m.get("artist", "").lower() == a_lower and m.get("title", "").lower() == t_lower:
-                return m.get("source")
+                return cast("str | None", m.get("source"))
     except Exception:
         pass
     return None
 
 
 @api_bp.route("/track-detail")
-def track_detail():
+def track_detail() -> ResponseReturnValue:
     """Get full details for a specific track from all data sources."""
     artist = request.args.get("artist", "").strip()
     title = request.args.get("title", "").strip()
@@ -670,7 +672,7 @@ def track_detail():
 
 
 @api_bp.route("/now-playing")
-def now_playing():
+def now_playing() -> ResponseReturnValue:
     """Get currently playing track from Last.fm."""
     settings = parse_env_file()
     username = settings.get("LASTFM_USER", "").strip()
@@ -687,7 +689,7 @@ def now_playing():
                 "user": username,
                 "api_key": api_key,
                 "format": "json",
-                "limit": 1,
+                "limit": "1",
             },
             timeout=10,
         )
@@ -751,7 +753,7 @@ def now_playing():
         return jsonify({"playing": False, "error": _("Internal error")})
 
 
-_image_cache = {}
+_image_cache: dict[str, dict[str, Any]] = {}
 _image_cache_lock = threading.Lock()
 _IMAGE_CACHE_MAX_SIZE = 50
 _IMAGE_CACHE_TTL = 3600
@@ -766,7 +768,7 @@ _ALLOWED_IMAGE_DOMAINS = frozenset(
 
 
 @api_bp.route("/image-proxy")
-def image_proxy():
+def image_proxy() -> ResponseReturnValue:
     """Proxy external images to enable CORS for canvas color extraction."""
     import time
     from urllib.parse import urlparse, urlunparse
@@ -847,7 +849,7 @@ def image_proxy():
 
 
 @api_bp.route("/scheduler/configure", methods=["POST"])
-def scheduler_configure():
+def scheduler_configure() -> ResponseReturnValue:
     """Configure and start/stop the scheduler.
 
     Also saves the settings to .env for persistence across restarts.
@@ -916,13 +918,13 @@ def scheduler_configure():
 
 
 @api_bp.route("/theme", methods=["GET"])
-def get_theme():
+def get_theme() -> ResponseReturnValue:
     """Return the persisted custom theme overrides."""
     return jsonify(load_theme_overrides())
 
 
 @api_bp.route("/theme", methods=["POST"])
-def post_theme():
+def post_theme() -> ResponseReturnValue:
     """Persist custom theme overrides. Body: {enabled, parents:{dark,light}}."""
     data = request.get_json(silent=True) or {}
     try:
@@ -934,7 +936,7 @@ def post_theme():
 
 
 @api_bp.route("/teleporter/export", methods=["POST"])
-def teleporter_export():
+def teleporter_export() -> ResponseReturnValue:
     """Export all config as an encrypted binary file."""
     data = request.get_json()
     if not data or not data.get("password"):
@@ -961,7 +963,7 @@ def teleporter_export():
 
 
 @api_bp.route("/teleporter/preview", methods=["POST"])
-def teleporter_preview():
+def teleporter_preview() -> ResponseReturnValue:
     """Decrypt and preview contents of a teleporter file without applying."""
     password = request.form.get("password", "")
     file = request.files.get("file")
@@ -984,7 +986,7 @@ def teleporter_preview():
 
 
 @api_bp.route("/teleporter/import", methods=["POST"])
-def teleporter_import():
+def teleporter_import() -> ResponseReturnValue:
     """Decrypt and restore config from a teleporter file."""
     password = request.form.get("password", "")
     file = request.files.get("file")
@@ -1007,7 +1009,7 @@ def teleporter_import():
 
 
 @api_bp.route("/history/status")
-def history_status():
+def history_status() -> ResponseReturnValue:
     """Check if history DB is enabled and get overview stats."""
     if not is_history_enabled():
         return jsonify({"enabled": False})
@@ -1021,7 +1023,7 @@ def history_status():
 
 
 @api_bp.route("/history/tracks")
-def history_tracks():
+def history_tracks() -> ResponseReturnValue:
     """Get paginated tracks from history DB."""
     db = get_history_db()
     if not db:
@@ -1044,7 +1046,7 @@ def history_tracks():
 
 
 @api_bp.route("/history/syncs")
-def history_syncs():
+def history_syncs() -> ResponseReturnValue:
     """Get paginated sync history."""
     db = get_history_db()
     if not db:
@@ -1064,7 +1066,7 @@ def history_syncs():
 
 
 @api_bp.route("/history/syncs/<int:sync_id>")
-def history_sync(sync_id: int):
+def history_sync(sync_id: int) -> ResponseReturnValue:
     """Get a single sync record."""
     db = get_history_db()
     if not db:
@@ -1078,7 +1080,7 @@ def history_sync(sync_id: int):
 
 
 @api_bp.route("/history/actions")
-def history_actions():
+def history_actions() -> ResponseReturnValue:
     """Get paginated action history."""
     db = get_history_db()
     if not db:
@@ -1098,7 +1100,7 @@ def history_actions():
 
 
 @api_bp.route("/history/top-tracks")
-def history_top_tracks():
+def history_top_tracks() -> ResponseReturnValue:
     """Get most frequently found tracks."""
     db = get_history_db()
     if not db:
@@ -1112,7 +1114,7 @@ def history_top_tracks():
 
 
 @api_bp.route("/history/backfill", methods=["POST"])
-def history_backfill():
+def history_backfill() -> ResponseReturnValue:
     """Backfill history DB from existing cache data."""
     db = get_history_db()
     if not db:
@@ -1135,7 +1137,7 @@ def history_backfill():
 
 
 @api_bp.route("/history/clear", methods=["POST"])
-def history_clear():
+def history_clear() -> ResponseReturnValue:
     """Delete all history data (tracks, syncs, actions)."""
     db = get_history_db()
     if not db:
@@ -1145,7 +1147,7 @@ def history_clear():
 
 
 @api_bp.route("/history/vacuum", methods=["POST"])
-def history_vacuum():
+def history_vacuum() -> ResponseReturnValue:
     """Apply retention/size pruning and VACUUM the database."""
     db = get_history_db()
     if not db:
@@ -1172,7 +1174,7 @@ def history_vacuum():
 
 
 @api_bp.route("/history/export", methods=["GET"])
-def history_export():
+def history_export() -> ResponseReturnValue:
     """Download the history database as a JSON dump."""
     db = get_history_db()
     if not db:
@@ -1192,7 +1194,7 @@ def history_export():
 
 
 @api_bp.route("/history/import", methods=["POST"])
-def history_import():
+def history_import() -> ResponseReturnValue:
     """Import a previously exported history JSON dump."""
     db = get_history_db()
     if not db:
@@ -1220,7 +1222,7 @@ def history_import():
 
 
 @api_bp.route("/history/trend")
-def history_trend():
+def history_trend() -> ResponseReturnValue:
     """Get daily sync trend data for charting."""
     db = get_history_db()
     if not db:
@@ -1265,7 +1267,7 @@ def _get_gunicorn_master_pid() -> int | None:
 
 
 @api_bp.route("/cache/summary")
-def cache_summary():
+def cache_summary() -> ResponseReturnValue:
     """Aggregate cache stats and the playlist cache contents for the admin modal."""
     return jsonify(
         {
@@ -1277,7 +1279,7 @@ def cache_summary():
 
 
 @api_bp.route("/cache/playlist-tracks")
-def cache_playlist_tracks():
+def cache_playlist_tracks() -> ResponseReturnValue:
     """Resolve a playlist cache template's video IDs to artist/title."""
     name = request.args.get("name", "").strip()
     if not name:
@@ -1286,7 +1288,7 @@ def cache_playlist_tracks():
 
 
 @api_bp.route("/cache/search/all", methods=["DELETE"])
-def cache_clear_search_all():
+def cache_clear_search_all() -> ResponseReturnValue:
     """Clear ALL entries from the search cache."""
     deleted = clear_search_cache_all()
     from ..services import history_record_action
@@ -1296,7 +1298,7 @@ def cache_clear_search_all():
 
 
 @api_bp.route("/cache/search/notfound", methods=["DELETE"])
-def cache_clear_search_notfound():
+def cache_clear_search_notfound() -> ResponseReturnValue:
     """Clear all not-found entries from the search cache."""
     deleted = clear_search_cache_notfound()
     from ..services import history_record_action
@@ -1306,7 +1308,7 @@ def cache_clear_search_notfound():
 
 
 @api_bp.route("/cache/search/bulk", methods=["DELETE"])
-def cache_bulk_delete_search():
+def cache_bulk_delete_search() -> ResponseReturnValue:
     """Bulk-delete search cache entries by raw key list (JSON: {keys: [...]})."""
     payload = request.get_json(silent=True) or {}
     keys = payload.get("keys") or []
@@ -1320,7 +1322,7 @@ def cache_bulk_delete_search():
 
 
 @api_bp.route("/cache/tags/all", methods=["DELETE"])
-def cache_clear_tags_all():
+def cache_clear_tags_all() -> ResponseReturnValue:
     """Clear ALL entries from the tag cache."""
     deleted = clear_tag_cache_all()
     from ..services import history_record_action
@@ -1330,7 +1332,7 @@ def cache_clear_tags_all():
 
 
 @api_bp.route("/cache/tags/bulk", methods=["DELETE"])
-def cache_bulk_delete_tags():
+def cache_bulk_delete_tags() -> ResponseReturnValue:
     """Bulk-delete tag cache entries by raw key list (JSON: {keys: [...]})."""
     payload = request.get_json(silent=True) or {}
     keys = payload.get("keys") or []
@@ -1344,7 +1346,7 @@ def cache_bulk_delete_tags():
 
 
 @api_bp.route("/cache/playlist/all", methods=["DELETE"])
-def cache_clear_playlist_all():
+def cache_clear_playlist_all() -> ResponseReturnValue:
     """Clear ENTIRE playlist cache (cache-only, leaves YTM playlists intact)."""
     deleted = clear_playlist_cache_all()
     from ..services import history_record_action
@@ -1354,7 +1356,7 @@ def cache_clear_playlist_all():
 
 
 @api_bp.route("/cache/playlist/entry", methods=["DELETE"])
-def cache_clear_playlist_entry():
+def cache_clear_playlist_entry() -> ResponseReturnValue:
     """Remove a single playlist from the playlist cache (cache-only)."""
     payload = request.get_json(silent=True) or {}
     name = (payload.get("name") or "").strip()
@@ -1370,7 +1372,7 @@ def cache_clear_playlist_entry():
 
 
 @api_bp.route("/cache/playlist/track", methods=["DELETE"])
-def cache_clear_playlist_track():
+def cache_clear_playlist_track() -> ResponseReturnValue:
     """Remove a single video ID from a playlist's cached template."""
     payload = request.get_json(silent=True) or {}
     name = (payload.get("name") or "").strip()

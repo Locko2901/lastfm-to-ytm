@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-10 17:10+0200\n"
+"POT-Creation-Date: 2026-06-11 13:15+0200\n"
 "PO-Revision-Date: 2026-03-13 15:44+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,253 +18,253 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: web/routes/actions.py:89
+#: web/routes/actions.py:91
 msgid "Invalid video ID. Must be 11 characters (or a valid YouTube URL)."
 msgstr ""
 
-#: web/routes/actions.py:92 web/routes/actions.py:142
+#: web/routes/actions.py:94 web/routes/actions.py:144
 msgid "Artist and title are required."
 msgstr ""
 
-#: web/routes/actions.py:145 web/routes/actions.py:149
+#: web/routes/actions.py:147 web/routes/actions.py:151
 msgid "At least one tag is required."
 msgstr ""
 
-#: web/routes/actions.py:220 web/routes/api.py:177 web/routes/api.py:248
-#: web/routes/api.py:858
+#: web/routes/actions.py:222 web/routes/api.py:179 web/routes/api.py:250
+#: web/routes/api.py:860
 msgid "No data provided"
 msgstr ""
 
-#: web/routes/actions.py:233 web/routes/actions.py:244
-#: web/routes/actions.py:259
+#: web/routes/actions.py:235 web/routes/actions.py:246
+#: web/routes/actions.py:261
 msgid "Imported"
 msgstr ""
 
-#: web/routes/api.py:157
+#: web/routes/api.py:159
 msgid ".env already exists"
 msgstr ""
 
-#: web/routes/api.py:160
+#: web/routes/api.py:162
 msgid ".env.example not found"
 msgstr ""
 
-#: web/routes/api.py:169
+#: web/routes/api.py:171
 msgid "Failed to create configuration file"
 msgstr ""
 
-#: web/routes/api.py:183
+#: web/routes/api.py:185
 msgid "Username and API key are required"
 msgstr ""
 
-#: web/routes/api.py:195
+#: web/routes/api.py:197
 msgid "Failed to save credentials"
 msgstr ""
 
-#: web/routes/api.py:274 web/routes/api.py:874
+#: web/routes/api.py:276 web/routes/api.py:876
 #, python-format
 msgid "Invalid cron expression: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:283 web/routes/api.py:882
+#: web/routes/api.py:285 web/routes/api.py:884
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr ""
 
-#: web/routes/api.py:302 web/static/js/modules/settings.js:141
+#: web/routes/api.py:304 web/static/js/modules/settings.js:141
 #: web/static/js/modules/settings.js:173
 msgid "Failed to save settings"
 msgstr ""
 
-#: web/routes/api.py:311
+#: web/routes/api.py:313
 msgid "No webhook URL provided"
 msgstr ""
 
-#: web/routes/api.py:326
+#: web/routes/api.py:328
 msgid "Webhook request failed. Check the URL and try again."
 msgstr ""
 
-#: web/routes/api.py:404
+#: web/routes/api.py:406
 msgid "Unknown panel"
 msgstr ""
 
-#: web/routes/api.py:418
+#: web/routes/api.py:420
 msgid "Invalid data: 'playlists' array required"
 msgstr ""
 
-#: web/routes/api.py:422
+#: web/routes/api.py:424
 msgid "'playlists' must be an array"
 msgstr ""
 
-#: web/routes/api.py:471
+#: web/routes/api.py:473
 msgid "Failed to save custom playlists"
 msgstr ""
 
-#: web/routes/api.py:602
+#: web/routes/api.py:604
 msgid "Artist and title are required"
 msgstr ""
 
-#: web/routes/api.py:680
+#: web/routes/api.py:682
 msgid "Last.fm credentials not configured"
 msgstr ""
 
-#: web/routes/api.py:748
+#: web/routes/api.py:750
 msgid "Failed to fetch from Last.fm"
 msgstr ""
 
-#: web/routes/api.py:751
+#: web/routes/api.py:753
 msgid "Internal error"
 msgstr ""
 
-#: web/routes/api.py:884
+#: web/routes/api.py:886
 msgid "Invalid start time format. Use HH:MM."
 msgstr ""
 
-#: web/routes/api.py:909
+#: web/routes/api.py:911
 msgid "Failed to configure scheduler. APScheduler may not be installed."
 msgstr ""
 
-#: web/routes/api.py:912
+#: web/routes/api.py:914
 #, python-format
 msgid "Invalid value: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:915
+#: web/routes/api.py:917
 msgid "Failed to configure scheduler"
 msgstr ""
 
-#: web/routes/api.py:932
+#: web/routes/api.py:934
 msgid "Failed to save theme overrides"
 msgstr ""
 
-#: web/routes/api.py:941 web/routes/api.py:970 web/routes/api.py:993
+#: web/routes/api.py:943 web/routes/api.py:972 web/routes/api.py:995
 msgid "Password is required"
 msgstr ""
 
-#: web/routes/api.py:945
+#: web/routes/api.py:947
 msgid "Password must be at least 4 characters"
 msgstr ""
 
-#: web/routes/api.py:960 web/static/js/modules/modals.js:580
+#: web/routes/api.py:962 web/static/js/modules/modals.js:580
 #: web/static/js/modules/modals.js:591 web/static/js/modules/teleporter.js:91
 #: web/static/js/modules/teleporter.js:104
 msgid "Export failed"
 msgstr ""
 
-#: web/routes/api.py:972 web/routes/api.py:995
+#: web/routes/api.py:974 web/routes/api.py:997
 msgid "No file provided"
 msgstr ""
 
-#: web/routes/api.py:980 web/routes/api.py:1003
+#: web/routes/api.py:982 web/routes/api.py:1005
 msgid "Could not read file - check your password and try again"
 msgstr ""
 
-#: web/routes/api.py:983 web/static/js/modules/teleporter.js:193
+#: web/routes/api.py:985 web/static/js/modules/teleporter.js:193
 #: web/static/js/modules/teleporter.js:205
 msgid "Preview failed"
 msgstr ""
 
-#: web/routes/api.py:1006 web/static/js/modules/history.js:1010
+#: web/routes/api.py:1008 web/static/js/modules/history.js:1010
 #: web/static/js/modules/history.js:1019 web/static/js/modules/modals.js:659
 #: web/static/js/modules/modals.js:678 web/static/js/modules/teleporter.js:233
 #: web/static/js/modules/teleporter.js:242
 msgid "Import failed"
 msgstr ""
 
-#: web/routes/api.py:1028 web/routes/api.py:1051 web/routes/api.py:1071
-#: web/routes/api.py:1085 web/routes/api.py:1105 web/routes/api.py:1119
-#: web/routes/api.py:1142 web/routes/api.py:1152 web/routes/api.py:1179
-#: web/routes/api.py:1199 web/routes/api.py:1227
+#: web/routes/api.py:1030 web/routes/api.py:1053 web/routes/api.py:1073
+#: web/routes/api.py:1087 web/routes/api.py:1107 web/routes/api.py:1121
+#: web/routes/api.py:1144 web/routes/api.py:1154 web/routes/api.py:1181
+#: web/routes/api.py:1201 web/routes/api.py:1229
 msgid "History database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1075
+#: web/routes/api.py:1077
 msgid "Sync record not found"
 msgstr ""
 
-#: web/routes/api.py:1203
+#: web/routes/api.py:1205
 msgid "No file uploaded"
 msgstr ""
 
-#: web/routes/api.py:1206
+#: web/routes/api.py:1208
 msgid "Invalid import mode"
 msgstr ""
 
-#: web/routes/api.py:1211
+#: web/routes/api.py:1213
 #, python-format
 msgid "Invalid JSON file: %(err)s"
 msgstr ""
 
-#: web/routes/api.py:1217
+#: web/routes/api.py:1219
 msgid "Invalid import file"
 msgstr ""
 
-#: web/routes/auth.py:27
+#: web/routes/auth.py:28
 msgid "No headers provided"
 msgstr ""
 
-#: web/routes/auth.py:41
+#: web/routes/auth.py:42
 msgid ""
 "Missing required headers (cookie, x-goog-authuser). Make sure you copy "
 "from a /browse request while logged in."
 msgstr ""
 
-#: web/routes/auth.py:45
+#: web/routes/auth.py:46
 #, python-format
 msgid "Failed to parse headers: %(error_msg)s"
 msgstr ""
 
-#: web/routes/auth.py:75
+#: web/routes/auth.py:76
 msgid "Headers were saved but auth appears expired. Try copying fresh headers."
 msgstr ""
 
-#: web/routes/auth.py:89 web/routes/auth.py:132
+#: web/routes/auth.py:90 web/routes/auth.py:133
 msgid "browser.json not found"
 msgstr ""
 
-#: web/routes/auth.py:91
+#: web/routes/auth.py:92
 msgid "browser.json is empty"
 msgstr ""
 
-#: web/routes/auth.py:96
+#: web/routes/auth.py:97
 msgid "Missing cookie in auth file"
 msgstr ""
 
-#: web/routes/auth.py:99
+#: web/routes/auth.py:100
 msgid "Auth cookie appears invalid"
 msgstr ""
 
-#: web/routes/auth.py:102
+#: web/routes/auth.py:103
 msgid "Invalid JSON in auth file"
 msgstr ""
 
-#: web/routes/auth.py:104
+#: web/routes/auth.py:105
 msgid "Cannot read auth file"
 msgstr ""
 
-#: web/routes/auth.py:148
+#: web/routes/auth.py:149
 msgid "Auth expired - please regenerate"
 msgstr ""
 
-#: web/routes/auth.py:150
+#: web/routes/auth.py:151
 msgid "Auth test failed"
 msgstr ""
 
-#: web/routes/notifications.py:33
+#: web/routes/notifications.py:34
 msgid "Message is required"
 msgstr ""
 
-#: web/routes/notifications.py:39
+#: web/routes/notifications.py:40
 msgid "Invalid notification data"
 msgstr ""
 
-#: web/routes/notifications.py:60
+#: web/routes/notifications.py:61
 msgid "Notification not found"
 msgstr ""
 
-#: web/routes/sync.py:165
+#: web/routes/sync.py:171
 msgid "Sync already running"
 msgstr ""
 
-#: web/routes/sync.py:183
+#: web/routes/sync.py:189
 msgid "No sync running"
 msgstr ""
 

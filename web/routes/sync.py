@@ -9,20 +9,25 @@ import sys
 import threading
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from flask import Blueprint, Response, jsonify, request, stream_with_context
+from flask.typing import ResponseReturnValue
 from flask_babel import gettext as _
 
 from ..services import sync_lock, sync_state
 from ..services.data import get_history_db
 from ..services.state import stream_state_output
 
+if TYPE_CHECKING:
+    from src.history import HistoryDB
+
 sync_bp = Blueprint("sync", __name__)
 
 logger = logging.getLogger(__name__)
 
 
-def _run_sync_process(script: str = "run.py", db=None, trigger: str = "web"):
+def _run_sync_process(script: str = "run.py", db: HistoryDB | None = None, trigger: str = "web") -> None:
     """Run sync in background."""
     from ..services.state import reset_output
 
@@ -73,6 +78,7 @@ def _run_sync_process(script: str = "run.py", db=None, trigger: str = "web"):
         with sync_lock:
             sync_state["process"] = process
 
+        assert process.stdout is not None
         for line in iter(process.stdout.readline, ""):
             with sync_lock:
                 sync_state["output"].append(line.rstrip())
@@ -152,7 +158,7 @@ def _run_sync_process(script: str = "run.py", db=None, trigger: str = "web"):
 
 
 @sync_bp.route("/run_sync", methods=["POST"])
-def run_sync():
+def run_sync() -> ResponseReturnValue:
     """Trigger a manual sync run."""
     ALLOWED_SCRIPTS = {"run.py", "run_tags.py"}
     data = request.get_json(silent=True) or {}
@@ -173,7 +179,7 @@ def run_sync():
 
 
 @sync_bp.route("/stop_sync", methods=["POST"])
-def stop_sync():
+def stop_sync() -> ResponseReturnValue:
     """Stop the running sync process."""
     with sync_lock:
         process = sync_state.get("process")
@@ -192,7 +198,7 @@ def stop_sync():
 
 
 @sync_bp.route("/sync_output")
-def sync_output():
+def sync_output() -> ResponseReturnValue:
     """Stream sync output via Server-Sent Events."""
     return Response(
         stream_with_context(stream_state_output(sync_state, sync_lock)),

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any, cast
 
 from flask import g, has_request_context
 
@@ -46,10 +47,10 @@ def _get_settings() -> Settings | None:
             g._settings = Settings.from_env()
         except Exception:
             g._settings = None
-    return g._settings
+    return cast("Settings | None", g._settings)
 
 
-def load_run_log() -> dict:
+def load_run_log() -> dict[str, Any]:
     """Load the last run log and enrich with data from cache/overrides.
 
     The run log only stores minimal data (artist, title, source).
@@ -123,7 +124,7 @@ def load_overrides() -> SearchOverrides:
     """Load search overrides."""
     if "_overrides" not in g:
         g._overrides = SearchOverrides(str(OVERRIDES_FILE))
-    return g._overrides
+    return cast("SearchOverrides", g._overrides)
 
 
 def load_search_cache() -> SearchCache:
@@ -138,16 +139,16 @@ def load_search_cache() -> SearchCache:
             )
         else:
             g._search_cache = SearchCache(str(SEARCH_CACHE_FILE))
-    return g._search_cache
+    return cast("SearchCache", g._search_cache)
 
 
-def get_cache_stats() -> dict:
+def get_cache_stats() -> dict[str, Any]:
     """Get cache statistics."""
     stats = load_search_cache().stats()
     return {"total": stats["total"], "found": stats["found"], "not_found": stats["notfound"]}
 
 
-def get_not_found_tracks() -> list[dict]:
+def get_not_found_tracks() -> list[dict[str, Any]]:
     """Get tracks with null video_id."""
     cache = load_search_cache()
     not_found = []
@@ -166,7 +167,7 @@ def get_not_found_tracks() -> list[dict]:
     return not_found
 
 
-def get_cached_tracks() -> list[dict]:
+def get_cached_tracks() -> list[dict[str, Any]]:
     """Get found tracks from the search cache."""
     cache = load_search_cache()
     overrides = load_overrides()
@@ -194,10 +195,10 @@ def get_cached_tracks() -> list[dict]:
     return cached
 
 
-def _get_playlist_context() -> dict:
+def _get_playlist_context() -> dict[str, Any]:
     """Resolve playlist cache file, name, and weekly settings from config.
 
-    Returns dict with keys: cache_file, name, weekly_enabled, weekly_prefix.
+    Returns dict[str, Any] with keys: cache_file, name, weekly_enabled, weekly_prefix.
     """
     settings = _get_settings()
     if settings:
@@ -222,15 +223,15 @@ def load_playlist_cache() -> PlaylistCache:
     if "_playlist_cache" not in g:
         ctx = _get_playlist_context()
         g._playlist_cache = PlaylistCache(str(ctx["cache_file"]))
-    return g._playlist_cache
+    return cast("PlaylistCache", g._playlist_cache)
 
 
-def get_playlist_cache_summary() -> list[dict]:
+def get_playlist_cache_summary() -> list[dict[str, Any]]:
     """List cached playlists with id, video_count, last_updated."""
     return load_playlist_cache().summary()
 
 
-def get_playlist_cache_tracks(playlist_name: str) -> list[dict]:
+def get_playlist_cache_tracks(playlist_name: str) -> list[dict[str, Any]]:
     """Resolve a playlist cache template's video IDs to artist/title via search cache."""
     pc = load_playlist_cache()
     video_ids = pc.get_video_ids(playlist_name)
@@ -240,7 +241,7 @@ def get_playlist_cache_tracks(playlist_name: str) -> list[dict]:
     sc = load_search_cache()
     overrides = load_overrides()
 
-    vid_to_info: dict[str, dict] = {}
+    vid_to_info: dict[str, dict[str, Any]] = {}
     for sc_entry in sc.values():
         vid = sc_entry.get("video_id")
         if vid and vid not in vid_to_info:
@@ -333,12 +334,12 @@ def get_last_sync_time() -> str | None:
             data = json.load(f)
 
         playlist_entry = data.get(ctx["name"], {})
-        return playlist_entry.get("last_updated")
+        return cast("str | None", playlist_entry.get("last_updated"))
     except Exception:
         return None
 
 
-def get_overrides_data() -> tuple[list[dict], list[dict]]:
+def get_overrides_data() -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Get all overrides and blacklist entries."""
     overrides = load_overrides()
 
@@ -375,7 +376,7 @@ def get_overrides_data() -> tuple[list[dict], list[dict]]:
 FAILURE_LOG_FILE = CACHE_DIR / ".last_failure.json"
 
 
-def load_failure_log() -> dict | None:
+def load_failure_log() -> dict[str, Any] | None:
     """Load the last failure log if it exists.
 
     Returns None if no failure log exists (sync was successful).
@@ -384,7 +385,7 @@ def load_failure_log() -> dict | None:
         return None
     try:
         with FAILURE_LOG_FILE.open() as f:
-            return json.load(f)
+            return cast("dict[str, Any] | None", json.load(f))
     except Exception:
         return None
 
@@ -403,10 +404,10 @@ def clear_failure_log() -> bool:
     return False
 
 
-def get_playlist_links() -> dict:
+def get_playlist_links() -> dict[str, Any]:
     """Get URLs to the main playlist and latest weekly playlist (if exists).
 
-    Returns dict with:
+    Returns dict[str, Any] with:
         - main_url: URL to main playlist (or None)
         - main_name: Name of main playlist
         - weekly_url: URL to latest weekly playlist (or None)
@@ -453,18 +454,18 @@ def get_playlist_links() -> dict:
         return result
 
 
-def get_playlist_mappings() -> tuple[list[dict], dict]:
+def get_playlist_mappings() -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Build the playlist mappings list with override/blacklist annotations.
 
     Returns:
-        Tuple of (playlist_mappings list, run_log dict).
+        Tuple of (playlist_mappings list, run_log dict[str, Any]).
     """
     run_log = load_run_log()
     overrides = load_overrides()
     override_keys = overrides.override_keys()
     blacklist_keys = overrides.blacklist_keys()
 
-    playlist_mappings = []
+    playlist_mappings: list[dict[str, Any]] = []
     for m in run_log["mappings"]:
         if (m.get("video_id") or m.get("pending_retry")) and len(playlist_mappings) < run_log["limit"]:
             key = _track_key(m["artist"], m["title"])
@@ -476,7 +477,7 @@ def get_playlist_mappings() -> tuple[list[dict], dict]:
     return playlist_mappings, run_log
 
 
-def _env_has_user_config(path) -> bool:
+def _env_has_user_config(path: Path) -> bool:
     """Return True if .env contains user-supplied config (not just auto-generated keys)."""
     auto_keys = {"FLASK_SECRET_KEY"}
     try:
@@ -492,7 +493,7 @@ def _env_has_user_config(path) -> bool:
     return False
 
 
-def get_setup_status() -> dict:
+def get_setup_status() -> dict[str, Any]:
     """Check if first-time setup is needed.
 
     Returns:
@@ -521,7 +522,7 @@ def load_tag_cache() -> TagCache:
             g._tag_cache = TagCache(settings.tag_cache_file, ttl_days=settings.tag_cache_ttl_days)
         else:
             g._tag_cache = TagCache(str(TAG_CACHE_FILE))
-    return g._tag_cache
+    return cast("TagCache", g._tag_cache)
 
 
 def load_tag_overrides() -> TagOverrides:
@@ -532,15 +533,15 @@ def load_tag_overrides() -> TagOverrides:
             g._tag_overrides = TagOverrides(settings.tag_overrides_file)
         else:
             g._tag_overrides = TagOverrides(str(TAG_OVERRIDES_FILE))
-    return g._tag_overrides
+    return cast("TagOverrides", g._tag_overrides)
 
 
-def get_tag_stats() -> dict:
+def get_tag_stats() -> dict[str, Any]:
     """Get tag cache statistics."""
     return load_tag_cache().stats()
 
 
-def get_tag_cache_tracks() -> list[dict]:
+def get_tag_cache_tracks() -> list[dict[str, Any]]:
     """Get tag cache tracks with override annotations."""
     cache = load_tag_cache()
     overrides = load_tag_overrides()
@@ -602,7 +603,7 @@ def get_tag_cache_tracks() -> list[dict]:
     return tracks
 
 
-def get_tag_overrides_data() -> list[dict]:
+def get_tag_overrides_data() -> list[dict[str, Any]]:
     """Get all tag override entries."""
     overrides = load_tag_overrides()
     result = []
@@ -649,10 +650,10 @@ def get_track_tags_map() -> dict[str, list[str]]:
     return tag_map
 
 
-def get_track_tag_overrides_map() -> dict[str, dict]:
+def get_track_tag_overrides_map() -> dict[str, dict[str, Any]]:
     """Build artist|title → tag overrides map."""
     overrides = load_tag_overrides()
-    result: dict[str, dict] = {}
+    result: dict[str, dict[str, Any]] = {}
     for key, data in overrides.items():
         fb_artist, fb_title = _parse_artist_title_from_key(key)
         artist = data.get("artist", fb_artist)
@@ -688,14 +689,14 @@ def get_tag_suggestions() -> list[str]:
     return sorted(counts, key=lambda n: counts[n], reverse=True)
 
 
-def load_custom_playlists_config() -> list[dict]:
+def load_custom_playlists_config() -> list[dict[str, Any]]:
     """Load custom playlist configs for the web UI."""
     settings = _get_settings()
     path = settings.custom_playlists_file if settings else str(CUSTOM_PLAYLISTS_FILE)
     configs = load_custom_playlists(path)
 
     cache_file = Path(settings.cache_playlist_file) if settings else PLAYLIST_CACHE_FILE
-    cache_data: dict = {}
+    cache_data: dict[str, Any] = {}
     if cache_file.exists():
         try:
             with cache_file.open() as f:
@@ -720,7 +721,7 @@ def load_custom_playlists_config() -> list[dict]:
     ]
 
 
-def save_custom_playlists_config(playlists: list[dict]) -> None:
+def save_custom_playlists_config(playlists: list[dict[str, Any]]) -> None:
     """Save custom playlist configs atomically."""
     settings = _get_settings()
     path = Path(settings.custom_playlists_file if settings else str(CUSTOM_PLAYLISTS_FILE))
@@ -731,10 +732,10 @@ def save_custom_playlists_config(playlists: list[dict]) -> None:
     temp_file.replace(path)
 
 
-def delete_custom_playlist_data(index: int, delete_from_ytm: bool = False) -> dict:
+def delete_custom_playlist_data(index: int, delete_from_ytm: bool = False) -> dict[str, Any]:
     """Delete a custom playlist: config, cache entry, and optionally from YTM.
 
-    Returns a result dict with status info and any warnings.
+    Returns a result dict[str, Any] with status info and any warnings.
     """
     import logging
 
@@ -781,7 +782,7 @@ def delete_custom_playlist_data(index: int, delete_from_ytm: bool = False) -> di
     return {"status": "deleted", "name": name, "warnings": warnings}
 
 
-def get_custom_playlist_tracks(index: int) -> list[dict]:
+def get_custom_playlist_tracks(index: int) -> list[dict[str, Any]]:
     """Return tracks that are actually in a custom playlist (from playlist cache).
 
     Mirrors the main playlist approach: reads the synced video IDs from the
@@ -815,7 +816,7 @@ def get_custom_playlist_tracks(index: int) -> list[dict]:
     override_keys = overrides.override_keys()
     blacklist_keys = overrides.blacklist_keys()
 
-    vid_to_info: dict[str, dict] = {}
+    vid_to_info: dict[str, dict[str, Any]] = {}
     for _key, sc_entry in search_cache.items():
         vid = sc_entry.get("video_id")
         if vid and vid not in vid_to_info:

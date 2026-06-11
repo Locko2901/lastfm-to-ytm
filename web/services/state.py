@@ -8,12 +8,13 @@ import time
 from collections import deque
 from collections.abc import Generator
 from threading import Lock
+from typing import Any
 
 MAX_OUTPUT_LINES = 5000
 
 sync_lock = Lock()
 
-sync_state: dict = {
+sync_state: dict[str, Any] = {
     "running": False,
     "output": deque(maxlen=MAX_OUTPUT_LINES),
     "started_at": None,
@@ -23,7 +24,7 @@ sync_state: dict = {
 }
 
 
-def reset_output(state: dict, lock: Lock) -> None:
+def reset_output(state: dict[str, Any], lock: Lock) -> None:
     """Reset output for new process."""
     with lock:
         state["output"] = deque(maxlen=MAX_OUTPUT_LINES)
@@ -31,7 +32,7 @@ def reset_output(state: dict, lock: Lock) -> None:
 
 
 def stream_state_output(
-    state: dict,
+    state: dict[str, Any],
     lock: Lock,
     running_key: str = "running",
     finished_key: str | None = None,

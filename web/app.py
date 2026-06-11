@@ -7,9 +7,11 @@ import os
 import secrets as _secrets
 import sys
 from pathlib import Path
+from typing import Any
 
 from babel import Locale
-from flask import Flask, g, render_template, request
+from flask import Flask, Response, g, render_template, request
+from flask.typing import ResponseReturnValue
 from flask_babel import Babel, get_translations
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -84,7 +86,7 @@ def _discover_locales() -> list[str]:
 SUPPORTED_LOCALES = _discover_locales()
 
 
-def get_locale():
+def get_locale() -> str:
     """Select locale from cookie, then Accept-Language header, then default."""
     cookie_locale = request.cookies.get("ytm-locale")
     if cookie_locale in SUPPORTED_LOCALES:
@@ -99,7 +101,7 @@ app.jinja_env.globals["use_minified"] = (_dist / "app.min.js").exists() and (_di
 
 
 @app.context_processor
-def inject_globals():
+def inject_globals() -> dict[str, Any]:
     """Make CSP nonce, locales, and JS translations accessible in all templates."""
     locale_choices = [(code, Locale(code).get_display_name(code) or code) for code in SUPPORTED_LOCALES]
     catalog = get_translations()
@@ -117,13 +119,13 @@ def inject_globals():
 
 
 @app.before_request
-def generate_csp_nonce():
+def generate_csp_nonce() -> None:
     """Generate a unique nonce for inline scripts on each request."""
     g.csp_nonce = _secrets.token_urlsafe(16)
 
 
 @app.after_request
-def add_security_headers(response):
+def add_security_headers(response: Response) -> Response:
     """Add security headers to all responses."""
     nonce = getattr(g, "csp_nonce", "")
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
@@ -145,19 +147,19 @@ app.register_blueprint(events_bp)
 
 
 @app.route("/manifest.json")
-def manifest():
+def manifest() -> ResponseReturnValue:
     """Serve PWA manifest from site root."""
     return app.send_static_file("manifest.json")
 
 
 @app.route("/")
-def index():
+def index() -> ResponseReturnValue:
     """Main dashboard page."""
     context = DashboardContext.build()
     return render_template("dashboard.html", **context.to_template_context())
 
 
-def main():
+def main() -> None:
     """Run the Flask development server."""
     logger.info("Starting web dashboard at http://127.0.0.1:2002")
     try:

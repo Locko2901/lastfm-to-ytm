@@ -89,7 +89,7 @@ ALL_SETTINGS = [
 
 def parse_env_file() -> dict[str, str]:
     """Parse .env file into key-value pairs."""
-    settings = {}
+    settings: dict[str, str] = {}
     if not ENV_FILE.exists():
         return settings
 

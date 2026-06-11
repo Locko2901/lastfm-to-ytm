@@ -8,6 +8,7 @@ import os
 import struct
 import time
 from pathlib import Path
+from typing import Any
 
 from src.config import CACHE_DIR, CONFIG_DIR
 
@@ -128,7 +129,7 @@ def _decrypt_payload(data: bytes, password: str) -> bytes:
 
 def export_config(password: str, *, cache_keys: list[str] | None = None) -> bytes:
     """Collect all config files, encrypt with password, return bytes."""
-    bundle: dict = {
+    bundle: dict[str, Any] = {
         "_teleporter_meta": {
             "version": TELEPORTER_VERSION,
             "exported_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -162,7 +163,7 @@ def export_config(password: str, *, cache_keys: list[str] | None = None) -> byte
     plaintext = json.dumps(bundle, ensure_ascii=False).encode("utf-8")
 
     salt = os.urandom(_SALT_LEN)
-    key = _derive_key_argon2(
+    derived_key = _derive_key_argon2(
         password,
         salt,
         memory_kib=_ARGON2_MEMORY_KIB,
@@ -179,12 +180,12 @@ def export_config(password: str, *, cache_keys: list[str] | None = None) -> byte
     )
 
     aad = _MAGIC + header
-    nonce, ciphertext, tag = _encrypt_aes_gcm(key, plaintext, aad=aad)
+    nonce, ciphertext, tag = _encrypt_aes_gcm(derived_key, plaintext, aad=aad)
 
     return _MAGIC + header + salt + nonce + ciphertext + tag
 
 
-def import_config(data: bytes, password: str) -> dict:
+def import_config(data: bytes, password: str) -> dict[str, Any]:
     """Decrypt and restore config files. Returns summary dict."""
     plaintext = _decrypt_payload(data, password)
     bundle = json.loads(plaintext.decode("utf-8"))
@@ -253,7 +254,7 @@ def import_config(data: bytes, password: str) -> dict:
     }
 
 
-def preview_config(data: bytes, password: str) -> dict:
+def preview_config(data: bytes, password: str) -> dict[str, Any]:
     """Decrypt and return a summary without applying changes."""
     plaintext = _decrypt_payload(data, password)
     bundle = json.loads(plaintext.decode("utf-8"))

@@ -6,8 +6,11 @@ import json
 import logging
 import queue
 import time
+from collections.abc import Iterator
+from typing import Any
 
 from flask import Blueprint, Response, stream_with_context
+from flask.typing import ResponseReturnValue
 
 from ..services import events as bus
 from ..services import notifications as notif_store
@@ -21,7 +24,7 @@ logger = logging.getLogger(__name__)
 _KEEPALIVE_SECONDS = 15
 
 
-def _snapshot() -> dict:
+def _snapshot() -> dict[str, Any]:
     """Capture current values that subscribers want on initial connect."""
     with sync_lock:
         sync_snap = {
@@ -48,10 +51,10 @@ def _snapshot() -> dict:
 
 
 @events_bp.route("")
-def stream():
+def stream() -> ResponseReturnValue:
     """SSE stream emitting typed events: ``sync_state``, ``stats_changed``, etc."""
 
-    def gen():
+    def gen() -> Iterator[str]:
         q = bus.subscribe()
         try:
             yield f"event: snapshot\ndata: {json.dumps(_snapshot())}\n\n"

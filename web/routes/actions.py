@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import logging
 import re
+from typing import Any
 
 from flask import Blueprint, jsonify, redirect, request, url_for
+from flask.typing import ResponseReturnValue
 from flask_babel import gettext as _
 
 from ..services import history_record_action, load_overrides, load_search_cache, load_tag_cache, load_tag_overrides
@@ -45,7 +47,7 @@ def extract_video_id(url_or_id: str) -> str | None:
 
 
 @actions_bp.route("/blacklist", methods=["POST"])
-def blacklist():
+def blacklist() -> ResponseReturnValue:
     """Add a track to the blacklist."""
     artist = request.form.get("artist", "")
     title = request.form.get("title", "")
@@ -61,7 +63,7 @@ def blacklist():
 
 
 @actions_bp.route("/unblacklist", methods=["POST"])
-def unblacklist():
+def unblacklist() -> ResponseReturnValue:
     """Remove a track from the blacklist."""
     artist = request.form.get("artist", "")
     title = request.form.get("title", "")
@@ -76,7 +78,7 @@ def unblacklist():
 
 
 @actions_bp.route("/override", methods=["POST"])
-def override():
+def override() -> ResponseReturnValue:
     """Add a manual override for a track."""
     artist = request.form.get("artist", "")
     title = request.form.get("title", "")
@@ -100,7 +102,7 @@ def override():
 
 
 @actions_bp.route("/remove_override", methods=["POST"])
-def remove_override():
+def remove_override() -> ResponseReturnValue:
     """Remove a manual override."""
     artist = request.form.get("artist", "")
     title = request.form.get("title", "")
@@ -115,7 +117,7 @@ def remove_override():
 
 
 @actions_bp.route("/clear_cache_entry", methods=["POST"])
-def clear_cache_entry():
+def clear_cache_entry() -> ResponseReturnValue:
     """Clear a specific cache entry."""
     artist = request.form.get("artist", "")
     title = request.form.get("title", "")
@@ -130,7 +132,7 @@ def clear_cache_entry():
 
 
 @actions_bp.route("/tag_override", methods=["POST"])
-def tag_override():
+def tag_override() -> ResponseReturnValue:
     """Add or update a tag override for a track."""
     artist = request.form.get("artist", "").strip()
     title = request.form.get("title", "").strip()
@@ -160,7 +162,7 @@ def tag_override():
 
 
 @actions_bp.route("/remove_tag_override", methods=["POST"])
-def remove_tag_override():
+def remove_tag_override() -> ResponseReturnValue:
     """Remove a tag override."""
     artist = request.form.get("artist", "")
     title = request.form.get("title", "")
@@ -175,7 +177,7 @@ def remove_tag_override():
 
 
 @actions_bp.route("/clear_tag_cache_entry", methods=["POST"])
-def clear_tag_cache_entry():
+def clear_tag_cache_entry() -> ResponseReturnValue:
     """Clear a specific tag cache entry."""
     artist = request.form.get("artist", "")
     title = request.form.get("title", "")
@@ -190,12 +192,12 @@ def clear_tag_cache_entry():
 
 
 @actions_bp.route("/export", methods=["GET"])
-def export_data():
+def export_data() -> ResponseReturnValue:
     """Export overrides, blacklist, and/or tag overrides as JSON."""
     export_type = request.args.get("type", "all")
     overrides = load_overrides()
 
-    result = {}
+    result: dict[str, Any] = {}
     if export_type in ("all", "overrides"):
         result["overrides"] = dict(overrides.override_items())
     if export_type in ("all", "blacklist"):
@@ -213,7 +215,7 @@ def export_data():
 
 
 @actions_bp.route("/import", methods=["POST"])
-def import_data():
+def import_data() -> ResponseReturnValue:
     """Import overrides and/or blacklist from JSON."""
     data = request.get_json()
     if not data:

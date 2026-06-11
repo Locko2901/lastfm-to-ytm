@@ -16,7 +16,7 @@ import threading
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from . import events as bus
 
@@ -63,7 +63,7 @@ def _save(data: dict[str, Any]) -> None:
         logger.warning("Could not persist notifications: %s", exc)
 
 
-def _prune(notifications: list[dict]) -> list[dict]:
+def _prune(notifications: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Drop expired entries and trim to MAX_NOTIFICATIONS (newest first)."""
     cutoff = time.time() - TTL_SECONDS
     fresh = []
@@ -118,7 +118,7 @@ def add(message: str, type_: str = "info", source: str | None = None) -> dict[st
                 try:
                     prev_ts = datetime.fromisoformat(prev["created_at"]).timestamp()
                     if time.time() - prev_ts < 5:
-                        return prev
+                        return cast("dict[str, Any]", prev)
                 except (KeyError, ValueError, TypeError):
                     pass
         data["notifications"].insert(0, entry)
