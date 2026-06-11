@@ -6,6 +6,7 @@ import json
 import logging
 
 from flask import Blueprint, jsonify, request
+from flask.typing import ResponseReturnValue
 from flask_babel import gettext as _
 
 from ..services import BROWSER_JSON_FILE
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 @auth_bp.route("/submit", methods=["POST"])
-def submit():
+def submit() -> ResponseReturnValue:
     """Parse raw browser headers and write browser.json directly.
 
     Accepts { "headers_raw": "..." } with pasted request headers or cURL.
@@ -29,7 +30,7 @@ def submit():
     headers_raw = data["headers_raw"].strip()
 
     try:
-        from ytmusicapi.setup import setup_browser
+        from ytmusicapi.setup import setup_browser  # type: ignore[attr-defined]
 
         setup_browser(filepath=str(BROWSER_JSON_FILE), headers_raw=headers_raw)
     except Exception as e:
@@ -105,7 +106,7 @@ def _validate_browser_json() -> tuple[bool, bool, str | None]:
 
 
 @auth_bp.route("/status")
-def status():
+def status() -> ResponseReturnValue:
     """Get browser.json validity."""
     browser_has_content, valid, _ = _validate_browser_json()
     return jsonify(
@@ -117,7 +118,7 @@ def status():
 
 
 @auth_bp.route("/validate")
-def validate():
+def validate() -> ResponseReturnValue:
     """Quick check that browser.json exists and has valid structure."""
     has_content, valid, error = _validate_browser_json()
     if valid:
@@ -126,7 +127,7 @@ def validate():
 
 
 @auth_bp.route("/test")
-def test():
+def test() -> ResponseReturnValue:
     """Actually test the auth by fetching the user's last liked song."""
     if not BROWSER_JSON_FILE.exists():
         return jsonify({"valid": False, "error": _("browser.json not found")})

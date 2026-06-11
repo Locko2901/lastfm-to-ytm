@@ -61,10 +61,12 @@ def save_theme_overrides(data: dict[str, Any]) -> dict[str, Any]:
 def _sanitise(data: Any) -> dict[str, Any]:
     if not isinstance(data, dict):
         return _empty()
-    parents_in = data.get("parents") if isinstance(data.get("parents"), dict) else {}
+    parents_raw = data.get("parents")
+    parents_in: dict[Any, Any] = parents_raw if isinstance(parents_raw, dict) else {}
     parents_out: dict[str, dict[str, str]] = {"dark": {}, "light": {}}
     for parent in _VALID_PARENTS:
-        bucket = parents_in.get(parent) if isinstance(parents_in.get(parent), dict) else {}
+        bucket_raw = parents_in.get(parent)
+        bucket: dict[Any, Any] = bucket_raw if isinstance(bucket_raw, dict) else {}
         for key, value in bucket.items():
             if not isinstance(key, str) or not key.startswith("--"):
                 continue

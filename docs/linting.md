@@ -17,7 +17,7 @@ This project uses these tools across its file types:
 ruff check .           # lint
 ruff check . --fix     # lint + auto-fix
 ruff format .          # format
-mypy                   # static type check (config picks up src/ + entry scripts)
+mypy                   # static type check (config picks up src/ + web/ + entry scripts)
 
 # JS / CSS  (requires: npm install)
 npm run lint           # lint
@@ -53,7 +53,7 @@ Configured in `pyproject.toml` under `[tool.ruff.lint]`. Highlights:
 
 ## mypy Rules
 
-Configured in `pyproject.toml` under `[tool.mypy]`. Runs in `strict` mode (plus `warn_unreachable`) over `src/`, `run.py`, and `run_tags.py`. Untyped third-party packages without stubs (`ytmusicapi`, `flask_babel`, `apscheduler`, `text_unidecode`, `unidecode`) are allowed via per-module `ignore_missing_imports` overrides. Run `mypy` with no arguments - the config picks up the right files.
+Configured in `pyproject.toml` under `[tool.mypy]`. Runs in `strict` mode (plus `warn_unreachable`) over `src/`, `web/`, `run.py`, and `run_tags.py`. Untyped third-party packages without stubs (`ytmusicapi`, `flask_babel`, `apscheduler`, `text_unidecode`, `unidecode`) are allowed via per-module `ignore_missing_imports` overrides. Run `mypy` with no arguments - the config picks up the right files.
 
 ## Biome Rules
 

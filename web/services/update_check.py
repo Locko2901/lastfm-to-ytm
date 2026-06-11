@@ -9,7 +9,7 @@ import re
 import subprocess
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import requests
 
@@ -209,7 +209,7 @@ def _github_get(path: str) -> dict[str, Any] | list[Any] | None:
         logger.debug("GitHub request %s returned HTTP %s", path, response.status_code)
         return None
     try:
-        return response.json()
+        return cast("dict[str, Any] | list[Any] | None", response.json())
     except ValueError:
         return None
 
@@ -296,7 +296,7 @@ def get_update_status() -> dict[str, Any]:
     - ``current_version``: version from ``pyproject.toml``
     - ``current_sha`` / ``current_sha_short``: full / 7-char build SHA, or
       ``None`` for non-image installs without a populated ``COMMIT SHA``
-    - ``build_type``: ``"local"`` (unpushed SHA — overrides everything else),
+    - ``build_type``: ``"local"`` (unpushed SHA - overrides everything else),
       ``"stable"`` / ``"dev"`` from ``YTMT_CHANNEL`` or ``.channel``, or
       inferred from the SHA (tag match → ``"stable"``, otherwise ``"dev"``;
       ``"unknown"`` if no SHA).

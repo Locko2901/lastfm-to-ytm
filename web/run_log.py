@@ -11,7 +11,7 @@ from pathlib import Path
 
 def save_run_log(
     cache_dir: Path,
-    mappings: list[dict],
+    mappings: list[dict[str, str]],
 ) -> None:
     """Save the run log with track mappings.
 
@@ -39,7 +39,7 @@ def create_mapping_entry(
     artist: str,
     title: str,
     source: str,
-) -> dict:
+) -> dict[str, str]:
     """Create a mapping entry."""
     return {
         "artist": artist,

@@ -9,6 +9,7 @@ import threading
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 try:
     from apscheduler.schedulers.background import BackgroundScheduler
@@ -26,7 +27,7 @@ _TAG_SYNC_COUNTER_FILE = Path(__file__).parent.parent.parent / "cache" / ".tag_s
 _scheduler: BackgroundScheduler | None = None
 _scheduler_lock = threading.Lock()
 
-scheduler_state: dict = {
+scheduler_state: dict[str, Any] = {
     "enabled": False,
     "schedule_type": "interval",  # "interval" or "cron"
     "interval_hours": 6,
@@ -60,7 +61,7 @@ def get_scheduler() -> BackgroundScheduler | None:
         return _scheduler
 
 
-def _get_sync_function() -> Callable | None:
+def _get_sync_function() -> Callable[..., None] | None:
     """Get sync function."""
     try:
         from ..routes.sync import _run_sync_process
@@ -91,7 +92,7 @@ def _get_sync_function() -> Callable | None:
                 logger.warning("Tag sync counter error, running anyway: %s", e)
                 return True
 
-        def scheduled_sync():
+        def scheduled_sync() -> None:
             """Wrapper to run sync and track it in scheduler state."""
             logger.info("Scheduled sync triggered")
 
@@ -133,7 +134,7 @@ def _get_sync_function() -> Callable | None:
         return None
 
 
-def _update_next_run():
+def _update_next_run() -> None:
     if _scheduler is not None and _scheduler.running:
         job = _scheduler.get_job("auto_sync")
         if job:
@@ -242,7 +243,7 @@ def start_scheduler(
         return False
 
 
-def stop_scheduler():
+def stop_scheduler() -> None:
     """Stop the scheduler completely."""
     global _scheduler
 
@@ -257,7 +258,7 @@ def stop_scheduler():
     logger.info("Scheduler stopped")
 
 
-def _parse_scheduler_settings() -> dict:
+def _parse_scheduler_settings() -> dict[str, Any]:
     """Parse AUTO_SYNC_* settings from the .env file.
 
     Returns dict with keys: enabled, schedule_type, interval_hours,
@@ -287,7 +288,7 @@ def _parse_scheduler_settings() -> dict:
     }
 
 
-def get_scheduler_status() -> dict:
+def get_scheduler_status() -> dict[str, Any]:
     """Get current scheduler status for the API.
 
     Reads the enabled/config state from the .env file so that all Gunicorn
@@ -316,7 +317,7 @@ def get_scheduler_status() -> dict:
     }
 
 
-def init_scheduler_from_env():
+def init_scheduler_from_env() -> None:
     """Initialize scheduler from environment variables on app startup."""
     cfg = _parse_scheduler_settings()
 

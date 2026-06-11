@@ -16,7 +16,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-_subscribers: list[queue.Queue] = []
+_subscribers: list[queue.Queue[Any]] = []
 _lock = threading.Lock()
 
 
@@ -30,15 +30,15 @@ def publish(event_type: str, data: Any = None) -> None:
             q.put_nowait(payload)
 
 
-def subscribe() -> queue.Queue:
+def subscribe() -> queue.Queue[Any]:
     """Register a subscriber queue. Caller must call ``unsubscribe`` on exit."""
-    q: queue.Queue = queue.Queue(maxsize=256)
+    q: queue.Queue[Any] = queue.Queue(maxsize=256)
     with _lock:
         _subscribers.append(q)
     return q
 
 
-def unsubscribe(q: queue.Queue) -> None:
+def unsubscribe(q: queue.Queue[Any]) -> None:
     """Remove a previously-registered subscriber queue."""
     with _lock, contextlib.suppress(ValueError):
         _subscribers.remove(q)
