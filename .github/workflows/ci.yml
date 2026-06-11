@@ -190,6 +190,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Lowercase image name
         id: img
@@ -258,6 +260,34 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: false
 
+      - name: Check if Docker Hub description changed
+        if: ${{ vars.DOCKERHUB_IMAGE != '' }}
+        id: desc
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BEFORE}" ] || [ "${BEFORE}" = "0000000000000000000000000000000000000000" ]; then
+            echo "No previous commit found; treating description as changed."
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --quiet "${BEFORE}" HEAD -- README.docker.md; then
+            echo "README.docker.md unchanged since ${BEFORE}; skipping description sync."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "README.docker.md changed since ${BEFORE}; will sync description."
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Sync Docker Hub description
+        if: ${{ vars.DOCKERHUB_IMAGE != '' && steps.desc.outputs.changed == 'true' }}
+        uses: peter-evans/dockerhub-description@v5
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ env.DOCKERHUB_IMAGE }}
+          short-description: "Sync Last.fm listening history to YouTube Music playlists"
+          readme-filepath: ./README.docker.md
+
   docker-publish-release:
     name: Docker publish (GHCR + Docker Hub - release)
     needs: [release-please, docker-publish]
@@ -319,41 +349,3 @@ jobs:
             )
           fi
           docker buildx imagetools create "${tag_args[@]}" "${SRC}"
-
-      - name: Checkout
-        if: ${{ vars.DOCKERHUB_IMAGE != '' }}
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Check if Docker Hub description changed
-        if: ${{ vars.DOCKERHUB_IMAGE != '' }}
-        id: desc
-        env:
-          MAJOR: ${{ needs.release-please.outputs.major }}
-          MINOR: ${{ needs.release-please.outputs.minor }}
-          PATCH: ${{ needs.release-please.outputs.patch }}
-        run: |
-          set -euo pipefail
-          NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
-          PREV_TAG="$(git tag --sort=-v:refname | grep -v "^${NEW_TAG}$" | head -n1 || true)"
-          if [ -z "${PREV_TAG}" ]; then
-            echo "No previous tag found; treating description as changed."
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          elif git diff --quiet "${PREV_TAG}" HEAD -- README.docker.md; then
-            echo "README.docker.md unchanged since ${PREV_TAG}; skipping description sync."
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "README.docker.md changed since ${PREV_TAG}; will sync description."
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Sync Docker Hub description
-        if: ${{ vars.DOCKERHUB_IMAGE != '' && steps.desc.outputs.changed == 'true' }}
-        uses: peter-evans/dockerhub-description@v5
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ env.DOCKERHUB_IMAGE }}
-          short-description: "Sync Last.fm listening history to YouTube Music playlists"
-          readme-filepath: ./README.docker.md
