@@ -4,6 +4,41 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.2.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.1.0...v2.2.0) (2026-06-11)
+
+
+### Features
+
+* **web:** add status filter to sync history panel ([bf8d78a](https://github.com/Locko2901/lastfm-to-ytm/commit/bf8d78a89f1b9be7603d99780000c8a0a759fcf2))
+
+
+### Bug Fixes
+
+* resolve CodeQL security alerts (SSRF, XSS, SQLi, info exposure) ([24cda45](https://github.com/Locko2901/lastfm-to-ytm/commit/24cda4575ccb5b3d87fe950128081b838b70ea14))
+* **web:** harden image proxy SSRF and document webhook/SSRF policy ([8ec0ccf](https://github.com/Locko2901/lastfm-to-ytm/commit/8ec0ccfe359e6cd0160879ac8809b9f8c7a0f659))
+
+
+### Documentation
+
+* reword Replay Mix intro across README and docs ([b2cf0e6](https://github.com/Locko2901/lastfm-to-ytm/commit/b2cf0e6607edb314662972f19525418302c02919))
+
+
+### Tests
+
+* add web backend tests, enable web type-checking + coverage ([f788aa1](https://github.com/Locko2901/lastfm-to-ytm/commit/f788aa177bc083e54ddf6ba34215763df159de63))
+* cover webhook SSRF guard and allow_private setting ([faf77e4](https://github.com/Locko2901/lastfm-to-ytm/commit/faf77e443b26036bc090507a792fd60bd6b3b6f5))
+
+
+### CI/CD
+
+* sync Docker Hub description from dev publish job ([05953fc](https://github.com/Locko2901/lastfm-to-ytm/commit/05953fc2254bd0d04707b0c9e3773e1c209ad36b))
+
+
+### Miscellaneous
+
+* enable strict mypy type checking ([1ae406d](https://github.com/Locko2901/lastfm-to-ytm/commit/1ae406d614c6ceba6a48198baa1f9a066f2ff8f7))
+* update dev dependencies installation to include web support ([ce7992e](https://github.com/Locko2901/lastfm-to-ytm/commit/ce7992e07b58864790e0778b8e645e00afcf0edc))
+
 ## [2.1.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.0.0...v2.1.0) (2026-06-09)
 
 
