@@ -296,6 +296,26 @@ def test_load_custom_playlists_parses_entries(tmp_path):
     assert cfg.blacklist == frozenset({"bad artist"})
 
 
+def test_load_custom_playlists_parses_blacklist_artists(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps(
+            {
+                "playlists": [
+                    {
+                        "name": "Rock",
+                        "tags": ["rock"],
+                        "blacklist_artists": ["Unwanted Artist"],
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    cfg = load_custom_playlists(str(path))[0]
+    assert cfg.blacklist_artists == frozenset({"unwanted artist"})
+
+
 def test_load_custom_playlists_skips_entries_without_tags(tmp_path):
     path = tmp_path / "custom.json"
     path.write_text(json.dumps({"playlists": [{"name": "NoTags"}]}), encoding="utf-8")

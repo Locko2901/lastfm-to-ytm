@@ -17,7 +17,7 @@ The web dashboard is always included with the Docker setup. It provides a full m
 
 - **Playlist tab** - View every track in your synced playlist with its matched YouTube Music link, source (cache/search/override), and status badges. Filter by overrides, blacklisted, or pending retry.
 - **Overrides tab** - Add, edit, or remove manual search overrides directly. Paste a YouTube Music URL or video ID and the dashboard extracts and validates it.
-- **Blacklist tab** - Manage blacklisted tracks from the UI. Blacklisted tracks are excluded entirely from playlist generation.
+- **Blacklist tab** - Manage blacklisted tracks from the UI. Blacklisted tracks are excluded entirely from playlist generation. **Blacklist Artist** excludes every track by an artist (the artist blacklist also applies to custom tag playlists; each playlist additionally supports its own per-artist blacklist in the editor).
 - **Not Found tab** - See all tracks where the search couldn't find a match. One-click to add an override or blacklist entry for any of them.
 
 ??? example "Screenshot: Not Found tab"

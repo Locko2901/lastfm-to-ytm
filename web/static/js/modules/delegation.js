@@ -9,6 +9,7 @@ const actionHandlers = {
   runSyncTags: () => window.runSyncTags(),
   stopSync: () => window.stopSync(),
   showAddBlacklistModal: () => window.showAddBlacklistModal(),
+  showAddBlacklistArtistModal: () => window.showAddBlacklistArtistModal(),
   showAddOverrideModal: () => window.showAddOverrideModal(),
   showExportImportModal: () => window.showExportImportModal(),
   showTeleporterModal: () => window.showTeleporterModal(),
@@ -58,6 +59,10 @@ const actionHandlers = {
     const { artist, title, tab } = el.dataset
     window.showBlacklistModal(artist, title, tab)
   },
+  showBlacklistArtistModal: el => {
+    const { artist, tab } = el.dataset
+    window.showBlacklistArtistModal(artist, tab)
+  },
   unblacklistTrack: el => {
     const { artist, title, tab } = el.dataset
     window.unblacklistTrack(artist, title, el, tab)
@@ -93,6 +98,14 @@ const actionHandlers = {
   unblacklistFromPlaylist: el => {
     const { artist, title, plIndex } = el.dataset
     window.unblacklistFromPlaylist(parseInt(plIndex, 10), artist, title)
+  },
+  blacklistArtistFromPlaylist: el => {
+    const { artist, plIndex } = el.dataset
+    window.blacklistArtistFromPlaylist(parseInt(plIndex, 10), artist)
+  },
+  unblacklistArtistFromPlaylist: el => {
+    const { artist, plIndex } = el.dataset
+    window.unblacklistArtistFromPlaylist(parseInt(plIndex, 10), artist)
   },
   expandTags: el => {
     const container = el.closest(".track-tags")

@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .data import (
+    get_artist_blacklist_data,
     get_cache_stats,
     get_cached_tracks,
     get_last_sync_time,
@@ -52,6 +53,7 @@ class DashboardContext:
     resolved: int
     overrides: Any
     blacklist: Any
+    blacklist_artists: Any
     cache_stats: Any
     cached_tracks: Any
     not_found_tracks: Any
@@ -85,6 +87,7 @@ class DashboardContext:
             resolved=len(playlist_mappings),
             overrides=override_list,
             blacklist=blacklist,
+            blacklist_artists=get_artist_blacklist_data(),
             cache_stats=get_cache_stats(),
             cached_tracks=get_cached_tracks(),
             not_found_tracks=get_not_found_tracks(),
@@ -113,6 +116,7 @@ class DashboardContext:
             "resolved": self.resolved,
             "overrides": self.overrides,
             "blacklist": self.blacklist,
+            "blacklist_artists": self.blacklist_artists,
             "cache_stats": self.cache_stats,
             "cached_tracks": self.cached_tracks,
             "not_found_tracks": self.not_found_tracks,

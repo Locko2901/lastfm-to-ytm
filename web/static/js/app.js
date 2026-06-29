@@ -14,6 +14,7 @@ import {
   showCacheAdminModal,
 } from "./modules/cacheAdmin.js"
 import {
+  blacklistArtistFromPlaylist,
   blacklistFromPlaylist,
   clearPreviewCache,
   confirmDeletePlaylist,
@@ -24,6 +25,7 @@ import {
   saveCustomPlaylist,
   showCustomPlaylistModal,
   togglePlaylistPreview,
+  unblacklistArtistFromPlaylist,
   unblacklistFromPlaylist,
 } from "./modules/customPlaylists.js"
 import {
@@ -61,8 +63,10 @@ import {
   exportData,
   initModals,
   removeTagOverride,
+  showAddBlacklistArtistModal,
   showAddBlacklistModal,
   showAddOverrideModal,
+  showBlacklistArtistModal,
   showBlacklistModal,
   showExportImportModal,
   showHistorySyncModal,
@@ -150,9 +154,11 @@ window.filterTags = filterTags
 window.showModal = showModal
 window.closeModal = closeModal
 window.showBlacklistModal = showBlacklistModal
+window.showBlacklistArtistModal = showBlacklistArtistModal
 window.showOverrideModal = showOverrideModal
 window.showAddOverrideModal = showAddOverrideModal
 window.showAddBlacklistModal = showAddBlacklistModal
+window.showAddBlacklistArtistModal = showAddBlacklistArtistModal
 window.unblacklistTrack = unblacklistTrack
 window.clearCacheEntry = clearCacheEntry
 window.showTagOverrideModal = showTagOverrideModal
@@ -227,6 +233,8 @@ window.saveCustomPlaylist = saveCustomPlaylist
 window.togglePlaylistPreview = togglePlaylistPreview
 window.blacklistFromPlaylist = blacklistFromPlaylist
 window.unblacklistFromPlaylist = unblacklistFromPlaylist
+window.blacklistArtistFromPlaylist = blacklistArtistFromPlaylist
+window.unblacklistArtistFromPlaylist = unblacklistArtistFromPlaylist
 window.loadPlaylistsData = loadPlaylistsData
 window.clearPreviewCache = clearPreviewCache
 

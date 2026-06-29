@@ -58,6 +58,17 @@ def resolve_tracks_to_video_ids(
                 run_log_mappings.append({"artist": artist, "title": title, "source": "blacklisted"})
             continue
 
+        if search_overrides.is_artist_blacklisted(artist):
+            misses += 1
+            bl_key = (artist.lower(), title.lower())
+            if bl_key not in blacklisted_seen:
+                blacklisted_seen.add(bl_key)
+                reason = search_overrides.get_artist_blacklist_reason(artist)
+                reason_str = f" (reason: {reason})" if reason else ""
+                log.info("Blacklisted artist skipped: %s - %s%s", artist, title, reason_str)
+                run_log_mappings.append({"artist": artist, "title": title, "source": "blacklisted"})
+            continue
+
         vid = search_overrides.get(artist, title)
         yt_title = None
         source = "override" if vid else None

@@ -1,5 +1,5 @@
 {# j2lint: disable=S7 #}
-{% from "macros/_track_actions.html" import search_bar, override_btn, blacklist_btn, clear_cache_btn, tag_pills %}
+{% from "macros/_track_actions.html" import search_bar, override_btn, blacklist_btn, blacklist_artist_btn, clear_cache_btn, tag_pills %}
 <div class="tab-panel" id="panel-notfound">
   <div class="panel-description">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -36,6 +36,7 @@
       <div class="track-actions">
         {{ override_btn(t.artist, t.title, "notfound") }}
         {{ blacklist_btn(t.artist, t.title, "notfound") }}
+        {{ blacklist_artist_btn(t.artist, "notfound") }}
         {{ clear_cache_btn(t.artist, t.title, "notfound") }}
       </div>
     </div>

@@ -85,6 +85,7 @@ def sync_custom_playlists(
             match=config.match,
             min_count=settings.tag_min_count,
             blacklist=config.blacklist,
+            blacklist_artists=config.blacklist_artists,
         )
         candidate_keys.update((t.artist.lower(), t.track.lower()) for t in matching_tracks)
 
@@ -168,6 +169,7 @@ def sync_custom_playlists(
                 match=config.match,
                 min_count=settings.tag_min_count,
                 blacklist=config.blacklist,
+                blacklist_artists=config.blacklist_artists,
             )
             candidate_keys.update((t.artist.lower(), t.track.lower()) for t in new_matching)
 

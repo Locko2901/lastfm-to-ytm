@@ -49,6 +49,14 @@ export function showBlacklistModal(artist, title, redirectTab) {
   showModal("blacklistModal")
 }
 
+export function showBlacklistArtistModal(artist, redirectTab) {
+  document.getElementById("blacklist-artist-name").value = artist
+  document.getElementById("blacklist-artist-display").value = artist
+  document.getElementById("blacklist-artist-redirect").value = redirectTab
+  document.getElementById("blacklist-artist-reason-field").value = ""
+  showModal("blacklistArtistModal")
+}
+
 export function showOverrideModal(artist, title, redirectTab, existingVideoId = "") {
   document.getElementById("override-artist").value = artist
   document.getElementById("override-title").value = title
@@ -64,6 +72,10 @@ export function showAddOverrideModal() {
 
 export function showAddBlacklistModal() {
   showModal("addBlacklistModal")
+}
+
+export function showAddBlacklistArtistModal() {
+  showModal("addBlacklistArtistModal")
 }
 
 export function showTagOverrideModal(artist, title, redirectTab, existingTags = "", lastfmTags = "", hasOverride = "") {

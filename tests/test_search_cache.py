@@ -1,6 +1,6 @@
 from datetime import UTC, datetime, timedelta
 
-from src.cache.search import NOT_FOUND, SearchCache
+from src.cache.search import NOT_FOUND, SearchCache, SearchOverrides
 
 
 def _make_cache(tmp_path, **kwargs) -> SearchCache:
@@ -90,3 +90,32 @@ def test_clear_notfound(tmp_path):
     assert cache.clear_notfound() == 1
     assert cache.get("A", "found") == "vid"
     assert cache.get("B", "missing") is None
+
+
+def _make_overrides(tmp_path) -> SearchOverrides:
+    return SearchOverrides(str(tmp_path / "overrides.json"))
+
+
+def test_artist_blacklist_roundtrip(tmp_path):
+    ov = _make_overrides(tmp_path)
+    assert ov.is_artist_blacklisted("Nickelback") is False
+    ov.blacklist_artist("Nickelback", reason="no thanks")
+    assert ov.is_artist_blacklisted("nickelback") is True
+    assert ov.get_artist_blacklist_reason("NICKELBACK") == "no thanks"
+
+
+def test_artist_blacklist_remove(tmp_path):
+    ov = _make_overrides(tmp_path)
+    ov.blacklist_artist("Artist")
+    assert ov.remove_artist_blacklist("artist") is True
+    assert ov.is_artist_blacklisted("Artist") is False
+    assert ov.remove_artist_blacklist("artist") is False
+
+
+def test_artist_blacklist_persists_and_stats(tmp_path):
+    path = str(tmp_path / "overrides.json")
+    SearchOverrides(path).blacklist_artist("Artist", reason="bad")
+    ov = SearchOverrides(path)
+    assert ov.is_artist_blacklisted("Artist") is True
+    assert ov.artist_blacklist_keys() == {"artist"}
+    assert ov.stats()["total_blacklisted_artists"] == 1

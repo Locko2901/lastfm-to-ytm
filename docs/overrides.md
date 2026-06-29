@@ -48,3 +48,21 @@ Blacklisted tracks are excluded entirely from playlist generation. They are chec
 
 !!! info "Resolution order"
     blacklist &rarr; overrides &rarr; search cache &rarr; YouTube Music API. Overrides and blacklist entries never expire (you remove them manually), and both also apply to [custom tag playlists](tag-playlists.md).
+
+## Blacklisting an Artist
+
+To exclude **every** track by an artist, add an entry to `_blacklist_artists`. Keys are the lowercase artist name; tracks are matched and skipped regardless of title:
+
+```json
+{
+  "_blacklist_artists": {
+    "unwanted artist": {
+      "artist": "Unwanted Artist",
+      "reason": "Never want this artist in any playlist"
+    }
+  }
+}
+```
+
+The artist blacklist is checked alongside the track blacklist (before overrides and cache). [Custom tag playlists](tag-playlists.md) support a per-playlist `blacklist_artists` array that works the same way.
+

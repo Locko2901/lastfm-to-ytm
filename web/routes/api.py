@@ -30,6 +30,7 @@ from ..services import (
     delete_custom_playlist_data,
     delete_ytm_playlist,
     discover_ytm_playlists,
+    get_artist_blacklist_data,
     get_cache_stats,
     get_cached_tracks,
     get_custom_playlist_tracks,
@@ -213,7 +214,7 @@ def mappings() -> ResponseReturnValue:
 def overrides() -> ResponseReturnValue:
     """JSON API for overrides and blacklist."""
     override_list, blacklist = get_overrides_data()
-    return jsonify({"overrides": override_list, "blacklist": blacklist})
+    return jsonify({"overrides": override_list, "blacklist": blacklist, "blacklist_artists": get_artist_blacklist_data()})
 
 
 @api_bp.route("/cache-stats")
@@ -375,7 +376,7 @@ def panel_html(panel_name: str) -> ResponseReturnValue:
         )
     if panel_name == "blacklist":
         _overrides, blacklist = get_overrides_data()
-        return render_template("partials/_panel_blacklist.html", blacklist=blacklist)
+        return render_template("partials/_panel_blacklist.html", blacklist=blacklist, blacklist_artists=get_artist_blacklist_data())
     if panel_name == "overrides":
         override_list, _blacklist = get_overrides_data()
         return render_template(
@@ -448,6 +449,10 @@ def custom_playlists_save() -> ResponseReturnValue:
         if not isinstance(blacklist, list):
             blacklist = []
         blacklist = [b for b in blacklist if isinstance(b, str)]
+        blacklist_artists = entry.get("blacklist_artists", [])
+        if not isinstance(blacklist_artists, list):
+            blacklist_artists = []
+        blacklist_artists = [b for b in blacklist_artists if isinstance(b, str)]
         backfill = entry.get("backfill", True)
         if not isinstance(backfill, bool):
             backfill = True
@@ -465,6 +470,7 @@ def custom_playlists_save() -> ResponseReturnValue:
                 "match": match,
                 "limit": limit,
                 "blacklist": [b.lower().strip() for b in blacklist if b.strip()],
+                "blacklist_artists": [b.lower().strip() for b in blacklist_artists if b.strip()],
                 "backfill": backfill,
                 "auto_sync": auto_sync,
             }
@@ -625,6 +631,7 @@ def track_detail() -> ResponseReturnValue:
         "has_tag_override": key in tag_overrides_map,
         "is_overridden": False,
         "is_blacklisted": False,
+        "is_artist_blacklisted": False,
         "cache_timestamp": None,
         "history_times_found": None,
         "history_first_seen": None,
@@ -642,6 +649,7 @@ def track_detail() -> ResponseReturnValue:
     blacklist_keys = overrides_obj.blacklist_keys()
     result["is_overridden"] = key in override_keys
     result["is_blacklisted"] = key in blacklist_keys
+    result["is_artist_blacklisted"] = overrides_obj.is_artist_blacklisted(artist)
 
     entry = cache.get_entry(artist, title)
     if entry:
@@ -655,6 +663,8 @@ def track_detail() -> ResponseReturnValue:
         result["source"] = _get_run_log_source(artist, title) or result["source"]
 
     if result["is_blacklisted"] and result["source"] not in ("blacklisted",):
+        result["source"] = "blacklisted"
+    if result["is_artist_blacklisted"] and result["source"] not in ("blacklisted",):
         result["source"] = "blacklisted"
 
     history_db = get_history_db()
