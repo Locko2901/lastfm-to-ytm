@@ -102,7 +102,7 @@ Creates a rolling weekly copy of the main playlist.
 3. Sorts by date descending
 4. Deletes everything beyond `WEEKLY_KEEP_WEEKS` (default 2)
 
-The cache is pruned in step with YTM: after deleting old weeklies, `PlaylistCache.prune_old_weeklies()` is called with the same `WEEKLY_KEEP_WEEKS`, so the cache retains the same number of weekly entries as remain on YouTube Music (`0` keeps all, but the cache always keeps at least 1).
+When `WEEKLY_KEEP_WEEKS > 0`, only the N most recent weekly playlists survive on YTM **and** in the cache (3 entries when `=3`, etc.); older weeks are deleted from both. When `WEEKLY_KEEP_WEEKS = 0`, every weekly playlist is kept forever on YTM and cached. In all cases, `PlaylistCache.clear_old_weekly_songs()` keeps the song template (`video_ids`) only for the current week - older surviving weeks retain just their ID with no songs.
 
 ### Discovery & Manual Management
 

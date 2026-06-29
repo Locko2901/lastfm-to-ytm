@@ -112,6 +112,19 @@ def test_prune_old_weeklies_noop_when_within_keep(tmp_path):
     assert pc.prune_old_weeklies("Recents", keep_count=2) == []
 
 
+def test_clear_old_weekly_songs_keeps_ids_drops_songs(tmp_path):
+    pc = _pc(tmp_path)
+    prefix = "Recents"
+    for d in ("2024-01-01", "2024-01-08", "2024-01-15"):
+        pc.set_template(f"{prefix} week of {d}", f"PL{d}", ["a", "b"])
+    current = f"{prefix} week of 2024-01-15"
+    cleared = pc.clear_old_weekly_songs(prefix, current)
+    assert set(cleared) == {"Recents week of 2024-01-01", "Recents week of 2024-01-08"}
+    assert pc.get_id("Recents week of 2024-01-01") == "PL2024-01-01"
+    assert pc.get_video_ids("Recents week of 2024-01-01") == []
+    assert pc.get_video_ids(current) == ["a", "b"]
+
+
 def test_persists_across_instances(tmp_path):
     path = str(tmp_path / ".playlist_cache.json")
     PlaylistCache(path).set_template("P", "PL1", ["a", "b"])

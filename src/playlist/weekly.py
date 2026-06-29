@@ -213,9 +213,9 @@ def update_weekly_playlist(
 
     if cache:
         try:
-            cache.prune_old_weeklies(base_prefix, keep_count=keep_weeks)
+            cache.clear_old_weekly_songs(base_prefix, weekly_name)
         except Exception as e:
-            log.warning("Failed to prune old weeklies from cache: %s", e)
+            log.warning("Failed to clear songs from old weeklies in cache: %s", e)
 
     if weekly_id and cache:
         cache.set_template(weekly_name, weekly_id, valid_video_ids)
