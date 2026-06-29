@@ -46,7 +46,7 @@ Pass any generator flag through, for example:
 | `dashboard`        | `dashboard.png`          | Default Playlist tab with fixture tracks and stats         |
 | `notfound`         | `notfound.png`           | "Not Found" tab populated from null-`video_id` cache rows  |
 | `overrides`        | `overrides.png`          | Overrides + blacklist tab                                  |
-| `custom_playlists` | `custom_playlists.png`   | Custom tag playlists tab                                   |
+| `custom_playlists` | `custom_playlists.png`   | Custom playlists tab                                   |
 | `history`          | `history.png`            | History tab with seeded stats / charts                     |
 | `settings_modal`   | `settings_modal.png`     | Settings modal (demo credentials only)                     |
 | `setup_wizard`     | `setup_wizard.png`       | First-time setup wizard                                    |

@@ -60,7 +60,7 @@ nav:
       - Release Channels: channels.md
   - Features:
       - Web Dashboard: dashboard.md
-      - Custom Tag Playlists: tag-playlists.md
+      - Custom Playlists: tag-playlists.md
       - Search Overrides: overrides.md
   - How It Works: how-it-works.md
   - Troubleshooting: troubleshooting.md
