@@ -16,6 +16,35 @@
     </svg>
     {{ _('Add to Blacklist') }}
   </button>
+  <button class="add-item-btn" data-action="showAddBlacklistArtistModal">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+      stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+    {{ _('Blacklist Artist') }}
+  </button>
+  {% if blacklist_artists %}
+  <div class="track-list">
+    {% for a in blacklist_artists %}
+    <div class="track-item management-card blacklisted" data-original-artist="{{ a.artist }}">
+      <div class="management-info">
+        <h3>{{ a.artist }} <span class="badge badge-blacklist">{{ _('All tracks') }}</span></h3>
+        {% if a.reason %}
+        <div class="meta">{{ _('Reason:') }} {{ a.reason }}</div>
+        {% endif %}
+      </div>
+      <div class="track-actions">
+        <form method="POST" action="/unblacklist_artist" style="display:inline">
+          <input type="hidden" name="artist" value="{{ a.artist }}">
+          <input type="hidden" name="redirect_tab" value="blacklist">
+          <button type="submit" class="btn btn-success btn-sm">{{ _('Restore') }}</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
   {% if blacklist %}
   <div class="track-list">
     {% for b in blacklist %}

@@ -8,7 +8,7 @@ For example, define a "Breakcore Mix" playlist that only includes tracks tagged 
     ![Custom Playlists](screenshots/custom_playlists.png)
 
 !!! tip "Related"
-    Tag playlists honor the same `_overrides` and `_blacklist` you set up in [Search Overrides](overrides.md), plus a **per-playlist** `blacklist` field (see [Configuration](#configuration) below). Use tag overrides when Last.fm's tags are wrong; use search overrides when the *matched video* is wrong.
+    Tag playlists honor the same `_overrides`, `_blacklist`, and `_blacklist_artists` you set up in [Search Overrides](overrides.md), plus **per-playlist** `blacklist`/`blacklist_artists` fields (see [Configuration](#configuration) below). Use tag overrides when Last.fm's tags are wrong; use search overrides when the *matched video* is wrong.
 
 ## How Tags Are Resolved
 
@@ -57,7 +57,8 @@ cp config/custom_playlists.json.example config/custom_playlists.json
       "match": "all",
       "limit": 30,
       "backfill": true,
-      "blacklist": ["artist name|unwanted track"]
+      "blacklist": ["artist name|unwanted track"],
+      "blacklist_artists": ["unwanted artist"]
     }
   ]
 }
@@ -72,6 +73,7 @@ cp config/custom_playlists.json.example config/custom_playlists.json
 | `limit` | no | Target number of tracks (default: `50`) |
 | `backfill` | no | Fetch more scrobbles if filtering doesn't reach the limit (default: `true`) |
 | `blacklist` | no | Per-playlist exclusions as `"artist\|title"` (lowercase) |
+| `blacklist_artists` | no | Per-playlist artist exclusions (lowercase artist names) |
 
 ### Environment Variables
 

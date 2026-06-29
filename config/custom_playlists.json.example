@@ -7,7 +7,8 @@
       "match": "any",
       "limit": 50,
       "backfill": true,
-      "blacklist": ["artist name|wrong song title"]
+      "blacklist": ["artist name|wrong song title"],
+      "blacklist_artists": ["unwanted artist"]
     },
     {
       "name": "Chill Electronic (auto)",

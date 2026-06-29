@@ -126,6 +126,40 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="blacklistArtistModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>{{ _('Blacklist Artist') }}</h2>
+      <button class="modal-close" data-action="closeModal" data-modal="blacklistArtistModal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <form id="blacklistArtistForm" method="POST" action="/blacklist_artist">
+      <div class="modal-body">
+        <input type="hidden" name="artist" id="blacklist-artist-name">
+        <input type="hidden" name="redirect_tab" id="blacklist-artist-redirect">
+        <div class="form-group">
+          <label>{{ _('Artist') }}</label>
+          <input type="text" id="blacklist-artist-display" disabled>
+          <span class="form-hint">{{ _('Every track by this artist will be excluded from all playlists.') }}</span>
+        </div>
+        <div class="form-group">
+          <label>{{ _('Reason (optional)') }}</label>
+          <input type="text" name="reason" id="blacklist-artist-reason-field" placeholder="{{ _('Why blacklist this artist?') }}">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="blacklistArtistModal">{{ _('Cancel') }}</button>
+        <button type="submit" class="btn btn-primary">{{ _('Blacklist Artist') }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="modal-overlay" id="addBlacklistModal">
   <div class="modal">
     <div class="modal-header">
@@ -157,6 +191,39 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="addBlacklistModal">{{ _('Cancel') }}</button>
         <button type="submit" class="btn btn-primary">{{ _('Blacklist') }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addBlacklistArtistModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>{{ _('Blacklist Artist') }}</h2>
+      <button class="modal-close" data-action="closeModal" data-modal="addBlacklistArtistModal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <form method="POST" action="/blacklist_artist" id="addBlacklistArtistForm">
+      <div class="modal-body">
+        <input type="hidden" name="redirect_tab" value="blacklist">
+        <div class="form-group">
+          <label>{{ _('Artist') }}</label>
+          <input type="text" name="artist" id="add-blacklist-artist-name" placeholder="{{ _('Artist name') }}" required>
+          <span class="form-hint">{{ _('Every track by this artist will be excluded from all playlists.') }}</span>
+        </div>
+        <div class="form-group">
+          <label>{{ _('Reason (optional)') }}</label>
+          <input type="text" name="reason" id="add-blacklist-artist-reason" placeholder="{{ _('Why blacklist this artist?') }}">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="addBlacklistArtistModal">{{ _('Cancel') }}</button>
+        <button type="submit" class="btn btn-primary">{{ _('Blacklist Artist') }}</button>
       </div>
     </form>
   </div>
@@ -346,6 +413,11 @@
         <label for="custompl-blacklist">{{ _('Blacklist (optional)') }}</label>
         <textarea id="custompl-blacklist" rows="3" placeholder="{{ _('artist|title (one per line)') }}"></textarea>
         <span class="form-hint">{{ _('Exclude specific tracks from this playlist') }}</span>
+      </div>
+      <div class="form-group">
+        <label for="custompl-blacklist-artists">{{ _('Artist Blacklist (optional)') }}</label>
+        <textarea id="custompl-blacklist-artists" rows="3" placeholder="{{ _('artist name (one per line)') }}"></textarea>
+        <span class="form-hint">{{ _('Exclude all tracks by these artists from this playlist') }}</span>
       </div>
     </div>
     <div class="modal-footer">

@@ -38,6 +38,17 @@
         {{ _('Blacklist') }}
       </button>
       {% endif %}
+      {% if t.is_playlist_artist_blacklisted %}
+      <button class="btn btn-secondary btn-sm" data-action="unblacklistArtistFromPlaylist" data-artist="{{ t.artist }}"
+        data-pl-index="{{ pl_index }}">
+        {{ _('Restore Artist') }}
+      </button>
+      {% else %}
+      <button class="btn btn-danger btn-sm" data-action="blacklistArtistFromPlaylist" data-artist="{{ t.artist }}" data-pl-index="{{ pl_index }}"
+        title="{{ _('Exclude all tracks by this artist from this playlist') }}">
+        {{ _('Blacklist Artist') }}
+      </button>
+      {% endif %}
     </div>
   </div>
   {% endfor %}

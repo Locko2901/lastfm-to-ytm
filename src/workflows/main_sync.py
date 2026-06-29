@@ -296,8 +296,13 @@ def run(settings: Settings) -> None:
     ctx.playlist_cache.log_metrics("Playlist")
 
     override_stats = ctx.search_overrides.stats()
-    if override_stats["total_overrides"] > 0 or override_stats["total_blacklisted"] > 0:
-        log.info("Overrides: %d, Blacklisted: %d", override_stats["total_overrides"], override_stats["total_blacklisted"])
+    if override_stats["total_overrides"] > 0 or override_stats["total_blacklisted"] > 0 or override_stats.get("total_blacklisted_artists", 0) > 0:
+        log.info(
+            "Overrides: %d, Blacklisted: %d, Blacklisted artists: %d",
+            override_stats["total_overrides"],
+            override_stats["total_blacklisted"],
+            override_stats.get("total_blacklisted_artists", 0),
+        )
 
     cache_stats = ctx.search_cache.get_stats()
     search_stats = get_search_statistics()

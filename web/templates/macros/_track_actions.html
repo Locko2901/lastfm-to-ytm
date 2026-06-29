@@ -46,6 +46,13 @@
 </button>
 {% endmacro %}
 
+{% macro blacklist_artist_btn(artist, tab) %}
+<button class="btn btn-danger btn-sm" data-action="showBlacklistArtistModal" data-artist="{{ artist }}" data-tab="{{ tab }}"
+  title="{{ _('Exclude all tracks by this artist') }}">
+  {{ _('Blacklist Artist') }}
+</button>
+{% endmacro %}
+
 {% macro restore_btn(artist, title, tab) %}
 <button class="btn btn-secondary btn-sm" data-action="unblacklistTrack" data-artist="{{ artist }}" data-title="{{ title }}" data-tab="{{ tab }}">
   {{ _('Restore') }}
@@ -98,6 +105,7 @@
 {% if pending_retry %}
 {{ override_btn(artist, title, tab) }}
 {{ blacklist_btn(artist, title, tab) }}
+{{ blacklist_artist_btn(artist, tab) }}
 {% else %}
 {% if is_overridden %}
 {{ remove_override_form(artist, title, tab) }}
@@ -109,6 +117,7 @@
 {% else %}
 {{ blacklist_btn(artist, title, tab) }}
 {% endif %}
+{{ blacklist_artist_btn(artist, tab) }}
 {{ tag_override_btn(artist, title, tab, all_tags=all_tags, has_override=has_tag_override) }}
 {% if show_clear_cache %}
 {{ clear_cache_btn(artist, title, tab) }}

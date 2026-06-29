@@ -482,6 +482,22 @@ def get_overrides_data() -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     return override_list, blacklist
 
 
+def get_artist_blacklist_data() -> list[dict[str, Any]]:
+    """Get all artist blacklist entries."""
+    overrides = load_overrides()
+    artists = []
+    for key, data in overrides.artist_blacklist_items():
+        artists.append(
+            {
+                "key": key,
+                "artist": data.get("artist", key),
+                "reason": data.get("reason", ""),
+                "timestamp": data.get("timestamp"),
+            }
+        )
+    return artists
+
+
 FAILURE_LOG_FILE = CACHE_DIR / ".last_failure.json"
 
 
@@ -821,6 +837,7 @@ def load_custom_playlists_config() -> list[dict[str, Any]]:
             "match": c.match,
             "limit": c.limit,
             "blacklist": sorted(c.blacklist),
+            "blacklist_artists": sorted(c.blacklist_artists),
             "backfill": c.backfill,
             "auto_sync": c.auto_sync,
             "track_count": len(cache_data.get(c.name, {}).get("video_ids", [])),
@@ -903,6 +920,7 @@ def get_custom_playlist_tracks(index: int) -> list[dict[str, Any]]:
     pl = playlists[index]
     playlist_name = pl["name"]
     blacklist_set = {b.lower() for b in pl.get("blacklist", [])}
+    blacklist_artists_set = {b.lower() for b in pl.get("blacklist_artists", [])}
 
     settings = _get_settings()
     cache_file = Path(settings.cache_playlist_file) if settings else PLAYLIST_CACHE_FILE
@@ -970,6 +988,7 @@ def get_custom_playlist_tracks(index: int) -> list[dict[str, Any]]:
 
         bl_key = f"{artist.lower()}|{title.lower()}"
         is_pl_blacklisted = bl_key in blacklist_set
+        is_pl_artist_blacklisted = artist.lower() in blacklist_artists_set
 
         results.append(
             {
@@ -983,6 +1002,7 @@ def get_custom_playlist_tracks(index: int) -> list[dict[str, Any]]:
                 "is_overridden": is_overridden,
                 "is_blacklisted": is_blacklisted,
                 "is_playlist_blacklisted": is_pl_blacklisted,
+                "is_playlist_artist_blacklisted": is_pl_artist_blacklisted,
             }
         )
 

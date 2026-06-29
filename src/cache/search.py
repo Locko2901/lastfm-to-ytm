@@ -185,9 +185,14 @@ class SearchOverrides(JSONCache[Any]):
             self._cache["_overrides"] = {}
         if "_blacklist" not in self._cache:
             self._cache["_blacklist"] = {}
+        if "_blacklist_artists" not in self._cache:
+            self._cache["_blacklist_artists"] = {}
 
     def _make_key(self, artist: str, title: str) -> str:
         return f"{artist.lower()}|{title.lower()}"
+
+    def _make_artist_key(self, artist: str) -> str:
+        return artist.lower()
 
     def get(self, artist: str, title: str) -> str | None:
         """Get override video ID."""
@@ -218,6 +223,19 @@ class SearchOverrides(JSONCache[Any]):
         key = self._make_key(artist, title)
         blacklist = self._cache.get("_blacklist", {})
         entry = blacklist.get(key)
+        if entry:
+            return str(entry.get("reason", "no reason given"))
+        return None
+
+    def is_artist_blacklisted(self, artist: str) -> bool:
+        """Check if an entire artist is blacklisted."""
+        key = self._make_artist_key(artist)
+        return key in self._cache.get("_blacklist_artists", {})
+
+    def get_artist_blacklist_reason(self, artist: str) -> str | None:
+        """Get artist blacklist reason, or None if not blacklisted."""
+        key = self._make_artist_key(artist)
+        entry = self._cache.get("_blacklist_artists", {}).get(key)
         if entry:
             return str(entry.get("reason", "no reason given"))
         return None
@@ -264,6 +282,32 @@ class SearchOverrides(JSONCache[Any]):
             return True
         return False
 
+    def blacklist_artist(self, artist: str, reason: str = "") -> None:
+        """Add an entire artist to the blacklist."""
+        key = self._make_artist_key(artist)
+        artists = self._cache.get("_blacklist_artists", {})
+        artists[key] = {
+            "artist": artist,
+            "reason": reason,
+            "timestamp": datetime.now(UTC).isoformat(),
+        }
+        self._cache["_blacklist_artists"] = artists
+        log.info("Added artist to blacklist: %s (reason: %s)", artist, reason or "none")
+        self._save()
+
+    def remove_artist_blacklist(self, artist: str) -> bool:
+        """Remove an artist from the blacklist. Returns True if removed."""
+        key = self._make_artist_key(artist)
+        artists = self._cache.get("_blacklist_artists", {})
+
+        if key in artists:
+            del artists[key]
+            self._cache["_blacklist_artists"] = artists
+            log.info("Removed artist from blacklist: %s", artist)
+            self._save()
+            return True
+        return False
+
     def remove(self, artist: str, title: str) -> bool:
         """Remove a manual override. Returns True if removed."""
         key = self._make_key(artist, title)
@@ -285,6 +329,10 @@ class SearchOverrides(JSONCache[Any]):
         """Return the set of blacklist keys (lowercase 'artist|title')."""
         return set(self._cache.get("_blacklist", {}).keys())
 
+    def artist_blacklist_keys(self) -> builtins.set[str]:
+        """Return the set of artist blacklist keys (lowercase artist)."""
+        return set(self._cache.get("_blacklist_artists", {}).keys())
+
     def override_items(self) -> list[tuple[str, dict[str, Any]]]:
         """Return all override entries as (key, data) pairs."""
         return list(self._cache.get("_overrides", {}).items())
@@ -293,9 +341,18 @@ class SearchOverrides(JSONCache[Any]):
         """Return all blacklist entries as (key, data) pairs."""
         return list(self._cache.get("_blacklist", {}).items())
 
+    def artist_blacklist_items(self) -> list[tuple[str, dict[str, Any]]]:
+        """Return all artist blacklist entries as (key, data) pairs."""
+        return list(self._cache.get("_blacklist_artists", {}).items())
+
     def stats(self) -> dict[str, int]:
         """Get override statistics."""
         overrides = self._cache.get("_overrides", {})
         blacklist = self._cache.get("_blacklist", {})
+        artists = self._cache.get("_blacklist_artists", {})
 
-        return {"total_overrides": len(overrides), "total_blacklisted": len(blacklist)}
+        return {
+            "total_overrides": len(overrides),
+            "total_blacklisted": len(blacklist),
+            "total_blacklisted_artists": len(artists),
+        }

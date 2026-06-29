@@ -28,6 +28,7 @@ export function showCustomPlaylistModal(editIndex = -1) {
     document.getElementById("custompl-backfill").checked = pl.backfill !== false
     document.getElementById("custompl-auto-sync").checked = pl.auto_sync !== false
     document.getElementById("custompl-blacklist").value = (pl.blacklist || []).join("\n")
+    document.getElementById("custompl-blacklist-artists").value = (pl.blacklist_artists || []).join("\n")
   } else {
     document.getElementById("custompl-modal-title").textContent = _("Add Custom Playlist")
     document.getElementById("custompl-name").value = ""
@@ -40,6 +41,7 @@ export function showCustomPlaylistModal(editIndex = -1) {
     document.getElementById("custompl-backfill").checked = true
     document.getElementById("custompl-auto-sync").checked = true
     document.getElementById("custompl-blacklist").value = ""
+    document.getElementById("custompl-blacklist-artists").value = ""
   }
   showModal("customPlaylistModal")
 }
@@ -59,6 +61,7 @@ export async function saveCustomPlaylist() {
   const backfill = document.getElementById("custompl-backfill").checked
   const autoSync = document.getElementById("custompl-auto-sync").checked
   const blacklistRaw = document.getElementById("custompl-blacklist").value.trim()
+  const blacklistArtistsRaw = document.getElementById("custompl-blacklist-artists").value.trim()
 
   if (!name) {
     showToast(_("Please enter a playlist name"), "error")
@@ -82,7 +85,14 @@ export async function saveCustomPlaylist() {
         .filter(Boolean)
     : []
 
-  const playlist = { name, description, tags, match, limit, backfill, auto_sync: autoSync, blacklist }
+  const blacklistArtists = blacklistArtistsRaw
+    ? blacklistArtistsRaw
+        .split("\n")
+        .map(l => l.trim())
+        .filter(Boolean)
+    : []
+
+  const playlist = { name, description, tags, match, limit, backfill, auto_sync: autoSync, blacklist, blacklist_artists: blacklistArtists }
 
   const updated = [...playlistsData]
   if (editIndex >= 0 && editIndex < updated.length) {
@@ -276,6 +286,72 @@ export async function unblacklistFromPlaylist(index, artist, title) {
   } catch (_error) {
     blacklist.splice(idx, 0, key)
     showToast(_("Failed to restore track"), "error")
+  }
+}
+
+async function refreshPreview(index) {
+  loadedPreviews.delete(index)
+  const card = document.querySelector(`.expandable-card[data-pl-index="${index}"]`)
+  if (card?.classList.contains("expanded")) {
+    card.classList.remove("expanded")
+    const preview = document.getElementById(`playlist-preview-${index}`)
+    if (preview) preview.classList.add("collapsed")
+    await togglePlaylistPreview(index)
+  }
+}
+
+async function savePlaylists() {
+  const response = await fetch("/api/custom-playlists", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ playlists: playlistsData }),
+  })
+  if (!response.ok) throw new Error("Failed to save")
+}
+
+export async function blacklistArtistFromPlaylist(index, artist) {
+  const pl = playlistsData[index]
+  if (!pl) return
+
+  const key = artist.toLowerCase()
+  const list = pl.blacklist_artists || []
+  if (list.includes(key)) {
+    showToast(_("Artist already blacklisted"), "info")
+    return
+  }
+
+  list.push(key)
+  pl.blacklist_artists = list
+
+  try {
+    await savePlaylists()
+    showToast(`${artist} ${_("blacklisted from")} ${pl.name}`, "success")
+    await refreshPreview(index)
+  } catch (_error) {
+    list.pop()
+    showToast(_("Failed to blacklist artist"), "error")
+  }
+}
+
+export async function unblacklistArtistFromPlaylist(index, artist) {
+  const pl = playlistsData[index]
+  if (!pl) return
+
+  const key = artist.toLowerCase()
+  const list = pl.blacklist_artists || []
+  const idx = list.indexOf(key)
+  if (idx === -1) return
+
+  list.splice(idx, 1)
+  pl.blacklist_artists = list
+
+  try {
+    await savePlaylists()
+    showToast(`${artist} ${_("restored in")} ${pl.name}`, "success")
+    await refreshPreview(index)
+  } catch (_error) {
+    list.splice(idx, 0, key)
+    showToast(_("Failed to restore artist"), "error")
   }
 }
 

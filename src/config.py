@@ -313,6 +313,7 @@ class CustomPlaylistConfig:
     match: str = "any"
     limit: int = 50
     blacklist: frozenset[str] = frozenset()
+    blacklist_artists: frozenset[str] = frozenset()
     backfill: bool = True
     auto_sync: bool = True
     description: str = ""
@@ -348,6 +349,9 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
         raw_blacklist = entry.get("blacklist", [])
         blacklist = frozenset(k.lower() for k in raw_blacklist if isinstance(k, str))
 
+        raw_blacklist_artists = entry.get("blacklist_artists", [])
+        blacklist_artists = frozenset(k.lower() for k in raw_blacklist_artists if isinstance(k, str))
+
         backfill = entry.get("backfill", True)
         if not isinstance(backfill, bool):
             backfill = True
@@ -367,6 +371,7 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
                 match=match,
                 limit=entry.get("limit", 50),
                 blacklist=blacklist,
+                blacklist_artists=blacklist_artists,
                 backfill=backfill,
                 auto_sync=auto_sync,
                 description=description,

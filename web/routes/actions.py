@@ -77,6 +77,35 @@ def unblacklist() -> ResponseReturnValue:
     return redirect(url_for("index") + f"?tab={redirect_tab}")
 
 
+@actions_bp.route("/blacklist_artist", methods=["POST"])
+def blacklist_artist() -> ResponseReturnValue:
+    """Add an entire artist to the blacklist."""
+    artist = request.form.get("artist", "")
+    reason = request.form.get("reason", "Artist blacklisted via web dashboard")
+
+    if artist:
+        overrides = load_overrides()
+        overrides.blacklist_artist(artist, reason)
+        history_record_action("artist_blacklist_add", artist, "", detail=reason)
+
+    redirect_tab = request.form.get("redirect_tab", "playlist")
+    return redirect(url_for("index") + f"?tab={redirect_tab}")
+
+
+@actions_bp.route("/unblacklist_artist", methods=["POST"])
+def unblacklist_artist() -> ResponseReturnValue:
+    """Remove an artist from the blacklist."""
+    artist = request.form.get("artist", "")
+
+    if artist:
+        overrides = load_overrides()
+        overrides.remove_artist_blacklist(artist)
+        history_record_action("artist_blacklist_remove", artist, "")
+
+    redirect_tab = request.form.get("redirect_tab", "blacklist")
+    return redirect(url_for("index") + f"?tab={redirect_tab}")
+
+
 @actions_bp.route("/override", methods=["POST"])
 def override() -> ResponseReturnValue:
     """Add a manual override for a track."""

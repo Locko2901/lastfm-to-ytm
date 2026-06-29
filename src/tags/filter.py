@@ -18,12 +18,17 @@ def filter_tracks_by_tags(
     match: str = "any",
     min_count: int = 10,
     blacklist: frozenset[str] = frozenset(),
+    blacklist_artists: frozenset[str] = frozenset(),
 ) -> list[Scrobble | WeightedTrack]:
     """Filter tracks by Last.fm tag criteria."""
     result: list[Scrobble | WeightedTrack] = []
 
     for t in tracks:
         key = (t.artist.lower(), t.track.lower())
+
+        if key[0] in blacklist_artists:
+            log.debug("Per-playlist artist blacklisted: %s - %s", t.artist, t.track)
+            continue
 
         blacklist_key = f"{key[0]}|{key[1]}"
         if blacklist_key in blacklist:

@@ -42,6 +42,13 @@ def test_filter_skips_blacklisted():
     assert result == []
 
 
+def test_filter_skips_blacklisted_artists():
+    tracks = [_track("A", "Rock Song"), _track("B", "Other Rock")]
+    tag_map = _tag_map(**{"A|Rock Song": [("rock", 100)], "B|Other Rock": [("rock", 100)]})
+    result = filter_tracks_by_tags(tracks, tag_map, {"rock"}, match="any", min_count=10, blacklist_artists=frozenset({"a"}))
+    assert [t.track for t in result] == ["Other Rock"]
+
+
 def test_filter_skips_tracks_without_tags():
     tracks = [_track("A", "Untagged")]
     result = filter_tracks_by_tags(tracks, {}, {"rock"}, match="any", min_count=10)

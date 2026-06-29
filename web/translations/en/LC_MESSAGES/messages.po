@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-29 12:07+0200\n"
+"POT-Creation-Date: 2026-06-29 13:28+0200\n"
 "PO-Revision-Date: 2026-03-13 15:44+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,182 +18,182 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: web/routes/actions.py:91
+#: web/routes/actions.py:120
 msgid "Invalid video ID. Must be 11 characters (or a valid YouTube URL)."
 msgstr ""
 
-#: web/routes/actions.py:94 web/routes/actions.py:144
+#: web/routes/actions.py:123 web/routes/actions.py:173
 msgid "Artist and title are required."
 msgstr ""
 
-#: web/routes/actions.py:147 web/routes/actions.py:151
+#: web/routes/actions.py:176 web/routes/actions.py:180
 msgid "At least one tag is required."
 msgstr ""
 
-#: web/routes/actions.py:222 web/routes/api.py:184 web/routes/api.py:255
-#: web/routes/api.py:865
+#: web/routes/actions.py:251 web/routes/api.py:185 web/routes/api.py:256
+#: web/routes/api.py:875
 msgid "No data provided"
 msgstr ""
 
-#: web/routes/actions.py:235 web/routes/actions.py:246
-#: web/routes/actions.py:261
+#: web/routes/actions.py:264 web/routes/actions.py:275
+#: web/routes/actions.py:290
 msgid "Imported"
 msgstr ""
 
-#: web/routes/api.py:164
+#: web/routes/api.py:165
 msgid ".env already exists"
 msgstr ""
 
-#: web/routes/api.py:167
+#: web/routes/api.py:168
 msgid ".env.example not found"
 msgstr ""
 
-#: web/routes/api.py:176
+#: web/routes/api.py:177
 msgid "Failed to create configuration file"
 msgstr ""
 
-#: web/routes/api.py:190
+#: web/routes/api.py:191
 msgid "Username and API key are required"
 msgstr ""
 
-#: web/routes/api.py:202
+#: web/routes/api.py:203
 msgid "Failed to save credentials"
 msgstr ""
 
-#: web/routes/api.py:281 web/routes/api.py:881
+#: web/routes/api.py:282 web/routes/api.py:891
 #, python-format
 msgid "Invalid cron expression: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:290 web/routes/api.py:889
+#: web/routes/api.py:291 web/routes/api.py:899
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr ""
 
-#: web/routes/api.py:309 web/static/js/modules/settings.js:141
+#: web/routes/api.py:310 web/static/js/modules/settings.js:141
 #: web/static/js/modules/settings.js:173
 msgid "Failed to save settings"
 msgstr ""
 
-#: web/routes/api.py:318
+#: web/routes/api.py:319
 msgid "No webhook URL provided"
 msgstr ""
 
-#: web/routes/api.py:333
+#: web/routes/api.py:334
 msgid "Webhook request failed. Check the URL and try again."
 msgstr ""
 
-#: web/routes/api.py:411
+#: web/routes/api.py:412
 msgid "Unknown panel"
 msgstr ""
 
-#: web/routes/api.py:425
+#: web/routes/api.py:426
 msgid "Invalid data: 'playlists' array required"
 msgstr ""
 
-#: web/routes/api.py:429
+#: web/routes/api.py:430
 msgid "'playlists' must be an array"
 msgstr ""
 
-#: web/routes/api.py:478
+#: web/routes/api.py:484
 msgid "Failed to save custom playlists"
 msgstr ""
 
-#: web/routes/api.py:609
+#: web/routes/api.py:615
 msgid "Artist and title are required"
 msgstr ""
 
-#: web/routes/api.py:687
+#: web/routes/api.py:697
 msgid "Last.fm credentials not configured"
 msgstr ""
 
-#: web/routes/api.py:755
+#: web/routes/api.py:765
 msgid "Failed to fetch from Last.fm"
 msgstr ""
 
-#: web/routes/api.py:758
+#: web/routes/api.py:768
 msgid "Internal error"
 msgstr ""
 
-#: web/routes/api.py:891
+#: web/routes/api.py:901
 msgid "Invalid start time format. Use HH:MM."
 msgstr ""
 
-#: web/routes/api.py:916
+#: web/routes/api.py:926
 msgid "Failed to configure scheduler. APScheduler may not be installed."
 msgstr ""
 
-#: web/routes/api.py:919
+#: web/routes/api.py:929
 #, python-format
 msgid "Invalid value: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:922
+#: web/routes/api.py:932
 msgid "Failed to configure scheduler"
 msgstr ""
 
-#: web/routes/api.py:939
+#: web/routes/api.py:949
 msgid "Failed to save theme overrides"
 msgstr ""
 
-#: web/routes/api.py:948 web/routes/api.py:977 web/routes/api.py:1000
+#: web/routes/api.py:958 web/routes/api.py:987 web/routes/api.py:1010
 msgid "Password is required"
 msgstr ""
 
-#: web/routes/api.py:952
+#: web/routes/api.py:962
 msgid "Password must be at least 4 characters"
 msgstr ""
 
-#: web/routes/api.py:967 web/static/js/modules/modals.js:580
-#: web/static/js/modules/modals.js:591 web/static/js/modules/teleporter.js:91
+#: web/routes/api.py:977 web/static/js/modules/modals.js:592
+#: web/static/js/modules/modals.js:603 web/static/js/modules/teleporter.js:91
 #: web/static/js/modules/teleporter.js:104
 msgid "Export failed"
 msgstr ""
 
-#: web/routes/api.py:979 web/routes/api.py:1002
+#: web/routes/api.py:989 web/routes/api.py:1012
 msgid "No file provided"
 msgstr ""
 
-#: web/routes/api.py:987 web/routes/api.py:1010
+#: web/routes/api.py:997 web/routes/api.py:1020
 msgid "Could not read file - check your password and try again"
 msgstr ""
 
-#: web/routes/api.py:990 web/static/js/modules/teleporter.js:193
+#: web/routes/api.py:1000 web/static/js/modules/teleporter.js:193
 #: web/static/js/modules/teleporter.js:205
 msgid "Preview failed"
 msgstr ""
 
-#: web/routes/api.py:1013 web/static/js/modules/history.js:1010
-#: web/static/js/modules/history.js:1019 web/static/js/modules/modals.js:659
-#: web/static/js/modules/modals.js:678 web/static/js/modules/teleporter.js:233
+#: web/routes/api.py:1023 web/static/js/modules/history.js:1010
+#: web/static/js/modules/history.js:1019 web/static/js/modules/modals.js:671
+#: web/static/js/modules/modals.js:690 web/static/js/modules/teleporter.js:233
 #: web/static/js/modules/teleporter.js:242
 msgid "Import failed"
 msgstr ""
 
-#: web/routes/api.py:1035 web/routes/api.py:1058 web/routes/api.py:1078
-#: web/routes/api.py:1092 web/routes/api.py:1112 web/routes/api.py:1126
-#: web/routes/api.py:1149 web/routes/api.py:1159 web/routes/api.py:1186
-#: web/routes/api.py:1206 web/routes/api.py:1234
+#: web/routes/api.py:1045 web/routes/api.py:1068 web/routes/api.py:1088
+#: web/routes/api.py:1102 web/routes/api.py:1122 web/routes/api.py:1136
+#: web/routes/api.py:1159 web/routes/api.py:1169 web/routes/api.py:1196
+#: web/routes/api.py:1216 web/routes/api.py:1244
 msgid "History database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1082
+#: web/routes/api.py:1092
 msgid "Sync record not found"
 msgstr ""
 
-#: web/routes/api.py:1210
+#: web/routes/api.py:1220
 msgid "No file uploaded"
 msgstr ""
 
-#: web/routes/api.py:1213
+#: web/routes/api.py:1223
 msgid "Invalid import mode"
 msgstr ""
 
-#: web/routes/api.py:1218
+#: web/routes/api.py:1228
 #, python-format
 msgid "Invalid JSON file: %(err)s"
 msgstr ""
 
-#: web/routes/api.py:1224
+#: web/routes/api.py:1234
 msgid "Invalid import file"
 msgstr ""
 
@@ -324,7 +324,7 @@ msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:162
 #: web/templates/partials/_panel_notfound.html:32
-#: web/templates/partials/_stats.html:17 web/templates/partials/_tabs.html:6
+#: web/templates/partials/_stats.html:17 web/templates/partials/_tabs.html:7
 msgid "Not Found"
 msgstr ""
 
@@ -341,7 +341,7 @@ msgstr ""
 msgid "selected"
 msgstr ""
 
-#: web/static/js/modules/cacheAdmin.js:222 web/static/js/modules/modals.js:793
+#: web/static/js/modules/cacheAdmin.js:222 web/static/js/modules/modals.js:805
 msgid "No tags"
 msgstr ""
 
@@ -471,65 +471,79 @@ msgstr ""
 msgid "Edit Custom Playlist"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:32
-#: web/templates/partials/_modals.html:288
+#: web/static/js/modules/customPlaylists.js:33
+#: web/templates/partials/_modals.html:355
 msgid "Add Custom Playlist"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:64
+#: web/static/js/modules/customPlaylists.js:67
 msgid "Please enter a playlist name"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:69
-#: web/static/js/modules/modals.js:473
+#: web/static/js/modules/customPlaylists.js:72
+#: web/static/js/modules/modals.js:485
 msgid "Please enter at least one tag"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:109
+#: web/static/js/modules/customPlaylists.js:119
 msgid "Custom playlist saved!"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:113
+#: web/static/js/modules/customPlaylists.js:123
 msgid "Failed to save custom playlist"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:148
+#: web/static/js/modules/customPlaylists.js:158
 msgid "Custom playlist deleted"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:152
+#: web/static/js/modules/customPlaylists.js:162
 msgid "Failed to delete custom playlist"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:193
+#: web/static/js/modules/customPlaylists.js:203
 #: web/static/js/modules/history.js:266
 msgid "Failed to load tracks"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:205
+#: web/static/js/modules/customPlaylists.js:215
 #: web/templates/partials/_panel_custompl.html:50
 msgid "blacklisted"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:215
+#: web/static/js/modules/customPlaylists.js:225
 msgid "Track already blacklisted"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:230
+#: web/static/js/modules/customPlaylists.js:240
+#: web/static/js/modules/customPlaylists.js:328
 msgid "blacklisted from"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:242
-#: web/static/js/modules/modals.js:448 web/static/js/modules/modals.js:457
+#: web/static/js/modules/customPlaylists.js:252
+#: web/static/js/modules/modals.js:460 web/static/js/modules/modals.js:469
 msgid "Failed to blacklist track"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:266
+#: web/static/js/modules/customPlaylists.js:276
+#: web/static/js/modules/customPlaylists.js:350
 msgid "restored in"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:278
+#: web/static/js/modules/customPlaylists.js:288
 msgid "Failed to restore track"
+msgstr ""
+
+#: web/static/js/modules/customPlaylists.js:319
+msgid "Artist already blacklisted"
+msgstr ""
+
+#: web/static/js/modules/customPlaylists.js:332
+msgid "Failed to blacklist artist"
+msgstr ""
+
+#: web/static/js/modules/customPlaylists.js:354
+msgid "Failed to restore artist"
 msgstr ""
 
 #: web/static/js/modules/customTheme.js:258
@@ -585,12 +599,12 @@ msgstr ""
 msgid "No syncs recorded yet"
 msgstr ""
 
-#: web/static/js/modules/history.js:308 web/templates/partials/_modals.html:926
+#: web/static/js/modules/history.js:308 web/templates/partials/_modals.html:998
 msgid "Resolved"
 msgstr ""
 
-#: web/static/js/modules/history.js:309 web/templates/partials/_modals.html:934
-#: web/templates/partials/_tabs.html:7
+#: web/static/js/modules/history.js:309
+#: web/templates/partials/_modals.html:1006 web/templates/partials/_tabs.html:8
 msgid "Cache"
 msgstr ""
 
@@ -624,7 +638,7 @@ msgid "Success"
 msgstr ""
 
 #: web/static/js/modules/history.js:444 web/static/js/modules/history.js:681
-#: web/templates/partials/_modals.html:950
+#: web/templates/partials/_modals.html:1022
 msgid "Error"
 msgstr ""
 
@@ -685,7 +699,7 @@ msgstr ""
 msgid "rows pruned"
 msgstr ""
 
-#: web/static/js/modules/history.js:964 web/static/js/modules/modals.js:623
+#: web/static/js/modules/history.js:964 web/static/js/modules/modals.js:635
 msgid "Please select a JSON file"
 msgstr ""
 
@@ -699,13 +713,13 @@ msgstr ""
 msgid "Syncs"
 msgstr ""
 
-#: web/static/js/modules/history.js:980 web/templates/partials/_modals.html:871
+#: web/static/js/modules/history.js:980 web/templates/partials/_modals.html:943
 #: web/templates/partials/_panel_history.html:46
 #: web/templates/partials/_panel_history.html:54
 msgid "Actions"
 msgstr ""
 
-#: web/static/js/modules/history.js:986 web/static/js/modules/modals.js:642
+#: web/static/js/modules/history.js:986 web/static/js/modules/modals.js:654
 msgid "Invalid JSON file"
 msgstr ""
 
@@ -729,8 +743,8 @@ msgstr ""
 msgid "Removed override"
 msgstr ""
 
-#: web/static/js/modules/history.js:1062 web/static/js/modules/modals.js:276
-#: web/static/js/modules/modals.js:799
+#: web/static/js/modules/history.js:1062 web/static/js/modules/modals.js:288
+#: web/static/js/modules/modals.js:811
 #: web/templates/partials/_custompl_tracks.html:21
 #: web/templates/partials/_panel_cache.html:22
 #: web/templates/partials/_panel_cache.html:51
@@ -805,39 +819,39 @@ msgstr ""
 msgid "total"
 msgstr ""
 
-#: web/static/js/modules/modals.js:106
+#: web/static/js/modules/modals.js:118
 msgid "Tag override removed"
 msgstr ""
 
-#: web/static/js/modules/modals.js:108
+#: web/static/js/modules/modals.js:120
 msgid "Failed to remove tag override"
 msgstr ""
 
-#: web/static/js/modules/modals.js:133
+#: web/static/js/modules/modals.js:145
 msgid "Tag cache cleared - will re-fetch on next sync"
 msgstr ""
 
-#: web/static/js/modules/modals.js:137
+#: web/static/js/modules/modals.js:149
 msgid "Failed to clear tag cache entry"
 msgstr ""
 
-#: web/static/js/modules/modals.js:176
+#: web/static/js/modules/modals.js:188
 #: web/templates/partials/_panel_playlist.html:54
 msgid "Will re-search on next sync"
 msgstr ""
 
-#: web/static/js/modules/modals.js:178
+#: web/static/js/modules/modals.js:190
 #: web/templates/partials/_panel_playlist.html:26
 #: web/templates/partials/_panel_playlist.html:55
 msgid "Pending Retry"
 msgstr ""
 
-#: web/static/js/modules/modals.js:189 web/static/js/modules/modals.js:340
-#: web/static/js/modules/modals.js:352 web/static/js/modules/modals.js:790
-#: web/static/js/modules/modals.js:798
+#: web/static/js/modules/modals.js:201 web/static/js/modules/modals.js:352
+#: web/static/js/modules/modals.js:364 web/static/js/modules/modals.js:802
+#: web/static/js/modules/modals.js:810
 #: web/templates/macros/_track_actions.html:30
 #: web/templates/partials/_custompl_tracks.html:20
-#: web/templates/partials/_modals.html:879
+#: web/templates/partials/_modals.html:951
 #: web/templates/partials/_panel_cache.html:50
 #: web/templates/partials/_panel_playlist.html:60
 #: web/templates/partials/_panel_tags.html:46
@@ -846,176 +860,177 @@ msgstr ""
 msgid "Override"
 msgstr ""
 
-#: web/static/js/modules/modals.js:191 web/static/js/modules/modals.js:225
-#: web/static/js/modules/modals.js:281 web/static/js/modules/modals.js:638
+#: web/static/js/modules/modals.js:203 web/static/js/modules/modals.js:237
+#: web/static/js/modules/modals.js:293 web/static/js/modules/modals.js:650
 #: web/templates/macros/_track_actions.html:45
 #: web/templates/partials/_custompl_tracks.html:38
 #: web/templates/partials/_modals.html:123
-#: web/templates/partials/_modals.html:159
-#: web/templates/partials/_modals.html:880 web/templates/partials/_tabs.html:5
+#: web/templates/partials/_modals.html:193
+#: web/templates/partials/_modals.html:952 web/templates/partials/_tabs.html:5
 msgid "Blacklist"
 msgstr ""
 
-#: web/static/js/modules/modals.js:197
+#: web/static/js/modules/modals.js:209
 msgid "Cache cleared - will retry on next sync"
 msgstr ""
 
-#: web/static/js/modules/modals.js:201
+#: web/static/js/modules/modals.js:213
 msgid "Failed to clear cache entry"
 msgstr ""
 
-#: web/static/js/modules/modals.js:217
+#: web/static/js/modules/modals.js:229
 msgid "Failed to unblacklist"
 msgstr ""
 
-#: web/static/js/modules/modals.js:250 web/static/js/modules/modals.js:430
+#: web/static/js/modules/modals.js:262 web/static/js/modules/modals.js:442
 msgid "Blacklisted via web dashboard"
 msgstr ""
 
-#: web/static/js/modules/modals.js:263
+#: web/static/js/modules/modals.js:275
 msgid "Failed to blacklist"
 msgstr ""
 
-#: web/static/js/modules/modals.js:282
-#: web/templates/macros/_track_actions.html:51
+#: web/static/js/modules/modals.js:294
+#: web/templates/macros/_track_actions.html:58
 #: web/templates/partials/_custompl_tracks.html:33
-#: web/templates/partials/_panel_blacklist.html:34
+#: web/templates/partials/_panel_blacklist.html:41
+#: web/templates/partials/_panel_blacklist.html:63
 msgid "Restore"
 msgstr ""
 
-#: web/static/js/modules/modals.js:295
+#: web/static/js/modules/modals.js:307
 msgid "Failed to blacklist track. Please try again."
 msgstr ""
 
-#: web/static/js/modules/modals.js:307
+#: web/static/js/modules/modals.js:319
 msgid "Override via web dashboard"
 msgstr ""
 
-#: web/static/js/modules/modals.js:313 web/static/js/modules/modals.js:440
-#: web/static/js/modules/modals.js:508 web/static/js/modules/setup.js:100
+#: web/static/js/modules/modals.js:325 web/static/js/modules/modals.js:452
+#: web/static/js/modules/modals.js:520 web/static/js/modules/setup.js:100
 msgid "Saving..."
 msgstr ""
 
-#: web/static/js/modules/modals.js:324
+#: web/static/js/modules/modals.js:336
 msgid "Invalid input"
 msgstr ""
 
-#: web/static/js/modules/modals.js:327 web/static/js/modules/modals.js:381
+#: web/static/js/modules/modals.js:339 web/static/js/modules/modals.js:393
 msgid "Failed to save override"
 msgstr ""
 
-#: web/static/js/modules/modals.js:367
+#: web/static/js/modules/modals.js:379
 #: web/templates/macros/_track_actions.html:39
-#: web/templates/partials/_modals.html:278
+#: web/templates/partials/_modals.html:345
 msgid "Remove Override"
 msgstr ""
 
-#: web/static/js/modules/modals.js:375
+#: web/static/js/modules/modals.js:387
 msgid "Override saved!"
 msgstr ""
 
-#: web/static/js/modules/modals.js:394
+#: web/static/js/modules/modals.js:406
 msgid "Please fill in all required fields"
 msgstr ""
 
-#: web/static/js/modules/modals.js:410 web/static/js/modules/modals.js:419
+#: web/static/js/modules/modals.js:422 web/static/js/modules/modals.js:431
 msgid "Failed to add override"
 msgstr ""
 
-#: web/static/js/modules/modals.js:413
+#: web/static/js/modules/modals.js:425
 msgid "Override added!"
 msgstr ""
 
-#: web/static/js/modules/modals.js:433
+#: web/static/js/modules/modals.js:445
 msgid "Please fill in artist and title"
 msgstr ""
 
-#: web/static/js/modules/modals.js:451
+#: web/static/js/modules/modals.js:463
 msgid "Track blacklisted!"
 msgstr ""
 
-#: web/static/js/modules/modals.js:498
+#: web/static/js/modules/modals.js:510
 msgid "No tag changes detected"
 msgstr ""
 
-#: web/static/js/modules/modals.js:518 web/static/js/modules/modals.js:530
+#: web/static/js/modules/modals.js:530 web/static/js/modules/modals.js:542
 msgid "Failed to save tag override"
 msgstr ""
 
-#: web/static/js/modules/modals.js:521
+#: web/static/js/modules/modals.js:533
 msgid "Tag override saved!"
 msgstr ""
 
-#: web/static/js/modules/modals.js:589
+#: web/static/js/modules/modals.js:601
 msgid "Export downloaded"
 msgstr ""
 
-#: web/static/js/modules/modals.js:638 web/templates/partials/_modals.html:938
+#: web/static/js/modules/modals.js:650 web/templates/partials/_modals.html:1010
 #: web/templates/partials/_panel_playlist.html:22
 #: web/templates/partials/_stats.html:9 web/templates/partials/_tabs.html:4
 msgid "Overrides"
 msgstr ""
 
-#: web/static/js/modules/modals.js:638
+#: web/static/js/modules/modals.js:650
 msgid "Tag Overrides"
 msgstr ""
 
-#: web/static/js/modules/modals.js:652
+#: web/static/js/modules/modals.js:664
 msgid "Importing..."
 msgstr ""
 
-#: web/static/js/modules/modals.js:664
+#: web/static/js/modules/modals.js:676
 #, python-format
 msgid ""
 "Imported %(overrides)s overrides, %(blacklist)s blacklist, and "
 "%(tag_overrides)s tag override entries"
 msgstr ""
 
-#: web/static/js/modules/modals.js:770
+#: web/static/js/modules/modals.js:782
 msgid "Failed to load details"
 msgstr ""
 
-#: web/static/js/modules/modals.js:800
+#: web/static/js/modules/modals.js:812
 #: web/templates/partials/_panel_notfound.html:33
 msgid "Cached:"
 msgstr ""
 
-#: web/static/js/modules/modals.js:812
+#: web/static/js/modules/modals.js:824
 #: web/templates/partials/_panel_custompl.html:33
 msgid "Open in YouTube Music"
 msgstr ""
 
-#: web/static/js/modules/modals.js:816
+#: web/static/js/modules/modals.js:828
 msgid "View on Last.fm"
 msgstr ""
 
-#: web/static/js/modules/modals.js:825
+#: web/static/js/modules/modals.js:837
 msgid "Error loading details"
 msgstr ""
 
-#: web/static/js/modules/modals.js:884
+#: web/static/js/modules/modals.js:896
 msgid "Loading sync details..."
 msgstr ""
 
-#: web/static/js/modules/modals.js:892
+#: web/static/js/modules/modals.js:904
 msgid "Failed to load sync details"
 msgstr ""
 
-#: web/static/js/modules/modals.js:922
+#: web/static/js/modules/modals.js:934
 msgid "Sync details"
 msgstr ""
 
-#: web/static/js/modules/modals.js:923
+#: web/static/js/modules/modals.js:935
 msgid "Error loading sync details"
 msgstr ""
 
 #: web/static/js/modules/playlists.js:35
-#: web/templates/partials/_modals.html:409
+#: web/templates/partials/_modals.html:481
 msgid "Open"
 msgstr ""
 
 #: web/static/js/modules/playlists.js:36
-#: web/templates/partials/_modals.html:381
+#: web/templates/partials/_modals.html:453
 #: web/templates/partials/_panel_custompl.html:63
 msgid "Delete"
 msgstr ""
@@ -1041,29 +1056,29 @@ msgstr ""
 msgid "Found %(n)s playlists"
 msgstr ""
 
-#: web/static/js/modules/playlists.js:126
+#: web/static/js/modules/playlists.js:125
 msgid "Nothing selected"
 msgstr ""
 
-#: web/static/js/modules/playlists.js:140
+#: web/static/js/modules/playlists.js:139
 #, python-format
 msgid "Tracked %(n)s playlists"
 msgstr ""
 
-#: web/static/js/modules/playlists.js:147
+#: web/static/js/modules/playlists.js:146
 #, python-format
 msgid "Delete '%(name)s' from YouTube Music? This cannot be undone."
 msgstr ""
 
-#: web/static/js/modules/playlists.js:157
+#: web/static/js/modules/playlists.js:156
 msgid "Deleted"
 msgstr ""
 
-#: web/static/js/modules/playlists.js:164
+#: web/static/js/modules/playlists.js:163
 msgid "Delete old weekly playlists from YouTube Music?"
 msgstr ""
 
-#: web/static/js/modules/playlists.js:167
+#: web/static/js/modules/playlists.js:166
 #, python-format
 msgid "Pruned %(n)s playlists"
 msgstr ""
@@ -1145,7 +1160,7 @@ msgid "Reconnect YouTube Music"
 msgstr ""
 
 #: web/static/js/modules/setup.js:65 web/templates/partials/_modals.html:83
-#: web/templates/partials/_modals.html:395
+#: web/templates/partials/_modals.html:467
 msgid "Connect YouTube Music"
 msgstr ""
 
@@ -1251,7 +1266,7 @@ msgstr ""
 msgid "Refresh"
 msgstr ""
 
-#: web/static/js/modules/tagInput.js:43 web/templates/partials/_modals.html:267
+#: web/static/js/modules/tagInput.js:43 web/templates/partials/_modals.html:334
 msgid "Add a tag..."
 msgstr ""
 
@@ -1390,11 +1405,11 @@ msgstr ""
 
 #: web/templates/dashboard.html:60
 #: web/templates/partials/_modal_cache_admin.html:142
-#: web/templates/partials/_modals.html:522
-#: web/templates/partials/_modals.html:612
-#: web/templates/partials/_modals.html:800
-#: web/templates/partials/_modals.html:878
-#: web/templates/partials/_modals.html:956
+#: web/templates/partials/_modals.html:594
+#: web/templates/partials/_modals.html:684
+#: web/templates/partials/_modals.html:872
+#: web/templates/partials/_modals.html:950
+#: web/templates/partials/_modals.html:1028
 #: web/templates/partials/_panel_settings.html:709
 msgid "Close"
 msgstr ""
@@ -1421,26 +1436,48 @@ msgstr ""
 msgid "Clear search"
 msgstr ""
 
-#: web/templates/macros/_track_actions.html:57
+#: web/templates/macros/_track_actions.html:51
+msgid "Exclude all tracks by this artist"
+msgstr ""
+
+#: web/templates/macros/_track_actions.html:52
+#: web/templates/partials/_custompl_tracks.html:49
+#: web/templates/partials/_modals.html:132
+#: web/templates/partials/_modals.html:157
+#: web/templates/partials/_modals.html:202
+#: web/templates/partials/_modals.html:226
+#: web/templates/partials/_panel_blacklist.html:25
+msgid "Blacklist Artist"
+msgstr ""
+
+#: web/templates/macros/_track_actions.html:64
 msgid "Clear from cache & retry on next sync"
 msgstr ""
 
-#: web/templates/macros/_track_actions.html:65
-#: web/templates/partials/_modals.html:266
-#: web/templates/partials/_modals.html:851
+#: web/templates/macros/_track_actions.html:72
+#: web/templates/partials/_modals.html:333
+#: web/templates/partials/_modals.html:923
 msgid "Tags"
 msgstr ""
 
-#: web/templates/macros/_track_actions.html:80
+#: web/templates/macros/_track_actions.html:87
 #: web/templates/partials/_panel_tags.html:56
 msgid "Show all tags"
 msgstr ""
 
-#: web/templates/macros/_track_actions.html:88
+#: web/templates/macros/_track_actions.html:95
 msgid "View details"
 msgstr ""
 
-#: web/templates/partials/_custompl_tracks.html:46
+#: web/templates/partials/_custompl_tracks.html:44
+msgid "Restore Artist"
+msgstr ""
+
+#: web/templates/partials/_custompl_tracks.html:48
+msgid "Exclude all tracks by this artist from this playlist"
+msgstr ""
+
+#: web/templates/partials/_custompl_tracks.html:57
 msgid "No matching tracks found. Run a tag sync first."
 msgstr ""
 
@@ -1585,586 +1622,615 @@ msgid "Blacklist Track"
 msgstr ""
 
 #: web/templates/partials/_modals.html:113
-#: web/templates/partials/_modals.html:183
-#: web/templates/partials/_modals.html:262
+#: web/templates/partials/_modals.html:250
+#: web/templates/partials/_modals.html:329
 msgid "Track"
 msgstr ""
 
 #: web/templates/partials/_modals.html:117
-#: web/templates/partials/_modals.html:153
-#: web/templates/partials/_modals.html:191
-#: web/templates/partials/_modals.html:231
-#: web/templates/partials/_modals.html:271
+#: web/templates/partials/_modals.html:151
+#: web/templates/partials/_modals.html:187
+#: web/templates/partials/_modals.html:220
+#: web/templates/partials/_modals.html:258
+#: web/templates/partials/_modals.html:298
+#: web/templates/partials/_modals.html:338
 msgid "Reason (optional)"
 msgstr ""
 
 #: web/templates/partials/_modals.html:118
-#: web/templates/partials/_modals.html:154
+#: web/templates/partials/_modals.html:188
 msgid "Why blacklist this track?"
 msgstr ""
 
 #: web/templates/partials/_modals.html:122
-#: web/templates/partials/_modals.html:158
-#: web/templates/partials/_modals.html:196
-#: web/templates/partials/_modals.html:236
-#: web/templates/partials/_modals.html:276
-#: web/templates/partials/_modals.html:352
-#: web/templates/partials/_modals.html:380
-#: web/templates/partials/_modals.html:446
-#: web/templates/partials/_modals.html:543
-#: web/templates/partials/_modals.html:965
-#: web/templates/partials/_modals.html:990
+#: web/templates/partials/_modals.html:156
+#: web/templates/partials/_modals.html:192
+#: web/templates/partials/_modals.html:225
+#: web/templates/partials/_modals.html:263
+#: web/templates/partials/_modals.html:303
+#: web/templates/partials/_modals.html:343
+#: web/templates/partials/_modals.html:424
+#: web/templates/partials/_modals.html:452
+#: web/templates/partials/_modals.html:518
+#: web/templates/partials/_modals.html:615
+#: web/templates/partials/_modals.html:1037
+#: web/templates/partials/_modals.html:1062
 msgid "Cancel"
 msgstr ""
 
-#: web/templates/partials/_modals.html:132
+#: web/templates/partials/_modals.html:146
+#: web/templates/partials/_modals.html:179
+#: web/templates/partials/_modals.html:215
+#: web/templates/partials/_modals.html:286
+#: web/templates/partials/_modals.html:903
+msgid "Artist"
+msgstr ""
+
+#: web/templates/partials/_modals.html:148
+#: web/templates/partials/_modals.html:217
+msgid "Every track by this artist will be excluded from all playlists."
+msgstr ""
+
+#: web/templates/partials/_modals.html:152
+#: web/templates/partials/_modals.html:221
+msgid "Why blacklist this artist?"
+msgstr ""
+
+#: web/templates/partials/_modals.html:166
 #: web/templates/partials/_panel_blacklist.html:17
 msgid "Add to Blacklist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:145
-#: web/templates/partials/_modals.html:219
-#: web/templates/partials/_modals.html:831
-msgid "Artist"
-msgstr ""
-
-#: web/templates/partials/_modals.html:146
-#: web/templates/partials/_modals.html:220
+#: web/templates/partials/_modals.html:180
+#: web/templates/partials/_modals.html:216
+#: web/templates/partials/_modals.html:287
 msgid "Artist name"
 msgstr ""
 
-#: web/templates/partials/_modals.html:149
-#: web/templates/partials/_modals.html:223
-#: web/templates/partials/_modals.html:835
+#: web/templates/partials/_modals.html:183
+#: web/templates/partials/_modals.html:290
+#: web/templates/partials/_modals.html:907
 msgid "Title"
 msgstr ""
 
-#: web/templates/partials/_modals.html:150
-#: web/templates/partials/_modals.html:224
+#: web/templates/partials/_modals.html:184
+#: web/templates/partials/_modals.html:291
 msgid "Track title"
 msgstr ""
 
-#: web/templates/partials/_modals.html:168
+#: web/templates/partials/_modals.html:235
 msgid "Override Track"
 msgstr ""
 
-#: web/templates/partials/_modals.html:187
-#: web/templates/partials/_modals.html:227
+#: web/templates/partials/_modals.html:254
+#: web/templates/partials/_modals.html:294
 msgid "YouTube Video ID or URL"
 msgstr ""
 
-#: web/templates/partials/_modals.html:188
-#: web/templates/partials/_modals.html:228
+#: web/templates/partials/_modals.html:255
+#: web/templates/partials/_modals.html:295
 msgid "Id or full URL"
 msgstr ""
 
-#: web/templates/partials/_modals.html:192
+#: web/templates/partials/_modals.html:259
 msgid "Why override this?"
 msgstr ""
 
-#: web/templates/partials/_modals.html:197
-#: web/templates/partials/_modals.html:237
+#: web/templates/partials/_modals.html:264
+#: web/templates/partials/_modals.html:304
 msgid "Save Override"
 msgstr ""
 
-#: web/templates/partials/_modals.html:206
+#: web/templates/partials/_modals.html:273
 #: web/templates/partials/_panel_overrides.html:18
 #: web/templates/partials/_panel_overrides.html:66
 msgid "Add Override"
 msgstr ""
 
-#: web/templates/partials/_modals.html:232
+#: web/templates/partials/_modals.html:299
 msgid "Why add this override?"
 msgstr ""
 
-#: web/templates/partials/_modals.html:246
+#: web/templates/partials/_modals.html:313
 msgid "Edit Tag Override"
 msgstr ""
 
-#: web/templates/partials/_modals.html:268
+#: web/templates/partials/_modals.html:335
 msgid "Add or remove tags"
 msgstr ""
 
-#: web/templates/partials/_modals.html:272
+#: web/templates/partials/_modals.html:339
 msgid "Why override tags?"
 msgstr ""
 
-#: web/templates/partials/_modals.html:279
+#: web/templates/partials/_modals.html:346
 msgid "Save Tags"
 msgstr ""
 
-#: web/templates/partials/_modals.html:300
+#: web/templates/partials/_modals.html:367
 #: web/templates/partials/_panel_settings.html:156
 msgid "Playlist Name"
 msgstr ""
 
-#: web/templates/partials/_modals.html:301
+#: web/templates/partials/_modals.html:368
 msgid "My Rock Playlist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:304
+#: web/templates/partials/_modals.html:371
 msgid "Description"
 msgstr ""
 
-#: web/templates/partials/_modals.html:305
+#: web/templates/partials/_modals.html:372
 #: web/templates/partials/_panel_settings.html:162
 msgid "Custom description (leave empty for auto-generated)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:306
+#: web/templates/partials/_modals.html:373
 msgid "Leave empty to auto-generate based on tags"
 msgstr ""
 
-#: web/templates/partials/_modals.html:309
+#: web/templates/partials/_modals.html:376
 msgid "Tags (comma-separated)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:310
+#: web/templates/partials/_modals.html:377
 msgid "rock, alternative, indie"
 msgstr ""
 
-#: web/templates/partials/_modals.html:311
+#: web/templates/partials/_modals.html:378
 msgid "Tracks with these Last.fm tags will be included"
 msgstr ""
 
-#: web/templates/partials/_modals.html:314
+#: web/templates/partials/_modals.html:381
 msgid "Match Mode"
 msgstr ""
 
-#: web/templates/partials/_modals.html:316
+#: web/templates/partials/_modals.html:383
 msgid "Any (track has at least one tag)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:317
+#: web/templates/partials/_modals.html:384
 msgid "All (track has all tags)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:321
+#: web/templates/partials/_modals.html:388
 #: web/templates/partials/_panel_settings.html:166
 msgid "Track Limit"
 msgstr ""
 
-#: web/templates/partials/_modals.html:327
+#: web/templates/partials/_modals.html:394
 msgid "No Limit"
 msgstr ""
 
-#: web/templates/partials/_modals.html:329
+#: web/templates/partials/_modals.html:396
 msgid "Include as many matching tracks as possible"
 msgstr ""
 
-#: web/templates/partials/_modals.html:334
+#: web/templates/partials/_modals.html:401
 #: web/templates/partials/_panel_settings.html:356
 msgid "Backfill"
 msgstr ""
 
-#: web/templates/partials/_modals.html:336
+#: web/templates/partials/_modals.html:403
 msgid "Fetch more scrobbles if the limit is not met"
 msgstr ""
 
-#: web/templates/partials/_modals.html:341
+#: web/templates/partials/_modals.html:408
 msgid "Include in auto-sync"
 msgstr ""
 
-#: web/templates/partials/_modals.html:343
+#: web/templates/partials/_modals.html:410
 msgid "Sync this playlist during scheduled runs"
 msgstr ""
 
-#: web/templates/partials/_modals.html:346
+#: web/templates/partials/_modals.html:413
 msgid "Blacklist (optional)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:347
+#: web/templates/partials/_modals.html:414
 msgid "artist|title (one per line)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:348
+#: web/templates/partials/_modals.html:415
 msgid "Exclude specific tracks from this playlist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:353
-msgid "Save Playlist"
-msgstr ""
-
-#: web/templates/partials/_modals.html:361
-msgid "Delete Playlist"
-msgstr ""
-
-#: web/templates/partials/_modals.html:371
-msgid "Are you sure you want to delete"
-msgstr ""
-
-#: web/templates/partials/_modals.html:375
-msgid "Also delete from YouTube Music"
-msgstr ""
-
-#: web/templates/partials/_modals.html:410
-msgid "and make sure you're logged in"
-msgstr ""
-
-#: web/templates/partials/_modals.html:413
-msgid "Open DevTools"
-msgstr ""
-
-#: web/templates/partials/_modals.html:413
-msgid "or"
-msgstr ""
-
-#: web/templates/partials/_modals.html:413
-msgid "on Mac"
-msgstr ""
-
-#: web/templates/partials/_modals.html:414
-msgid "Network"
-msgstr ""
-
-#: web/templates/partials/_modals.html:415
-#: web/templates/partials/_modals.html:428
-msgid "tab"
-msgstr ""
-
 #: web/templates/partials/_modals.html:418
-msgid "Filter by"
+msgid "Artist Blacklist (optional)"
 msgstr ""
 
 #: web/templates/partials/_modals.html:419
-msgid "in the search bar. If nothing appears, scroll down or click"
+msgid "artist name (one per line)"
 msgstr ""
 
 #: web/templates/partials/_modals.html:420
+msgid "Exclude all tracks by these artists from this playlist"
+msgstr ""
+
+#: web/templates/partials/_modals.html:425
+msgid "Save Playlist"
+msgstr ""
+
+#: web/templates/partials/_modals.html:433
+msgid "Delete Playlist"
+msgstr ""
+
+#: web/templates/partials/_modals.html:443
+msgid "Are you sure you want to delete"
+msgstr ""
+
+#: web/templates/partials/_modals.html:447
+msgid "Also delete from YouTube Music"
+msgstr ""
+
+#: web/templates/partials/_modals.html:482
+msgid "and make sure you're logged in"
+msgstr ""
+
+#: web/templates/partials/_modals.html:485
+msgid "Open DevTools"
+msgstr ""
+
+#: web/templates/partials/_modals.html:485
+msgid "or"
+msgstr ""
+
+#: web/templates/partials/_modals.html:485
+msgid "on Mac"
+msgstr ""
+
+#: web/templates/partials/_modals.html:486
+msgid "Network"
+msgstr ""
+
+#: web/templates/partials/_modals.html:487
+#: web/templates/partials/_modals.html:500
+msgid "tab"
+msgstr ""
+
+#: web/templates/partials/_modals.html:490
+msgid "Filter by"
+msgstr ""
+
+#: web/templates/partials/_modals.html:491
+msgid "in the search bar. If nothing appears, scroll down or click"
+msgstr ""
+
+#: web/templates/partials/_modals.html:492
 msgid "Library"
 msgstr ""
 
-#: web/templates/partials/_modals.html:421
+#: web/templates/partials/_modals.html:493
 msgid "in the top bar."
 msgstr ""
 
-#: web/templates/partials/_modals.html:425
+#: web/templates/partials/_modals.html:497
 msgid "right-click the request"
 msgstr ""
 
-#: web/templates/partials/_modals.html:425
+#: web/templates/partials/_modals.html:497
 msgid "Copy"
 msgstr ""
 
-#: web/templates/partials/_modals.html:426
+#: web/templates/partials/_modals.html:498
 msgid "Copy Request Headers"
 msgstr ""
 
-#: web/templates/partials/_modals.html:428
+#: web/templates/partials/_modals.html:500
 msgid "click the request name"
 msgstr ""
 
-#: web/templates/partials/_modals.html:428
+#: web/templates/partials/_modals.html:500
 msgid "Headers"
 msgstr ""
 
-#: web/templates/partials/_modals.html:429
+#: web/templates/partials/_modals.html:501
 msgid "copy everything from"
 msgstr ""
 
-#: web/templates/partials/_modals.html:431
+#: web/templates/partials/_modals.html:503
 msgid "to the end of \"Request headers\", or right-click"
 msgstr ""
 
-#: web/templates/partials/_modals.html:431
+#: web/templates/partials/_modals.html:503
 msgid "Copy as cURL"
 msgstr ""
 
-#: web/templates/partials/_modals.html:437
+#: web/templates/partials/_modals.html:509
 msgid "Paste request headers or cURL command here..."
 msgstr ""
 
-#: web/templates/partials/_modals.html:453
+#: web/templates/partials/_modals.html:525
 msgid "Connect"
 msgstr ""
 
-#: web/templates/partials/_modals.html:469
+#: web/templates/partials/_modals.html:541
 #: web/templates/partials/_panel_settings.html:665
 #: web/templates/partials/_panel_settings.html:681
 msgid "Export / Import"
 msgstr ""
 
-#: web/templates/partials/_modals.html:481
-#: web/templates/partials/_modals.html:570
-#: web/templates/partials/_modals.html:649
-#: web/templates/partials/_modals.html:986
+#: web/templates/partials/_modals.html:553
+#: web/templates/partials/_modals.html:642
+#: web/templates/partials/_modals.html:721
+#: web/templates/partials/_modals.html:1058
 msgid "Export"
 msgstr ""
 
-#: web/templates/partials/_modals.html:482
+#: web/templates/partials/_modals.html:554
 msgid "Download overrides and blacklist as a JSON file for backup or sharing."
 msgstr ""
 
-#: web/templates/partials/_modals.html:491
+#: web/templates/partials/_modals.html:563
 msgid "Export All"
 msgstr ""
 
-#: web/templates/partials/_modals.html:493
+#: web/templates/partials/_modals.html:565
 msgid "Overrides Only"
 msgstr ""
 
-#: web/templates/partials/_modals.html:494
+#: web/templates/partials/_modals.html:566
 msgid "Blacklist Only"
 msgstr ""
 
-#: web/templates/partials/_modals.html:496
+#: web/templates/partials/_modals.html:568
 msgid "Tag Overrides Only"
 msgstr ""
 
-#: web/templates/partials/_modals.html:501
-#: web/templates/partials/_modals.html:517
-#: web/templates/partials/_modals.html:588
-#: web/templates/partials/_modals.html:738
-#: web/templates/partials/_modals.html:987
+#: web/templates/partials/_modals.html:573
+#: web/templates/partials/_modals.html:589
+#: web/templates/partials/_modals.html:660
+#: web/templates/partials/_modals.html:810
+#: web/templates/partials/_modals.html:1059
 msgid "Import"
 msgstr ""
 
-#: web/templates/partials/_modals.html:503
+#: web/templates/partials/_modals.html:575
 msgid ""
 "Import overrides and blacklist from a previously exported JSON file. "
 "Existing entries will be preserved."
 msgstr ""
 
-#: web/templates/partials/_modals.html:512
-#: web/templates/partials/_modals.html:599
+#: web/templates/partials/_modals.html:584
+#: web/templates/partials/_modals.html:671
 msgid "Drop a JSON file here or click to browse"
 msgstr ""
 
-#: web/templates/partials/_modals.html:530
-#: web/templates/partials/_modals.html:544
+#: web/templates/partials/_modals.html:602
+#: web/templates/partials/_modals.html:616
 msgid "Clear History"
 msgstr ""
 
-#: web/templates/partials/_modals.html:540
+#: web/templates/partials/_modals.html:612
 msgid ""
 "This will permanently delete all history data (tracks, syncs, actions). "
 "Continue?"
 msgstr ""
 
-#: web/templates/partials/_modals.html:558
+#: web/templates/partials/_modals.html:630
 #: web/templates/partials/_panel_settings.html:408
 #: web/templates/partials/_panel_settings.html:671
 msgid "History Database"
 msgstr ""
 
-#: web/templates/partials/_modals.html:572
+#: web/templates/partials/_modals.html:644
 msgid ""
 "Download the full history database (tracks, syncs, actions) as a "
 "plaintext JSON dump."
 msgstr ""
 
-#: web/templates/partials/_modals.html:582
+#: web/templates/partials/_modals.html:654
 msgid "Download JSON Dump"
 msgstr ""
 
-#: web/templates/partials/_modals.html:590
+#: web/templates/partials/_modals.html:662
 msgid ""
 "Restore a previously exported history dump. Merge is idempotent (re-"
 "importing the same file inserts zero new rows). Replace wipes the "
 "existing database first."
 msgstr ""
 
-#: web/templates/partials/_modals.html:605
+#: web/templates/partials/_modals.html:677
 msgid "Merge"
 msgstr ""
 
-#: web/templates/partials/_modals.html:606
+#: web/templates/partials/_modals.html:678
 msgid "Replace"
 msgstr ""
 
-#: web/templates/partials/_modals.html:627
+#: web/templates/partials/_modals.html:699
 #: web/templates/partials/_panel_settings.html:687
 msgid "Teleporter"
 msgstr ""
 
-#: web/templates/partials/_modals.html:645
+#: web/templates/partials/_modals.html:717
 msgid ""
 "This backup contains sensitive data (API keys, auth tokens). Keep it "
 "secure."
 msgstr ""
 
-#: web/templates/partials/_modals.html:650
+#: web/templates/partials/_modals.html:722
 msgid "Bundle all config files into an encrypted backup."
 msgstr ""
 
-#: web/templates/partials/_modals.html:652
+#: web/templates/partials/_modals.html:724
 msgid "Encryption Password"
 msgstr ""
 
-#: web/templates/partials/_modals.html:654
+#: web/templates/partials/_modals.html:726
 msgid "Enter a password (min. 8 characters)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:657
-#: web/templates/partials/_modals.html:765
+#: web/templates/partials/_modals.html:729
+#: web/templates/partials/_modals.html:837
 msgid "Show password"
 msgstr ""
 
-#: web/templates/partials/_modals.html:676
+#: web/templates/partials/_modals.html:748
 msgid "Include cache files"
 msgstr ""
 
-#: web/templates/partials/_modals.html:687
+#: web/templates/partials/_modals.html:759
 msgid "Search cache"
 msgstr ""
 
-#: web/templates/partials/_modals.html:689
+#: web/templates/partials/_modals.html:761
 msgid ""
 "Cached YouTube Music search results. Avoids re-searching tracks on a new "
 "instance."
 msgstr ""
 
-#: web/templates/partials/_modals.html:695
+#: web/templates/partials/_modals.html:767
 msgid "Playlist cache"
 msgstr ""
 
-#: web/templates/partials/_modals.html:697
+#: web/templates/partials/_modals.html:769
 msgid ""
 "Stores playlist IDs and desired track state. Needed to resume syncing "
 "without recreating playlists."
 msgstr ""
 
-#: web/templates/partials/_modals.html:703
+#: web/templates/partials/_modals.html:775
 msgid "Tag cache"
 msgstr ""
 
-#: web/templates/partials/_modals.html:704
+#: web/templates/partials/_modals.html:776
 msgid "Cached Last.fm tag lookups. Avoids re-fetching tags for every track."
 msgstr ""
 
-#: web/templates/partials/_modals.html:710
+#: web/templates/partials/_modals.html:782
 msgid "Theme overrides"
 msgstr ""
 
-#: web/templates/partials/_modals.html:711
+#: web/templates/partials/_modals.html:783
 msgid "Your custom color scheme for the dashboard (per base theme)."
 msgstr ""
 
-#: web/templates/partials/_modals.html:717
+#: web/templates/partials/_modals.html:789
 msgid "History database"
 msgstr ""
 
-#: web/templates/partials/_modals.html:719
+#: web/templates/partials/_modals.html:791
 msgid ""
 "Track lookups, sync runs, and action log. Merged into the target instance"
 " on import."
 msgstr ""
 
-#: web/templates/partials/_modals.html:731
+#: web/templates/partials/_modals.html:803
 msgid "Export Encrypted Backup"
 msgstr ""
 
-#: web/templates/partials/_modals.html:739
+#: web/templates/partials/_modals.html:811
 msgid "Restore config from an encrypted backup file."
 msgstr ""
 
-#: web/templates/partials/_modals.html:747
+#: web/templates/partials/_modals.html:819
 msgid "Drop a .bin backup file here or click to browse"
 msgstr ""
 
-#: web/templates/partials/_modals.html:752
+#: web/templates/partials/_modals.html:824
 msgid "Remove file"
 msgstr ""
 
-#: web/templates/partials/_modals.html:761
+#: web/templates/partials/_modals.html:833
 msgid "Decryption Password"
 msgstr ""
 
-#: web/templates/partials/_modals.html:763
+#: web/templates/partials/_modals.html:835
 msgid "Enter the password used during export"
 msgstr ""
 
-#: web/templates/partials/_modals.html:786
+#: web/templates/partials/_modals.html:858
 msgid "Preview"
 msgstr ""
 
-#: web/templates/partials/_modals.html:794
+#: web/templates/partials/_modals.html:866
 msgid "Restore Backup"
 msgstr ""
 
-#: web/templates/partials/_modals.html:815
+#: web/templates/partials/_modals.html:887
 msgid "Track Details"
 msgstr ""
 
-#: web/templates/partials/_modals.html:839
+#: web/templates/partials/_modals.html:911
 msgid "Video ID"
 msgstr ""
 
-#: web/templates/partials/_modals.html:843
+#: web/templates/partials/_modals.html:915
 msgid "YouTube Title"
 msgstr ""
 
-#: web/templates/partials/_modals.html:847
+#: web/templates/partials/_modals.html:919
 msgid "Source"
 msgstr ""
 
-#: web/templates/partials/_modals.html:855
-#: web/templates/partials/_modals.html:910
+#: web/templates/partials/_modals.html:927
+#: web/templates/partials/_modals.html:982
 msgid "Status"
 msgstr ""
 
-#: web/templates/partials/_modals.html:859
+#: web/templates/partials/_modals.html:931
 msgid "Seen"
 msgstr ""
 
-#: web/templates/partials/_modals.html:863
+#: web/templates/partials/_modals.html:935
 msgid "First Seen"
 msgstr ""
 
-#: web/templates/partials/_modals.html:867
+#: web/templates/partials/_modals.html:939
 msgid "Last Seen"
 msgstr ""
 
-#: web/templates/partials/_modals.html:894
+#: web/templates/partials/_modals.html:966
 msgid "Sync Details"
 msgstr ""
 
-#: web/templates/partials/_modals.html:914
+#: web/templates/partials/_modals.html:986
 msgid "Started"
 msgstr ""
 
-#: web/templates/partials/_modals.html:918
+#: web/templates/partials/_modals.html:990
 msgid "Finished"
 msgstr ""
 
-#: web/templates/partials/_modals.html:922
+#: web/templates/partials/_modals.html:994
 msgid "Duration"
 msgstr ""
 
-#: web/templates/partials/_modals.html:930
+#: web/templates/partials/_modals.html:1002
 #: web/templates/partials/_panel_history.html:26
 #: web/templates/partials/_panel_history.html:65
 msgid "Missed"
 msgstr ""
 
-#: web/templates/partials/_modals.html:942
+#: web/templates/partials/_modals.html:1014
 #: web/templates/partials/_panel_history.html:42
 msgid "API Searches"
 msgstr ""
 
-#: web/templates/partials/_modals.html:946
+#: web/templates/partials/_modals.html:1018
 msgid "Playlist Ops"
 msgstr ""
 
-#: web/templates/partials/_modals.html:964
+#: web/templates/partials/_modals.html:1036
 msgid "Customize Theme"
 msgstr ""
 
-#: web/templates/partials/_modals.html:975
+#: web/templates/partials/_modals.html:1047
 msgid ""
 "Pick a color for each token. Changes preview live; nothing is saved until"
 " you click Save."
 msgstr ""
 
-#: web/templates/partials/_modals.html:985
+#: web/templates/partials/_modals.html:1057
 msgid "Discard customizations for the current base theme"
 msgstr ""
 
-#: web/templates/partials/_modals.html:985
+#: web/templates/partials/_modals.html:1057
 msgid "Reset to parent"
 msgstr ""
 
-#: web/templates/partials/_modals.html:991
+#: web/templates/partials/_modals.html:1063
 #: web/templates/partials/_panel_settings.html:718
 msgid "Save"
 msgstr ""
@@ -2176,15 +2242,20 @@ msgid ""
 "filter out tracks you never want resurfaced."
 msgstr ""
 
-#: web/templates/partials/_panel_blacklist.html:26
+#: web/templates/partials/_panel_blacklist.html:32
+msgid "All tracks"
+msgstr ""
+
+#: web/templates/partials/_panel_blacklist.html:34
+#: web/templates/partials/_panel_blacklist.html:55
 msgid "Reason:"
 msgstr ""
 
-#: web/templates/partials/_panel_blacklist.html:48
+#: web/templates/partials/_panel_blacklist.html:77
 msgid "No Blacklisted Tracks"
 msgstr ""
 
-#: web/templates/partials/_panel_blacklist.html:49
+#: web/templates/partials/_panel_blacklist.html:78
 msgid ""
 "Blacklisted tracks will be skipped during sync and won't appear in your "
 "playlist."
@@ -2377,11 +2448,11 @@ msgstr ""
 msgid "Search not found tracks..."
 msgstr ""
 
-#: web/templates/partials/_panel_notfound.html:52
+#: web/templates/partials/_panel_notfound.html:53
 msgid "No Missing Tracks"
 msgstr ""
 
-#: web/templates/partials/_panel_notfound.html:53
+#: web/templates/partials/_panel_notfound.html:54
 msgid ""
 "All tracks in the cache have been successfully matched to YouTube Music "
 "videos."
@@ -2740,7 +2811,7 @@ msgid "E.g., Europe/Berlin, America/New_York"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:287
-#: web/templates/partials/_tabs.html:9
+#: web/templates/partials/_tabs.html:10
 msgid "Custom Playlists"
 msgstr ""
 
@@ -3118,7 +3189,7 @@ msgid "Search tagged tracks..."
 msgstr ""
 
 #: web/templates/partials/_panel_tags.html:24
-#: web/templates/partials/_stats.html:25 web/templates/partials/_tabs.html:8
+#: web/templates/partials/_stats.html:25 web/templates/partials/_tabs.html:9
 msgid "Track Tags"
 msgstr ""
 
@@ -3174,11 +3245,11 @@ msgstr ""
 msgid "Playlist"
 msgstr ""
 
-#: web/templates/partials/_tabs.html:10
+#: web/templates/partials/_tabs.html:11
 msgid "Playlists"
 msgstr ""
 
-#: web/templates/partials/_tabs.html:11
+#: web/templates/partials/_tabs.html:12
 msgid "History"
 msgstr ""
 
