@@ -232,7 +232,7 @@ Files under `config/` (paths set by `CACHE_OVERRIDES_FILE`,
 |---|---|
 | `search_overrides.json` | Manual `artist\|title &rarr; video_id` fixes and a blacklist |
 | `tag_overrides.json` | Forced Last.fm tag assignments |
-| `custom_playlists.json` | Tag-based playlist definitions |
+| `custom_playlists.json` | Custom playlist definitions (tags & artists) |
 
 Tracked in git only as `*.example` templates. Plaintext JSON; not sensitive on
 their own, but they reveal listening preferences.

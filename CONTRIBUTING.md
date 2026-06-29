@@ -1,6 +1,6 @@
 # Contributing
 
-Contributions are welcome. The process is intentionally lightweight.
+Contributions are welcome. The tooling spans four languages (Python, JS, CSS, HTML templates) with a full stack of linters, formatters, type checking, and two test layers - but [`./precommit.sh`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/precommit.sh) wires it all together so you can run everything with one command.
 
 ## Reporting issues
 

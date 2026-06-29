@@ -1,6 +1,6 @@
 # How It Works
 
-This tool has two sync flows: the **main playlist** (covered below) and, optionally, **custom tag playlists**. The Docker dashboard exposes both as separate buttons; on the CLI they are `python run.py` and `python run_tags.py`. The rest of this page describes the main flow - tag playlists are documented in [Custom Tag Playlists](tag-playlists.md).
+This tool has two sync flows: the **main playlist** (covered below) and, optionally, **custom playlists** (tag- and artist-based). The Docker dashboard exposes both as separate buttons; on the CLI they are `python run.py` and `python run_tags.py`. The rest of this page describes the main flow - custom playlists are documented in [Custom Playlists](tag-playlists.md).
 
 ## Overview
 

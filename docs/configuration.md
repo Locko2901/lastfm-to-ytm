@@ -90,7 +90,7 @@ These settings only apply when running the web dashboard.
 | `AUTO_SYNC_INTERVAL_HOURS` | `6` | Hours between syncs (interval mode) |
 | `AUTO_SYNC_START_TIME` | | HH:MM anchor for interval start (e.g., `00:00`) |
 | `AUTO_SYNC_CRON` | `0 */6 * * *` | Cron expression (cron mode) |
-| `AUTO_TAG_SYNC_ENABLED` | `false` | Also sync custom tag playlists after each scheduled run |
+| `AUTO_TAG_SYNC_ENABLED` | `false` | Also sync custom playlists (tags & artists) after each scheduled run |
 | `AUTO_TAG_SYNC_FREQUENCY` | `1` | Run tag sync every N main syncs (`1` = every time) |
 | `USE_24_HOUR_CLOCK` | `true` | Display times in 24-hour format |
 | `DATE_FORMAT` | `auto` | Date display format: `auto` (browser locale), `DMY` (31/12), or `MDY` (12/31) |
@@ -140,7 +140,7 @@ These are rarely changed. Most users can ignore everything below.
     | `CACHE_SEARCH_TTL_DAYS` | `30` | Days before cached searches expire (`0` = never) |
     | `CACHE_NOTFOUND_TTL_DAYS` | `7` | Days before "not found" results are retried (`0` = don't cache) |
 
-??? note "Custom tag playlists"
+??? note "Custom playlists"
 
     | Variable | Default | Description |
     |----------|---------|-------------|
@@ -152,7 +152,7 @@ These are rarely changed. Most users can ignore everything below.
     | `TAG_SLEEP_BETWEEN` | `0.25` | Delay between tag API calls in seconds |
     | `TAG_OVERRIDES_FILE` | `config/tag_overrides.json` | Manual tag overrides file |
 
-    See [Custom Tag Playlists](tag-playlists.md) for the JSON schema and examples.
+    See [Custom Playlists](tag-playlists.md) for the JSON schema and examples.
 
 ??? note "History database"
 

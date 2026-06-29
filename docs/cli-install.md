@@ -126,7 +126,7 @@ python run.py     # or just: lastfm-ytm-sync
 # uv users: uv run run.py   (no need to activate .venv first)
 ```
 
-To sync your [custom tag playlists](tag-playlists.md) instead, run:
+To sync your [custom playlists](tag-playlists.md) instead, run:
 
 ```bash
 python run_tags.py    # or just: lastfm-ytm-tags

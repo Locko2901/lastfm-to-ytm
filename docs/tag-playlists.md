@@ -1,18 +1,19 @@
-# Custom Tag Playlists
+# Custom Playlists
 
-Create automatic YouTube Music playlists based on Last.fm tags and genres. You can define multiple tag-based playlists that fill themselves with matching tracks from your scrobble history.
+Create automatic YouTube Music playlists that fill themselves with matching tracks from your scrobble history. Each custom playlist is one of two **types**:
 
-For example, define a "Breakcore Mix" playlist that only includes tracks tagged `breakcore` or `drill and bass` on Last.fm, or a "Chill Electronic" playlist that requires both `electronic` and `ambient` tags.
+- **Tag playlists** - include tracks by Last.fm tags/genres. For example, a "Breakcore Mix" playlist that only includes tracks tagged `breakcore` or `drill and bass`, or a "Chill Electronic" playlist that requires both `electronic` and `ambient`.
+- **Artist playlists** - include every found track by one or more specific artists. For example, a "Radiohead & Aphex Twin" playlist that gathers all of those artists' tracks from your history.
 
 ??? example "Screenshot: Custom Playlists editor"
     ![Custom Playlists](screenshots/custom_playlists.png)
 
 !!! tip "Related"
-    Tag playlists honor the same `_overrides`, `_blacklist`, and `_blacklist_artists` you set up in [Search Overrides](overrides.md), plus **per-playlist** `blacklist`/`blacklist_artists` fields (see [Configuration](#configuration) below). Use tag overrides when Last.fm's tags are wrong; use search overrides when the *matched video* is wrong.
+    Custom playlists honor the same `_overrides`, `_blacklist`, and `_blacklist_artists` you set up in [Search Overrides](overrides.md), plus **per-playlist** `blacklist`/`blacklist_artists` fields (see [Configuration](#configuration) below). Use tag overrides when Last.fm's tags are wrong; use search overrides when the *matched video* is wrong.
 
 ## How Tags Are Resolved
 
-The tag system follows the same cache-first approach as the main sync:
+Tag playlists use a cache-first approach to find each track's Last.fm tags (artist playlists skip this step entirely, since they match on artist name alone):
 
 1. **Tag overrides** - check `config/tag_overrides.json` (user manual fixes). If the override mode is `"replace"`, the override tags are used directly and steps 2-3 are skipped.
 2. **Tag cache** - check `cache/.tag_cache.json` (90-day TTL, configurable via `TAG_CACHE_TTL_DAYS`)
@@ -28,7 +29,7 @@ If backfilling is enabled and a playlist has not reached its target track count 
 
 ## Configuration
 
-**Docker**: Use the web dashboard to create and manage tag playlists. Tag sync can be triggered manually from the UI, or automatically after each scheduled main sync via `AUTO_TAG_SYNC_ENABLED` and `AUTO_TAG_SYNC_FREQUENCY` (see [Configuration](configuration.md)).
+**Docker**: Use the web dashboard to create and manage custom playlists. Pick the **Playlist Type** (genre tags or artists) in the editor. Sync can be triggered manually from the UI, or automatically after each scheduled main sync via `AUTO_TAG_SYNC_ENABLED` and `AUTO_TAG_SYNC_FREQUENCY` (see [Configuration](configuration.md)).
 
 **CLI**: Edit `config/custom_playlists.json` directly:
 
@@ -59,6 +60,13 @@ cp config/custom_playlists.json.example config/custom_playlists.json
       "backfill": true,
       "blacklist": ["artist name|unwanted track"],
       "blacklist_artists": ["unwanted artist"]
+    },
+    {
+      "name": "My Favorite Artists (auto)",
+      "kind": "artists",
+      "artists": ["radiohead", "aphex twin"],
+      "limit": 50,
+      "backfill": true
     }
   ]
 }
@@ -67,9 +75,11 @@ cp config/custom_playlists.json.example config/custom_playlists.json
 | Field | Required | Description |
 |-------|----------|-------------|
 | `name` | yes | Playlist name on YouTube Music |
+| `kind` | no | `"tags"` (default) or `"artists"` |
 | `description` | no | Optional playlist description (empty = auto-generated) |
-| `tags` | yes | Last.fm tags to match against |
-| `match` | no | `"any"` (track has at least one tag, default) or `"all"` (track has every tag) |
+| `tags` | tag playlists | Last.fm tags to match against (required when `kind` is `"tags"`) |
+| `artists` | artist playlists | Lowercase artist names to include (required when `kind` is `"artists"`) |
+| `match` | no | `"any"` (track has at least one tag, default) or `"all"` (track has every tag). Tag playlists only |
 | `limit` | no | Target number of tracks (default: `50`) |
 | `backfill` | no | Fetch more scrobbles if filtering doesn't reach the limit (default: `true`) |
 | `blacklist` | no | Per-playlist exclusions as `"artist\|title"` (lowercase) |
@@ -83,7 +93,7 @@ cp config/custom_playlists.json.example config/custom_playlists.json
 | `TAG_CACHE_TTL_DAYS` | `90` | Days before cached tags expire |
 | `TAG_MIN_COUNT` | `10` | Minimum Last.fm tag count threshold |
 | `TAG_SLEEP_BETWEEN` | `0.25` | Seconds between tag API calls |
-| `CUSTOM_PLAYLISTS_PRIVACY` | *(main setting)* | Privacy for tag playlists (`PUBLIC` / `PRIVATE`) |
+| `CUSTOM_PLAYLISTS_PRIVACY` | *(main setting)* | Privacy for custom playlists (`PUBLIC` / `PRIVATE`) |
 | `BACKFILL_PASSES` | `3` | Maximum backfill iterations |
 
 ---
@@ -127,13 +137,13 @@ cp config/tag_overrides.json.example config/tag_overrides.json
 
 ---
 
-## Running Tag Sync
+## Running Custom Sync
 
-Tag playlists are synced separately from the main playlist. Use the dedicated entry point:
+Custom playlists (both tag- and artist-based) are synced separately from the main playlist. Use the dedicated entry point:
 
 ```bash
 python run_tags.py  # or: lastfm-ytm-tags
 ```
 
 !!! warning
-    `python run.py` only runs the main playlist sync. Tag playlists must be triggered separately via `run_tags.py` or from the web dashboard.
+    `python run.py` only runs the main playlist sync. Custom playlists must be triggered separately via `run_tags.py` or from the web dashboard (**Custom Playlist Sync** in the run menu).

@@ -119,7 +119,7 @@ After your first successful sync:
 - **Fix mismatches** - check the playlist for wrong matches and add [manual overrides](overrides.md) to fix them. The web dashboard's **Not Found** and **Playlist** tabs make this easy.
 - **Tune the playlist feel** - adjust `RECENCY_PLAY_WEIGHT`, `RECENCY_HALF_LIFE_HOURS`, or `LIMIT` from the Settings modal. Defaults are sensible; see [Configuration](configuration.md) only if you want to dig in.
 - **Get weekly snapshots** - weekly playlists are on by default. Read [How It Works &rarr; Weekly Playlists](how-it-works.md#weekly-playlists) to learn how to rename or keep more.
-- **Set up tag playlists** - auto-generate genre-based playlists from your Last.fm tags. See [Custom Tag Playlists](tag-playlists.md).
+- **Set up custom playlists** - auto-generate tag- or artist-based playlists from your Last.fm data. See [Custom Playlists](tag-playlists.md).
 - **Enable scheduling** - turn on the built-in scheduler from the Settings modal (gear icon, top right).
 - **Get notified** - set up [webhooks](webhooks.md) for Discord (or any other) notifications on sync results.
 

@@ -47,7 +47,7 @@ Find the video ID from a YouTube Music URL - it is the part after `v=` (e.g., `h
 Blacklisted tracks are excluded entirely from playlist generation. They are checked *before* overrides and the search cache, so a blacklisted track will never appear in any playlist regardless of other entries.
 
 !!! info "Resolution order"
-    blacklist &rarr; overrides &rarr; search cache &rarr; YouTube Music API. Overrides and blacklist entries never expire (you remove them manually), and both also apply to [custom tag playlists](tag-playlists.md).
+    blacklist &rarr; overrides &rarr; search cache &rarr; YouTube Music API. Overrides and blacklist entries never expire (you remove them manually), and both also apply to [custom playlists](tag-playlists.md).
 
 ## Blacklisting an Artist
 
@@ -64,5 +64,5 @@ To exclude **every** track by an artist, add an entry to `_blacklist_artists`. K
 }
 ```
 
-The artist blacklist is checked alongside the track blacklist (before overrides and cache). [Custom tag playlists](tag-playlists.md) support a per-playlist `blacklist_artists` array that works the same way.
+The artist blacklist is checked alongside the track blacklist (before overrides and cache). [Custom playlists](tag-playlists.md) support a per-playlist `blacklist_artists` array that works the same way.
 

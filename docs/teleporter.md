@@ -26,7 +26,7 @@ The Teleporter lets you export and import your entire configuration as a single 
 - `browser.json` - YouTube Music authentication cookies
 - `config/search_overrides.json` - manual search overrides and blacklist
 - `config/tag_overrides.json` - tag overrides
-- `config/custom_playlists.json` - custom tag playlist definitions
+- `config/custom_playlists.json` - custom playlist definitions (tags & artists)
 
 **Optionally exported:**
 
