@@ -121,6 +121,11 @@ const actionHandlers = {
   cacheRemovePlaylistTrack: el => window.cacheRemovePlaylistTrack(el.dataset.name, el.dataset.videoId),
   cacheAdminTogglePlaylist: el => window.cacheAdminTogglePlaylist(el.dataset.name),
 
+  discoverPlaylists: () => window.discoverPlaylists(),
+  trackSelectedPlaylists: () => window.trackSelectedPlaylists(),
+  deleteYtmPlaylist: el => window.deleteYtmPlaylist(el.dataset.id, el.dataset.name),
+  pruneWeeklies: () => window.pruneWeeklies(),
+
   showCustomThemeModal: () => window.showCustomThemeModal(),
   cancelCustomThemeModal: () => window.cancelCustomThemeModal(),
   saveCustomThemeFromModal: () => window.saveCustomThemeFromModal(),

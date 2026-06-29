@@ -7,5 +7,6 @@
   <button class="tab" data-tab="cache">{{ _('Cache') }} <span class="tab-badge">{{ cached_tracks | length }}</span></button>
   <button class="tab" data-tab="tags">{{ _('Track Tags') }} <span class="tab-badge">{{ tag_cache_tracks | length }}</span></button>
   <button class="tab" data-tab="custompl">{{ _('Custom Playlists') }} <span class="tab-badge">{{ custom_playlists | length }}</span></button>
+  <button class="tab" data-tab="playlists">{{ _('Playlists') }} <span class="tab-badge" id="playlistsTabBadge"></span></button>
   <button class="tab" id="historyTab" data-tab="history" {% if not history_enabled %} hidden {% endif %}>{{ _('History') }}</button>
 </div>
