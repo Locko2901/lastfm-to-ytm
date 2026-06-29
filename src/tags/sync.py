@@ -5,18 +5,18 @@ import logging
 import os
 import traceback
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from ..config import load_custom_playlists
 from ..lastfm import fetch_recent_with_diversity
 from ..playlist import upsert_playlist
 from ..playlist.sync import InvalidVideoIDsError, _evict_from_cache
 from ..search import resolve_tracks_to_video_ids
-from .filter import filter_tracks_by_tags
+from .filter import filter_tracks_by_artists, filter_tracks_by_tags
 from .resolver import resolve_tags_for_tracks
 
 if TYPE_CHECKING:
-    from ..config import Settings
+    from ..config import CustomPlaylistConfig, Settings
     from ..context import RuntimeContext
     from ..lastfm import Scrobble
     from ..recency import WeightedTrack
@@ -56,37 +56,35 @@ def sync_custom_playlists(
             log.info("No custom playlists enabled for auto-sync")
             return TagSyncSummary()
 
-    log.info("Processing %d custom tag playlist(s)...", len(configs))
+    log.info("Processing %d custom playlist(s)...", len(configs))
 
     privacy = settings.custom_playlists_privacy_status or settings.privacy_status
     candidate_keys: set[tuple[str, str]] = set()
     missed_keys: set[tuple[str, str]] = set()
 
-    tag_map = resolve_tags_for_tracks(
-        recents,
-        ctx.tag_cache,
-        settings.lastfm_api_key,
-        min_count=settings.tag_min_count,
-        sleep_between=settings.tag_sleep_between,
-        max_retries=settings.lastfm_max_retries,
-        tag_overrides=ctx.tag_overrides,
-    )
+    tag_map: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    if any(c.kind == "tags" for c in configs):
+        tag_map = resolve_tags_for_tracks(
+            recents,
+            ctx.tag_cache,
+            settings.lastfm_api_key,
+            min_count=settings.tag_min_count,
+            sleep_between=settings.tag_sleep_between,
+            max_retries=settings.lastfm_max_retries,
+            tag_overrides=ctx.tag_overrides,
+        )
 
     for config in configs:
         limit_label = "unlimited" if config.limit == 0 else str(config.limit)
-        log.info("--- Custom playlist: '%s' (tags=%s, match=%s, limit=%s) ---", config.name, list(config.tags), config.match, limit_label)
+        if config.kind == "artists":
+            log.info("--- Custom playlist: '%s' (artists=%s, limit=%s) ---", config.name, list(config.artists), limit_label)
+        else:
+            log.info("--- Custom playlist: '%s' (tags=%s, match=%s, limit=%s) ---", config.name, list(config.tags), config.match, limit_label)
 
         wanted_tags = set(config.tags)
+        wanted_artists = set(config.artists)
 
-        matching_tracks = filter_tracks_by_tags(
-            recents,
-            tag_map,
-            wanted_tags,
-            match=config.match,
-            min_count=settings.tag_min_count,
-            blacklist=config.blacklist,
-            blacklist_artists=config.blacklist_artists,
-        )
+        matching_tracks = _filter_for_config(config, recents, tag_map, wanted_tags, wanted_artists, settings)
         candidate_keys.update((t.artist.lower(), t.track.lower()) for t in matching_tracks)
 
         video_ids = _resolve_from_existing(matching_tracks, track_to_vid)
@@ -151,26 +149,19 @@ def sync_custom_playlists(
 
             all_recents = more_recents
 
-            new_tag_map = resolve_tags_for_tracks(
-                new_scrobbles,
-                ctx.tag_cache,
-                settings.lastfm_api_key,
-                min_count=settings.tag_min_count,
-                sleep_between=settings.tag_sleep_between,
-                max_retries=settings.lastfm_max_retries,
-                tag_overrides=ctx.tag_overrides,
-            )
-            tag_map.update(new_tag_map)
+            if config.kind == "tags":
+                new_tag_map = resolve_tags_for_tracks(
+                    new_scrobbles,
+                    ctx.tag_cache,
+                    settings.lastfm_api_key,
+                    min_count=settings.tag_min_count,
+                    sleep_between=settings.tag_sleep_between,
+                    max_retries=settings.lastfm_max_retries,
+                    tag_overrides=ctx.tag_overrides,
+                )
+                tag_map.update(new_tag_map)
 
-            new_matching = filter_tracks_by_tags(
-                new_scrobbles,
-                tag_map,
-                wanted_tags,
-                match=config.match,
-                min_count=settings.tag_min_count,
-                blacklist=config.blacklist,
-                blacklist_artists=config.blacklist_artists,
-            )
+            new_matching = _filter_for_config(config, new_scrobbles, tag_map, wanted_tags, wanted_artists, settings)
             candidate_keys.update((t.artist.lower(), t.track.lower()) for t in new_matching)
 
             if not new_matching:
@@ -226,8 +217,11 @@ def sync_custom_playlists(
             artist, track_name = vid_to_track.get(vid, ("?", "?"))
             log.info("  %3d. %s - %s", i, artist, track_name)
 
-        desc = config.description or f"Auto-generated tag playlist ({', '.join(config.tags)})"
-
+        if config.kind == "artists":
+            default_desc = f"Auto-generated artist playlist ({', '.join(config.artists)})"
+        else:
+            default_desc = f"Auto-generated tag playlist ({', '.join(config.tags)})"
+        desc = config.description or default_desc
         try:
             upsert_playlist(
                 ctx.ytm,
@@ -302,6 +296,33 @@ def sync_custom_playlists(
     )
 
 
+def _filter_for_config(
+    config: CustomPlaylistConfig,
+    tracks: list[Scrobble],
+    tag_map: dict[tuple[str, str], list[dict[str, Any]]],
+    wanted_tags: set[str],
+    wanted_artists: set[str],
+    settings: Settings,
+) -> list[Scrobble | WeightedTrack]:
+    """Filter tracks for a config by either artist or tag criteria."""
+    if config.kind == "artists":
+        return filter_tracks_by_artists(
+            tracks,
+            wanted_artists,
+            blacklist=config.blacklist,
+            blacklist_artists=config.blacklist_artists,
+        )
+    return filter_tracks_by_tags(
+        tracks,
+        tag_map,
+        wanted_tags,
+        match=config.match,
+        min_count=settings.tag_min_count,
+        blacklist=config.blacklist,
+        blacklist_artists=config.blacklist_artists,
+    )
+
+
 def _resolve_from_existing(
     tracks: list[Scrobble | WeightedTrack],
     track_to_vid: dict[tuple[str, str], str],
@@ -325,11 +346,11 @@ def _save_tag_failure(
     playlist_name: str,
     error: Exception,
 ) -> None:
-    """Save a failure log and fire webhook for a tag playlist error."""
+    """Save a failure log and fire webhook for a custom playlist error."""
     from ..config import CACHE_DIR
     from ..webhook import send_webhook
 
-    error_message = f"Tag playlist '{playlist_name}': {error}"
+    error_message = f"Custom playlist '{playlist_name}': {error}"
     tb_str = traceback.format_exc()
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)

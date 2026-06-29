@@ -48,3 +48,31 @@ def filter_tracks_by_tags(
             result.append(t)
 
     return result
+
+
+def filter_tracks_by_artists(
+    tracks: Sequence[Scrobble | WeightedTrack],
+    wanted_artists: set[str],
+    blacklist: frozenset[str] = frozenset(),
+    blacklist_artists: frozenset[str] = frozenset(),
+) -> list[Scrobble | WeightedTrack]:
+    """Filter tracks to those by one of the wanted artists (case-insensitive)."""
+    result: list[Scrobble | WeightedTrack] = []
+
+    for t in tracks:
+        artist_key = t.artist.lower()
+        if artist_key not in wanted_artists:
+            continue
+
+        if artist_key in blacklist_artists:
+            log.debug("Per-playlist artist blacklisted: %s - %s", t.artist, t.track)
+            continue
+
+        blacklist_key = f"{artist_key}|{t.track.lower()}"
+        if blacklist_key in blacklist:
+            log.debug("Per-playlist blacklisted: %s - %s", t.artist, t.track)
+            continue
+
+        result.append(t)
+
+    return result

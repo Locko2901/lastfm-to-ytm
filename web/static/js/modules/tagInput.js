@@ -1,33 +1,43 @@
 import { _ } from "./i18n.js"
 
-let allTags = []
-let fetched = false
-let fetchPromise = null
+const sources = new Map()
 
-async function ensureTags() {
-  if (fetched) return
-  if (fetchPromise) return fetchPromise
-  fetchPromise = fetch("/api/tags/suggestions")
-    .then(r => (r.ok ? r.json() : { tags: [] }))
+function getSource(url, key) {
+  let src = sources.get(url)
+  if (!src) {
+    src = { url, key, items: [], fetched: false, promise: null }
+    sources.set(url, src)
+  }
+  return src
+}
+
+async function ensureSuggestions(src) {
+  if (src.fetched) return
+  if (src.promise) return src.promise
+  src.promise = fetch(src.url)
+    .then(r => (r.ok ? r.json() : {}))
     .then(data => {
-      allTags = data.tags || []
-      fetched = true
+      src.items = data[src.key] || []
+      src.fetched = true
     })
     .catch(() => {
-      allTags = []
-      fetched = true
+      src.items = []
+      src.fetched = true
     })
-  return fetchPromise
+  return src.promise
 }
 
 export function invalidateTagSuggestions() {
-  fetched = false
-  fetchPromise = null
+  const src = sources.get("/api/tags/suggestions")
+  if (src) {
+    src.fetched = false
+    src.promise = null
+  }
 }
 
 const instances = new Map()
 
-export function initTagInput(inputId) {
+export function initTagInput(inputId, sourceUrl = "/api/tags/suggestions", sourceKey = "tags") {
   const original = document.getElementById(inputId)
   if (!original || instances.has(inputId)) return
 
@@ -53,7 +63,17 @@ export function initTagInput(inputId) {
   original.style.display = "none"
   original.insertAdjacentElement("afterend", wrapper)
 
-  const state = { tags: [], inputId, original, typingInput, pillContainer, dropdown, wrapper, selectedIndex: -1 }
+  const state = {
+    tags: [],
+    inputId,
+    original,
+    typingInput,
+    pillContainer,
+    dropdown,
+    wrapper,
+    selectedIndex: -1,
+    source: getSource(sourceUrl, sourceKey),
+  }
   instances.set(inputId, state)
 
   const existing = original.value
@@ -129,7 +149,7 @@ function syncToOriginal(state) {
 }
 
 async function onInput(state) {
-  await ensureTags()
+  await ensureSuggestions(state.source)
   const query = state.typingInput.value.trim().toLowerCase()
   renderDropdown(state, query)
 }
@@ -173,9 +193,13 @@ function onKeydown(state, e) {
 function renderDropdown(state, query) {
   state.selectedIndex = -1
   const { dropdown, tags: currentTags } = state
+  const allTags = state.source.items
 
-  const filtered = allTags.filter(t => !currentTags.includes(t) && (!query || t.includes(query)))
-  const showCustom = query && !allTags.includes(query) && !currentTags.includes(query)
+  const filtered = allTags.filter(t => {
+    const lower = t.toLowerCase()
+    return !currentTags.includes(lower) && (!query || lower.includes(query))
+  })
+  const showCustom = query && !allTags.some(t => t.toLowerCase() === query) && !currentTags.includes(query)
 
   if (filtered.length === 0 && !showCustom) {
     closeDropdown(state)
@@ -184,7 +208,7 @@ function renderDropdown(state, query) {
 
   let html = ""
 
-  for (const tag of filtered.slice(0, 15)) {
+  for (const tag of filtered) {
     const esc = tag.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;")
     html += `<div class="tag-input-option" data-tag="${esc}">${esc}</div>`
   }

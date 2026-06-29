@@ -111,8 +111,8 @@ import {
   openSyncDrawer,
   reattachRunningSync,
   runSync,
+  runSyncCustom,
   runSyncDefault,
-  runSyncTags,
   startDataWatcher,
   stopSync,
   toggleRunMenu,
@@ -186,7 +186,7 @@ window.closeSyncDrawer = closeSyncDrawer
 window.runSync = runSync
 window.toggleRunMenu = toggleRunMenu
 window.runSyncDefault = runSyncDefault
-window.runSyncTags = runSyncTags
+window.runSyncCustom = runSyncCustom
 window.stopSync = stopSync
 window.goToSyncAndRun = goToSyncAndRun
 
@@ -315,6 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initTagInput("tag-override-tags")
   initTagInput("add-tag-override-tags")
   initTagInput("custompl-tags")
+  initTagInput("custompl-artists", "/api/artists/suggestions", "artists")
 })
 
 window.dismissDataUpdateBanner = dismissDataUpdateBanner

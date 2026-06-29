@@ -35,7 +35,7 @@ def run_tags(settings: Settings) -> None:
         log.warning("No recent scrobbles found. Exiting.")
         return
 
-    log.info("Running tag-based custom playlist sync only...")
+    log.info("Running custom playlist sync only...")
 
     try:
         summary = sync_custom_playlists(ctx, recents, track_to_vid={})
@@ -71,7 +71,7 @@ def run_tags(settings: Settings) -> None:
         source = os.environ.get("SYNC_TRIGGER", "cli")
         db.record_action(
             "sync_complete",
-            detail=f"tag sync resolved={summary.tracks_resolved}, missed={summary.tracks_missed}",
+            detail=f"custom playlist sync resolved={summary.tracks_resolved}, missed={summary.tracks_missed}",
             source=source,
         )
 

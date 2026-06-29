@@ -568,14 +568,14 @@
             <div class="form-group form-group-checkbox">
               <label>
                 <input type="checkbox" id="AUTO_TAG_SYNC_ENABLED" name="AUTO_TAG_SYNC_ENABLED">
-                <span>{{ _('Include tag playlists') }}</span>
+                <span>{{ _('Include custom playlists') }}</span>
               </label>
-              <span class="form-hint">{{ _('Also sync custom tag-based playlists after each scheduled run') }}</span>
+              <span class="form-hint">{{ _('Also sync custom tag & artist playlists after each scheduled run') }}</span>
             </div>
             <div class="form-group" id="tagSyncFrequencyGroup">
-              <label for="AUTO_TAG_SYNC_FREQUENCY">{{ _('Tag sync frequency') }}</label>
+              <label for="AUTO_TAG_SYNC_FREQUENCY">{{ _('Custom sync frequency') }}</label>
               <input type="number" id="AUTO_TAG_SYNC_FREQUENCY" name="AUTO_TAG_SYNC_FREQUENCY" min="1" max="100" placeholder="1" value="1">
-              <span class="form-hint">{{ _('Run tag sync every N main syncs (1 = every time, 3 = every 3rd sync)') }}</span>
+              <span class="form-hint">{{ _('Run custom playlist sync every N main syncs (1 = every time, 3 = every 3rd sync)') }}</span>
             </div>
             <div class="form-group">
               <label for="AUTO_SYNC_TYPE">{{ _('Schedule Type') }}</label>

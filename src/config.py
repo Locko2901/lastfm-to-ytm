@@ -306,10 +306,12 @@ class Settings:
 
 @dataclass(frozen=True)
 class CustomPlaylistConfig:
-    """Configuration for a single tag-based custom playlist."""
+    """Configuration for a single custom playlist (tag- or artist-based)."""
 
     name: str
-    tags: tuple[str, ...]
+    tags: tuple[str, ...] = ()
+    artists: tuple[str, ...] = ()
+    kind: str = "tags"
     match: str = "any"
     limit: int = 50
     blacklist: frozenset[str] = frozenset()
@@ -338,8 +340,15 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
 
     for entry in playlists:
         name = entry.get("name")
+        kind = entry.get("kind", "tags")
+        if kind not in ("tags", "artists"):
+            kind = "tags"
+
+        raw_artists = entry.get("artists", [])
+        artists = tuple(a.lower() for a in raw_artists if isinstance(a, str) and a.strip())
+
         tags = entry.get("tags")
-        if not name or not tags:
+        if not name or (kind == "tags" and not tags) or (kind == "artists" and not artists):
             continue
 
         match = entry.get("match", "any")
@@ -367,7 +376,9 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
         configs.append(
             CustomPlaylistConfig(
                 name=name,
-                tags=tuple(t.lower() for t in tags),
+                tags=tuple(t.lower() for t in tags) if tags else (),
+                artists=artists,
+                kind=kind,
                 match=match,
                 limit=entry.get("limit", 50),
                 blacklist=blacklist,

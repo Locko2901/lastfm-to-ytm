@@ -1,5 +1,5 @@
 from src.lastfm import Scrobble
-from src.tags.filter import filter_tracks_by_tags
+from src.tags.filter import filter_tracks_by_artists, filter_tracks_by_tags
 
 
 def _track(artist, title):
@@ -64,3 +64,30 @@ def test_filter_case_insensitive_keys_and_tags():
 
 def test_filter_empty_tracks():
     assert filter_tracks_by_tags([], {}, {"rock"}) == []
+
+
+def test_filter_by_artists_matches_case_insensitive():
+    tracks = [_track("Radiohead", "Creep"), _track("Other", "Song")]
+    result = filter_tracks_by_artists(tracks, {"radiohead"})
+    assert [t.track for t in result] == ["Creep"]
+
+
+def test_filter_by_artists_multiple():
+    tracks = [_track("A", "1"), _track("B", "2"), _track("C", "3")]
+    result = filter_tracks_by_artists(tracks, {"a", "c"})
+    assert [t.track for t in result] == ["1", "3"]
+
+
+def test_filter_by_artists_respects_blacklists():
+    tracks = [_track("A", "Keep"), _track("A", "Drop"), _track("B", "Banned")]
+    result = filter_tracks_by_artists(
+        tracks,
+        {"a", "b"},
+        blacklist=frozenset({"a|drop"}),
+        blacklist_artists=frozenset({"b"}),
+    )
+    assert [t.track for t in result] == ["Keep"]
+
+
+def test_filter_by_artists_empty():
+    assert filter_tracks_by_artists([], {"a"}) == []

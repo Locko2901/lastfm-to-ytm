@@ -1,6 +1,6 @@
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
-import { setTagInputValue } from "./tagInput.js"
+import { getTagInputValue, setTagInputValue } from "./tagInput.js"
 import { refreshPanel, refreshStats, showToast } from "./utils.js"
 
 let playlistsData = []
@@ -8,6 +8,17 @@ const loadedPreviews = new Set()
 
 export function setPlaylistsData(data) {
   playlistsData = data
+}
+
+function applyKindVisibility(kind) {
+  const isArtists = kind === "artists"
+  document.getElementById("custompl-tags-group").style.display = isArtists ? "none" : ""
+  document.getElementById("custompl-match-group").style.display = isArtists ? "none" : ""
+  document.getElementById("custompl-artists-group").style.display = isArtists ? "" : "none"
+}
+
+export function onCustomPlaylistKindChange() {
+  applyKindVisibility(document.getElementById("custompl-kind").value)
 }
 
 export function showCustomPlaylistModal(editIndex = -1) {
@@ -18,8 +29,10 @@ export function showCustomPlaylistModal(editIndex = -1) {
     const pl = playlistsData[editIndex]
     document.getElementById("custompl-modal-title").textContent = _("Edit Custom Playlist")
     document.getElementById("custompl-name").value = pl.name || ""
+    document.getElementById("custompl-kind").value = pl.kind || "tags"
     document.getElementById("custompl-description").value = pl.description || ""
     setTagInputValue("custompl-tags", (pl.tags || []).join(", "))
+    setTagInputValue("custompl-artists", (pl.artists || []).join(", "))
     document.getElementById("custompl-match").value = pl.match || "any"
     const isNoLimit = pl.limit === 0
     noLimitCheckbox.checked = isNoLimit
@@ -32,8 +45,10 @@ export function showCustomPlaylistModal(editIndex = -1) {
   } else {
     document.getElementById("custompl-modal-title").textContent = _("Add Custom Playlist")
     document.getElementById("custompl-name").value = ""
+    document.getElementById("custompl-kind").value = "tags"
     document.getElementById("custompl-description").value = ""
     setTagInputValue("custompl-tags", "")
+    setTagInputValue("custompl-artists", "")
     document.getElementById("custompl-match").value = "any"
     noLimitCheckbox.checked = false
     limitInput.value = "50"
@@ -43,6 +58,7 @@ export function showCustomPlaylistModal(editIndex = -1) {
     document.getElementById("custompl-blacklist").value = ""
     document.getElementById("custompl-blacklist-artists").value = ""
   }
+  applyKindVisibility(document.getElementById("custompl-kind").value)
   showModal("customPlaylistModal")
 }
 
@@ -53,8 +69,10 @@ export function editCustomPlaylist(index) {
 export async function saveCustomPlaylist() {
   const editIndex = parseInt(document.getElementById("custompl-edit-index").value, 10)
   const name = document.getElementById("custompl-name").value.trim()
+  const kind = document.getElementById("custompl-kind").value
   const description = document.getElementById("custompl-description").value.trim()
-  const tagsRaw = document.getElementById("custompl-tags").value.trim()
+  const tagsRaw = getTagInputValue("custompl-tags").trim()
+  const artistsRaw = getTagInputValue("custompl-artists").trim()
   const match = document.getElementById("custompl-match").value
   const noLimit = document.getElementById("custompl-no-limit").checked
   const limit = noLimit ? 0 : parseInt(document.getElementById("custompl-limit").value, 10) || 50
@@ -68,7 +86,12 @@ export async function saveCustomPlaylist() {
     return
   }
 
-  if (!tagsRaw) {
+  if (kind === "artists" && !artistsRaw) {
+    showToast(_("Please enter at least one artist"), "error")
+    return
+  }
+
+  if (kind === "tags" && !tagsRaw) {
     showToast(_("Please enter at least one tag"), "error")
     return
   }
@@ -76,6 +99,11 @@ export async function saveCustomPlaylist() {
   const tags = tagsRaw
     .split(",")
     .map(t => t.trim().toLowerCase())
+    .filter(Boolean)
+
+  const artists = artistsRaw
+    .split(",")
+    .map(a => a.trim().toLowerCase())
     .filter(Boolean)
 
   const blacklist = blacklistRaw
@@ -92,7 +120,19 @@ export async function saveCustomPlaylist() {
         .filter(Boolean)
     : []
 
-  const playlist = { name, description, tags, match, limit, backfill, auto_sync: autoSync, blacklist, blacklist_artists: blacklistArtists }
+  const playlist = {
+    name,
+    kind,
+    description,
+    tags,
+    artists,
+    match,
+    limit,
+    backfill,
+    auto_sync: autoSync,
+    blacklist,
+    blacklist_artists: blacklistArtists,
+  }
 
   const updated = [...playlistsData]
   if (editIndex >= 0 && editIndex < updated.length) {
@@ -359,6 +399,7 @@ export function initCustomPlaylists() {
   document.getElementById("custompl-no-limit")?.addEventListener("change", e => {
     document.getElementById("custompl-limit").disabled = e.target.checked
   })
+  document.getElementById("custompl-kind")?.addEventListener("change", () => onCustomPlaylistKindChange())
 }
 
 export function clearPreviewCache() {
