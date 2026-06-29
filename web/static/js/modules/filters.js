@@ -164,6 +164,7 @@ export function filterByTab(tabContext) {
   else if (tabContext === "notfound") filterNotFound()
   else if (tabContext === "tags") filterTags()
   else if (tabContext === "history" && window.loadHistoryData) window.loadHistoryData()
+  else if (tabContext === "playlists" && window.loadTrackedPlaylists) window.loadTrackedPlaylists()
   else filterTracks()
 }
 

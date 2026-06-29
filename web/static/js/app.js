@@ -73,6 +73,7 @@ import {
   unblacklistTrack,
 } from "./modules/modals.js"
 import { initNotifications } from "./modules/notifications.js"
+import { deleteYtmPlaylist, discoverPlaylists, loadTrackedPlaylists, pruneWeeklies, trackSelectedPlaylists } from "./modules/playlists.js"
 import {
   closeSettingsModal,
   dismissReloadBanner,
@@ -257,7 +258,11 @@ window.cacheClearPlaylistAll = cacheClearPlaylistAll
 window.cacheRemovePlaylistEntry = cacheRemovePlaylistEntry
 window.cacheRemovePlaylistTrack = cacheRemovePlaylistTrack
 window.cacheAdminTogglePlaylist = cacheAdminTogglePlaylist
-
+window.discoverPlaylists = discoverPlaylists
+window.loadTrackedPlaylists = loadTrackedPlaylists
+window.trackSelectedPlaylists = trackSelectedPlaylists
+window.deleteYtmPlaylist = deleteYtmPlaylist
+window.pruneWeeklies = pruneWeeklies
 initDelegation()
 
 document.addEventListener("DOMContentLoaded", () => {

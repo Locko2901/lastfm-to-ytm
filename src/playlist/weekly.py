@@ -213,7 +213,7 @@ def update_weekly_playlist(
 
     if cache:
         try:
-            cache.prune_old_weeklies(base_prefix)
+            cache.prune_old_weeklies(base_prefix, keep_count=keep_weeks)
         except Exception as e:
             log.warning("Failed to prune old weeklies from cache: %s", e)
 

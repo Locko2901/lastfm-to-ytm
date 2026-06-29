@@ -96,6 +96,24 @@ class PlaylistCache(JSONCache[Any]):
         entry["last_updated"] = datetime.now(UTC).isoformat()
         self._save()
 
+    def track_id(self, playlist_name: str, playlist_id: str) -> None:
+        """Cache a playlist's ID without a template (IDs-only discovery).
+
+        Preserves any existing video_ids template; only updates the ID.
+        """
+        entry = self._cache.get(playlist_name)
+        if entry and isinstance(entry, dict):
+            entry["id"] = playlist_id
+            entry["last_updated"] = datetime.now(UTC).isoformat()
+        else:
+            self._cache[playlist_name] = {
+                "id": playlist_id,
+                "video_ids": [],
+                "last_updated": datetime.now(UTC).isoformat(),
+            }
+        log.info("Tracked playlist ID: '%s' -> %s", playlist_name, playlist_id)
+        self._save()
+
     def remove(self, playlist_name: str) -> None:
         """Remove playlist from cache."""
         if playlist_name in self._cache:
