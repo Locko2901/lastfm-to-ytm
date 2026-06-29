@@ -268,7 +268,7 @@ export async function showSyncFailureBanner(data) {
 
   let syncLabel = _("Sync")
   if (data.sync_type === "tags") {
-    syncLabel = data.playlist_name ? `${_("Tag playlist")} '${escapeHtml(data.playlist_name)}'` : _("Tag sync")
+    syncLabel = data.playlist_name ? `${_("Custom playlist")} '${escapeHtml(data.playlist_name)}'` : _("Custom playlist sync")
   }
   const failedLabel = `${syncLabel} ${_("failed")}`
 
@@ -310,7 +310,9 @@ export async function showFailureLogModal() {
 
   let modalTitle = "Sync Failure Details"
   if (lastFailureData.sync_type === "tags") {
-    modalTitle = lastFailureData.playlist_name ? `Tag Playlist '${lastFailureData.playlist_name}' Failure Details` : "Tag Sync Failure Details"
+    modalTitle = lastFailureData.playlist_name
+      ? `Custom Playlist '${lastFailureData.playlist_name}' Failure Details`
+      : "Custom Playlist Sync Failure Details"
   }
 
   let modal = document.getElementById("failureLogModal")

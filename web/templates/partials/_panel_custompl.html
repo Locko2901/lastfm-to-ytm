@@ -40,8 +40,12 @@
           </a>{% endif %}
         </div>
         <div class="subtitle">
+          {% if pl.kind == 'artists' %}
+          <span class="badge badge-accent">{{ _('Artists') }}</span>
+          {% else %}
           <span class="badge badge-{{ 'success' if pl.match == 'all' else 'accent' }}">{{ _('Match:') }}
             {{ pl.match }}</span>
+          {% endif %}
           <span class="badge">{{ _('Limit:') }} {{ _('None') if pl.limit == 0 else pl.limit }}</span>
           {% if pl.backfill is defined and not pl.backfill %}<span class="badge badge-muted">{{ _('No Backfill') }}</span>{% endif %}
           {% if pl.auto_sync is defined and not pl.auto_sync %}<span class="badge badge-muted">{{ _('No Auto-sync') }}</span>{% endif %}
@@ -50,9 +54,15 @@
             {{ _('blacklisted') }}</span>
         </div>
         <div class="custom-pl-tags">
+          {% if pl.kind == 'artists' %}
+          {% for artist in pl.artists %}
+          <span class="tag-pill">{{ artist }}</span>
+          {% endfor %}
+          {% else %}
           {% for tag in pl.tags %}
           <span class="tag-pill">{{ tag }}</span>
           {% endfor %}
+          {% endif %}
         </div>
       </div>
       <div class="track-actions">

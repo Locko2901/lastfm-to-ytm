@@ -31,6 +31,7 @@ from ..services import (
     delete_ytm_playlist,
     discover_ytm_playlists,
     get_artist_blacklist_data,
+    get_artist_suggestions,
     get_cache_stats,
     get_cached_tracks,
     get_custom_playlist_tracks,
@@ -434,10 +435,16 @@ def custom_playlists_save() -> ResponseReturnValue:
         if not isinstance(entry, dict):
             continue
         name = entry.get("name", "").strip()
+        kind = entry.get("kind", "tags")
+        if kind not in ("tags", "artists"):
+            kind = "tags"
         tags = entry.get("tags", [])
-        if not name or not tags:
-            continue
         if not isinstance(tags, list) or not all(isinstance(t, str) for t in tags):
+            tags = []
+        artists = entry.get("artists", [])
+        if not isinstance(artists, list) or not all(isinstance(a, str) for a in artists):
+            artists = []
+        if not name or (kind == "tags" and not tags) or (kind == "artists" and not artists):
             continue
         match = entry.get("match", "any")
         if match not in ("any", "all"):
@@ -466,7 +473,9 @@ def custom_playlists_save() -> ResponseReturnValue:
             {
                 "name": name,
                 "description": description.strip(),
+                "kind": kind,
                 "tags": [t.lower().strip() for t in tags if t.strip()],
+                "artists": [a.lower().strip() for a in artists if a.strip()],
                 "match": match,
                 "limit": limit,
                 "blacklist": [b.lower().strip() for b in blacklist if b.strip()],
@@ -494,6 +503,12 @@ def tag_overrides_get() -> ResponseReturnValue:
 def tag_suggestions() -> ResponseReturnValue:
     """Get unique tag names from the tag cache for autocomplete."""
     return jsonify({"tags": get_tag_suggestions()})
+
+
+@api_bp.route("/artists/suggestions")
+def artist_suggestions() -> ResponseReturnValue:
+    """Get unique artist names from found tracks for autocomplete."""
+    return jsonify({"artists": get_artist_suggestions()})
 
 
 @api_bp.route("/custom-playlists/<int:index>", methods=["DELETE"])

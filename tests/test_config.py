@@ -329,3 +329,45 @@ def test_load_custom_playlists_invalid_match_defaults_to_any(tmp_path):
         encoding="utf-8",
     )
     assert load_custom_playlists(str(path))[0].match == "any"
+
+
+def test_load_custom_playlists_parses_artist_playlist(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps(
+            {
+                "playlists": [
+                    {
+                        "name": "Faves",
+                        "kind": "artists",
+                        "artists": ["Radiohead", "Aphex Twin"],
+                        "limit": 40,
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    cfg = load_custom_playlists(str(path))[0]
+    assert cfg.kind == "artists"
+    assert cfg.artists == ("radiohead", "aphex twin")
+    assert cfg.tags == ()
+    assert cfg.limit == 40
+
+
+def test_load_custom_playlists_skips_artist_playlist_without_artists(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps({"playlists": [{"name": "Faves", "kind": "artists"}]}),
+        encoding="utf-8",
+    )
+    assert load_custom_playlists(str(path)) == []
+
+
+def test_load_custom_playlists_invalid_kind_defaults_to_tags(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps({"playlists": [{"name": "P", "tags": ["x"], "kind": "weird"}]}),
+        encoding="utf-8",
+    )
+    assert load_custom_playlists(str(path))[0].kind == "tags"

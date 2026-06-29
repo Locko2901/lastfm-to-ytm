@@ -368,16 +368,29 @@
         <input type="text" id="custompl-name" placeholder="{{ _('My Rock Playlist') }}" required>
       </div>
       <div class="form-group">
+        <label for="custompl-kind">{{ _('Playlist Type') }}</label>
+        <select id="custompl-kind">
+          <option value="tags">{{ _('Genre tags') }}</option>
+          <option value="artists">{{ _('Artists') }}</option>
+        </select>
+        <span class="form-hint">{{ _('Build from Last.fm genre tags or from specific artists') }}</span>
+      </div>
+      <div class="form-group">
         <label for="custompl-description">{{ _('Description') }}</label>
         <input type="text" id="custompl-description" placeholder="{{ _('Custom description (leave empty for auto-generated)') }}">
-        <span class="form-hint">{{ _('Leave empty to auto-generate based on tags') }}</span>
+        <span class="form-hint">{{ _('Leave empty to auto-generate') }}</span>
       </div>
-      <div class="form-group">
+      <div class="form-group" id="custompl-tags-group">
         <label for="custompl-tags">{{ _('Tags (comma-separated)') }}</label>
-        <input type="text" id="custompl-tags" placeholder="{{ _('rock, alternative, indie') }}" required>
+        <input type="text" id="custompl-tags" placeholder="{{ _('rock, alternative, indie') }}">
         <span class="form-hint">{{ _('Tracks with these Last.fm tags will be included') }}</span>
       </div>
-      <div class="form-group">
+      <div class="form-group" id="custompl-artists-group" style="display:none">
+        <label for="custompl-artists">{{ _('Artists') }}</label>
+        <input type="text" id="custompl-artists" placeholder="{{ _('Artist Name') }}">
+        <span class="form-hint">{{ _('All found tracks by these artists will be included') }}</span>
+      </div>
+      <div class="form-group" id="custompl-match-group">
         <label for="custompl-match">{{ _('Match Mode') }}</label>
         <select id="custompl-match">
           <option value="any">{{ _('Any (track has at least one tag)') }}</option>

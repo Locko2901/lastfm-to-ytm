@@ -45,7 +45,7 @@ export function runSyncDefault() {
   runSync("run.py")
 }
 
-export function runSyncTags() {
+export function runSyncCustom() {
   document.getElementById("syncRunMenu")?.classList.remove("open")
   runSync("run_tags.py")
 }

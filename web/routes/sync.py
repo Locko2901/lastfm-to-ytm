@@ -133,7 +133,7 @@ def _run_sync_process(script: str = "run.py", db: HistoryDB | None = None, trigg
             from ..services import events as _events
             from ..services import notifications as _notif
 
-            label = "Tag sync" if script == "run_tags.py" else "Sync"
+            label = "Custom playlist sync" if script == "run_tags.py" else "Sync"
             if exit_code == 0:
                 _notif.add(f"{label} finished successfully", type_="success", source=f"sync:{trigger}")
             else:

@@ -814,6 +814,20 @@ def get_tag_suggestions() -> list[str]:
     return sorted(counts, key=lambda n: counts[n], reverse=True)
 
 
+def get_artist_suggestions() -> list[str]:
+    """Get sorted unique artist names from found search-cache tracks."""
+    cache = load_search_cache()
+    seen: dict[str, str] = {}
+    for key, entry in cache.items():
+        if not entry.get("video_id"):
+            continue
+        fb_artist, _fb_title = _parse_artist_title_from_key(key)
+        artist = (entry.get("artist") or fb_artist or "").strip()
+        if artist:
+            seen.setdefault(artist.lower(), artist)
+    return [seen[k] for k in sorted(seen)]
+
+
 def load_custom_playlists_config() -> list[dict[str, Any]]:
     """Load custom playlist configs for the web UI."""
     settings = _get_settings()
@@ -833,7 +847,9 @@ def load_custom_playlists_config() -> list[dict[str, Any]]:
         {
             "name": c.name,
             "description": c.description,
+            "kind": c.kind,
             "tags": list(c.tags),
+            "artists": list(c.artists),
             "match": c.match,
             "limit": c.limit,
             "blacklist": sorted(c.blacklist),
