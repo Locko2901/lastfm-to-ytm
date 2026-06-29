@@ -202,6 +202,43 @@ class PlaylistCache(JSONCache[Any]):
 
         return removed
 
+    def clear_old_weekly_songs(self, base_prefix: str, current_week_name: str) -> list[str]:
+        """Strip song templates from all weekly entries except the current week.
+
+        Keeps every weekly playlist's cached ``id`` (so they survive forever)
+        but empties their ``video_ids`` template. Only the current week retains
+        its songs. Returns the names of cleared playlists.
+        """
+        import re
+        from datetime import date
+
+        marker = f"{base_prefix} week of "
+        date_pattern = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+        cleared: list[str] = []
+        for name, entry in self._cache.items():
+            if name == current_week_name or not isinstance(entry, dict):
+                continue
+            if not name.startswith(marker):
+                continue
+            tail = name[len(marker) :].strip()
+            if not date_pattern.match(tail):
+                continue
+            try:
+                date.fromisoformat(tail)
+            except Exception:
+                continue
+            if entry.get("video_ids"):
+                entry["video_ids"] = []
+                entry["last_updated"] = datetime.now(UTC).isoformat()
+                cleared.append(name)
+
+        if cleared:
+            self._save()
+            log.info("Cleared songs from %d old weekly cache entries", len(cleared))
+
+        return cleared
+
     def verify_exists(self, ytm: YTMusic, playlist_name: str) -> bool:
         """Verify playlist still exists on YTM."""
         playlist_id = self.get_id(playlist_name)
