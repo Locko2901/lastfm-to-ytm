@@ -13,6 +13,7 @@ from src.cache.search import SearchCache, SearchOverrides
 from src.cache.tags import TagCache, TagOverrides
 from src.config import CACHE_DIR, CONFIG_DIR, Settings, load_custom_playlists
 from src.history import HistoryDB
+from src.lastfm import LocalScrobbleDB
 from src.playlist.weekly import _derive_weekly_prefix
 
 from .env import BROWSER_JSON_FILE, ENV_FILE
@@ -1026,6 +1027,7 @@ def get_custom_playlist_tracks(index: int) -> list[dict[str, Any]]:
 
 
 _history_db: HistoryDB | None = None
+_local_scrobble_db: LocalScrobbleDB | None = None
 
 
 def get_history_db() -> HistoryDB | None:
@@ -1065,6 +1067,44 @@ def is_history_enabled() -> bool:
     """Check if history DB is enabled in settings."""
     settings = _get_settings()
     return bool(settings and settings.history_db_enabled)
+
+
+def get_local_scrobble_db() -> LocalScrobbleDB | None:
+    """Return the shared LocalScrobbleDB instance, or None if disabled.
+
+    Works both inside a Flask request context and from background threads.
+    """
+    global _local_scrobble_db
+    if _local_scrobble_db is not None:
+        return _local_scrobble_db
+
+    if has_request_context():
+        settings = _get_settings()
+    else:
+        try:
+            settings = Settings.from_env()
+        except Exception:
+            return None
+
+    if not settings or not settings.use_local_lastfm_db:
+        return None
+
+    _local_scrobble_db = LocalScrobbleDB(settings.lastfm_local_db_file)
+    return _local_scrobble_db
+
+
+def reset_local_scrobble_db() -> None:
+    """Reset the cached LocalScrobbleDB instance (e.g. after settings change)."""
+    global _local_scrobble_db
+    if _local_scrobble_db is not None:
+        _local_scrobble_db.close()
+    _local_scrobble_db = None
+
+
+def is_local_lastfm_enabled() -> bool:
+    """Check if the local Last.fm history DB is enabled in settings."""
+    settings = _get_settings()
+    return bool(settings and settings.use_local_lastfm_db)
 
 
 def history_record_action(

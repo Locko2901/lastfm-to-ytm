@@ -37,6 +37,7 @@ from ..services import (
     get_custom_playlist_tracks,
     get_history_db,
     get_last_sync_time,
+    get_local_scrobble_db,
     get_not_found_tracks,
     get_overrides_data,
     get_playlist_cache_summary,
@@ -51,6 +52,7 @@ from ..services import (
     get_track_tags_map,
     get_update_status,
     is_history_enabled,
+    is_local_lastfm_enabled,
     list_tracked_playlists,
     load_custom_playlists_config,
     load_failure_log,
@@ -62,6 +64,7 @@ from ..services import (
     remove_playlist_from_cache,
     remove_track_from_playlist_cache,
     reset_history_db,
+    reset_local_scrobble_db,
     save_custom_playlists_config,
     sync_lock,
     sync_state,
@@ -297,6 +300,9 @@ def settings_update() -> ResponseReturnValue:
 
         if "HISTORY_DB_ENABLED" in updates or "HISTORY_DB_FILE" in updates:
             reset_history_db()
+
+        if "USE_LOCAL_LASTFM_DB" in updates or "LASTFM_LOCAL_DB_FILE" in updates:
+            reset_local_scrobble_db()
 
         try:
             from ..services import events as _events
@@ -1049,6 +1055,14 @@ def history_status() -> ResponseReturnValue:
     stats = db.get_overview_stats()
     stats["enabled"] = True
     stats["db_size_bytes"] = db.get_db_size_bytes()
+
+    local_db = get_local_scrobble_db()
+    stats["local_lastfm_enabled"] = local_db is not None
+    if local_db is not None:
+        local_stats = local_db.get_stats()
+        stats["library_tracks"] = local_stats["total_tracks"]
+        stats["library_plays"] = local_stats["total_plays"]
+        stats["library_last_sync_at"] = local_stats["last_sync_at"]
     return jsonify(stats)
 
 
@@ -1131,7 +1145,11 @@ def history_actions() -> ResponseReturnValue:
 
 @api_bp.route("/history/top-tracks")
 def history_top_tracks() -> ResponseReturnValue:
-    """Get most frequently found tracks."""
+    """Get most frequently found tracks.
+
+    When the local Last.fm DB is enabled, returns the most-played tracks from
+    the full scrobble library (lifetime plays) instead of YTM lookup frequency.
+    """
     db = get_history_db()
     if not db:
         return jsonify({"error": _("History database is not enabled")}), 400
@@ -1140,7 +1158,96 @@ def history_top_tracks() -> ResponseReturnValue:
         limit = min(int(request.args.get("limit", 20)), 100)
     except (ValueError, TypeError):
         limit = 20
-    return jsonify({"tracks": db.get_top_tracks(limit)})
+
+    local_db = get_local_scrobble_db()
+    if local_db is not None:
+        rows = local_db.get_top_tracks(limit)
+        tracks = [
+            {
+                "artist": r["artist"],
+                "title": r["track"],
+                "plays": r["plays"],
+                "times_found": r["plays"],
+                "video_id": None,
+                "yt_title": None,
+            }
+            for r in rows
+        ]
+        return jsonify({"tracks": tracks, "source": "local_lastfm"})
+
+    return jsonify({"tracks": db.get_top_tracks(limit), "source": "history"})
+
+
+@api_bp.route("/lastfm-db/status")
+def lastfm_db_status() -> ResponseReturnValue:
+    """Return status/stats for the local Last.fm scrobble history database."""
+    if not is_local_lastfm_enabled():
+        return jsonify({"enabled": False})
+    db = get_local_scrobble_db()
+    if not db:
+        return jsonify({"enabled": False})
+    stats = db.get_stats()
+    stats["enabled"] = True
+    return jsonify(stats)
+
+
+@api_bp.route("/lastfm-db/clear", methods=["POST"])
+def lastfm_db_clear() -> ResponseReturnValue:
+    """Delete all locally stored Last.fm scrobbles (resets the sync watermark)."""
+    db = get_local_scrobble_db()
+    if not db:
+        return jsonify({"error": _("Local Last.fm database is not enabled")}), 400
+    db.clear()
+    db.vacuum()
+    return jsonify({"status": "cleared"})
+
+
+@api_bp.route("/lastfm-db/export", methods=["GET"])
+def lastfm_db_export() -> ResponseReturnValue:
+    """Download the local Last.fm scrobble history as a JSON dump."""
+    db = get_local_scrobble_db()
+    if not db:
+        return jsonify({"error": _("Local Last.fm database is not enabled")}), 400
+
+    from datetime import UTC, datetime
+
+    payload = db.export_to_dict()
+    body = json.dumps(payload, ensure_ascii=False, indent=2)
+    stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
+    filename = f"lastfm-history-{stamp}.json"
+    return Response(
+        body,
+        mimetype="application/json",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@api_bp.route("/lastfm-db/import", methods=["POST"])
+def lastfm_db_import() -> ResponseReturnValue:
+    """Import a previously exported local Last.fm scrobble dump."""
+    db = get_local_scrobble_db()
+    if not db:
+        return jsonify({"error": _("Local Last.fm database is not enabled")}), 400
+
+    file = request.files.get("file")
+    if file is None:
+        return jsonify({"error": _("No file uploaded")}), 400
+    mode = (request.form.get("mode") or "merge").strip().lower()
+    if mode not in {"merge", "replace"}:
+        return jsonify({"error": _("Invalid import mode")}), 400
+
+    try:
+        payload = json.loads(file.read().decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as e:
+        return jsonify({"error": _("Invalid JSON file: %(err)s", err=str(e))}), 400
+
+    try:
+        counts = db.import_from_dict(payload, mode=mode)
+    except ValueError:
+        logger.warning("Local Last.fm import failed", exc_info=True)
+        return jsonify({"error": _("Invalid import file")}), 400
+
+    return jsonify({"status": "ok", "mode": mode, **counts})
 
 
 @api_bp.route("/history/backfill", methods=["POST"])

@@ -202,10 +202,12 @@ function updateBackfillSection(data) {
   const section = document.getElementById("historyBackfillSection")
   if (section) section.style.display = ""
 
-  const sizeEl = document.getElementById("historyDbSize")
-  if (sizeEl && data.db_size_bytes != null) {
-    const kb = (data.db_size_bytes / 1024).toFixed(1)
-    sizeEl.textContent = `${_("DB size:")} ${kb} KB`
+  const statusEl = document.getElementById("historyDbStatus")
+  if (statusEl) {
+    const kb = data.db_size_bytes != null ? (data.db_size_bytes / 1024).toFixed(1) : "?"
+    const tracks = data.total_tracks ?? 0
+    const syncs = data.total_syncs ?? 0
+    statusEl.textContent = `${tracks} ${_("lookups")} \u00b7 ${syncs} ${_("syncs")} \u00b7 ${kb} KB`
   }
 }
 
@@ -390,26 +392,31 @@ async function loadHistoryTopTracks() {
       return
     }
 
+    const isLocal = data.source === "local_lastfm"
+
     list.innerHTML = data.tracks
-      .map(
-        (t, i) => `
+      .map((t, i) => {
+        let ytmMarkup = ""
+        if (!isLocal) {
+          ytmMarkup = t.video_id
+            ? `<a href="https://music.youtube.com/watch?v=${esc(t.video_id)}" target="_blank" rel="noopener">${esc(t.yt_title || t.title)}</a>`
+            : `<span class="text-muted">${_("Not found")}</span>`
+        }
+        const countBadge = isLocal ? `${t.plays}\u00d7 ${_("played")}` : `${_("seen")} ${t.times_found}\u00d7`
+        return `
       <div class="track-item" data-artist="${escAttr(t.artist.toLowerCase())}" data-title="${escAttr(t.title.toLowerCase())}" data-original-artist="${escAttr(t.artist)}" data-original-title="${escAttr(t.title)}">
         <div class="track-info">
           <span class="track-artist"><span class="badge badge-muted">#${i + 1}</span> ${esc(t.artist)}</span>
           <span class="track-title">${esc(t.title)}</span>
         </div>
         <div class="track-ytm">
-          ${
-            t.video_id
-              ? `<a href="https://music.youtube.com/watch?v=${esc(t.video_id)}" target="_blank" rel="noopener">${esc(t.yt_title || t.title)}</a>`
-              : `<span class="text-muted">${_("Not found")}</span>`
-          }
+          ${ytmMarkup}
           <span class="track-ytm-id">
-            <span class="badge badge-success">${_("seen")} ${t.times_found}×</span>
+            <span class="badge badge-success">${countBadge}</span>
           </span>
         </div>
-      </div>`,
-      )
+      </div>`
+      })
       .join("")
   } catch (_e) {
     list.innerHTML = `<div class="empty-state"><p class="text-muted">${_("Failed to load top tracks")}</p></div>`
@@ -892,12 +899,12 @@ export async function confirmClearHistory() {
     const r = await fetch("/api/history/clear", { method: "POST" })
     if (!r.ok) {
       const data = await r.json()
-      throw new Error(data.error || _("Failed to clear history"))
+      throw new Error(data.error || _("Failed to clear history database"))
     }
-    showToast(_("History cleared"), "success")
+    showToast(_("History database cleared"), "success")
     await refreshHistoryPanelState()
   } catch (e) {
-    showToast(e.message || _("Failed to clear history"), "error")
+    showToast(e.message || _("Failed to clear history database"), "error")
   }
 }
 

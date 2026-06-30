@@ -160,6 +160,19 @@ def export_config(password: str, *, cache_keys: list[str] | None = None) -> byte
         except Exception as e:
             logger.warning("Teleporter: history_db export failed: %s", e)
 
+    if cache_keys and "lastfm_db" in cache_keys:
+        try:
+            from src.config import Settings
+            from src.lastfm import LocalScrobbleDB
+
+            settings = Settings.from_env()
+            if settings.use_local_lastfm_db and Path(settings.lastfm_local_db_file).exists():
+                local_db = LocalScrobbleDB(settings.lastfm_local_db_file)
+                bundle["files"]["lastfm_db"] = json.dumps(local_db.export_to_dict(), ensure_ascii=False)
+                local_db.close()
+        except Exception as e:
+            logger.warning("Teleporter: lastfm_db export failed: %s", e)
+
     plaintext = json.dumps(bundle, ensure_ascii=False).encode("utf-8")
 
     salt = os.urandom(_SALT_LEN)
@@ -218,6 +231,25 @@ def import_config(data: bytes, password: str) -> dict[str, Any]:
             skipped.append("history_db")
             logger.warning("Teleporter: history_db import failed: %s", e)
 
+    if "lastfm_db" in files:
+        try:
+            from src.config import Settings
+            from src.lastfm import LocalScrobbleDB
+
+            settings = Settings.from_env()
+            if settings.use_local_lastfm_db:
+                payload = json.loads(files["lastfm_db"])
+                local_db = LocalScrobbleDB(settings.lastfm_local_db_file)
+                local_db.import_from_dict(payload, mode="merge")
+                local_db.close()
+                restored.append("lastfm_db")
+            else:
+                skipped.append("lastfm_db")
+                logger.warning("Teleporter: lastfm_db skipped (local Last.fm DB not enabled)")
+        except Exception as e:
+            skipped.append("lastfm_db")
+            logger.warning("Teleporter: lastfm_db import failed: %s", e)
+
     all_known_files = list(_CONFIG_FILES) + list(_CACHE_FILES.items())
     for key, path in all_known_files:
         if key not in files:
@@ -272,6 +304,7 @@ def preview_config(data: bytes, password: str) -> dict[str, Any]:
         "playlist_cache": "playlist_cache.json",
         "theme_overrides": "theme_overrides.json",
         "history_db": "history.db",
+        "lastfm_db": "lastfm_history.db",
     }
 
     included = []

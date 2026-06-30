@@ -165,6 +165,16 @@ These are rarely changed. Most users can ignore everything below.
 
     See [History Database](history.md) for what's tracked and the dashboard view.
 
+??? note "Local Last.fm history database"
+
+    | Variable | Default | Description |
+    |----------|---------|-------------|
+    | `USE_LOCAL_LASTFM_DB` | `false` | Build the main playlist from your full local scrobble history (lifetime plays + recency) instead of recent tracks. **Changes playlist behaviour.** |
+    | `LASTFM_LOCAL_DB_FILE` | `cache/lastfm_history.db` | Path to the local Last.fm history database file |
+    | `LASTFM_LOCAL_DB_MAX_SCROBBLES` | `0` | Safety cap on scrobbles ingested per crawl (`0` = unlimited) |
+
+    See [Local Last.fm History](local-history.md) for how the full crawl and incremental updates work.
+
 ??? note "Reliability & retries"
 
     | Variable | Default | Description |

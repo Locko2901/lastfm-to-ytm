@@ -205,6 +205,22 @@ def test_from_env_recency_min_plays_floor(clean_env):
     assert Settings.from_env().recency_min_plays == 1
 
 
+def test_from_env_local_lastfm_db_defaults(clean_env):
+    clean_env.delenv("USE_LOCAL_LASTFM_DB", raising=False)
+    settings = Settings.from_env()
+    assert settings.use_local_lastfm_db is False
+    assert settings.lastfm_local_db_file.endswith("lastfm_history.db")
+    assert settings.lastfm_local_db_max_scrobbles == 0
+
+
+def test_from_env_local_lastfm_db_enabled(clean_env):
+    clean_env.setenv("USE_LOCAL_LASTFM_DB", "true")
+    clean_env.setenv("LASTFM_LOCAL_DB_MAX_SCROBBLES", "5000")
+    settings = Settings.from_env()
+    assert settings.use_local_lastfm_db is True
+    assert settings.lastfm_local_db_max_scrobbles == 5000
+
+
 def test_from_env_max_raw_scrobbles_zero_means_unlimited(clean_env):
     clean_env.setenv("MAX_RAW_SCROBBLES", "0")
     assert Settings.from_env().max_raw_scrobbles == 999999

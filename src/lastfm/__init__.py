@@ -6,14 +6,18 @@ from .fetch import (
     fetch_recent,
     fetch_recent_with_diversity,
     fetch_track_tags,
+    iter_all_scrobbles,
 )
+from .local_db import LocalScrobbleDB
 from .scrobble import Scrobble
 
 __all__ = [
+    "LocalScrobbleDB",
     "Scrobble",
     "disable_ipv4_only",
     "enable_ipv4_only",
     "fetch_recent",
     "fetch_recent_with_diversity",
     "fetch_track_tags",
+    "iter_all_scrobbles",
 ]

@@ -2,7 +2,16 @@ import { applyCustomTheme, loadCustomTheme, onParentThemeChanged, setCustomEnabl
 import { refreshHistoryPanelState, setHistoryTabVisibility } from "./history.js"
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
-import { formatDateTime, getDateTimePrefs, insertBanner, invalidateSettingsCache, removeBanner, showToast, updateAutoSyncIndicator } from "./utils.js"
+import {
+  escapeHtml,
+  formatDateTime,
+  getDateTimePrefs,
+  insertBanner,
+  invalidateSettingsCache,
+  removeBanner,
+  showToast,
+  updateAutoSyncIndicator,
+} from "./utils.js"
 
 const NO_RESTART_SETTINGS = [
   "LASTFM_USER",
@@ -100,6 +109,7 @@ export async function loadSettings() {
     }
 
     refreshHistoryBackfillVisibility()
+    refreshLocalLastfmVisibility()
 
     const form = document.getElementById("settingsForm")
     if (form) window._originalSettings = readFormSettings(form)
@@ -151,6 +161,11 @@ export async function saveSettings(event) {
     if (changedSettings.includes("HISTORY_DB_ENABLED")) {
       setHistoryTabVisibility(settings.HISTORY_DB_ENABLED)
       await refreshHistoryPanelState()
+    }
+
+    if (changedSettings.includes("USE_LOCAL_LASTFM_DB")) {
+      await refreshHistoryPanelState()
+      refreshLocalLastfmVisibility()
     }
 
     if (changedSettings.includes("DISPLAY_TIPS")) {
@@ -372,6 +387,8 @@ export function initSettings(switchTabFn) {
   initLocale()
   initSchedulerTypeToggle()
   initHistoryDbToggle()
+  initLocalLastfmToggle()
+  initLocalLastfmImportDropzone()
   loadSchedulerStatus()
 
   const importInput = document.getElementById("customThemeImportInput")
@@ -422,16 +439,183 @@ function initHistoryDbToggle() {
   checkbox.addEventListener("change", refreshHistoryBackfillVisibility)
 }
 
+function initLocalLastfmToggle() {
+  const checkbox = document.getElementById("USE_LOCAL_LASTFM_DB")
+  if (!checkbox) return
+  checkbox.addEventListener("change", refreshLocalLastfmVisibility)
+}
+
+function refreshLocalLastfmVisibility() {
+  const checkbox = document.getElementById("USE_LOCAL_LASTFM_DB")
+  const actions = document.getElementById("localLastfmActions")
+  const dataMgmtGroup = document.getElementById("localLastfmDataMgmtGroup")
+  const enabled = !!checkbox?.checked
+  if (actions) actions.style.display = enabled ? "" : "none"
+  if (dataMgmtGroup) dataMgmtGroup.style.display = enabled ? "" : "none"
+  loadLocalLastfmStatus()
+}
+
+async function loadLocalLastfmStatus() {
+  const el = document.getElementById("localLastfmStatus")
+  if (!el) return
+  const checkbox = document.getElementById("USE_LOCAL_LASTFM_DB")
+  if (checkbox && !checkbox.checked) {
+    el.textContent = ""
+    return
+  }
+  try {
+    const r = await fetch("/api/lastfm-db/status")
+    if (!r.ok) return
+    const data = await r.json()
+    if (!data.enabled) {
+      el.textContent = _("Not yet synced \u2014 run a sync to build the local history database.")
+      return
+    }
+    const kb = data.db_size_bytes != null ? (data.db_size_bytes / 1024).toFixed(1) : "?"
+    const tracks = data.total_tracks ?? 0
+    const plays = data.total_plays ?? 0
+    if (tracks === 0) {
+      el.textContent = _("Not yet synced \u2014 run a sync to build the local history database.")
+    } else {
+      el.textContent = `${tracks} ${_("unique tracks")} \u00b7 ${plays} ${_("plays")} \u00b7 ${kb} KB`
+    }
+  } catch (_e) {}
+}
+
+export function clearLocalLastfm() {
+  showModal("clearLocalLastfmModal")
+}
+
+export async function confirmClearLocalLastfm() {
+  closeModal("clearLocalLastfmModal")
+  try {
+    const r = await fetch("/api/lastfm-db/clear", { method: "POST" })
+    if (!r.ok) {
+      const data = await r.json()
+      throw new Error(data.error || _("Failed to clear Last.fm history"))
+    }
+    showToast(_("Last.fm history cleared"), "success")
+    loadLocalLastfmStatus()
+  } catch (e) {
+    showToast(e.message || _("Failed to clear Last.fm history"), "error")
+  }
+}
+
+export function localLastfmExport() {
+  window.location.href = "/api/lastfm-db/export"
+}
+
+export function showLocalLastfmDataModal() {
+  pendingLocalLastfmImportFile = null
+  const preview = document.getElementById("lastfm-import-preview")
+  if (preview) preview.style.display = "none"
+  const dropzone = document.getElementById("lastfm-import-dropzone")
+  if (dropzone) dropzone.classList.remove("dragover")
+  showModal("localLastfmDataModal")
+}
+
+let pendingLocalLastfmImportFile = null
+let _lastfmDropzoneInited = false
+
+export function initLocalLastfmImportDropzone() {
+  if (_lastfmDropzoneInited) return
+  const dropzone = document.getElementById("lastfm-import-dropzone")
+  const fileInput = document.getElementById("lastfm-import-file-input")
+  if (!dropzone || !fileInput) return
+  _lastfmDropzoneInited = true
+
+  dropzone.addEventListener("click", () => fileInput.click())
+  dropzone.addEventListener("dragover", e => {
+    e.preventDefault()
+    dropzone.classList.add("dragover")
+  })
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"))
+  dropzone.addEventListener("drop", e => {
+    e.preventDefault()
+    dropzone.classList.remove("dragover")
+    const file = e.dataTransfer?.files?.[0]
+    if (file) _previewLocalLastfmImportFile(file)
+  })
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files?.[0]
+    if (file) _previewLocalLastfmImportFile(file)
+    fileInput.value = ""
+  })
+}
+
+function _previewLocalLastfmImportFile(file) {
+  if (!file.name.endsWith(".json")) {
+    showToast(_("Please select a JSON file"), "error")
+    return
+  }
+  const reader = new FileReader()
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result)
+      const count = Array.isArray(data?.scrobbles) ? data.scrobbles.length : 0
+      pendingLocalLastfmImportFile = file
+      const statsEl = document.getElementById("lastfm-import-stats")
+      if (statsEl) {
+        statsEl.innerHTML = `
+          <p><strong>${escapeHtml(file.name)}</strong></p>
+          <p>${_("Tracks")}: <strong>${count}</strong></p>
+        `
+      }
+      const preview = document.getElementById("lastfm-import-preview")
+      if (preview) preview.style.display = ""
+    } catch (_err) {
+      showToast(_("Invalid JSON file"), "error")
+    }
+  }
+  reader.readAsText(file)
+}
+
+export async function confirmLocalLastfmImportMerge() {
+  await submitLocalLastfmImport("merge")
+}
+
+export async function confirmLocalLastfmImportReplace() {
+  await submitLocalLastfmImport("replace")
+}
+
+async function submitLocalLastfmImport(mode) {
+  const file = pendingLocalLastfmImportFile
+  if (!file) return
+  try {
+    const fd = new FormData()
+    fd.append("file", file)
+    fd.append("mode", mode)
+    const r = await fetch("/api/lastfm-db/import", { method: "POST", body: fd })
+    const data = await r.json()
+    if (!r.ok) {
+      throw new Error(data.error || _("Import failed"))
+    }
+    showToast(`${_("Imported:")} ${data.imported} ${_("tracks")}`, "success")
+    pendingLocalLastfmImportFile = null
+    const preview = document.getElementById("lastfm-import-preview")
+    if (preview) preview.style.display = "none"
+    closeModal("localLastfmDataModal")
+    loadLocalLastfmStatus()
+  } catch (e) {
+    showToast(e.message || _("Import failed"), "error")
+  }
+}
+
 async function loadHistoryDbSize() {
+  const el = document.getElementById("historyDbStatus")
+  if (!el) return
   try {
     const r = await fetch("/api/history/status")
     if (!r.ok) return
     const data = await r.json()
-    const sizeEl = document.getElementById("historyDbSize")
-    if (sizeEl && data.db_size_bytes != null) {
-      const kb = (data.db_size_bytes / 1024).toFixed(1)
-      sizeEl.textContent = `${_("DB size:")} ${kb} KB`
+    if (!data.enabled) {
+      el.textContent = ""
+      return
     }
+    const kb = data.db_size_bytes != null ? (data.db_size_bytes / 1024).toFixed(1) : "?"
+    const tracks = data.total_tracks ?? 0
+    const syncs = data.total_syncs ?? 0
+    el.textContent = `${tracks} ${_("lookups")} \u00b7 ${syncs} ${_("syncs")} \u00b7 ${kb} KB`
   } catch (_e) {}
 }
 

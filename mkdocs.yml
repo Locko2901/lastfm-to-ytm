@@ -68,6 +68,7 @@ nav:
       - CLI Install (no Docker): cli-install.md
       - Webhooks: webhooks.md
       - History Database: history.md
+      - Local Last.fm History: local-history.md
       - Teleporter (Backup): teleporter.md
   - Reference:
       - Configuration: configuration.md
