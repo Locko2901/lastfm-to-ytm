@@ -28,8 +28,22 @@
       <button class="filter-chip" data-filter="has-tags">{{ _('Has Tags') }} <span class="chip-count"></span></button>
       <button class="filter-chip" data-filter="no-tags">{{ _('No Tags') }} <span class="chip-count"></span></button>
     </div>
+    {% if mappings | selectattr('score') | list | length %}
+    <button type="button" class="btn btn-secondary btn-sm" id="playlistGraphToggle" data-action="togglePlaylistGraph" aria-expanded="false"
+      aria-controls="playlistGraph">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10"></line>
+        <line x1="12" y1="20" x2="12" y2="4"></line>
+        <line x1="6" y1="20" x2="6" y2="14"></line>
+      </svg>
+      <span>{{ _('Show Graph') }}</span>
+    </button>
+    {% endif %}
 
   </div>
+
+  <div class="playlist-graph" id="playlistGraph" hidden></div>
 
   <div class="track-list" id="playlistTracks">
     {% for m in mappings %}
@@ -37,10 +51,12 @@
       class="track-item {% if m.is_overridden %}overridden{% endif %}{% if m.is_blacklisted %} blacklisted{% endif %}{% if m.pending_retry %} pending-retry{% endif %}"
       data-artist="{{ m.artist | lower }}" data-title="{{ m.title | lower }}" data-source="{{ m.source }}" data-original-artist="{{ m.artist }}"
       data-original-title="{{ m.title }}" data-overridden="{{ 'yes' if m.is_overridden else 'no' }}"
-      data-blacklisted="{{ 'yes' if m.is_blacklisted else 'no' }}" data-pending="{{ 'yes' if m.pending_retry else 'no' }}"
-      data-videoid="{{ m.video_id | lower }}" {% set _tags = track_tags_map.get((m.artist | lower ~ '|' ~ m.title | lower), []) %}
-      {% set _key = m.artist | lower ~ '|' ~ m.title | lower %} {% set _all_tags = track_tags_map.get(_key, []) %}
-      {% set _to = tag_overrides_map.get(_key, {}) %} data-tags="{{ _tags | join(',') | lower }}" data-hastags="{{ 'yes' if _tags else 'no' }}">
+      {% if m.score is not none %}data-score="{{ m.score }}" {% endif %}{% if m.plays is not none %} data-plays="{{ m.plays }}"
+      {% endif %}{% if m.ts is not none %} data-ts="{{ m.ts }}" {% endif %} data-blacklisted="{{ 'yes' if m.is_blacklisted else 'no' }}"
+      data-pending="{{ 'yes' if m.pending_retry else 'no' }}" data-videoid="{{ m.video_id | lower }}"
+      {% set _tags = track_tags_map.get((m.artist | lower ~ '|' ~ m.title | lower), []) %} {% set _key = m.artist | lower ~ '|' ~ m.title | lower %}
+      {% set _all_tags = track_tags_map.get(_key, []) %} {% set _to = tag_overrides_map.get(_key, {}) %} data-tags="{{ _tags | join(',') | lower }}"
+      data-hastags="{{ 'yes' if _tags else 'no' }}">
       <div class="track-index">#{{ loop.index }}</div>
 
       <div class="track-info">

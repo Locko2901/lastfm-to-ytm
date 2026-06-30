@@ -20,6 +20,7 @@
     opacity 0.15s ease,
     transform 0.15s ease;
   word-wrap: break-word;
+  white-space: pre-line;
 }
 
 .tooltip.visible {

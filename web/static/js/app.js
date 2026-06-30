@@ -77,6 +77,7 @@ import {
   unblacklistTrack,
 } from "./modules/modals.js"
 import { initNotifications } from "./modules/notifications.js"
+import { togglePlaylistGraph } from "./modules/playlistGraph.js"
 import { deleteYtmPlaylist, discoverPlaylists, loadTrackedPlaylists, pruneWeeklies, trackSelectedPlaylists } from "./modules/playlists.js"
 import {
   clearLocalLastfm,
@@ -156,6 +157,7 @@ window.filterTracks = filterTracks
 window.filterNotFound = filterNotFound
 window.filterCache = filterCache
 window.filterTags = filterTags
+window.togglePlaylistGraph = togglePlaylistGraph
 
 window.showModal = showModal
 window.closeModal = closeModal

@@ -193,3 +193,63 @@
   flex-wrap: wrap;
   margin-top: 0.375rem;
 }
+
+.playlist-graph {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.playlist-graph[hidden] {
+  display: none;
+}
+
+.playlist-graph-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.playlist-graph-svg .pg-grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.playlist-graph-svg .pg-axis {
+  stroke: var(--border-light);
+  stroke-width: 1;
+}
+
+.playlist-graph-svg .pg-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.playlist-graph-svg .pg-point {
+  fill: var(--accent);
+  stroke: var(--bg-card);
+  stroke-width: 1;
+}
+
+.playlist-graph-svg .pg-axis-label {
+  fill: var(--text-muted);
+  font-size: 8px;
+}
+
+.playlist-graph-svg .pg-axis-title {
+  fill: var(--text-secondary);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.playlist-graph .pg-empty {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+  margin: 1rem 0;
+}

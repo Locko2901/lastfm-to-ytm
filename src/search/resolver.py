@@ -114,7 +114,12 @@ def resolve_tracks_to_video_ids(
                 track_key = (artist.lower(), title.lower())
                 track_to_vid[track_key] = vid
                 unique_count += 1
-                run_log_mappings.append({"artist": artist, "title": title, "source": source})
+                entry: dict[str, Any] = {"artist": artist, "title": title, "source": source}
+                if isinstance(t, WeightedTrack):
+                    entry["score"] = round(t.score, 6)
+                    entry["plays"] = t.plays
+                    entry["ts"] = t.ts
+                run_log_mappings.append(entry)
 
                 cache_marker = f" [{source}]" if source != "search" else ""
                 if isinstance(t, WeightedTrack):

@@ -608,8 +608,8 @@ def scheduler_status() -> ResponseReturnValue:
     return jsonify(get_scheduler_status())
 
 
-def _get_run_log_source(artist: str, title: str) -> str | None:
-    """Read raw run log to find the original source for a track."""
+def _get_run_log_entry(artist: str, title: str) -> dict[str, Any] | None:
+    """Read raw run log to find the original mapping entry for a track."""
     from ..services.data import RUN_LOG_FILE
 
     try:
@@ -620,7 +620,7 @@ def _get_run_log_source(artist: str, title: str) -> str | None:
         a_lower, t_lower = artist.lower(), title.lower()
         for m in data.get("mappings", []):
             if m.get("artist", "").lower() == a_lower and m.get("title", "").lower() == t_lower:
-                return cast("str | None", m.get("source"))
+                return cast("dict[str, Any]", m)
     except Exception:
         pass
     return None
@@ -654,6 +654,8 @@ def track_detail() -> ResponseReturnValue:
         "is_blacklisted": False,
         "is_artist_blacklisted": False,
         "cache_timestamp": None,
+        "score": None,
+        "plays": None,
         "history_times_found": None,
         "history_first_seen": None,
         "history_last_seen": None,
@@ -680,8 +682,12 @@ def track_detail() -> ResponseReturnValue:
             result["yt_title"] = entry.get("yt_title")
             result["source"] = "cache" if entry.get("video_id") else "not_found"
 
-    if result["source"] in ("cache", None):
-        result["source"] = _get_run_log_source(artist, title) or result["source"]
+    run_log_entry = _get_run_log_entry(artist, title)
+    if run_log_entry:
+        result["score"] = run_log_entry.get("score")
+        result["plays"] = run_log_entry.get("plays")
+        if result["source"] in ("cache", None):
+            result["source"] = run_log_entry.get("source") or result["source"]
 
     if result["is_blacklisted"] and result["source"] not in ("blacklisted",):
         result["source"] = "blacklisted"
