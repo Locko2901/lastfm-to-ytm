@@ -735,6 +735,8 @@ function _setDetailLoading() {
   document.getElementById("detail-links").innerHTML = ""
   document.getElementById("detail-override-btn").style.display = "none"
   document.getElementById("detail-blacklist-btn").style.display = "none"
+  const scoreRow = document.getElementById("detail-score-row")
+  if (scoreRow) scoreRow.style.display = "none"
 }
 
 function _setHistoryDetailRowsVisible(visible) {
@@ -793,6 +795,17 @@ export async function showTrackDetailModal(artist, title, tab) {
       sourceEl.innerHTML = `<span class="badge ${badgeClass}">${escapeHtml(label)}</span>`
     } else {
       sourceEl.textContent = "-"
+    }
+
+    const scoreRow = document.getElementById("detail-score-row")
+    if (scoreRow) {
+      if (_detailTab !== "history" && d.score != null) {
+        const playsLabel = d.plays != null ? ` · ${_("Plays")}: ${d.plays}` : ""
+        document.getElementById("detail-score").textContent = `${Number(d.score).toFixed(4)}${playsLabel}`
+        scoreRow.style.display = "flex"
+      } else {
+        scoreRow.style.display = "none"
+      }
     }
 
     const tagsEl = document.getElementById("detail-tags")

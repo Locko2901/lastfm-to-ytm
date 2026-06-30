@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-30 11:38+0200\n"
+"POT-Creation-Date: 2026-06-30 12:05+0200\n"
 "PO-Revision-Date: 2026-03-13 15:44+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -31,7 +31,7 @@ msgid "At least one tag is required."
 msgstr ""
 
 #: web/routes/actions.py:251 web/routes/api.py:189 web/routes/api.py:260
-#: web/routes/api.py:896
+#: web/routes/api.py:902
 msgid "No data provided"
 msgstr ""
 
@@ -60,12 +60,12 @@ msgstr ""
 msgid "Failed to save credentials"
 msgstr ""
 
-#: web/routes/api.py:286 web/routes/api.py:912
+#: web/routes/api.py:286 web/routes/api.py:918
 #, python-format
 msgid "Invalid cron expression: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:295 web/routes/api.py:920
+#: web/routes/api.py:295 web/routes/api.py:926
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr ""
 
@@ -102,67 +102,67 @@ msgstr ""
 msgid "Artist and title are required"
 msgstr ""
 
-#: web/routes/api.py:718
+#: web/routes/api.py:724
 msgid "Last.fm credentials not configured"
 msgstr ""
 
-#: web/routes/api.py:786
+#: web/routes/api.py:792
 msgid "Failed to fetch from Last.fm"
 msgstr ""
 
-#: web/routes/api.py:789
+#: web/routes/api.py:795
 msgid "Internal error"
 msgstr ""
 
-#: web/routes/api.py:922
+#: web/routes/api.py:928
 msgid "Invalid start time format. Use HH:MM."
 msgstr ""
 
-#: web/routes/api.py:947
+#: web/routes/api.py:953
 msgid "Failed to configure scheduler. APScheduler may not be installed."
 msgstr ""
 
-#: web/routes/api.py:950
+#: web/routes/api.py:956
 #, python-format
 msgid "Invalid value: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:953
+#: web/routes/api.py:959
 msgid "Failed to configure scheduler"
 msgstr ""
 
-#: web/routes/api.py:970
+#: web/routes/api.py:976
 msgid "Failed to save theme overrides"
 msgstr ""
 
-#: web/routes/api.py:979 web/routes/api.py:1008 web/routes/api.py:1031
+#: web/routes/api.py:985 web/routes/api.py:1014 web/routes/api.py:1037
 msgid "Password is required"
 msgstr ""
 
-#: web/routes/api.py:983
+#: web/routes/api.py:989
 msgid "Password must be at least 4 characters"
 msgstr ""
 
-#: web/routes/api.py:998 web/static/js/modules/modals.js:592
+#: web/routes/api.py:1004 web/static/js/modules/modals.js:592
 #: web/static/js/modules/modals.js:603 web/static/js/modules/teleporter.js:91
 #: web/static/js/modules/teleporter.js:104
 msgid "Export failed"
 msgstr ""
 
-#: web/routes/api.py:1010 web/routes/api.py:1033
+#: web/routes/api.py:1016 web/routes/api.py:1039
 msgid "No file provided"
 msgstr ""
 
-#: web/routes/api.py:1018 web/routes/api.py:1041
+#: web/routes/api.py:1024 web/routes/api.py:1047
 msgid "Could not read file - check your password and try again"
 msgstr ""
 
-#: web/routes/api.py:1021 web/static/js/modules/teleporter.js:193
+#: web/routes/api.py:1027 web/static/js/modules/teleporter.js:193
 #: web/static/js/modules/teleporter.js:205
 msgid "Preview failed"
 msgstr ""
 
-#: web/routes/api.py:1044 web/static/js/modules/history.js:1017
+#: web/routes/api.py:1050 web/static/js/modules/history.js:1017
 #: web/static/js/modules/history.js:1026 web/static/js/modules/modals.js:671
 #: web/static/js/modules/modals.js:690 web/static/js/modules/settings.js:591
 #: web/static/js/modules/settings.js:600
@@ -171,35 +171,35 @@ msgstr ""
 msgid "Import failed"
 msgstr ""
 
-#: web/routes/api.py:1074 web/routes/api.py:1097 web/routes/api.py:1117
-#: web/routes/api.py:1131 web/routes/api.py:1155 web/routes/api.py:1258
-#: web/routes/api.py:1281 web/routes/api.py:1291 web/routes/api.py:1318
-#: web/routes/api.py:1338 web/routes/api.py:1366
+#: web/routes/api.py:1080 web/routes/api.py:1103 web/routes/api.py:1123
+#: web/routes/api.py:1137 web/routes/api.py:1161 web/routes/api.py:1264
+#: web/routes/api.py:1287 web/routes/api.py:1297 web/routes/api.py:1324
+#: web/routes/api.py:1344 web/routes/api.py:1372
 msgid "History database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1121
+#: web/routes/api.py:1127
 msgid "Sync record not found"
 msgstr ""
 
-#: web/routes/api.py:1199 web/routes/api.py:1210 web/routes/api.py:1230
+#: web/routes/api.py:1205 web/routes/api.py:1216 web/routes/api.py:1236
 msgid "Local Last.fm database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1234 web/routes/api.py:1342
+#: web/routes/api.py:1240 web/routes/api.py:1348
 msgid "No file uploaded"
 msgstr ""
 
-#: web/routes/api.py:1237 web/routes/api.py:1345
+#: web/routes/api.py:1243 web/routes/api.py:1351
 msgid "Invalid import mode"
 msgstr ""
 
-#: web/routes/api.py:1242 web/routes/api.py:1350
+#: web/routes/api.py:1248 web/routes/api.py:1356
 #, python-format
 msgid "Invalid JSON file: %(err)s"
 msgstr ""
 
-#: web/routes/api.py:1248 web/routes/api.py:1356
+#: web/routes/api.py:1254 web/routes/api.py:1362
 msgid "Invalid import file"
 msgstr ""
 
@@ -336,7 +336,7 @@ msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:163
 #: web/templates/partials/_custompl_tracks.html:22
-#: web/templates/partials/_panel_playlist.html:63
+#: web/templates/partials/_panel_playlist.html:79
 msgid "Cached"
 msgstr ""
 
@@ -347,7 +347,7 @@ msgstr ""
 msgid "selected"
 msgstr ""
 
-#: web/static/js/modules/cacheAdmin.js:222 web/static/js/modules/modals.js:805
+#: web/static/js/modules/cacheAdmin.js:222 web/static/js/modules/modals.js:818
 msgid "No tags"
 msgstr ""
 
@@ -615,12 +615,12 @@ msgid "No syncs recorded yet"
 msgstr ""
 
 #: web/static/js/modules/history.js:310
-#: web/templates/partials/_modals.html:1112
+#: web/templates/partials/_modals.html:1116
 msgid "Resolved"
 msgstr ""
 
 #: web/static/js/modules/history.js:311
-#: web/templates/partials/_modals.html:1120 web/templates/partials/_tabs.html:8
+#: web/templates/partials/_modals.html:1124 web/templates/partials/_tabs.html:8
 msgid "Cache"
 msgstr ""
 
@@ -658,7 +658,7 @@ msgid "Success"
 msgstr ""
 
 #: web/static/js/modules/history.js:451 web/static/js/modules/history.js:688
-#: web/templates/partials/_modals.html:1136
+#: web/templates/partials/_modals.html:1140
 msgid "Error"
 msgstr ""
 
@@ -735,7 +735,7 @@ msgid "Syncs"
 msgstr ""
 
 #: web/static/js/modules/history.js:987
-#: web/templates/partials/_modals.html:1057
+#: web/templates/partials/_modals.html:1061
 #: web/templates/partials/_panel_history.html:46
 #: web/templates/partials/_panel_history.html:54
 msgid "Actions"
@@ -763,12 +763,12 @@ msgid "Removed override"
 msgstr ""
 
 #: web/static/js/modules/history.js:1069 web/static/js/modules/modals.js:288
-#: web/static/js/modules/modals.js:811
+#: web/static/js/modules/modals.js:824
 #: web/templates/partials/_custompl_tracks.html:21
 #: web/templates/partials/_panel_cache.html:22
 #: web/templates/partials/_panel_cache.html:51
 #: web/templates/partials/_panel_playlist.html:24
-#: web/templates/partials/_panel_playlist.html:62
+#: web/templates/partials/_panel_playlist.html:78
 #: web/templates/partials/_stats.html:13
 msgid "Blacklisted"
 msgstr ""
@@ -855,24 +855,24 @@ msgid "Failed to clear tag cache entry"
 msgstr ""
 
 #: web/static/js/modules/modals.js:188
-#: web/templates/partials/_panel_playlist.html:54
+#: web/templates/partials/_panel_playlist.html:70
 msgid "Will re-search on next sync"
 msgstr ""
 
 #: web/static/js/modules/modals.js:190
 #: web/templates/partials/_panel_playlist.html:26
-#: web/templates/partials/_panel_playlist.html:55
+#: web/templates/partials/_panel_playlist.html:71
 msgid "Pending Retry"
 msgstr ""
 
 #: web/static/js/modules/modals.js:201 web/static/js/modules/modals.js:352
-#: web/static/js/modules/modals.js:364 web/static/js/modules/modals.js:802
-#: web/static/js/modules/modals.js:810
+#: web/static/js/modules/modals.js:364 web/static/js/modules/modals.js:815
+#: web/static/js/modules/modals.js:823
 #: web/templates/macros/_track_actions.html:30
 #: web/templates/partials/_custompl_tracks.html:20
-#: web/templates/partials/_modals.html:1065
+#: web/templates/partials/_modals.html:1069
 #: web/templates/partials/_panel_cache.html:50
-#: web/templates/partials/_panel_playlist.html:60
+#: web/templates/partials/_panel_playlist.html:76
 #: web/templates/partials/_panel_tags.html:46
 #: web/templates/partials/_panel_tags.html:52
 #: web/templates/partials/_panel_tags.html:61
@@ -885,7 +885,7 @@ msgstr ""
 #: web/templates/partials/_custompl_tracks.html:38
 #: web/templates/partials/_modals.html:123
 #: web/templates/partials/_modals.html:193
-#: web/templates/partials/_modals.html:1066 web/templates/partials/_tabs.html:5
+#: web/templates/partials/_modals.html:1070 web/templates/partials/_tabs.html:5
 msgid "Blacklist"
 msgstr ""
 
@@ -984,7 +984,7 @@ msgstr ""
 msgid "Export downloaded"
 msgstr ""
 
-#: web/static/js/modules/modals.js:650 web/templates/partials/_modals.html:1124
+#: web/static/js/modules/modals.js:650 web/templates/partials/_modals.html:1128
 #: web/templates/partials/_panel_playlist.html:22
 #: web/templates/partials/_stats.html:9 web/templates/partials/_tabs.html:4
 msgid "Overrides"
@@ -1005,42 +1005,78 @@ msgid ""
 "%(tag_overrides)s tag override entries"
 msgstr ""
 
-#: web/static/js/modules/modals.js:782
+#: web/static/js/modules/modals.js:784
 msgid "Failed to load details"
 msgstr ""
 
-#: web/static/js/modules/modals.js:812
+#: web/static/js/modules/modals.js:803
+#: web/static/js/modules/playlistGraph.js:90
+msgid "Plays"
+msgstr ""
+
+#: web/static/js/modules/modals.js:825
 #: web/templates/partials/_panel_notfound.html:33
 msgid "Cached:"
 msgstr ""
 
-#: web/static/js/modules/modals.js:824
+#: web/static/js/modules/modals.js:837
 #: web/templates/partials/_panel_custompl.html:33
 msgid "Open in YouTube Music"
 msgstr ""
 
-#: web/static/js/modules/modals.js:828
+#: web/static/js/modules/modals.js:841
 msgid "View on Last.fm"
 msgstr ""
 
-#: web/static/js/modules/modals.js:837
+#: web/static/js/modules/modals.js:850
 msgid "Error loading details"
 msgstr ""
 
-#: web/static/js/modules/modals.js:896
+#: web/static/js/modules/modals.js:909
 msgid "Loading sync details..."
 msgstr ""
 
-#: web/static/js/modules/modals.js:904
+#: web/static/js/modules/modals.js:917
 msgid "Failed to load sync details"
 msgstr ""
 
-#: web/static/js/modules/modals.js:934
+#: web/static/js/modules/modals.js:947
 msgid "Sync details"
 msgstr ""
 
-#: web/static/js/modules/modals.js:935
+#: web/static/js/modules/modals.js:948
 msgid "Error loading sync details"
+msgstr ""
+
+#: web/static/js/modules/playlistGraph.js:52
+msgid "Track score by playlist position"
+msgstr ""
+
+#: web/static/js/modules/playlistGraph.js:72
+msgid "Playlist position"
+msgstr ""
+
+#: web/static/js/modules/playlistGraph.js:77
+#: web/static/js/modules/playlistGraph.js:89
+#: web/templates/partials/_modals.html:1037
+msgid "Score"
+msgstr ""
+
+#: web/static/js/modules/playlistGraph.js:93
+msgid "Last played"
+msgstr ""
+
+#: web/static/js/modules/playlistGraph.js:114
+#: web/templates/partials/_panel_playlist.html:40
+msgid "Show Graph"
+msgstr ""
+
+#: web/static/js/modules/playlistGraph.js:123
+msgid "No score data available. Run a sync first."
+msgstr ""
+
+#: web/static/js/modules/playlistGraph.js:132
+msgid "Hide Graph"
 msgstr ""
 
 #: web/static/js/modules/playlists.js:35
@@ -1448,8 +1484,8 @@ msgstr ""
 #: web/templates/partials/_modals.html:697
 #: web/templates/partials/_modals.html:790
 #: web/templates/partials/_modals.html:986
-#: web/templates/partials/_modals.html:1064
-#: web/templates/partials/_modals.html:1142
+#: web/templates/partials/_modals.html:1068
+#: web/templates/partials/_modals.html:1146
 #: web/templates/partials/_panel_settings.html:765
 msgid "Close"
 msgstr ""
@@ -1496,7 +1532,7 @@ msgstr ""
 
 #: web/templates/macros/_track_actions.html:72
 #: web/templates/partials/_modals.html:333
-#: web/templates/partials/_modals.html:1037
+#: web/templates/partials/_modals.html:1041
 msgid "Tags"
 msgstr ""
 
@@ -1694,8 +1730,8 @@ msgstr ""
 #: web/templates/partials/_modals.html:531
 #: web/templates/partials/_modals.html:628
 #: web/templates/partials/_modals.html:720
-#: web/templates/partials/_modals.html:1151
-#: web/templates/partials/_modals.html:1176
+#: web/templates/partials/_modals.html:1155
+#: web/templates/partials/_modals.html:1180
 msgid "Cancel"
 msgstr ""
 
@@ -2022,7 +2058,7 @@ msgstr ""
 #: web/templates/partials/_modals.html:655
 #: web/templates/partials/_modals.html:748
 #: web/templates/partials/_modals.html:827
-#: web/templates/partials/_modals.html:1172
+#: web/templates/partials/_modals.html:1176
 msgid "Export"
 msgstr ""
 
@@ -2051,7 +2087,7 @@ msgstr ""
 #: web/templates/partials/_modals.html:673
 #: web/templates/partials/_modals.html:766
 #: web/templates/partials/_modals.html:924
-#: web/templates/partials/_modals.html:1173
+#: web/templates/partials/_modals.html:1177
 msgid "Import"
 msgstr ""
 
@@ -2281,73 +2317,73 @@ msgstr ""
 msgid "Source"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1041
-#: web/templates/partials/_modals.html:1096
+#: web/templates/partials/_modals.html:1045
+#: web/templates/partials/_modals.html:1100
 msgid "Status"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1045
+#: web/templates/partials/_modals.html:1049
 msgid "Seen"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1049
+#: web/templates/partials/_modals.html:1053
 msgid "First Seen"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1053
+#: web/templates/partials/_modals.html:1057
 msgid "Last Seen"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1080
+#: web/templates/partials/_modals.html:1084
 msgid "Sync Details"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1100
+#: web/templates/partials/_modals.html:1104
 msgid "Started"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1104
+#: web/templates/partials/_modals.html:1108
 msgid "Finished"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1108
+#: web/templates/partials/_modals.html:1112
 msgid "Duration"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1116
+#: web/templates/partials/_modals.html:1120
 #: web/templates/partials/_panel_history.html:26
 #: web/templates/partials/_panel_history.html:65
 msgid "Missed"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1128
+#: web/templates/partials/_modals.html:1132
 #: web/templates/partials/_panel_history.html:42
 msgid "API Searches"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1132
+#: web/templates/partials/_modals.html:1136
 msgid "Playlist Ops"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1150
+#: web/templates/partials/_modals.html:1154
 msgid "Customize Theme"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1161
+#: web/templates/partials/_modals.html:1165
 msgid ""
 "Pick a color for each token. Changes preview live; nothing is saved until"
 " you click Save."
 msgstr ""
 
-#: web/templates/partials/_modals.html:1171
+#: web/templates/partials/_modals.html:1175
 msgid "Discard customizations for the current base theme"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1171
+#: web/templates/partials/_modals.html:1175
 msgid "Reset to parent"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1177
+#: web/templates/partials/_modals.html:1181
 #: web/templates/partials/_panel_settings.html:774
 msgid "Save"
 msgstr ""
@@ -2583,7 +2619,7 @@ msgid ""
 msgstr ""
 
 #: web/templates/partials/_panel_overrides.html:34
-#: web/templates/partials/_panel_playlist.html:61
+#: web/templates/partials/_panel_playlist.html:77
 msgid "Tag Override"
 msgstr ""
 
@@ -2609,19 +2645,19 @@ msgid ""
 "replace it."
 msgstr ""
 
-#: web/templates/partials/_panel_playlist.html:64
+#: web/templates/partials/_panel_playlist.html:80
 msgid "Search"
 msgstr ""
 
-#: web/templates/partials/_panel_playlist.html:84
+#: web/templates/partials/_panel_playlist.html:100
 msgid "No Playlist Data"
 msgstr ""
 
-#: web/templates/partials/_panel_playlist.html:85
+#: web/templates/partials/_panel_playlist.html:101
 msgid "Run a sync to generate playlist mappings and see them here."
 msgstr ""
 
-#: web/templates/partials/_panel_playlist.html:86
+#: web/templates/partials/_panel_playlist.html:102
 msgid "Run Sync"
 msgstr ""
 

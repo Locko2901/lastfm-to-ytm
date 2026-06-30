@@ -106,6 +106,9 @@ def load_run_log() -> dict[str, Any]:
                     "yt_title": yt_title,
                     "source": source,
                     "pending_retry": pending_retry,
+                    "score": m.get("score"),
+                    "plays": m.get("plays"),
+                    "ts": m.get("ts"),
                 }
             )
 
