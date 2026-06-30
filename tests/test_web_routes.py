@@ -129,7 +129,7 @@ def test_history_status_does_not_clobber_total_tracks(client, monkeypatch, tmp_p
     local.ingest_scrobbles([Scrobble("A", "Hit", "", now), Scrobble("A", "Hit", "", now), Scrobble("B", "Deep", "", now)])
 
     monkeypatch.setattr(api, "is_history_enabled", lambda: True)
-    monkeypatch.setattr(api, "get_history_db", lambda: _FakeHistoryDB())
+    monkeypatch.setattr(api, "get_history_db", _FakeHistoryDB)
     monkeypatch.setattr(api, "get_local_scrobble_db", lambda: local)
 
     body = client.get("/api/history/status").get_json()
@@ -153,7 +153,7 @@ def test_history_status_without_local_lastfm(client, monkeypatch):
             return 100
 
     monkeypatch.setattr(api, "is_history_enabled", lambda: True)
-    monkeypatch.setattr(api, "get_history_db", lambda: _FakeHistoryDB())
+    monkeypatch.setattr(api, "get_history_db", _FakeHistoryDB)
     monkeypatch.setattr(api, "get_local_scrobble_db", lambda: None)
 
     body = client.get("/api/history/status").get_json()
@@ -181,7 +181,7 @@ def test_history_top_tracks_uses_history_when_local_disabled(client, monkeypatch
         def get_top_tracks(self, _limit):
             return [{"artist": "A", "title": "X", "video_id": "v", "times_found": 3}]
 
-    monkeypatch.setattr(api, "get_history_db", lambda: _FakeHistoryDB())
+    monkeypatch.setattr(api, "get_history_db", _FakeHistoryDB)
     monkeypatch.setattr(api, "get_local_scrobble_db", lambda: None)
 
     body = client.get("/api/history/top-tracks").get_json()
@@ -254,7 +254,7 @@ def test_history_top_tracks_delegates_to_local(client, monkeypatch, tmp_path):
     local = LocalScrobbleDB(tmp_path / "lfm.db")
     local.ingest_scrobbles([Scrobble("A", "Hit", "", now), Scrobble("A", "Hit", "", now), Scrobble("B", "Deep", "", now)])
 
-    monkeypatch.setattr(api, "get_history_db", lambda: object())
+    monkeypatch.setattr(api, "get_history_db", object)
     monkeypatch.setattr(api, "get_local_scrobble_db", lambda: local)
 
     resp = client.get("/api/history/top-tracks?limit=10")
