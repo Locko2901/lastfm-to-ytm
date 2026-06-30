@@ -31,7 +31,7 @@ The **History Database** section in **Settings** exposes the DB-only maintenance
 
 - **Backfill from Cache** - one-shot import of your existing search cache and overrides as `cache_backfill` / `override_backfill` rows so old lookups show up in the dashboard.
 - **Vacuum &amp; Prune** - runs `prune_by_age()` (if `HISTORY_RETENTION_DAYS > 0`), then `prune_if_oversized()` (if `HISTORY_MAX_SIZE_MB > 0`), then a final `VACUUM` to reclaim disk space. Useful after lowering either limit, or as a manual housekeeping trigger between syncs. A `history_vacuum` action is logged with the row counts that were removed.
-- **Clear All History** - wipes every row from `tracks`, `syncs`, and `actions`, then `VACUUM`s. Irreversible.
+- **Clear History Database** - wipes every row from `tracks`, `syncs`, and `actions`, then `VACUUM`s. Irreversible.
 
 Backup and restore live one section down in **Settings &rarr; Data Management &rarr; History Database** (visible only when the DB is enabled):
 

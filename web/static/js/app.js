@@ -79,13 +79,19 @@ import {
 import { initNotifications } from "./modules/notifications.js"
 import { deleteYtmPlaylist, discoverPlaylists, loadTrackedPlaylists, pruneWeeklies, trackSelectedPlaylists } from "./modules/playlists.js"
 import {
+  clearLocalLastfm,
   closeSettingsModal,
+  confirmClearLocalLastfm,
+  confirmLocalLastfmImportMerge,
+  confirmLocalLastfmImportReplace,
   dismissReloadBanner,
   dismissRestartBanner,
   initSettings,
   loadSettings,
+  localLastfmExport,
   restartServer,
   saveSettings,
+  showLocalLastfmDataModal,
   showSettingsModal,
   testWebhook,
 } from "./modules/settings.js"
@@ -254,6 +260,13 @@ window.confirmHistoryImportMerge = confirmHistoryImportMerge
 window.confirmHistoryImportReplace = confirmHistoryImportReplace
 window.loadHistoryData = loadHistoryData
 window.switchHistoryView = switchHistoryView
+
+window.clearLocalLastfm = clearLocalLastfm
+window.confirmClearLocalLastfm = confirmClearLocalLastfm
+window.localLastfmExport = localLastfmExport
+window.showLocalLastfmDataModal = showLocalLastfmDataModal
+window.confirmLocalLastfmImportMerge = confirmLocalLastfmImportMerge
+window.confirmLocalLastfmImportReplace = confirmLocalLastfmImportReplace
 
 window.showCacheAdminModal = showCacheAdminModal
 window.reloadCacheAdmin = reloadCacheAdmin

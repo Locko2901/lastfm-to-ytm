@@ -160,6 +160,9 @@ class Settings:
     history_db_file: str = str(CACHE_DIR / "history.db")
     history_max_size_mb: float = 0
     history_retention_days: int = 0
+    use_local_lastfm_db: bool = False
+    lastfm_local_db_file: str = str(CACHE_DIR / "lastfm_history.db")
+    lastfm_local_db_max_scrobbles: int = 0
     webhook_url: str = ""
     webhook_events: str = "error"
     webhook_allow_private: bool = False
@@ -246,6 +249,9 @@ class Settings:
         history_db_file = os.getenv("HISTORY_DB_FILE", str(CACHE_DIR / "history.db"))
         history_max_size_mb = _str_to_float(os.getenv("HISTORY_MAX_SIZE_MB"), 0)
         history_retention_days = _str_to_int(os.getenv("HISTORY_RETENTION_DAYS"), 0)
+        use_local_lastfm_db = _str_to_bool(os.getenv("USE_LOCAL_LASTFM_DB"), False)
+        lastfm_local_db_file = os.getenv("LASTFM_LOCAL_DB_FILE", str(CACHE_DIR / "lastfm_history.db"))
+        lastfm_local_db_max_scrobbles = _str_to_int(os.getenv("LASTFM_LOCAL_DB_MAX_SCROBBLES"), 0)
         webhook_url = (_strip_inline_comment(os.getenv("WEBHOOK_URL")) or "").strip()
         webhook_events = (_strip_inline_comment(os.getenv("WEBHOOK_EVENTS")) or "error").strip().lower()
         if webhook_events not in {"all", "error"}:
@@ -298,6 +304,9 @@ class Settings:
             history_db_file=history_db_file,
             history_max_size_mb=history_max_size_mb,
             history_retention_days=history_retention_days,
+            use_local_lastfm_db=use_local_lastfm_db,
+            lastfm_local_db_file=lastfm_local_db_file,
+            lastfm_local_db_max_scrobbles=lastfm_local_db_max_scrobbles,
             webhook_url=webhook_url,
             webhook_events=webhook_events,
             webhook_allow_private=webhook_allow_private,

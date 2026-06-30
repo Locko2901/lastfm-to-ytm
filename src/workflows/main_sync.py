@@ -25,7 +25,7 @@ from ..playlist import get_playlist_statistics, log_playlist_statistics, sync_pl
 from ..playlist import reset_query_counter as reset_playlist_counter
 from ..playlist.sync import InvalidVideoIDsError, _evict_from_cache, _retry_with_backoff
 from ..playlist.weekly import update_weekly_playlist
-from ..recency import WeightedTrack, collapse_recency_weighted, dedupe_keep_latest
+from ..recency import WeightedTrack, collapse_recency_weighted, dedupe_keep_latest, weight_history_tracks
 from ..search import (
     get_search_statistics,
     log_search_statistics,
@@ -33,7 +33,7 @@ from ..search import (
     resolve_tracks_to_video_ids,
 )
 from ..ytm import create_playlist_with_items, get_existing_playlist_by_name
-from ._common import build_context, fetch_scrobbles
+from ._common import build_context, fetch_scrobbles, sync_local_history
 from .backfill import reorder_after_backfill, run_backfill
 
 log = logging.getLogger(__name__)
@@ -161,33 +161,55 @@ def run(settings: Settings) -> None:
     reset_search_statistics()
     reset_playlist_counter()
 
-    recents = fetch_scrobbles(settings)
-    if not recents:
-        log.warning("No recent scrobbles found. Exiting.")
-        return
-
-    if settings.use_recency_weighting:
-        tracks: Sequence[Scrobble | WeightedTrack] = collapse_recency_weighted(
-            recents,
+    if settings.use_local_lastfm_db:
+        local_db = sync_local_history(settings)
+        records = local_db.get_scoring_rows(min_plays=settings.recency_min_plays)
+        local_db.close()
+        if not records:
+            log.warning("Local Last.fm DB has no tracks after sync. Exiting.")
+            return
+        weighted = weight_history_tracks(
+            records,
             half_life_hours=settings.recency_half_life_hours,
             play_weight=settings.recency_play_weight,
             min_plays=settings.recency_min_plays,
         )
+        candidate_cap = max(settings.limit * (settings.backfill_passes + 1), settings.limit)
+        tracks: Sequence[Scrobble | WeightedTrack] = weighted[:candidate_cap]
+        recents: list[Scrobble] = []
         log.info(
-            "Aggregated to %d unique tracks (half-life=%.1fh). Resolving on YTM...",
+            "Resolving up to %d candidate tracks from local Last.fm DB (%d unique tracks scored)...",
             len(tracks),
-            settings.recency_half_life_hours,
+            len(weighted),
         )
     else:
-        ordered = sorted(recents, key=lambda x: x.ts, reverse=True)
-        tracks = dedupe_keep_latest(ordered) if settings.deduplicate else ordered
-        log.info(
-            "Prepared %d tracks (%s).",
-            len(tracks),
-            "deduped" if settings.deduplicate else "with repeats",
-        )
+        recents = fetch_scrobbles(settings)
+        if not recents:
+            log.warning("No recent scrobbles found. Exiting.")
+            return
 
-    log.info("Resolving %d unique tracks on YTM...", len(tracks))
+        if settings.use_recency_weighting:
+            tracks = collapse_recency_weighted(
+                recents,
+                half_life_hours=settings.recency_half_life_hours,
+                play_weight=settings.recency_play_weight,
+                min_plays=settings.recency_min_plays,
+            )
+            log.info(
+                "Aggregated to %d unique tracks (half-life=%.1fh). Resolving on YTM...",
+                len(tracks),
+                settings.recency_half_life_hours,
+            )
+        else:
+            ordered = sorted(recents, key=lambda x: x.ts, reverse=True)
+            tracks = dedupe_keep_latest(ordered) if settings.deduplicate else ordered
+            log.info(
+                "Prepared %d tracks (%s).",
+                len(tracks),
+                "deduped" if settings.deduplicate else "with repeats",
+            )
+
+        log.info("Resolving %d unique tracks on YTM...", len(tracks))
 
     video_ids, misses, track_to_vid, run_log_mappings = resolve_tracks_to_video_ids(
         ctx.ytm_search,
@@ -200,32 +222,33 @@ def run(settings: Settings) -> None:
         settings.search_max_workers,
     )
 
-    bf = run_backfill(
-        ctx,
-        settings,
-        recents=recents,
-        tracks=list(tracks),
-        video_ids=video_ids,
-        track_to_vid=track_to_vid,
-        run_log_mappings=run_log_mappings,
-        misses=misses,
-    )
-    recents = bf.recents
-    tracks = bf.tracks
-    video_ids = bf.video_ids
-    track_to_vid = bf.track_to_vid
-    run_log_mappings = bf.run_log_mappings
-    misses = bf.misses
-
-    if bf.happened:
-        tracks, video_ids, run_log_mappings = reorder_after_backfill(
+    if not settings.use_local_lastfm_db:
+        bf = run_backfill(
+            ctx,
             settings,
             recents=recents,
-            tracks=tracks,
+            tracks=list(tracks),
             video_ids=video_ids,
             track_to_vid=track_to_vid,
             run_log_mappings=run_log_mappings,
+            misses=misses,
         )
+        recents = bf.recents
+        tracks = bf.tracks
+        video_ids = bf.video_ids
+        track_to_vid = bf.track_to_vid
+        run_log_mappings = bf.run_log_mappings
+        misses = bf.misses
+
+        if bf.happened:
+            tracks, video_ids, run_log_mappings = reorder_after_backfill(
+                settings,
+                recents=recents,
+                tracks=tracks,
+                video_ids=video_ids,
+                track_to_vid=track_to_vid,
+                run_log_mappings=run_log_mappings,
+            )
 
     target_count = settings.limit
     if len(video_ids) < target_count:

@@ -1,6 +1,7 @@
 import logging
 import socket
 import time
+from collections.abc import Iterator
 from typing import Any
 
 import requests
@@ -175,6 +176,92 @@ def fetch_recent(
         page += 1
 
     return all_scrobbles
+
+
+def iter_all_scrobbles(
+    username: str,
+    api_key: str,
+    from_timestamp: int | None = None,
+    to_timestamp: int | None = None,
+    max_retries: int = 5,
+    per_page: int = 200,
+    max_scrobbles: int = 0,
+) -> Iterator[list[Scrobble]]:
+    """Yield scrobbles page by page across the user's entire history.
+
+    Pages from newest to oldest until exhausted (or ``max_scrobbles`` reached).
+    Pass ``from_timestamp`` to fetch only scrobbles newer than a watermark
+    (used for incremental syncs). Yielding per page keeps memory bounded so the
+    caller can stream batches straight into a database.
+    """
+    per_page = max(1, min(200, per_page))
+    page = 1
+    total_pages: int | None = None
+    yielded = 0
+
+    while True:
+        params: dict[str, Any] = {
+            "method": "user.getrecenttracks",
+            "user": username,
+            "api_key": api_key,
+            "format": "json",
+            "limit": per_page,
+            "page": page,
+        }
+        if from_timestamp is not None:
+            params["from"] = str(from_timestamp)
+        if to_timestamp is not None:
+            params["to"] = str(to_timestamp)
+
+        data = _make_api_request(params, page, max_retries)
+        if data is None:
+            log.info(
+                "iter_all_scrobbles: stopping at page %d - Last.fm request failed after retries (%d scrobbles fetched)",
+                page,
+                yielded,
+            )
+            break
+
+        recenttracks = data.get("recenttracks", {})
+        tracks = recenttracks.get("track", [])
+        if isinstance(tracks, dict):
+            tracks = [tracks]
+
+        if not tracks:
+            log.info(
+                "iter_all_scrobbles: stopping at page %d - empty page returned (%d scrobbles fetched)",
+                page,
+                yielded,
+            )
+            break
+
+        if total_pages is None:
+            attr = recenttracks.get("@attr", {})
+            total_pages = int(attr.get("totalPages", "0") or "0")
+
+        page_scrobbles = _parse_tracks(tracks)
+        if page_scrobbles:
+            if max_scrobbles > 0 and yielded + len(page_scrobbles) > max_scrobbles:
+                page_scrobbles = page_scrobbles[: max_scrobbles - yielded]
+            yielded += len(page_scrobbles)
+            yield page_scrobbles
+
+        if max_scrobbles > 0 and yielded >= max_scrobbles:
+            log.info(
+                "iter_all_scrobbles: stopping at page %d - reached max_scrobbles cap (%d scrobbles fetched)",
+                page,
+                yielded,
+            )
+            break
+        if total_pages and page >= total_pages:
+            log.info(
+                "iter_all_scrobbles: done - Last.fm reported no more history (%d scrobbles across %d pages)",
+                yielded,
+                page,
+            )
+            break
+
+        page += 1
 
 
 def fetch_recent_with_diversity(

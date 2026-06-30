@@ -62,6 +62,208 @@ def test_settings_get_returns_all_keys(client):
     assert "PLAYLIST_NAME" in body
     assert "DEDUPLICATE" in body
     assert isinstance(body["DEDUPLICATE"], bool)
+    assert "USE_LOCAL_LASTFM_DB" in body
+    assert isinstance(body["USE_LOCAL_LASTFM_DB"], bool)
+
+
+def test_lastfm_db_status_disabled(client):
+    resp = client.get("/api/lastfm-db/status")
+    assert resp.status_code == 200
+    assert resp.get_json() == {"enabled": False}
+
+
+def test_lastfm_db_clear_disabled_returns_400(client, monkeypatch):
+    from web.routes import api
+
+    monkeypatch.setattr(api, "get_local_scrobble_db", lambda: None)
+    resp = client.post("/api/lastfm-db/clear")
+    assert resp.status_code == 400
+    assert "error" in resp.get_json()
+
+
+def test_lastfm_db_export_import_roundtrip(client, monkeypatch, tmp_path):
+    import io
+    import time
+
+    from src.lastfm import LocalScrobbleDB, Scrobble
+    from web.routes import api
+
+    now = int(time.time())
+    db = LocalScrobbleDB(tmp_path / "lfm.db")
+    db.ingest_scrobbles([Scrobble("A", "Hit", "", now), Scrobble("A", "Hit", "", now)])
+    monkeypatch.setattr(api, "get_local_scrobble_db", lambda: db)
+
+    export = client.get("/api/lastfm-db/export")
+    assert export.status_code == 200
+    assert "attachment" in export.headers["Content-Disposition"]
+    dump = export.get_data()
+
+    db2 = LocalScrobbleDB(tmp_path / "lfm2.db")
+    monkeypatch.setattr(api, "get_local_scrobble_db", lambda: db2)
+    resp = client.post(
+        "/api/lastfm-db/import",
+        data={"file": (io.BytesIO(dump), "dump.json"), "mode": "merge"},
+        content_type="multipart/form-data",
+    )
+    body = resp.get_json()
+    assert body["status"] == "ok"
+    assert body["imported"] == 1
+    assert db2.get_total_plays() == 2
+
+
+def test_history_status_does_not_clobber_total_tracks(client, monkeypatch, tmp_path):
+    import time
+
+    from src.lastfm import LocalScrobbleDB, Scrobble
+    from web.routes import api
+
+    class _FakeHistoryDB:
+        def get_overview_stats(self):
+            return {"total_tracks": 5, "found_tracks": 3, "not_found_tracks": 2, "total_syncs": 1}
+
+        def get_db_size_bytes(self):
+            return 100
+
+    now = int(time.time())
+    local = LocalScrobbleDB(tmp_path / "lfm.db")
+    local.ingest_scrobbles([Scrobble("A", "Hit", "", now), Scrobble("A", "Hit", "", now), Scrobble("B", "Deep", "", now)])
+
+    monkeypatch.setattr(api, "is_history_enabled", lambda: True)
+    monkeypatch.setattr(api, "get_history_db", lambda: _FakeHistoryDB())
+    monkeypatch.setattr(api, "get_local_scrobble_db", lambda: local)
+
+    body = client.get("/api/history/status").get_json()
+    assert body["total_tracks"] == 5
+    assert body["found_tracks"] + body["not_found_tracks"] == body["total_tracks"]
+    assert body["local_lastfm_enabled"] is True
+    assert body["library_tracks"] == 2
+    assert body["library_plays"] == 3
+    assert "total_plays" not in body
+
+
+def test_history_status_without_local_lastfm(client, monkeypatch):
+    """Only History DB enabled: no library_* keys, local flag False."""
+    from web.routes import api
+
+    class _FakeHistoryDB:
+        def get_overview_stats(self):
+            return {"total_tracks": 5, "found_tracks": 3, "not_found_tracks": 2, "total_syncs": 1}
+
+        def get_db_size_bytes(self):
+            return 100
+
+    monkeypatch.setattr(api, "is_history_enabled", lambda: True)
+    monkeypatch.setattr(api, "get_history_db", lambda: _FakeHistoryDB())
+    monkeypatch.setattr(api, "get_local_scrobble_db", lambda: None)
+
+    body = client.get("/api/history/status").get_json()
+    assert body["total_tracks"] == 5
+    assert body["local_lastfm_enabled"] is False
+    assert "library_tracks" not in body
+    assert "library_plays" not in body
+    assert "library_last_sync_at" not in body
+
+
+def test_history_status_disabled_returns_enabled_false(client, monkeypatch):
+    """History DB off (e.g. only Last.fm, or neither): status short-circuits."""
+    from web.routes import api
+
+    monkeypatch.setattr(api, "is_history_enabled", lambda: False)
+    body = client.get("/api/history/status").get_json()
+    assert body == {"enabled": False}
+
+
+def test_history_top_tracks_uses_history_when_local_disabled(client, monkeypatch):
+    """Only History DB enabled: top-tracks come from the resolution log."""
+    from web.routes import api
+
+    class _FakeHistoryDB:
+        def get_top_tracks(self, _limit):
+            return [{"artist": "A", "title": "X", "video_id": "v", "times_found": 3}]
+
+    monkeypatch.setattr(api, "get_history_db", lambda: _FakeHistoryDB())
+    monkeypatch.setattr(api, "get_local_scrobble_db", lambda: None)
+
+    body = client.get("/api/history/top-tracks").get_json()
+    assert body["source"] == "history"
+    assert body["tracks"][0]["title"] == "X"
+
+
+def test_history_top_tracks_requires_history_db(client, monkeypatch):
+    """History DB off: top-tracks is unavailable even if Last.fm data exists."""
+    from web.routes import api
+
+    monkeypatch.setattr(api, "get_history_db", lambda: None)
+    resp = client.get("/api/history/top-tracks")
+    assert resp.status_code == 400
+
+
+def test_local_scrobble_db_singleton_reset_on_disable(monkeypatch, tmp_path):
+    """Activate Last.fm DB then deactivate: reset clears the cached singleton."""
+    pytest.importorskip("flask")
+
+    import types
+
+    from web.services import data
+
+    db_file = tmp_path / "lfm.db"
+    enabled = types.SimpleNamespace(use_local_lastfm_db=True, lastfm_local_db_file=str(db_file))
+    monkeypatch.setattr(data, "_local_scrobble_db", None)
+    monkeypatch.setattr(data.Settings, "from_env", staticmethod(lambda: enabled))
+
+    first = data.get_local_scrobble_db()
+    assert first is not None
+    assert data.get_local_scrobble_db() is first  # cached singleton
+
+    data.reset_local_scrobble_db()
+    disabled = types.SimpleNamespace(use_local_lastfm_db=False, lastfm_local_db_file=str(db_file))
+    monkeypatch.setattr(data.Settings, "from_env", staticmethod(lambda: disabled))
+    assert data.get_local_scrobble_db() is None
+
+
+def test_history_db_singleton_reset_on_disable(monkeypatch, tmp_path):
+    """Activate History DB then deactivate: reset clears the cached singleton."""
+    pytest.importorskip("flask")
+
+    import types
+
+    from web.services import data
+
+    db_file = tmp_path / "hist.db"
+    enabled = types.SimpleNamespace(history_db_enabled=True, history_db_file=str(db_file))
+    monkeypatch.setattr(data, "_history_db", None)
+    monkeypatch.setattr(data.Settings, "from_env", staticmethod(lambda: enabled))
+
+    first = data.get_history_db()
+    assert first is not None
+    assert data.get_history_db() is first  # cached singleton
+
+    data.reset_history_db()
+    disabled = types.SimpleNamespace(history_db_enabled=False, history_db_file=str(db_file))
+    monkeypatch.setattr(data.Settings, "from_env", staticmethod(lambda: disabled))
+    assert data.get_history_db() is None
+
+
+def test_history_top_tracks_delegates_to_local(client, monkeypatch, tmp_path):
+    import time
+
+    from src.lastfm import LocalScrobbleDB, Scrobble
+    from web.routes import api
+
+    now = int(time.time())
+    local = LocalScrobbleDB(tmp_path / "lfm.db")
+    local.ingest_scrobbles([Scrobble("A", "Hit", "", now), Scrobble("A", "Hit", "", now), Scrobble("B", "Deep", "", now)])
+
+    monkeypatch.setattr(api, "get_history_db", lambda: object())
+    monkeypatch.setattr(api, "get_local_scrobble_db", lambda: local)
+
+    resp = client.get("/api/history/top-tracks?limit=10")
+    body = resp.get_json()
+    assert body["source"] == "local_lastfm"
+    assert body["tracks"][0]["title"] == "Hit"
+    assert body["tracks"][0]["plays"] == 2
+    assert body["tracks"][0]["times_found"] == 2
+    assert body["tracks"][0]["video_id"] is None
 
 
 def test_setup_status_endpoint(client):
