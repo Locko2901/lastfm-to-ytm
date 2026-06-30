@@ -25,6 +25,15 @@ The database stores three types of records:
 
 When `HISTORY_MAX_SIZE_MB` is set to a non-zero value, the database auto-prunes the oldest records when the file exceeds the specified size. When `HISTORY_RETENTION_DAYS` is set, every successful main sync also deletes any `syncs` and `actions` rows older than the cutoff and `VACUUM`s the file to reclaim space. Track rows are kept (they are cumulative lookup state, not history).
 
+## "Seen" vs "Played"
+
+The dashboard surfaces two different per-track counters that are easy to confuse because they often disagree for the same song:
+
+- **Seen** (the `times_found` counter, shown as the `seen N×` badge and the **Seen** row in the **Track Details** modal) counts how many times the **sync engine resolved this track to a YouTube Music video**. It is incremented once per sync run that encounters the track, so a song that lingers in your recent-tracks window across many syncs accumulates a high "seen" count regardless of how often you actually listened to it. It is a *pipeline/lookup* metric, not a listening metric.
+- **Played** (the `N× played` badge) is your **lifetime Last.fm scrobble count** and only appears when the [local Last.fm history database](local-history.md) is enabled. It reflects how many times you actually listened to the track.
+
+Because they measure different things, **"Seen" and "Played" are expected to differ** - a track can show, say, `484× seen` in the Track Details modal while the Top Tracks list shows `150× played`. "Seen" tends to be higher when frequent syncs keep re-resolving the same track; "Played" only ever moves when you genuinely listen to the song again.
+
 ## Maintenance
 
 The **History Database** section in **Settings** exposes the DB-only maintenance actions:
