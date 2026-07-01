@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Any, cast
 
@@ -17,6 +18,8 @@ from src.lastfm import LocalScrobbleDB
 from src.playlist.weekly import _derive_weekly_prefix
 
 from .env import BROWSER_JSON_FILE, ENV_FILE
+
+logger = logging.getLogger(__name__)
 
 RUN_LOG_FILE = CACHE_DIR / ".last_run_log.json"
 OVERRIDES_FILE = CONFIG_DIR / "search_overrides.json"
@@ -316,8 +319,9 @@ def discover_ytm_playlists() -> dict[str, Any]:
 
         yt = YTMusic(str(BROWSER_JSON_FILE))
         library = yt.get_library_playlists(limit=1000) or []
-    except Exception as e:
-        return {"error": str(e), "candidates": []}
+    except Exception:
+        logger.warning("Failed to discover YTM playlists", exc_info=True)
+        return {"error": "Failed to reach YouTube Music", "candidates": []}
 
     return {"candidates": discover_playlists(library, settings, custom_names, tracked_ids)}
 
@@ -370,8 +374,9 @@ def delete_ytm_playlist(playlist_id: str, name: str | None = None) -> dict[str, 
 
         yt = YTMusic(str(BROWSER_JSON_FILE))
         yt.delete_playlist(playlist_id)
-    except Exception as e:
-        return {"deleted": False, "error": str(e)}
+    except Exception:
+        logger.warning("Failed to delete YTM playlist", exc_info=True)
+        return {"deleted": False, "error": "Failed to delete playlist on YouTube Music"}
     if name:
         pc.remove(name)
     return {"deleted": True, "name": name}
@@ -392,8 +397,9 @@ def prune_old_weeklies_ytm() -> dict[str, Any]:
 
         yt = YTMusic(str(BROWSER_JSON_FILE))
         to_prune = _prune_old_weeklies(yt, base_prefix, keep_weeks)
-    except Exception as e:
-        return {"error": str(e), "deleted": []}
+    except Exception:
+        logger.warning("Failed to prune old weekly playlists", exc_info=True)
+        return {"error": "Failed to reach YouTube Music", "deleted": []}
     deleted: list[str] = []
     for title, pid in to_prune:
         try:
