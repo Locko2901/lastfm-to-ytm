@@ -102,7 +102,7 @@ APScheduler runs automated syncs in the background:
 
 ### Tag Sync Frequency Counter
 
-When tag sync is enabled, a file counter (`cache/.tag_sync_counter.json`) tracks how many main syncs have occurred since the last tag sync. Tag sync runs every N main syncs (configurable). The counter resets to 0 after each tag sync run.
+When tag sync is enabled, a file counter (`runtime/.tag_sync_counter.json`) tracks how many main syncs have occurred since the last tag sync. Tag sync runs every N main syncs (configurable). The counter resets to 0 after each tag sync run.
 
 ### Scheduled Sync Flow
 

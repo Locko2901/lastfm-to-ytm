@@ -5,6 +5,7 @@ from __future__ import annotations
 import contextlib
 import json
 import logging
+import os
 import threading
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -22,7 +23,8 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-_TAG_SYNC_COUNTER_FILE = Path(__file__).parent.parent.parent / "cache" / ".tag_sync_counter.json"
+_RUNTIME_DIR = Path(os.environ.get("RUNTIME_DIR") or os.environ.get("CACHE_DIR") or str(Path(__file__).parent.parent.parent / "runtime"))
+_TAG_SYNC_COUNTER_FILE = _RUNTIME_DIR / ".tag_sync_counter.json"
 
 _scheduler: BackgroundScheduler | None = None
 _scheduler_lock = threading.Lock()

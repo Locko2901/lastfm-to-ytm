@@ -119,7 +119,7 @@ Available tags:
 !!! note
     `latest` only moves when a new release tag is published - it never points at an untagged `main` commit. Use `dev` if you want the bleeding edge.
 
-You can also bypass the launcher entirely - pulling and running the image with plain `docker` works fine, as long as you mount `cache/`, `config/`, `.env`, and `browser.json` the same way [`devops/docker-compose.yml`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/devops/docker-compose.yml) does.
+You can also bypass the launcher entirely - pulling and running the image with plain `docker` works fine, as long as you mount `runtime/`, `config/`, `.env`, and `browser.json` the same way [`devops/docker-compose.yml`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/devops/docker-compose.yml) does.
 
 ---
 
@@ -165,7 +165,7 @@ Click the pill to open the GitHub release for the changelog before upgrading. Th
 
 For standalone CLI installs, see [CLI Install &rarr; Updating](cli-install.md#updating).
 
-Docker bind mounts (`cache/`, `config/`, `.env`, `browser.json`) persist across rebuilds and image swaps, so your data and credentials survive any upgrade path.
+Docker bind mounts (`runtime/`, `config/`, `.env`, `browser.json`) persist across rebuilds and image swaps, so your data and credentials survive any upgrade path.
 
 ---
 

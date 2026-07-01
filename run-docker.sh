@@ -249,7 +249,14 @@ echo -e "${GREEN}✓ Docker daemon is running${NC}"
 
 echo -e "${BLUE}[3/5]${NC} Checking required files..."
 
-mkdir -p "$SCRIPT_DIR/cache" "$SCRIPT_DIR/config"
+# Migrate the legacy cache/ directory to runtime/ (persistent state was renamed).
+# Only move when runtime/ does not exist yet, so re-runs are safe.
+if [[ ! -e "$SCRIPT_DIR/runtime" && -d "$SCRIPT_DIR/cache" ]]; then
+    echo -e "${YELLOW}→ Migrating legacy cache/ directory to runtime/...${NC}"
+    mv "$SCRIPT_DIR/cache" "$SCRIPT_DIR/runtime"
+fi
+
+mkdir -p "$SCRIPT_DIR/runtime" "$SCRIPT_DIR/config"
 
 if [[ -d "$SCRIPT_DIR/.env" ]]; then
     echo -e "${YELLOW}→ Removing .env directory (Docker artifact)...${NC}"

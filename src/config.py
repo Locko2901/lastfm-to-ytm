@@ -1,8 +1,10 @@
 """Settings from environment variables."""
 
+import contextlib
 import json
 import logging
 import os
+import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -12,9 +14,158 @@ PROJECT_ROOT = Path(__file__).parent.parent
 
 load_dotenv(PROJECT_ROOT / ".env")
 
-CACHE_DIR = Path(os.getenv("CACHE_DIR", str(PROJECT_ROOT / "cache")))
+_LEGACY_CACHE_DIR = PROJECT_ROOT / "cache"
+
+
+def _resolve_runtime_dir() -> Path:
+    """Resolve the runtime state directory, migrating legacy cache/ if needed.
+
+    Resolution order:
+    1. RUNTIME_DIR env var (new, explicit) - used as-is.
+    2. CACHE_DIR env var (legacy, explicit) - used as-is for backwards compat.
+    3. Default runtime/ - if it is missing but a legacy cache/ directory exists,
+       the contents are moved over automatically so existing installs keep their
+       history databases and caches.
+    """
+    explicit = os.getenv("RUNTIME_DIR") or os.getenv("CACHE_DIR")
+    if explicit:
+        return Path(explicit)
+
+    target = PROJECT_ROOT / "runtime"
+    if not target.exists() and _LEGACY_CACHE_DIR.is_dir():
+        try:
+            shutil.move(str(_LEGACY_CACHE_DIR), str(target))
+            logging.getLogger(__name__).info("Migrated legacy cache/ directory to runtime/")
+        except Exception as exc:  # pragma: no cover - defensive, keep data reachable
+            logging.getLogger(__name__).warning("Could not migrate cache/ to runtime/: %s", exc)
+            return _LEGACY_CACHE_DIR
+    return target
+
+
+RUNTIME_DIR = _resolve_runtime_dir()
+
+CACHE_DIR = RUNTIME_DIR
 
 CONFIG_DIR = Path(os.getenv("CONFIG_DIR", str(PROJECT_ROOT / "config")))
+
+
+def _remap_legacy_path(value: str) -> str:
+    """Rewrite a path pointing inside the old cache/ directory to RUNTIME_DIR.
+
+    Keeps `.env` files copied from older releases (which reference cache/...)
+    working after the runtime/ migration. Paths that are pinned to the legacy
+    location on purpose (RUNTIME_DIR == cache/) or that live elsewhere are
+    returned unchanged.
+    """
+    if RUNTIME_DIR == _LEGACY_CACHE_DIR:
+        return value
+    p = Path(value)
+    try:
+        if p.is_absolute():
+            rel = p.relative_to(_LEGACY_CACHE_DIR)
+        elif p.parts and p.parts[0] == "cache":
+            rel = Path(*p.parts[1:])
+        else:
+            return value
+    except ValueError:
+        return value
+    return str(RUNTIME_DIR / rel)
+
+
+def _runtime_file(env_name: str, filename: str) -> str:
+    """Resolve a runtime file path from an env var, remapping legacy cache/ paths."""
+    return _remap_legacy_path(os.getenv(env_name, str(RUNTIME_DIR / filename)))
+
+
+_RUNTIME_PATH_ENV_KEYS = (
+    "CACHE_PLAYLIST_FILE",
+    "CACHE_SEARCH_FILE",
+    "TAG_CACHE_FILE",
+    "HISTORY_DB_FILE",
+    "LASTFM_LOCAL_DB_FILE",
+)
+
+
+def _legacy_cache_value_to_runtime(value: str) -> str | None:
+    """Return the runtime/ equivalent of a legacy cache/ path, else None.
+
+    Returns None for values that are not under the legacy cache/ directory
+    (custom locations or paths already pointing at runtime/), so callers can
+    leave those untouched. Relative inputs stay relative (``cache/x`` ->
+    ``runtime/x``); absolute inputs under the legacy dir are rebased onto
+    ``PROJECT_ROOT/runtime``.
+    """
+    v = value.strip()
+    if not v:
+        return None
+    p = Path(v)
+    if p.is_absolute():
+        try:
+            rel = p.relative_to(_LEGACY_CACHE_DIR)
+        except ValueError:
+            return None
+        return str(PROJECT_ROOT / "runtime" / rel)
+    parts = p.parts
+    if not parts or parts[0] != "cache":
+        return None
+    return "runtime" if len(parts) == 1 else "runtime/" + "/".join(parts[1:])
+
+
+def migrate_env_to_runtime() -> bool:
+    """Rewrite legacy cache/ paths in the on-disk .env to runtime/ (one-time).
+
+    Idempotent and safe to call on every start:
+    - Keys pointing under the old cache/ directory are rewritten to runtime/.
+    - Keys pointing at a custom location are left untouched.
+    - Keys already pointing at runtime/ are left untouched.
+
+    Skipped entirely when RUNTIME_DIR or the legacy CACHE_DIR env var pins a
+    custom runtime location - that is an explicit user choice we don't override.
+    Returns True if the file was modified. Call this from process entry points
+    (CLI / web server start), never at import time, so tests and library imports
+    don't mutate a real .env.
+    """
+    if os.getenv("RUNTIME_DIR") or os.getenv("CACHE_DIR"):
+        return False
+    env_file = PROJECT_ROOT / ".env"
+    if not env_file.exists():
+        return False
+    try:
+        original = env_file.read_text(encoding="utf-8")
+    except OSError:
+        return False
+
+    changed = False
+    out_lines: list[str] = []
+    for line in original.splitlines(keepends=True):
+        newline = "\n" if line.endswith("\n") else ""
+        body = line[: len(line) - len(newline)] if newline else line
+        stripped = body.strip()
+        if stripped and not stripped.startswith("#") and "=" in body:
+            key, sep, rest = body.partition("=")
+            if key.strip() in _RUNTIME_PATH_ENV_KEYS:
+                value, comment = rest, ""
+                for marker in (" #", "\t#"):
+                    idx = value.find(marker)
+                    if idx != -1:
+                        value, comment = value[:idx], value[idx:]
+                        break
+                new_value = _legacy_cache_value_to_runtime(value)
+                if new_value is not None and new_value != value.strip():
+                    body = f"{key}{sep}{new_value}{comment}"
+                    changed = True
+        out_lines.append(body + newline)
+
+    if not changed:
+        return False
+
+    tmp_file = env_file.with_name(env_file.name + ".tmp")
+    tmp_file.write_text("".join(out_lines), encoding="utf-8")
+    tmp_file.replace(env_file)
+    with contextlib.suppress(OSError):
+        env_file.chmod(0o600)
+    logging.getLogger(__name__).info("Migrated legacy cache/ paths in .env to runtime/")
+    return True
 
 
 def _strip_inline_comment(val: str | None) -> str | None:
@@ -144,24 +295,24 @@ class Settings:
     lastfm_max_retries: int = 5
     lastfm_max_consecutive_empty: int = 3
     lastfm_force_ipv4: bool = True
-    cache_playlist_file: str = str(CACHE_DIR / ".playlist_cache.json")
-    cache_search_file: str = str(CACHE_DIR / ".search_cache.json")
+    cache_playlist_file: str = str(RUNTIME_DIR / ".playlist_cache.json")
+    cache_search_file: str = str(RUNTIME_DIR / ".search_cache.json")
     cache_overrides_file: str = str(CONFIG_DIR / "search_overrides.json")
     cache_search_ttl_days: int = 30
     cache_notfound_ttl_days: int = 7
     custom_playlists_file: str = str(CONFIG_DIR / "custom_playlists.json")
     custom_playlists_privacy_status: str | None = None
-    tag_cache_file: str = str(CACHE_DIR / ".tag_cache.json")
+    tag_cache_file: str = str(RUNTIME_DIR / ".tag_cache.json")
     tag_cache_ttl_days: int = 90
     tag_min_count: int = 10
     tag_sleep_between: float = 0.25
     tag_overrides_file: str = str(CONFIG_DIR / "tag_overrides.json")
     history_db_enabled: bool = False
-    history_db_file: str = str(CACHE_DIR / "history.db")
+    history_db_file: str = str(RUNTIME_DIR / "history.db")
     history_max_size_mb: float = 0
     history_retention_days: int = 0
     use_local_lastfm_db: bool = False
-    lastfm_local_db_file: str = str(CACHE_DIR / "lastfm_history.db")
+    lastfm_local_db_file: str = str(RUNTIME_DIR / "lastfm_history.db")
     lastfm_local_db_max_scrobbles: int = 0
     webhook_url: str = ""
     webhook_events: str = "error"
@@ -229,8 +380,8 @@ class Settings:
         lastfm_max_consecutive_empty = _str_to_int(os.getenv("LASTFM_MAX_CONSECUTIVE_EMPTY"), 3)
         lastfm_force_ipv4 = _str_to_bool(os.getenv("LASTFM_FORCE_IPV4"), True)
 
-        cache_playlist_file = os.getenv("CACHE_PLAYLIST_FILE", str(CACHE_DIR / ".playlist_cache.json"))
-        cache_search_file = os.getenv("CACHE_SEARCH_FILE", str(CACHE_DIR / ".search_cache.json"))
+        cache_playlist_file = _runtime_file("CACHE_PLAYLIST_FILE", ".playlist_cache.json")
+        cache_search_file = _runtime_file("CACHE_SEARCH_FILE", ".search_cache.json")
         cache_overrides_file = os.getenv("CACHE_OVERRIDES_FILE", str(CONFIG_DIR / "search_overrides.json"))
         cache_search_ttl_days = _str_to_int(os.getenv("CACHE_SEARCH_TTL_DAYS"), 30)
         cache_notfound_ttl_days = _str_to_int(os.getenv("CACHE_NOTFOUND_TTL_DAYS"), 7)
@@ -240,17 +391,17 @@ class Settings:
         custom_playlists_privacy_status: str | None = None
         if custom_playlists_privacy_env is not None:
             custom_playlists_privacy_status = _parse_privacy(custom_playlists_privacy_env, "PRIVATE")
-        tag_cache_file = os.getenv("TAG_CACHE_FILE", str(CACHE_DIR / ".tag_cache.json"))
+        tag_cache_file = _runtime_file("TAG_CACHE_FILE", ".tag_cache.json")
         tag_cache_ttl_days = _str_to_int(os.getenv("TAG_CACHE_TTL_DAYS"), 90)
         tag_min_count = _str_to_int(os.getenv("TAG_MIN_COUNT"), 10)
         tag_sleep_between = _str_to_float(os.getenv("TAG_SLEEP_BETWEEN"), 0.25)
         tag_overrides_file = os.getenv("TAG_OVERRIDES_FILE", str(CONFIG_DIR / "tag_overrides.json"))
         history_db_enabled = _str_to_bool(os.getenv("HISTORY_DB_ENABLED"), False)
-        history_db_file = os.getenv("HISTORY_DB_FILE", str(CACHE_DIR / "history.db"))
+        history_db_file = _runtime_file("HISTORY_DB_FILE", "history.db")
         history_max_size_mb = _str_to_float(os.getenv("HISTORY_MAX_SIZE_MB"), 0)
         history_retention_days = _str_to_int(os.getenv("HISTORY_RETENTION_DAYS"), 0)
         use_local_lastfm_db = _str_to_bool(os.getenv("USE_LOCAL_LASTFM_DB"), False)
-        lastfm_local_db_file = os.getenv("LASTFM_LOCAL_DB_FILE", str(CACHE_DIR / "lastfm_history.db"))
+        lastfm_local_db_file = _runtime_file("LASTFM_LOCAL_DB_FILE", "lastfm_history.db")
         lastfm_local_db_max_scrobbles = _str_to_int(os.getenv("LASTFM_LOCAL_DB_MAX_SCROBBLES"), 0)
         webhook_url = (_strip_inline_comment(os.getenv("WEBHOOK_URL")) or "").strip()
         webhook_events = (_strip_inline_comment(os.getenv("WEBHOOK_EVENTS")) or "error").strip().lower()

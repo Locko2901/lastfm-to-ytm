@@ -31,7 +31,7 @@ Slim runtime image with only what's needed:
 The entrypoint handles permission mapping and file initialization:
 
 1. **UID/GID matching** - reads the owner UID/GID of the `/app/config` mount and remaps the `lastfm` user to match via `usermod`/`groupmod`. This prevents permission conflicts with host-mounted volumes.
-2. **File fixup** - creates `config/search_overrides.json` with empty structure if missing, fixes `.env` if it is accidentally a directory, ensures correct ownership on `cache/` and `config/`
+2. **File fixup** - creates `config/search_overrides.json` with empty structure if missing, fixes `.env` if it is accidentally a directory, ensures correct ownership on `runtime/` and `config/`
 3. **Privilege drop** - all subsequent commands run as the `lastfm` user via `gosu`
 
 ---
@@ -67,7 +67,7 @@ After forking, `post_fork()` initializes the APScheduler instance from env setti
 
 | Host path | Container path | Mode |
 |---|---|---|
-| `cache/` | `/app/cache` | read-write |
+| `runtime/` | `/app/runtime` | read-write |
 | `config/` | `/app/config` | read-write |
 | `browser.json` | `/app/browser.json` | read-write |
 | `.env` | `/app/.env` | read-write |

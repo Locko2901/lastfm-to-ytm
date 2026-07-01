@@ -112,6 +112,37 @@ These settings only apply when running the web dashboard.
 
 These are rarely changed. Most users can ignore everything below.
 
+### Runtime directory
+
+All persistent runtime state - the SQLite history databases plus the search,
+tag, and playlist caches, run logs, and notification queue - lives under
+`runtime/` in the project root.
+
+!!! info "Renamed from `cache/`"
+    This directory used to be called `cache/`. It was renamed to `runtime/`
+    because it holds **persistent state** (notably the opt-in SQLite history
+    databases), not disposable cache data. The migration is automatic and
+    non-breaking:
+
+    - **On startup**, if a legacy `cache/` directory exists and `runtime/` does
+      not, its contents are moved to `runtime/` for you.
+    - **The CLI and web entry points** also rewrite the path variables below in
+      your `.env` from `cache/...` to `runtime/...` once - values pointing at a
+      custom location or already at `runtime/` are left untouched.
+    - The legacy `CACHE_DIR` environment variable still works as an alias for
+      `RUNTIME_DIR`, so existing setups keep working. When the Docker launcher
+      (`run-docker.sh`) sees a legacy `cache/` directory and no `runtime/`, it
+      moves it across before starting the container.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `RUNTIME_DIR` | `runtime/` | Directory for all persistent runtime state. Overrides the per-file paths' base directory. |
+| `CACHE_DIR` | *(unset)* | Deprecated alias for `RUNTIME_DIR`. Still honoured for backward compatibility. |
+
+The individual path variables (`HISTORY_DB_FILE`, `CACHE_SEARCH_FILE`, etc.)
+listed in the sections below default to files inside `runtime/`. Set them
+explicitly only if you need a file in a non-default location.
+
 ??? note "Search behavior"
 
     | Variable | Default | Description |
@@ -134,8 +165,8 @@ These are rarely changed. Most users can ignore everything below.
 
     | Variable | Default | Description |
     |----------|---------|-------------|
-    | `CACHE_PLAYLIST_FILE` | `cache/.playlist_cache.json` | Path to playlist cache |
-    | `CACHE_SEARCH_FILE` | `cache/.search_cache.json` | Path to search cache |
+    | `CACHE_PLAYLIST_FILE` | `runtime/.playlist_cache.json` | Path to playlist cache |
+    | `CACHE_SEARCH_FILE` | `runtime/.search_cache.json` | Path to search cache |
     | `CACHE_OVERRIDES_FILE` | `config/search_overrides.json` | Path to search overrides |
     | `CACHE_SEARCH_TTL_DAYS` | `30` | Days before cached searches expire (`0` = never) |
     | `CACHE_NOTFOUND_TTL_DAYS` | `7` | Days before "not found" results are retried (`0` = don't cache) |
@@ -146,7 +177,7 @@ These are rarely changed. Most users can ignore everything below.
     |----------|---------|-------------|
     | `CUSTOM_PLAYLISTS_FILE` | `config/custom_playlists.json` | Path to custom playlist config |
     | `CUSTOM_PLAYLISTS_PRIVACY` | *(inherit)* | Default privacy for custom playlists: `PRIVATE`/`UNLISTED`/`PUBLIC` (empty = inherit `PLAYLIST_PRIVACY`). Overridable per playlist via the config's `privacy` field |
-    | `TAG_CACHE_FILE` | `cache/.tag_cache.json` | Path to tag cache file |
+    | `TAG_CACHE_FILE` | `runtime/.tag_cache.json` | Path to tag cache file |
     | `TAG_CACHE_TTL_DAYS` | `90` | Days before cached tags expire |
     | `TAG_MIN_COUNT` | `10` | Minimum Last.fm tag vote count to consider valid |
     | `TAG_SLEEP_BETWEEN` | `0.25` | Delay between tag API calls in seconds |
@@ -159,7 +190,7 @@ These are rarely changed. Most users can ignore everything below.
     | Variable | Default | Description |
     |----------|---------|-------------|
     | `HISTORY_DB_ENABLED` | `false` | Track all songs, syncs, and actions in a local SQLite DB |
-    | `HISTORY_DB_FILE` | `cache/history.db` | Path to the history database file |
+    | `HISTORY_DB_FILE` | `runtime/history.db` | Path to the history database file |
     | `HISTORY_MAX_SIZE_MB` | `0` | Auto-prune oldest records when exceeded (`0` = unlimited) |
     | `HISTORY_RETENTION_DAYS` | `0` | After each sync, delete `syncs` &amp; `actions` rows older than N days (`0` = keep forever). `tracks` are always retained. |
 
@@ -170,7 +201,7 @@ These are rarely changed. Most users can ignore everything below.
     | Variable | Default | Description |
     |----------|---------|-------------|
     | `USE_LOCAL_LASTFM_DB` | `false` | Build the main playlist from your full local scrobble history (lifetime plays + recency) instead of recent tracks. **Changes playlist behaviour.** |
-    | `LASTFM_LOCAL_DB_FILE` | `cache/lastfm_history.db` | Path to the local Last.fm history database file |
+    | `LASTFM_LOCAL_DB_FILE` | `runtime/lastfm_history.db` | Path to the local Last.fm history database file |
     | `LASTFM_LOCAL_DB_MAX_SCROBBLES` | `0` | Safety cap on scrobbles ingested per crawl (`0` = unlimited) |
 
     See [Local Last.fm History](local-history.md) for how the full crawl and incremental updates work.
