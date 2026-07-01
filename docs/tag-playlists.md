@@ -147,3 +147,21 @@ python run_tags.py  # or: lastfm-ytm-tags
 
 !!! warning
     `python run.py` only runs the main playlist sync. Custom playlists must be triggered separately via `run_tags.py` or from the web dashboard (**Custom Playlist Sync** in the run menu).
+
+### Syncing specific playlists
+
+The run menu's **Custom Playlist Sync** rebuilds *every* configured custom
+playlist. To refresh just one (or a handful) without touching the rest, use the
+**Custom Playlists** tab instead:
+
+- Each playlist card has its own **Sync** button that rebuilds only that
+  playlist.
+- The **Sync Multiple…** button in the toolbar opens a dialog where you tick one
+  or more playlists (or none, to sync all) and rebuild exactly those in a single
+  run.
+
+Both routes reuse the same engine as a full custom sync - they simply restrict
+it to the chosen playlist names - so backfill, blacklists, and limits all behave
+identically. Auto-sync exclusions are ignored for these manual runs: a playlist
+marked **No Auto-sync** is still rebuilt when you sync it explicitly.
+

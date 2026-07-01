@@ -37,14 +37,26 @@ def sync_custom_playlists(
     ctx: RuntimeContext,
     recents: list[Scrobble],
     track_to_vid: dict[tuple[str, str], str],
+    only_names: set[str] | None = None,
 ) -> TagSyncSummary:
-    """Sync all tag-based custom playlists."""
+    """Sync tag-based custom playlists.
+
+    When ``only_names`` is provided, only playlists whose (case-insensitive) name
+    is in the set are synced. This powers per-playlist syncs from the dashboard.
+    """
     settings = ctx.settings
 
     configs = load_custom_playlists(settings.custom_playlists_file)
     if not configs:
         log.debug("No custom playlists configured, skipping")
         return TagSyncSummary()
+
+    if only_names:
+        wanted = {n.lower() for n in only_names}
+        configs = [c for c in configs if c.name.lower() in wanted]
+        if not configs:
+            log.warning("No custom playlists matched the requested names: %s", ", ".join(sorted(only_names)))
+            return TagSyncSummary()
 
     trigger = os.environ.get("SYNC_TRIGGER", "cli")
     if trigger == "scheduled":

@@ -448,6 +448,8 @@
   background: var(--bg-input);
   color: var(--text-primary);
   font-size: 0.875rem;
+  resize: vertical;
+  min-height: 2.5rem;
   transition: border-color var(--transition);
 }
 
@@ -1098,6 +1100,55 @@
 
 .management-card.blacklisted {
   border-left: 2px solid var(--danger);
+}
+
+.custompl-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.sync-pl-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.sync-pl-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 18rem;
+  overflow-y: auto;
+}
+
+.sync-pl-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.sync-pl-item:hover {
+  border-color: var(--accent);
+}
+
+.sync-pl-check {
+  width: 1.05rem;
+  height: 1.05rem;
+  cursor: pointer;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.sync-pl-name {
+  font-size: 0.875rem;
+  color: var(--text-primary);
 }
 
 .panel-description {
