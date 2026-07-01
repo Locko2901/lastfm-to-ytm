@@ -43,5 +43,34 @@
       "demo_ld_sm_013"
     ],
     "last_updated": "2026-05-21T08:00:00+00:00"
+  },
+  "Ambient Focus (auto)": {
+    "id": "PLdemoCustomAmbient0000000001",
+    "video_ids": [
+      "demo_hd_cs_003",
+      "demo_hd_st_004",
+      "demo_qc_sm_011",
+      "demo_fr_rt_015"
+    ],
+    "last_updated": "2026-05-28T09:15:00+00:00"
+  },
+  "Indie Folk Sundays (auto)": {
+    "id": "PLdemoCustomFolk00000000000001",
+    "video_ids": [
+      "demo_pk_fw_009",
+      "demo_pk_os_010"
+    ],
+    "last_updated": "2026-05-27T08:00:00+00:00"
+  },
+  "Favorite Artists (auto)": {
+    "id": "PLdemoCustomArtists00000000001",
+    "video_ids": [
+      "demo_aL_gm_001",
+      "demo_aL_hs_002",
+      "demo_hd_cs_003",
+      "demo_hd_st_004",
+      "demo_sh_rt_007"
+    ],
+    "last_updated": "2026-05-28T09:15:00+00:00"
   }
 }

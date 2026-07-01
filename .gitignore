@@ -71,3 +71,5 @@ config/*.json
 tests/screenshots/fixtures/cache/*.db
 tests/screenshots/fixtures/cache/*.db-shm
 tests/screenshots/fixtures/cache/*.db-wal
+# Notification store written by the demo app during screenshot runs
+tests/screenshots/fixtures/cache/.notifications.json

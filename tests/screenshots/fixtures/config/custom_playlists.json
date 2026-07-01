@@ -3,17 +3,46 @@
     {
       "name": "Ambient Focus (auto)",
       "description": "Long-form ambient and drone for deep work",
-      "tags": ["ambient", "drone", "field recording"],
+      "tags": [
+        "ambient",
+        "drone",
+        "field recording"
+      ],
       "match": "any",
       "limit": 40,
-      "backfill": true
+      "backfill": true,
+      "privacy": "PUBLIC"
     },
     {
       "name": "Indie Folk Sundays (auto)",
       "description": "Acoustic and folk picks",
-      "tags": ["folk", "indie folk", "acoustic"],
-      "match": "any",
-      "limit": 25
+      "tags": [
+        "folk",
+        "indie folk",
+        "acoustic"
+      ],
+      "match": "all",
+      "limit": 25,
+      "auto_sync": false
+    },
+    {
+      "name": "Favorite Artists (auto)",
+      "description": "Everything from a handful of go-to artists",
+      "kind": "artists",
+      "artists": [
+        "Aurora Lights",
+        "Halcyon Drift",
+        "Saturn Hours"
+      ],
+      "limit": 50,
+      "backfill": true,
+      "privacy": "UNLISTED",
+      "blacklist": [
+        "saturn hours|equinox"
+      ],
+      "blacklist_artists": [
+        "saturn hours tribute"
+      ]
     }
   ]
 }
