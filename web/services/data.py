@@ -866,6 +866,7 @@ def load_custom_playlists_config() -> list[dict[str, Any]]:
             "blacklist_artists": sorted(c.blacklist_artists),
             "backfill": c.backfill,
             "auto_sync": c.auto_sync,
+            "privacy": c.privacy,
             "track_count": len(cache_data.get(c.name, {}).get("video_ids", [])),
             "playlist_id": cache_data.get(c.name, {}).get("id"),
         }

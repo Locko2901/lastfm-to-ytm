@@ -475,6 +475,9 @@ def custom_playlists_save() -> ResponseReturnValue:
         description = entry.get("description", "")
         if not isinstance(description, str):
             description = ""
+        raw_privacy = entry.get("privacy")
+        privacy_upper = raw_privacy.strip().upper() if isinstance(raw_privacy, str) else ""
+        privacy: str | None = privacy_upper if privacy_upper in ("PUBLIC", "UNLISTED", "PRIVATE") else None
         cleaned.append(
             {
                 "name": name,
@@ -488,6 +491,7 @@ def custom_playlists_save() -> ResponseReturnValue:
                 "blacklist_artists": [b.lower().strip() for b in blacklist_artists if b.strip()],
                 "backfill": backfill,
                 "auto_sync": auto_sync,
+                "privacy": privacy,
             }
         )
 

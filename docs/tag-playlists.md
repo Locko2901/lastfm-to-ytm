@@ -58,6 +58,7 @@ cp config/custom_playlists.json.example config/custom_playlists.json
       "match": "all",
       "limit": 30,
       "backfill": true,
+      "privacy": "PUBLIC",
       "blacklist": ["artist name|unwanted track"],
       "blacklist_artists": ["unwanted artist"]
     },
@@ -82,6 +83,7 @@ cp config/custom_playlists.json.example config/custom_playlists.json
 | `match` | no | `"any"` (track has at least one tag, default) or `"all"` (track has every tag). Tag playlists only |
 | `limit` | no | Target number of tracks (default: `50`) |
 | `backfill` | no | Fetch more scrobbles if filtering doesn't reach the limit (default: `true`) |
+| `privacy` | no | Per-playlist visibility: `"PUBLIC"`, `"UNLISTED"`, or `"PRIVATE"` (omit/empty to inherit the global `CUSTOM_PLAYLISTS_PRIVACY` setting) |
 | `blacklist` | no | Per-playlist exclusions as `"artist\|title"` (lowercase) |
 | `blacklist_artists` | no | Per-playlist artist exclusions (lowercase artist names) |
 
@@ -93,7 +95,7 @@ cp config/custom_playlists.json.example config/custom_playlists.json
 | `TAG_CACHE_TTL_DAYS` | `90` | Days before cached tags expire |
 | `TAG_MIN_COUNT` | `10` | Minimum Last.fm tag count threshold |
 | `TAG_SLEEP_BETWEEN` | `0.25` | Seconds between tag API calls |
-| `CUSTOM_PLAYLISTS_PRIVACY` | *(main setting)* | Privacy for custom playlists (`PUBLIC` / `PRIVATE`) |
+| `CUSTOM_PLAYLISTS_PRIVACY` | *(main setting)* | Default privacy for custom playlists (`PUBLIC` / `UNLISTED` / `PRIVATE`). Overridable per playlist with the `privacy` field above |
 | `BACKFILL_PASSES` | `3` | Maximum backfill iterations |
 
 ---

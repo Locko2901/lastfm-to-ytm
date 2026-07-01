@@ -145,7 +145,7 @@ These are rarely changed. Most users can ignore everything below.
     | Variable | Default | Description |
     |----------|---------|-------------|
     | `CUSTOM_PLAYLISTS_FILE` | `config/custom_playlists.json` | Path to custom playlist config |
-    | `CUSTOM_PLAYLISTS_PRIVACY` | *(inherit)* | `PRIVATE`/`UNLISTED`/`PUBLIC` (empty = inherit `PLAYLIST_PRIVACY`) |
+    | `CUSTOM_PLAYLISTS_PRIVACY` | *(inherit)* | Default privacy for custom playlists: `PRIVATE`/`UNLISTED`/`PUBLIC` (empty = inherit `PLAYLIST_PRIVACY`). Overridable per playlist via the config's `privacy` field |
     | `TAG_CACHE_FILE` | `cache/.tag_cache.json` | Path to tag cache file |
     | `TAG_CACHE_TTL_DAYS` | `90` | Days before cached tags expire |
     | `TAG_MIN_COUNT` | `10` | Minimum Last.fm tag vote count to consider valid |

@@ -70,7 +70,7 @@ def sync_custom_playlists(
 
     log.info("Processing %d custom playlist(s)...", len(configs))
 
-    privacy = settings.custom_playlists_privacy_status or settings.privacy_status
+    default_privacy = settings.custom_playlists_privacy_status or settings.privacy_status
     candidate_keys: set[tuple[str, str]] = set()
     missed_keys: set[tuple[str, str]] = set()
 
@@ -234,6 +234,7 @@ def sync_custom_playlists(
         else:
             default_desc = f"Auto-generated tag playlist ({', '.join(config.tags)})"
         desc = config.description or default_desc
+        privacy = config.privacy or default_privacy
         try:
             upsert_playlist(
                 ctx.ytm,

@@ -7,6 +7,7 @@
       "match": "any",
       "limit": 50,
       "backfill": true,
+      "privacy": "PUBLIC",
       "blacklist": ["artist name|wrong song title"],
       "blacklist_artists": ["unwanted artist"]
     },

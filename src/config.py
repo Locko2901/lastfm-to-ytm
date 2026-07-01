@@ -328,6 +328,7 @@ class CustomPlaylistConfig:
     backfill: bool = True
     auto_sync: bool = True
     description: str = ""
+    privacy: str | None = None
 
 
 def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
@@ -382,6 +383,11 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
         if not isinstance(description, str):
             description = ""
 
+        raw_privacy = entry.get("privacy")
+        privacy: str | None = None
+        if isinstance(raw_privacy, str) and raw_privacy.strip().upper() in _VALID_PRIVACY:
+            privacy = raw_privacy.strip().upper()
+
         configs.append(
             CustomPlaylistConfig(
                 name=name,
@@ -395,6 +401,7 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
                 backfill=backfill,
                 auto_sync=auto_sync,
                 description=description,
+                privacy=privacy,
             )
         )
 
