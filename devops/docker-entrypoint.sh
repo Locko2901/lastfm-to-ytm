@@ -9,9 +9,11 @@ if [ "$HOST_UID" != "0" ]; then
     groupmod -g "$HOST_GID" lastfm 2>/dev/null || true
 fi
 
-chmod -R 775 /app/cache /app/config 2>/dev/null || true
+mkdir -p /app/runtime 2>/dev/null || true
 
-chown -R lastfm:lastfm /app/cache /app/config 2>/dev/null || true
+chmod -R 775 /app/runtime /app/config 2>/dev/null || true
+
+chown -R lastfm:lastfm /app/runtime /app/config 2>/dev/null || true
 
 gosu lastfm test -f /app/config/search_overrides.json || \
     gosu lastfm sh -c 'echo "{\"_overrides\": {}, \"_blacklist\": {}}" > /app/config/search_overrides.json'

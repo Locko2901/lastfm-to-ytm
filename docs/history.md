@@ -59,7 +59,7 @@ The same JSON dump is what the [Teleporter](teleporter.md) embeds when you tick 
 
 ```bash
 HISTORY_DB_ENABLED=false               # Enable/disable the history database
-HISTORY_DB_FILE=cache/history.db       # Path to the database file
+HISTORY_DB_FILE=runtime/history.db     # Path to the database file
 HISTORY_MAX_SIZE_MB=0                  # Auto-prune oldest records when exceeded (0 = unlimited)
 HISTORY_RETENTION_DAYS=0               # Auto-delete syncs & actions older than N days after each sync (0 = keep forever)
 ```
@@ -67,6 +67,6 @@ HISTORY_RETENTION_DAYS=0               # Auto-delete syncs & actions older than 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `HISTORY_DB_ENABLED` | `false` | Track all songs, syncs, and actions in a local SQLite DB |
-| `HISTORY_DB_FILE` | `cache/history.db` | Path to the history database file |
+| `HISTORY_DB_FILE` | `runtime/history.db` | Path to the history database file |
 | `HISTORY_MAX_SIZE_MB` | `0` | Auto-prune oldest records when the file exceeds this size (`0` = unlimited) |
 | `HISTORY_RETENTION_DAYS` | `0` | After each sync, delete `syncs` &amp; `actions` rows older than N days (`0` = keep forever). `tracks` are always retained. |

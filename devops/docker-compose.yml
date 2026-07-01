@@ -10,7 +10,7 @@ services:
     ports:
       - "${YTMT_PORT:-2002}:2002"
     volumes:
-      - ../cache:/app/cache
+      - ../runtime:/app/runtime
       - ../config:/app/config
       - ../browser.json:/app/browser.json
       - ../.env:/app/.env

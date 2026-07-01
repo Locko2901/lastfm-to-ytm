@@ -82,7 +82,7 @@ fetch ".env.example"              ".env.example"
 
 chmod +x "${TARGET}/run-docker.sh"
 
-mkdir -p "${TARGET}/cache" "${TARGET}/config"
+mkdir -p "${TARGET}/runtime" "${TARGET}/config"
 touch "${TARGET}/.env"
 [[ -f "${TARGET}/browser.json" ]] || echo '{}' > "${TARGET}/browser.json"
 

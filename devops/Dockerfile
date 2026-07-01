@@ -64,12 +64,12 @@ COPY COMMIT_SHA ./COMMIT_SHA
 COPY devops/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-RUN mkdir -p /app/cache /app/config && \
+RUN mkdir -p /app/runtime /app/config && \
     chown -R lastfm:lastfm /app
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    CACHE_DIR=/app/cache \
+    RUNTIME_DIR=/app/runtime \
     CONFIG_DIR=/app/config
 
 ENTRYPOINT ["docker-entrypoint.sh"]

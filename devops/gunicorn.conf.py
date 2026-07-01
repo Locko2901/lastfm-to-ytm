@@ -68,6 +68,13 @@ preload_app = _preload_env == "true" if _preload_env else _auto_preload
 
 def on_starting(server):
     """Called just before the master process is initialized."""
+    try:
+        from src.config import migrate_env_to_runtime
+
+        if migrate_env_to_runtime():
+            server.log.info("Migrated legacy cache/ paths in .env to runtime/")
+    except Exception as e:
+        server.log.warning(f"Could not migrate .env cache/ paths: {e}")
 
 
 def post_fork(server, worker):  # noqa: ARG001

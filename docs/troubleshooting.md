@@ -38,7 +38,7 @@ If none of these match, check the sync console (or `./run-docker.sh --logs`) for
 ### Playlist not updating
 
 - Confirm `PLAYLIST_NAME` matches the existing playlist name exactly (case-sensitive)
-- Check that `cache/.playlist_cache.json` has the correct playlist ID
+- Check that `runtime/.playlist_cache.json` has the correct playlist ID
 - Set `LOG_LEVEL=DEBUG` for verbose output
 
 ### Missing or wrong matches
@@ -68,7 +68,7 @@ If none of these match, check the sync console (or `./run-docker.sh --logs`) for
 
 ### Stale cache results
 
-- Cached search results expire after `CACHE_SEARCH_TTL_DAYS` (default: 30). If a video has been removed or a better match exists, open the **cache management modal** (database icon in the dashboard header) &rarr; *Search cache* tab and bulk-delete the affected entries, or delete `cache/.search_cache.json` entirely.
+- Cached search results expire after `CACHE_SEARCH_TTL_DAYS` (default: 30). If a video has been removed or a better match exists, open the **cache management modal** (database icon in the dashboard header) &rarr; *Search cache* tab and bulk-delete the affected entries, or delete `runtime/.search_cache.json` entirely.
 - "Not found" entries are retried after `CACHE_NOTFOUND_TTL_DAYS` (default: 7). To force an immediate retry, clear the entry from the cache.
 
 ---
@@ -91,4 +91,4 @@ When YouTube removes a video for copyright reasons, it stays in the playlist as 
 
 Occasionally the sync can fail mid-run (rate limits, transient API errors, etc.) and leave the playlist in an empty or partially-filled state.
 
-**Workaround:** Run the sync again. If the playlist is still empty after a retry, open the **cache management modal** (database icon in the dashboard header) &rarr; *Playlist cache* tab and remove the affected entry, then run the sync once more so it rebuilds from scratch. As a last resort you can delete `cache/.playlist_cache.json` directly.
+**Workaround:** Run the sync again. If the playlist is still empty after a retry, open the **cache management modal** (database icon in the dashboard header) &rarr; *Playlist cache* tab and remove the affected entry, then run the sync once more so it rebuilds from scratch. As a last resort you can delete `runtime/.playlist_cache.json` directly.

@@ -23,7 +23,7 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _PYPROJECT_FILE = _PROJECT_ROOT / "pyproject.toml"
 _COMMIT_SHA_FILE = _PROJECT_ROOT / "COMMIT_SHA"
 _CHANNEL_FILE = _PROJECT_ROOT / ".channel"
-_CACHE_DIR = Path(os.environ.get("CACHE_DIR", str(_PROJECT_ROOT / "cache")))
+_CACHE_DIR = Path(os.environ.get("RUNTIME_DIR") or os.environ.get("CACHE_DIR") or str(_PROJECT_ROOT / "runtime"))
 _CACHE_FILE = _CACHE_DIR / ".update_check.json"
 _DEFAULT_BRANCH = os.environ.get("YTMT_GITHUB_BRANCH", "main")
 

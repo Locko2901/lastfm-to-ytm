@@ -16,7 +16,7 @@ Create automatic YouTube Music playlists that fill themselves with matching trac
 Tag playlists use a cache-first approach to find each track's Last.fm tags (artist playlists skip this step entirely, since they match on artist name alone):
 
 1. **Tag overrides** - check `config/tag_overrides.json` (user manual fixes). If the override mode is `"replace"`, the override tags are used directly and steps 2-3 are skipped.
-2. **Tag cache** - check `cache/.tag_cache.json` (90-day TTL, configurable via `TAG_CACHE_TTL_DAYS`)
+2. **Tag cache** - check `runtime/.tag_cache.json` (90-day TTL, configurable via `TAG_CACHE_TTL_DAYS`)
 3. **Last.fm API** - fetch via `track.getTopTags`, falling back to `artist.getTopTags` if track-level tags are unavailable
 
 After fetching, `"add"` mode tag overrides are merged into the result (this allows supplementing Last.fm's tags without replacing them entirely).

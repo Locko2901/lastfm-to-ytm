@@ -1,6 +1,6 @@
 """Server-side notification store with SSE fan-out.
 
-Notifications are persisted to ``cache/.notifications.json`` so they survive
+Notifications are persisted to ``runtime/.notifications.json`` so they survive
 restarts and are shared across browser tabs / devices. Live updates are
 broadcast to connected clients through per-subscriber queues consumed by the
 SSE endpoint in ``web.routes.notifications``.
@@ -23,8 +23,8 @@ from . import events as bus
 logger = logging.getLogger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
-_CACHE_DIR = Path(os.environ.get("CACHE_DIR", str(_PROJECT_ROOT / "cache")))
-_STORE_FILE = _CACHE_DIR / ".notifications.json"
+_RUNTIME_DIR = Path(os.environ.get("RUNTIME_DIR") or os.environ.get("CACHE_DIR") or str(_PROJECT_ROOT / "runtime"))
+_STORE_FILE = _RUNTIME_DIR / ".notifications.json"
 
 _VALID_TYPES = {"success", "error", "info", "warning"}
 MAX_NOTIFICATIONS = 100

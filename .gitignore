@@ -28,7 +28,9 @@ browser.json
 COMMIT_SHA
 .channel
 
-# Cache directory
+# Runtime state directory (SQLite history DBs, search/tag/playlist caches, run logs)
+/runtime/
+# Legacy cache directory (pre-runtime rename; kept for backwards compatibility)
 /cache/
 
 # IDE specific files

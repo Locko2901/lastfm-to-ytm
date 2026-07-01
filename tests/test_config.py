@@ -387,3 +387,130 @@ def test_load_custom_playlists_invalid_kind_defaults_to_tags(tmp_path):
         encoding="utf-8",
     )
     assert load_custom_playlists(str(path))[0].kind == "tags"
+
+
+def test_resolve_runtime_dir_prefers_runtime_env(monkeypatch, tmp_path):
+    monkeypatch.setenv("RUNTIME_DIR", str(tmp_path / "rt"))
+    monkeypatch.setenv("CACHE_DIR", str(tmp_path / "legacy"))
+    assert config_mod._resolve_runtime_dir() == tmp_path / "rt"
+
+
+def test_resolve_runtime_dir_legacy_cache_env_is_alias(monkeypatch, tmp_path):
+    monkeypatch.delenv("RUNTIME_DIR", raising=False)
+    monkeypatch.setenv("CACHE_DIR", str(tmp_path / "legacy"))
+    assert config_mod._resolve_runtime_dir() == tmp_path / "legacy"
+
+
+def test_resolve_runtime_dir_migrates_legacy_cache(monkeypatch, tmp_path):
+    monkeypatch.delenv("RUNTIME_DIR", raising=False)
+    monkeypatch.delenv("CACHE_DIR", raising=False)
+    legacy = tmp_path / "cache"
+    legacy.mkdir()
+    (legacy / "history.db").write_text("data", encoding="utf-8")
+    monkeypatch.setattr(config_mod, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(config_mod, "_LEGACY_CACHE_DIR", legacy)
+
+    result = config_mod._resolve_runtime_dir()
+
+    assert result == tmp_path / "runtime"
+    assert (tmp_path / "runtime" / "history.db").read_text(encoding="utf-8") == "data"
+    assert not legacy.exists()
+
+
+def test_resolve_runtime_dir_default_when_no_legacy(monkeypatch, tmp_path):
+    monkeypatch.delenv("RUNTIME_DIR", raising=False)
+    monkeypatch.delenv("CACHE_DIR", raising=False)
+    monkeypatch.setattr(config_mod, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(config_mod, "_LEGACY_CACHE_DIR", tmp_path / "cache")
+    assert config_mod._resolve_runtime_dir() == tmp_path / "runtime"
+
+
+def test_remap_legacy_path_relative(monkeypatch, tmp_path):
+    monkeypatch.setattr(config_mod, "RUNTIME_DIR", tmp_path / "runtime")
+    monkeypatch.setattr(config_mod, "_LEGACY_CACHE_DIR", tmp_path / "cache")
+    assert config_mod._remap_legacy_path("cache/history.db") == str(tmp_path / "runtime" / "history.db")
+
+
+def test_remap_legacy_path_absolute(monkeypatch, tmp_path):
+    legacy = tmp_path / "cache"
+    monkeypatch.setattr(config_mod, "RUNTIME_DIR", tmp_path / "runtime")
+    monkeypatch.setattr(config_mod, "_LEGACY_CACHE_DIR", legacy)
+    assert config_mod._remap_legacy_path(str(legacy / "sub" / "db.sqlite")) == str(tmp_path / "runtime" / "sub" / "db.sqlite")
+
+
+def test_remap_legacy_path_leaves_unrelated_paths(monkeypatch, tmp_path):
+    monkeypatch.setattr(config_mod, "RUNTIME_DIR", tmp_path / "runtime")
+    monkeypatch.setattr(config_mod, "_LEGACY_CACHE_DIR", tmp_path / "cache")
+    assert config_mod._remap_legacy_path("/somewhere/else/db.sqlite") == "/somewhere/else/db.sqlite"
+    assert config_mod._remap_legacy_path("runtime/history.db") == "runtime/history.db"
+
+
+def test_remap_legacy_path_noop_when_pinned_to_legacy(monkeypatch, tmp_path):
+    legacy = tmp_path / "cache"
+    monkeypatch.setattr(config_mod, "RUNTIME_DIR", legacy)
+    monkeypatch.setattr(config_mod, "_LEGACY_CACHE_DIR", legacy)
+    assert config_mod._remap_legacy_path("cache/history.db") == "cache/history.db"
+
+
+def _prep_env_migration(monkeypatch, tmp_path):
+    monkeypatch.delenv("RUNTIME_DIR", raising=False)
+    monkeypatch.delenv("CACHE_DIR", raising=False)
+    monkeypatch.setattr(config_mod, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(config_mod, "_LEGACY_CACHE_DIR", tmp_path / "cache")
+    return tmp_path / ".env"
+
+
+def test_migrate_env_rewrites_legacy_cache_paths(monkeypatch, tmp_path):
+    env_file = _prep_env_migration(monkeypatch, tmp_path)
+    env_file.write_text(
+        "HISTORY_DB_FILE=cache/history.db\nTAG_CACHE_FILE=cache/.tag_cache.json # tag cache\nLASTFM_USER=alice\n",
+        encoding="utf-8",
+    )
+    assert config_mod.migrate_env_to_runtime() is True
+    contents = env_file.read_text(encoding="utf-8")
+    assert "HISTORY_DB_FILE=runtime/history.db\n" in contents
+    assert "TAG_CACHE_FILE=runtime/.tag_cache.json # tag cache\n" in contents
+    assert "LASTFM_USER=alice\n" in contents
+
+
+def test_migrate_env_leaves_custom_paths(monkeypatch, tmp_path):
+    env_file = _prep_env_migration(monkeypatch, tmp_path)
+    env_file.write_text("HISTORY_DB_FILE=/data/mydb.sqlite\n", encoding="utf-8")
+    assert config_mod.migrate_env_to_runtime() is False
+    assert env_file.read_text(encoding="utf-8") == "HISTORY_DB_FILE=/data/mydb.sqlite\n"
+
+
+def test_migrate_env_leaves_runtime_paths(monkeypatch, tmp_path):
+    env_file = _prep_env_migration(monkeypatch, tmp_path)
+    env_file.write_text("HISTORY_DB_FILE=runtime/history.db\n", encoding="utf-8")
+    assert config_mod.migrate_env_to_runtime() is False
+    assert env_file.read_text(encoding="utf-8") == "HISTORY_DB_FILE=runtime/history.db\n"
+
+
+def test_migrate_env_skipped_when_custom_dir_env_set(monkeypatch, tmp_path):
+    env_file = _prep_env_migration(monkeypatch, tmp_path)
+    env_file.write_text("HISTORY_DB_FILE=cache/history.db\n", encoding="utf-8")
+    monkeypatch.setenv("RUNTIME_DIR", str(tmp_path / "custom"))
+    assert config_mod.migrate_env_to_runtime() is False
+    assert env_file.read_text(encoding="utf-8") == "HISTORY_DB_FILE=cache/history.db\n"
+
+
+def test_migrate_env_rewrites_absolute_legacy_path(monkeypatch, tmp_path):
+    env_file = _prep_env_migration(monkeypatch, tmp_path)
+    legacy_abs = tmp_path / "cache" / "history.db"
+    env_file.write_text(f"HISTORY_DB_FILE={legacy_abs}\n", encoding="utf-8")
+    assert config_mod.migrate_env_to_runtime() is True
+    expected = tmp_path / "runtime" / "history.db"
+    assert env_file.read_text(encoding="utf-8") == f"HISTORY_DB_FILE={expected}\n"
+
+
+def test_migrate_env_missing_file_is_noop(monkeypatch, tmp_path):
+    _prep_env_migration(monkeypatch, tmp_path)
+    assert config_mod.migrate_env_to_runtime() is False
+
+
+def test_migrate_env_ignores_non_runtime_keys(monkeypatch, tmp_path):
+    env_file = _prep_env_migration(monkeypatch, tmp_path)
+    env_file.write_text("SOME_OTHER_PATH=cache/thing.json\n", encoding="utf-8")
+    assert config_mod.migrate_env_to_runtime() is False
+    assert env_file.read_text(encoding="utf-8") == "SOME_OTHER_PATH=cache/thing.json\n"

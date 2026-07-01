@@ -20,9 +20,9 @@ exposing the app outside a trusted network.
 | Last.fm API key + username | `.env` | None | No |
 | Flask session secret | `.env` (`FLASK_SECRET_KEY`) | None | No |
 | Webhook URL | `.env` (`WEBHOOK_URL`) | None | No |
-| Search / playlist / tag caches | `cache/*.json` | None | No |
-| History database (opt-in) | `cache/history.db` (SQLite, WAL) | None | No |
-| Local Last.fm history (opt-in) | `cache/lastfm_history.db` (SQLite, WAL) | None | No |
+| Search / playlist / tag caches | `runtime/*.json` | None | No |
+| History database (opt-in) | `runtime/history.db` (SQLite, WAL) | None | No |
+| Local Last.fm history (opt-in) | `runtime/lastfm_history.db` (SQLite, WAL) | None | No |
 | User overrides & custom playlists | `config/*.json` | None | No (`.example` only) |
 | Encrypted backup bundles | User-chosen `.bin` file | **AES-256-GCM + Argon2id** | No |
 
@@ -66,10 +66,13 @@ write-scope auth is never requested. The setup wizard can write these values via
 the unauthenticated `/api/setup/lastfm` endpoint
 ([`web/routes/api.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/web/routes/api.py)).
 
-## 3. Cache directory
+## 3. Runtime directory
 
-All runtime state lives under `cache/` (overridable via `CACHE_DIR`). Every cache
-file is plain JSON written through `JSONCache` in
+All runtime state lives under `runtime/` (overridable via `RUNTIME_DIR`; the
+legacy `CACHE_DIR` env var still works as an alias). Installs that predate the
+rename keep a `cache/` directory next to the project; on startup its contents are
+moved to `runtime/` automatically. Every cache file is plain JSON written through
+`JSONCache` in
 [`src/cache/__init__.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/cache/__init__.py), which uses:
 
 - atomic writes (temp file + `os.replace`), and
@@ -94,7 +97,7 @@ None of these are encrypted. None contain Last.fm or Google credentials.
 
 **Disabled by default.** Enable with `HISTORY_DB_ENABLED=true`
 ([`src/config.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/config.py)). Path: `HISTORY_DB_FILE` (default
-`cache/history.db`).
+`runtime/history.db`).
 
 SQLite with WAL mode, foreign keys, thread-local connections - implemented in
 [`src/history/db.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/history/db.py). Schema (v3):
@@ -145,7 +148,7 @@ AES-256-GCM.
 
 **Disabled by default.** Enable with `USE_LOCAL_LASTFM_DB=true`
 ([`src/config.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/config.py)). Path:
-`LASTFM_LOCAL_DB_FILE` (default `cache/lastfm_history.db`). See the
+`LASTFM_LOCAL_DB_FILE` (default `runtime/lastfm_history.db`). See the
 [Local Last.fm History](local-history.md) page for the feature itself.
 
 This is a **separate** database from the History database in section 4. It crawls
@@ -166,7 +169,7 @@ per-play rows, so even large libraries stay small.
   `USE_LOCAL_LASTFM_DB=true` on the target instance. The exported JSON is
   plaintext; carry it encrypted inside a [Teleporter](teleporter.md) bundle
   (tick **Local Last.fm database**) if you need it protected at rest.
-- **Git:** excluded via the `/cache/` rule like every other cache file.
+- **Git:** excluded via the `/runtime/` rule like every other runtime file.
 
 ## 6. Encrypted backup / restore (Teleporter)
 
@@ -211,7 +214,7 @@ read-write so the container can persist state back to the host:
 
 ```yaml
 volumes:
-  - ../cache:/app/cache
+  - ../runtime:/app/runtime
   - ../config:/app/config
   - ../browser.json:/app/browser.json
   - ../.env:/app/.env
@@ -290,7 +293,8 @@ Anything else controls behaviour, not access.
 `.gitignore` keeps the following out of the repository:
 
 - `.env`, `browser.json`, `.channel`
-- `/cache/` (entire directory, including `history.db` and `lastfm_history.db`)
+- `/runtime/` (entire directory, including `history.db` and `lastfm_history.db`;
+  the legacy `/cache/` directory is also ignored for pre-rename installs)
 - `config/*.json` with a `!config/*.example` (and `!config/*.json.example`)
   whitelist - any real override file you drop into `config/` is ignored by
   default; only the `.example` templates are committed
