@@ -32,6 +32,7 @@ export function showCustomPlaylistModal(editIndex = -1) {
     document.getElementById("custompl-name").value = pl.name || ""
     document.getElementById("custompl-kind").value = pl.kind || "tags"
     document.getElementById("custompl-description").value = pl.description || ""
+    document.getElementById("custompl-privacy").value = pl.privacy || ""
     setTagInputValue("custompl-tags", (pl.tags || []).join(", "))
     setTagInputValue("custompl-artists", (pl.artists || []).join(", "))
     document.getElementById("custompl-match").value = pl.match || "any"
@@ -48,6 +49,7 @@ export function showCustomPlaylistModal(editIndex = -1) {
     document.getElementById("custompl-name").value = ""
     document.getElementById("custompl-kind").value = "tags"
     document.getElementById("custompl-description").value = ""
+    document.getElementById("custompl-privacy").value = ""
     setTagInputValue("custompl-tags", "")
     setTagInputValue("custompl-artists", "")
     document.getElementById("custompl-match").value = "any"
@@ -72,6 +74,7 @@ export async function saveCustomPlaylist() {
   const name = document.getElementById("custompl-name").value.trim()
   const kind = document.getElementById("custompl-kind").value
   const description = document.getElementById("custompl-description").value.trim()
+  const privacy = document.getElementById("custompl-privacy").value || null
   const tagsRaw = getTagInputValue("custompl-tags").trim()
   const artistsRaw = getTagInputValue("custompl-artists").trim()
   const match = document.getElementById("custompl-match").value
@@ -125,6 +128,7 @@ export async function saveCustomPlaylist() {
     name,
     kind,
     description,
+    privacy,
     tags,
     artists,
     match,

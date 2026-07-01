@@ -380,6 +380,16 @@
         <input type="text" id="custompl-description" placeholder="{{ _('Custom description (leave empty for auto-generated)') }}">
         <span class="form-hint">{{ _('Leave empty to auto-generate') }}</span>
       </div>
+      <div class="form-group">
+        <label for="custompl-privacy">{{ _('Visibility') }}</label>
+        <select id="custompl-privacy">
+          <option value="">{{ _('Inherit from default') }}</option>
+          <option value="PUBLIC">{{ _('Public') }}</option>
+          <option value="UNLISTED">{{ _('Unlisted') }}</option>
+          <option value="PRIVATE">{{ _('Private') }}</option>
+        </select>
+        <span class="form-hint">{{ _('Inherit uses the global Custom Playlist Visibility setting') }}</span>
+      </div>
       <div class="form-group" id="custompl-tags-group">
         <label for="custompl-tags">{{ _('Tags (comma-separated)') }}</label>
         <input type="text" id="custompl-tags" placeholder="{{ _('rock, alternative, indie') }}">
