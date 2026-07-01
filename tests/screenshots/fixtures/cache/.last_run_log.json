@@ -2,20 +2,125 @@
   "timestamp": "2026-05-28T09:15:00+00:00",
   "total": 15,
   "mappings": [
-    { "artist": "Aurora Lights", "title": "Glass Mountain", "source": "cache" },
-    { "artist": "Aurora Lights", "title": "Hollow Sky", "source": "cache" },
-    { "artist": "Halcyon Drift", "title": "Coral Static", "source": "cache" },
-    { "artist": "Halcyon Drift", "title": "Slow Tide", "source": "override" },
-    { "artist": "Midnight Cartographer", "title": "Compass Rose", "source": "cache" },
-    { "artist": "Midnight Cartographer", "title": "Northbound", "source": "cache" },
-    { "artist": "Saturn Hours", "title": "Ring Theory", "source": "cache" },
-    { "artist": "Saturn Hours", "title": "Halo Effect", "source": "cache" },
-    { "artist": "Paper Kites Demo", "title": "Featherweight", "source": "cache" },
-    { "artist": "Paper Kites Demo", "title": "Origami Sun", "source": "cache" },
-    { "artist": "The Quiet Channel", "title": "Standby Mode", "source": "cache" },
-    { "artist": "The Quiet Channel", "title": "Test Pattern", "source": "override" },
-    { "artist": "Lowercase Drums", "title": "soft margin", "source": "cache" },
-    { "artist": "Lowercase Drums", "title": "blank canvas", "source": "blacklisted" },
-    { "artist": "Field Recordings Pro", "title": "Rainwater on Tin", "source": "cache" }
+    {
+      "artist": "Aurora Lights",
+      "title": "Glass Mountain",
+      "source": "cache",
+      "score": 0.94,
+      "plays": 38,
+      "ts": "2026-05-28T09:14:56+00:00"
+    },
+    {
+      "artist": "Aurora Lights",
+      "title": "Hollow Sky",
+      "source": "cache",
+      "score": 0.91,
+      "plays": 31,
+      "ts": "2026-05-28T08:02:11+00:00"
+    },
+    {
+      "artist": "Halcyon Drift",
+      "title": "Coral Static",
+      "source": "cache",
+      "score": 0.88,
+      "plays": 27,
+      "ts": "2026-05-28T07:48:00+00:00"
+    },
+    {
+      "artist": "Halcyon Drift",
+      "title": "Slow Tide",
+      "source": "override",
+      "score": 0.99,
+      "plays": 22,
+      "ts": "2026-05-27T15:33:00+00:00"
+    },
+    {
+      "artist": "Midnight Cartographer",
+      "title": "Compass Rose",
+      "source": "cache",
+      "score": 0.86,
+      "plays": 18,
+      "ts": "2026-05-28T06:02:00+00:00"
+    },
+    {
+      "artist": "Midnight Cartographer",
+      "title": "Northbound",
+      "source": "cache",
+      "score": 0.83,
+      "plays": 15,
+      "ts": "2026-05-26T18:55:00+00:00"
+    },
+    {
+      "artist": "Saturn Hours",
+      "title": "Ring Theory",
+      "source": "cache",
+      "score": 0.90,
+      "plays": 26,
+      "ts": "2026-05-28T05:47:00+00:00"
+    },
+    {
+      "artist": "Saturn Hours",
+      "title": "Halo Effect",
+      "source": "cache",
+      "score": 0.79,
+      "plays": 12,
+      "ts": "2026-05-25T11:14:00+00:00"
+    },
+    {
+      "artist": "Paper Kites Demo",
+      "title": "Featherweight",
+      "source": "cache",
+      "score": 0.85,
+      "plays": 11,
+      "ts": "2026-05-27T19:22:00+00:00"
+    },
+    {
+      "artist": "Paper Kites Demo",
+      "title": "Origami Sun",
+      "source": "cache",
+      "score": 0.74,
+      "plays": 9,
+      "ts": "2026-05-24T13:41:00+00:00"
+    },
+    {
+      "artist": "The Quiet Channel",
+      "title": "Standby Mode",
+      "source": "cache",
+      "score": 0.71,
+      "plays": 8,
+      "ts": "2026-05-26T09:18:00+00:00"
+    },
+    {
+      "artist": "The Quiet Channel",
+      "title": "Test Pattern",
+      "source": "override",
+      "score": 0.97,
+      "plays": 7,
+      "ts": "2026-05-28T08:55:00+00:00"
+    },
+    {
+      "artist": "Lowercase Drums",
+      "title": "soft margin",
+      "source": "cache",
+      "score": 0.68,
+      "plays": 5,
+      "ts": "2026-05-23T22:07:00+00:00"
+    },
+    {
+      "artist": "Lowercase Drums",
+      "title": "blank canvas",
+      "source": "blacklisted",
+      "score": null,
+      "plays": 4,
+      "ts": "2026-05-22T16:30:00+00:00"
+    },
+    {
+      "artist": "Field Recordings Pro",
+      "title": "Rainwater on Tin",
+      "source": "cache",
+      "score": 0.62,
+      "plays": 3,
+      "ts": "2026-05-23T14:45:00+00:00"
+    }
   ]
 }
