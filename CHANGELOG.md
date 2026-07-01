@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.4.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.3.0...v2.4.0) (2026-07-01)
+
+
+### Features
+
+* add local Last.fm history database for lifetime-play playlists ([4c382c0](https://github.com/Locko2901/lastfm-to-ytm/commit/4c382c0c92151eadba5cd54fae97809a09fc58ca))
+* add per-playlist visibility override for custom playlists ([b3a41af](https://github.com/Locko2901/lastfm-to-ytm/commit/b3a41af789fc701b06110f6ea4b653e536b1c459))
+* add playlist score graph and surface track scores ([7f54f43](https://github.com/Locko2901/lastfm-to-ytm/commit/7f54f437059a82efae1bee08694ece9e9f60a520))
+* rename cache/ to runtime/ with backwards-compatible auto-migration ([1975531](https://github.com/Locko2901/lastfm-to-ytm/commit/19755311652439e45a2f01aac7d9e32379bafe43))
+* sync individual or a subset of custom playlists ([d10fbb3](https://github.com/Locko2901/lastfm-to-ytm/commit/d10fbb3e9b6168e915141ba5424cd584483ebdca))
+
+
+### Bug Fixes
+
+* **web:** stop exposing raw exception strings in playlist API responses ([69e1aba](https://github.com/Locko2901/lastfm-to-ytm/commit/69e1aba9ad90d446346e7a4f334f25bc3708531d))
+
+
+### Documentation
+
+* auto-sync Docker Hub README from README.md ([e306469](https://github.com/Locko2901/lastfm-to-ytm/commit/e3064697e0c03161a46708f0142d747ae3df3f32))
+* clarify "Seen" vs "Played" metrics in history database documentation ([6a7dff8](https://github.com/Locko2901/lastfm-to-ytm/commit/6a7dff8e287931bf8f09ba9d517690cc270c0649))
+
+
+### Tests
+
+* replace unnecessary lambdas in web route tests to satisfy ruff PLW0108 ([a150a10](https://github.com/Locko2901/lastfm-to-ytm/commit/a150a10cfba62b6786564f13b92003b69331af4a))
+
+
+### Build
+
+* **deps:** bump flask to 3.1.3 and cryptography to 49.0.0 ([8869584](https://github.com/Locko2901/lastfm-to-ytm/commit/8869584d367a3f96dc42aba2bea538be4dda951a))
+* **deps:** pin dev/web/docs extras to exact versions ([ec86638](https://github.com/Locko2901/lastfm-to-ytm/commit/ec866380f381bde3fbf3b2f3a074432449d2d1f9))
+
 ## [2.3.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.2.0...v2.3.0) (2026-06-29)
 
 
