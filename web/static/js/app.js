@@ -18,12 +18,17 @@ import {
   blacklistFromPlaylist,
   clearPreviewCache,
   confirmDeletePlaylist,
+  confirmSyncPlaylists,
   deleteCustomPlaylist,
   editCustomPlaylist,
   initCustomPlaylists,
   loadPlaylistsData,
   saveCustomPlaylist,
   showCustomPlaylistModal,
+  showSyncPlaylistsModal,
+  syncCustomPlaylist,
+  syncPlaylistsSelectAll,
+  syncPlaylistsSelectNone,
   togglePlaylistPreview,
   unblacklistArtistFromPlaylist,
   unblacklistFromPlaylist,
@@ -239,6 +244,11 @@ window.deleteCustomPlaylist = deleteCustomPlaylist
 window.confirmDeletePlaylist = confirmDeletePlaylist
 window.saveCustomPlaylist = saveCustomPlaylist
 window.togglePlaylistPreview = togglePlaylistPreview
+window.syncCustomPlaylist = syncCustomPlaylist
+window.showSyncPlaylistsModal = showSyncPlaylistsModal
+window.syncPlaylistsSelectAll = syncPlaylistsSelectAll
+window.syncPlaylistsSelectNone = syncPlaylistsSelectNone
+window.confirmSyncPlaylists = confirmSyncPlaylists
 window.blacklistFromPlaylist = blacklistFromPlaylist
 window.unblacklistFromPlaylist = unblacklistFromPlaylist
 window.blacklistArtistFromPlaylist = blacklistArtistFromPlaylist

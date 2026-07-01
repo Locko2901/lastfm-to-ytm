@@ -22,6 +22,7 @@ exposing the app outside a trusted network.
 | Webhook URL | `.env` (`WEBHOOK_URL`) | None | No |
 | Search / playlist / tag caches | `cache/*.json` | None | No |
 | History database (opt-in) | `cache/history.db` (SQLite, WAL) | None | No |
+| Local Last.fm history (opt-in) | `cache/lastfm_history.db` (SQLite, WAL) | None | No |
 | User overrides & custom playlists | `config/*.json` | None | No (`.example` only) |
 | Encrypted backup bundles | User-chosen `.bin` file | **AES-256-GCM + Argon2id** | No |
 
@@ -85,6 +86,7 @@ file is plain JSON written through `JSONCache` in
 | `.update_check.json` | GitHub release version cache | None |
 | `.notifications.json` | Web notification queue | None |
 | `history.db` (+ `-shm`, `-wal`) | Opt-in audit DB (see below) | High |
+| `lastfm_history.db` (+ `-shm`, `-wal`) | Opt-in full scrobble library (see below) | High |
 
 None of these are encrypted. None contain Last.fm or Google credentials.
 
@@ -139,7 +141,34 @@ encrypted, include the **History database** option inside a
 [Teleporter](teleporter.md) bundle instead, which wraps the same JSON dump in
 AES-256-GCM.
 
-## 5. Encrypted backup / restore (Teleporter)
+## 5. Local Last.fm history database (optional)
+
+**Disabled by default.** Enable with `USE_LOCAL_LASTFM_DB=true`
+([`src/config.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/config.py)). Path:
+`LASTFM_LOCAL_DB_FILE` (default `cache/lastfm_history.db`). See the
+[Local Last.fm History](local-history.md) page for the feature itself.
+
+This is a **separate** database from the History database in section 4. It crawls
+your *entire* Last.fm scrobble history into one aggregated row per unique
+`(artist, track)` - lifetime play count plus first/last-played timestamps -
+implemented in [`src/lastfm/local_db.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/lastfm/local_db.py). It stores no
+per-play rows, so even large libraries stay small.
+
+- **Sensitivity: High.** Like the History database, it is a full record of your
+  listening habits - treat it as personal data. It contains **no credentials**.
+- **Encryption:** none on disk. Rely on filesystem-level controls if
+  confidentiality matters.
+- **Export / import.** Dump as plaintext JSON via `GET /api/lastfm-db/export`
+  (or **Settings &rarr; Data Management**), re-import via
+  `POST /api/lastfm-db/import` (multipart upload, `mode=merge|replace`). **Merge**
+  is idempotent - play counts take the maximum rather than summing, so
+  re-importing the same dump changes nothing. Both endpoints require
+  `USE_LOCAL_LASTFM_DB=true` on the target instance. The exported JSON is
+  plaintext; carry it encrypted inside a [Teleporter](teleporter.md) bundle
+  (tick **Local Last.fm database**) if you need it protected at rest.
+- **Git:** excluded via the `/cache/` rule like every other cache file.
+
+## 6. Encrypted backup / restore (Teleporter)
 
 The only place the app encrypts anything at rest. See
 [Teleporter docs](teleporter.md) and
@@ -157,7 +186,7 @@ A bundle can include `.env`, `browser.json`, all `config/*.json` overrides, and
 key and YouTube cookies** - store the `.bin` file and its password as you would
 any password vault export.
 
-## 6. Web dashboard security
+## 7. Web dashboard security
 
 - **No login.** There is no user table, no password, no API token. Every route
   under `/api/*`, `/auth/*`, `/sync/*`, and `/actions/*` is reachable by anyone
@@ -175,7 +204,7 @@ any password vault export.
 and front it with nginx/Caddy/Traefik doing TLS + Basic Auth, OAuth2 Proxy,
 Authelia, Tailscale ACLs, or similar.
 
-## 7. Docker
+## 8. Docker
 
 [`devops/docker-compose.yml`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/devops/docker-compose.yml) mounts host paths
 read-write so the container can persist state back to the host:
@@ -199,7 +228,7 @@ volumes:
 - Avoid putting `LASTFM_API_KEY` in `environment:` in compose - it ends up in
   `docker inspect` output. Stick with the `.env` mount.
 
-## 8. Webhooks
+## 9. Webhooks
 
 Configured via `WEBHOOK_URL`, `WEBHOOK_EVENTS`, and `WEBHOOK_ALLOW_PRIVATE`
 ([`src/webhook.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/webhook.py)).
@@ -223,7 +252,7 @@ Configured via `WEBHOOK_URL`, `WEBHOOK_EVENTS`, and `WEBHOOK_ALLOW_PRIVATE`
     can be dismissed as *used in tests / won't fix* (it is the feature's whole
     purpose to POST to an operator-chosen URL).
 
-## 9. Configuration overrides
+## 10. Configuration overrides
 
 Files under `config/` (paths set by `CACHE_OVERRIDES_FILE`,
 `TAG_OVERRIDES_FILE`, `CUSTOM_PLAYLISTS_FILE`):
@@ -237,7 +266,7 @@ Files under `config/` (paths set by `CACHE_OVERRIDES_FILE`,
 Tracked in git only as `*.example` templates. Plaintext JSON; not sensitive on
 their own, but they reveal listening preferences.
 
-## 10. Environment variables
+## 11. Environment variables
 
 The canonical list lives in `.env.example` and is documented on the
 [Configuration](configuration.md) page. The only **sensitive** keys are:
@@ -256,12 +285,12 @@ Anything else controls behaviour, not access.
     design. That alert is expected: there is no key-management layer, and the
     threat model already assumes a trusted single-user host.
 
-## 11. What's excluded from git
+## 12. What's excluded from git
 
 `.gitignore` keeps the following out of the repository:
 
 - `.env`, `browser.json`, `.channel`
-- `/cache/` (entire directory, including `history.db`)
+- `/cache/` (entire directory, including `history.db` and `lastfm_history.db`)
 - `config/*.json` with a `!config/*.example` (and `!config/*.json.example`)
   whitelist - any real override file you drop into `config/` is ignored by
   default; only the `.example` templates are committed

@@ -1,5 +1,6 @@
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
+import { runSyncCustomPlaylists } from "./sync.js"
 import { getTagInputValue, setTagInputValue } from "./tagInput.js"
 import { refreshPanel, refreshStats, showToast } from "./utils.js"
 
@@ -404,4 +405,60 @@ export function initCustomPlaylists() {
 
 export function clearPreviewCache() {
   loadedPreviews.clear()
+}
+
+export function syncCustomPlaylist(index) {
+  const pl = playlistsData[index]
+  if (!pl?.name) return
+  showToast(`${_("Syncing")} ${pl.name}...`, "info")
+  runSyncCustomPlaylists([pl.name])
+}
+
+export function showSyncPlaylistsModal() {
+  const list = document.getElementById("sync-pl-list")
+  if (!list) return
+  list.innerHTML = ""
+  playlistsData.forEach((pl, i) => {
+    const label = document.createElement("label")
+    label.className = "sync-pl-item"
+    const cb = document.createElement("input")
+    cb.type = "checkbox"
+    cb.className = "sync-pl-check"
+    cb.dataset.index = String(i)
+    const span = document.createElement("span")
+    span.className = "sync-pl-name"
+    span.textContent = pl.name
+    label.appendChild(cb)
+    label.appendChild(span)
+    list.appendChild(label)
+  })
+  showModal("syncPlaylistsModal")
+}
+
+function setAllSyncChecks(checked) {
+  for (const cb of document.querySelectorAll(".sync-pl-check")) {
+    cb.checked = checked
+  }
+}
+
+export function syncPlaylistsSelectAll() {
+  setAllSyncChecks(true)
+}
+
+export function syncPlaylistsSelectNone() {
+  setAllSyncChecks(false)
+}
+
+export function confirmSyncPlaylists() {
+  const checked = [...document.querySelectorAll(".sync-pl-check:checked")]
+  const names = checked.map(cb => playlistsData[parseInt(cb.dataset.index, 10)]?.name).filter(Boolean)
+  closeModal("syncPlaylistsModal")
+
+  if (!names.length) {
+    showToast(_("Syncing all custom playlists..."), "info")
+    runSyncCustomPlaylists([])
+    return
+  }
+  showToast(`${_("Syncing")} ${names.length} ${_("playlist(s)")}...`, "info")
+  runSyncCustomPlaylists(names)
 }

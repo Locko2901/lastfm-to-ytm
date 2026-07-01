@@ -50,6 +50,10 @@ export function runSyncCustom() {
   runSync("run_tags.py")
 }
 
+export function runSyncCustomPlaylists(names) {
+  runSync("run_tags.py", names)
+}
+
 function classifyLine(text) {
   if (text.includes("ERROR") || text.includes("Error")) return "error"
   if (text.includes("WARNING") || text.includes("Not found")) return "warning"
@@ -176,7 +180,7 @@ export async function reattachRunningSync() {
   attachSyncStream()
 }
 
-export async function runSync(script = "run.py") {
+export async function runSync(script = "run.py", playlists = null) {
   const output = document.getElementById("syncOutput")
   const indicator = document.getElementById("syncIndicator")
   const statusText = document.getElementById("syncStatusText")
@@ -206,10 +210,14 @@ export async function runSync(script = "run.py") {
   stopBtn.style.display = ""
 
   try {
+    const body = { script }
+    if (Array.isArray(playlists) && playlists.length) {
+      body.playlists = playlists
+    }
     const response = await fetch("/run_sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ script }),
+      body: JSON.stringify(body),
     })
     if (!response.ok) {
       const data = await response.json()

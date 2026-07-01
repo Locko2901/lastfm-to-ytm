@@ -1,5 +1,6 @@
 """Tag-based custom playlist sync workflow."""
 
+import json
 import logging
 import os
 import time
@@ -22,6 +23,22 @@ from ._common import build_context, fetch_scrobbles
 log = logging.getLogger(__name__)
 
 
+def _read_playlist_filter() -> set[str] | None:
+    """Parse the optional CUSTOM_PLAYLIST_FILTER env var (JSON list of names)."""
+    raw = os.environ.get("CUSTOM_PLAYLIST_FILTER")
+    if not raw:
+        return None
+    try:
+        names = json.loads(raw)
+    except (ValueError, TypeError):
+        log.warning("Ignoring malformed CUSTOM_PLAYLIST_FILTER value")
+        return None
+    if not isinstance(names, list):
+        return None
+    cleaned = {str(n).strip() for n in names if str(n).strip()}
+    return cleaned or None
+
+
 def run_tags(settings: Settings) -> None:
     """Run only the custom tag-based playlist sync."""
     _start = time.monotonic()
@@ -37,8 +54,12 @@ def run_tags(settings: Settings) -> None:
 
     log.info("Running custom playlist sync only...")
 
+    only_names = _read_playlist_filter()
+    if only_names:
+        log.info("Restricting sync to %d requested playlist(s): %s", len(only_names), ", ".join(sorted(only_names)))
+
     try:
-        summary = sync_custom_playlists(ctx, recents, track_to_vid={})
+        summary = sync_custom_playlists(ctx, recents, track_to_vid={}, only_names=only_names)
     except Exception as e:
         log.exception("Custom playlist sync failed: %s", e)
         save_failure_log(f"Custom playlist sync failed: {e}", traceback.format_exc(), sync_type="tags")

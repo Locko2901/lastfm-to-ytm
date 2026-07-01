@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+import json
 import logging
 import subprocess
 import sys
@@ -27,7 +28,12 @@ sync_bp = Blueprint("sync", __name__)
 logger = logging.getLogger(__name__)
 
 
-def _run_sync_process(script: str = "run.py", db: HistoryDB | None = None, trigger: str = "web") -> None:
+def _run_sync_process(
+    script: str = "run.py",
+    db: HistoryDB | None = None,
+    trigger: str = "web",
+    playlist_filter: list[str] | None = None,
+) -> None:
     """Run sync in background."""
     from ..services.state import reset_output
 
@@ -61,6 +67,11 @@ def _run_sync_process(script: str = "run.py", db: HistoryDB | None = None, trigg
         env = {**__import__("os").environ, "SYNC_TRIGGER": trigger}
         if sync_id is not None:
             env["HISTORY_SYNC_ID"] = str(sync_id)
+        if script == "run_tags.py" and playlist_filter:
+            env["CUSTOM_PLAYLIST_FILTER"] = json.dumps(playlist_filter)
+        else:
+            env.pop("CUSTOM_PLAYLIST_FILTER", None)
+
         # Remove settings that may have changed since server start so the
         # subprocess re-reads them from .env via load_dotenv().
         for key in ("WEBHOOK_URL", "WEBHOOK_EVENTS"):
@@ -166,13 +177,20 @@ def run_sync() -> ResponseReturnValue:
     if script not in ALLOWED_SCRIPTS:
         script = "run.py"
 
+    playlist_filter: list[str] | None = None
+    if script == "run_tags.py":
+        raw = data.get("playlists")
+        if isinstance(raw, list):
+            names = [str(n).strip() for n in raw if isinstance(n, str) and str(n).strip()]
+            playlist_filter = names or None
+
     with sync_lock:
         if sync_state["running"]:
             return jsonify({"error": _("Sync already running")}), 400
         sync_state["running"] = True
 
     db = get_history_db()
-    thread = threading.Thread(target=_run_sync_process, args=(script, db), daemon=True)
+    thread = threading.Thread(target=_run_sync_process, args=(script, db, "web", playlist_filter), daemon=True)
     thread.start()
 
     return jsonify({"status": "started"})
