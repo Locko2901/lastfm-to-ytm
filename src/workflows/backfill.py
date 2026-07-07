@@ -73,6 +73,12 @@ def run_backfill(
                 half_life_hours=settings.recency_half_life_hours,
                 play_weight=settings.recency_play_weight,
                 min_plays=settings.recency_min_plays,
+                normalization=settings.recency_normalization,
+                velocity_weight=settings.recency_velocity_weight,
+                session_weighting=settings.recency_session_weighting,
+                session_start=settings.recency_session_start,
+                session_end=settings.recency_session_end,
+                session_timezone=settings.recency_session_timezone,
             )
             new_tracks: list[Scrobble | WeightedTrack] = [
                 t for t in new_scrobble_tracks if (t.artist.lower(), t.track.lower()) not in seen_track_keys
@@ -142,6 +148,12 @@ def reorder_after_backfill(
             half_life_hours=settings.recency_half_life_hours,
             play_weight=settings.recency_play_weight,
             min_plays=settings.recency_min_plays,
+            normalization=settings.recency_normalization,
+            velocity_weight=settings.recency_velocity_weight,
+            session_weighting=settings.recency_session_weighting,
+            session_start=settings.recency_session_start,
+            session_end=settings.recency_session_end,
+            session_timezone=settings.recency_session_timezone,
         )
 
         reordered_video_ids: list[str] = []

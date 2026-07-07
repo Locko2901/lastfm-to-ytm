@@ -117,6 +117,12 @@
               </select>
               <span class="form-hint">{{ _('How dates are displayed in the interface') }}</span>
             </div>
+            <div class="form-group">
+              <label for="TIMEZONE">{{ _('Timezone') }}</label>
+              <input type="text" id="TIMEZONE" name="TIMEZONE" placeholder="UTC">
+              <span
+                class="form-hint">{{ _('Default IANA timezone (e.g. Europe/Berlin, America/New_York) used for weekly-playlist week boundaries and session hours. Weekly and session timezones inherit this unless overridden.') }}</span>
+            </div>
             <div class="form-group form-group-checkbox">
               <label>
                 <input type="checkbox" id="DISPLAY_TIPS" name="DISPLAY_TIPS">
@@ -217,6 +223,42 @@
               <input type="text" id="RECENCY_MIN_PLAYS" name="RECENCY_MIN_PLAYS" inputmode="numeric" placeholder="1">
               <span class="form-hint">{{ _('Gate tracks: must be scrobbled at least this many times in the fetched window (1 = no gate)') }}</span>
             </div>
+            <div class="form-group">
+              <label for="RECENCY_NORMALIZATION">{{ _('Play-count normalization') }}</label>
+              <select id="RECENCY_NORMALIZATION" name="RECENCY_NORMALIZATION">
+                <option value="linear">{{ _('Linear (default)') }}</option>
+                <option value="log">{{ _('Logarithmic') }}</option>
+                <option value="rank">{{ _('Percentile rank') }}</option>
+              </select>
+              <span
+                class="form-hint">{{ _('How play counts convert to a score. Linear divides by the top track (one 500-play outlier flattens everything else). Logarithmic compresses big outliers so heavy hitters do not dominate. Rank ignores absolute counts and scores by position, giving the most balanced spread.') }}</span>
+            </div>
+            <div class="form-group">
+              <label for="RECENCY_VELOCITY_WEIGHT">{{ _('Velocity Weight (0.0-1.0)') }}</label>
+              <input type="text" id="RECENCY_VELOCITY_WEIGHT" name="RECENCY_VELOCITY_WEIGHT" inputmode="decimal" placeholder="0.0">
+              <span
+                class="form-hint">{{ _('Blends in a trending signal based on plays-per-day (how tightly a track\u2019s plays cluster in time). 0.0 = off. Raise it to favor tracks you are bingeing right now over ones played the same number of times spread across months.') }}</span>
+            </div>
+            <div class="form-group form-group-checkbox">
+              <label>
+                <input type="checkbox" id="RECENCY_SESSION_WEIGHTING" name="RECENCY_SESSION_WEIGHTING">
+                <span>{{ _('Session weighting') }}</span>
+              </label>
+              <span
+                class="form-hint">{{ _('Give extra weight to plays that happened during your preferred listening hours (e.g. an evening session) over background/late-night scrobbles. Only applies when scoring from the fetched scrobble window, not the local Last.fm DB.') }}</span>
+            </div>
+            <div class="form-group">
+              <label for="RECENCY_SESSION_HOURS">{{ _('Session Hours') }}</label>
+              <input type="text" id="RECENCY_SESSION_HOURS" name="RECENCY_SESSION_HOURS" placeholder="9-23">
+              <span
+                class="form-hint">{{ _('Preferred listening window as START-END in 24h local time (half-open, may wrap past midnight, e.g. 22-4). Used only when session weighting is on.') }}</span>
+            </div>
+            <div class="form-group">
+              <label for="RECENCY_SESSION_TIMEZONE">{{ _('Session Timezone') }}</label>
+              <input type="text" id="RECENCY_SESSION_TIMEZONE" name="RECENCY_SESSION_TIMEZONE" placeholder="UTC">
+              <span
+                class="form-hint">{{ _('IANA timezone for the session window (e.g. America/New_York). Leave blank to inherit the general timezone.') }}</span>
+            </div>
           </div>
         </div>
 
@@ -272,7 +314,7 @@
             <div class="form-group">
               <label for="WEEKLY_TIMEZONE">{{ _('Timezone') }}</label>
               <input type="text" id="WEEKLY_TIMEZONE" name="WEEKLY_TIMEZONE" placeholder="UTC">
-              <span class="form-hint">{{ _('E.g., Europe/Berlin, America/New_York') }}</span>
+              <span class="form-hint">{{ _('E.g., Europe/Berlin, America/New_York. Leave blank to inherit the general timezone.') }}</span>
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@ import src.config as config_mod
 from src.config import (
     Settings,
     _parse_privacy,
+    _parse_session_hours,
     _str_to_bool,
     _str_to_float,
     _str_to_int,
@@ -138,6 +139,7 @@ def clean_env(monkeypatch):
         "SEARCH_MAX_WORKERS",
         "BACKFILL_PASSES",
         "YTM_AUTH_PATH",
+        "TIMEZONE",
     }
     for key in list(__import__("os").environ):
         if key.startswith(prefixes) or key in extras:
@@ -203,6 +205,105 @@ def test_from_env_recency_play_weight_clamped(clean_env):
 def test_from_env_recency_min_plays_floor(clean_env):
     clean_env.setenv("RECENCY_MIN_PLAYS", "0")
     assert Settings.from_env().recency_min_plays == 1
+
+
+def test_parse_session_hours_valid():
+    assert _parse_session_hours("9-23") == (9, 23)
+    assert _parse_session_hours("22-4") == (22, 4)
+    assert _parse_session_hours("0-0") == (0, 0)
+
+
+def test_parse_session_hours_invalid_uses_default():
+    assert _parse_session_hours(None) == (9, 23)
+    assert _parse_session_hours("") == (9, 23)
+    assert _parse_session_hours("9") == (9, 23)
+    assert _parse_session_hours("9-24") == (9, 23)
+    assert _parse_session_hours("-1-5") == (9, 23)
+    assert _parse_session_hours("a-b") == (9, 23)
+
+
+def test_parse_session_hours_strips_comment():
+    assert _parse_session_hours("18-2 # my evenings") == (18, 2)
+
+
+@pytest.mark.usefixtures("clean_env")
+def test_from_env_recency_new_defaults():
+    settings = Settings.from_env()
+    assert settings.recency_normalization == "linear"
+    assert settings.recency_velocity_weight == 0.0
+    assert settings.recency_session_weighting is False
+    assert settings.recency_session_start == 9
+    assert settings.recency_session_end == 23
+    assert settings.recency_session_timezone == "UTC"
+
+
+def test_from_env_recency_normalization_valid(clean_env):
+    clean_env.setenv("RECENCY_NORMALIZATION", "LOG")
+    assert Settings.from_env().recency_normalization == "log"
+
+
+def test_from_env_recency_normalization_invalid_falls_back(clean_env):
+    clean_env.setenv("RECENCY_NORMALIZATION", "bogus")
+    assert Settings.from_env().recency_normalization == "linear"
+
+
+def test_from_env_recency_velocity_weight_clamped(clean_env):
+    clean_env.setenv("RECENCY_VELOCITY_WEIGHT", "2.0")
+    assert Settings.from_env().recency_velocity_weight == 0.0
+    clean_env.setenv("RECENCY_VELOCITY_WEIGHT", "0.5")
+    assert Settings.from_env().recency_velocity_weight == 0.5
+
+
+def test_from_env_recency_session_hours_parsed(clean_env):
+    clean_env.setenv("RECENCY_SESSION_WEIGHTING", "true")
+    clean_env.setenv("RECENCY_SESSION_HOURS", "20-2")
+    settings = Settings.from_env()
+    assert settings.recency_session_weighting is True
+    assert settings.recency_session_start == 20
+    assert settings.recency_session_end == 2
+
+
+def test_from_env_recency_session_timezone_falls_back_to_weekly(clean_env):
+    clean_env.setenv("WEEKLY_TIMEZONE", "America/New_York")
+    assert Settings.from_env().recency_session_timezone == "America/New_York"
+
+
+def test_from_env_recency_session_timezone_explicit_wins(clean_env):
+    clean_env.setenv("WEEKLY_TIMEZONE", "America/New_York")
+    clean_env.setenv("RECENCY_SESSION_TIMEZONE", "Europe/Berlin")
+    assert Settings.from_env().recency_session_timezone == "Europe/Berlin"
+
+
+@pytest.mark.usefixtures("clean_env")
+def test_from_env_timezone_default_is_utc():
+    settings = Settings.from_env()
+    assert settings.timezone == "UTC"
+    assert settings.weekly_timezone == "UTC"
+    assert settings.recency_session_timezone == "UTC"
+
+
+def test_from_env_general_timezone_inherited_by_weekly_and_session(clean_env):
+    clean_env.setenv("TIMEZONE", "Europe/Berlin")
+    settings = Settings.from_env()
+    assert settings.timezone == "Europe/Berlin"
+    assert settings.weekly_timezone == "Europe/Berlin"
+    assert settings.recency_session_timezone == "Europe/Berlin"
+
+
+def test_from_env_weekly_timezone_overrides_general(clean_env):
+    clean_env.setenv("TIMEZONE", "Europe/Berlin")
+    clean_env.setenv("WEEKLY_TIMEZONE", "America/New_York")
+    settings = Settings.from_env()
+    assert settings.weekly_timezone == "America/New_York"
+    assert settings.recency_session_timezone == "America/New_York"
+
+
+def test_from_env_session_timezone_overrides_general(clean_env):
+    clean_env.setenv("TIMEZONE", "Europe/Berlin")
+    clean_env.setenv("RECENCY_SESSION_TIMEZONE", "Asia/Tokyo")
+    settings = Settings.from_env()
+    assert settings.recency_session_timezone == "Asia/Tokyo"
+    assert settings.weekly_timezone == "Europe/Berlin"
 
 
 def test_from_env_local_lastfm_db_defaults(clean_env):

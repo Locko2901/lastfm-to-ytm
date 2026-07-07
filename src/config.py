@@ -203,6 +203,31 @@ def _str_to_int(val: str | None, default: int) -> int:
         return default
 
 
+_VALID_NORMALIZATIONS = {"linear", "log", "rank"}
+
+
+def _parse_session_hours(val: str | None, default: tuple[int, int] = (9, 23)) -> tuple[int, int]:
+    """Parse a ``"START-END"`` hour window into a ``(start, end)`` pair.
+
+    Both bounds must be integers in ``0..23``; otherwise ``default`` is
+    returned. The window is interpreted as half-open ``[start, end)`` and may
+    wrap around midnight (e.g. ``"22-4"``).
+    """
+    val = _strip_inline_comment(val)
+    if not val:
+        return default
+    parts = val.split("-")
+    if len(parts) != 2:
+        return default
+    try:
+        start, end = int(parts[0]), int(parts[1])
+    except ValueError:
+        return default
+    if not (0 <= start <= 23 and 0 <= end <= 23):
+        return default
+    return start, end
+
+
 _VALID_PRIVACY = {"PUBLIC", "UNLISTED", "PRIVATE"}
 _BOOLEAN_PRIVACY_TOKENS = {"1", "true", "t", "yes", "y", "on", "0", "false", "f", "no", "n", "off"}
 
@@ -281,8 +306,15 @@ class Settings:
     recency_half_life_hours: float = 48.0
     recency_play_weight: float = 0.7
     recency_min_plays: int = 1
+    recency_normalization: str = "linear"
+    recency_velocity_weight: float = 0.0
+    recency_session_weighting: bool = False
+    recency_session_start: int = 9
+    recency_session_end: int = 23
+    recency_session_timezone: str = "UTC"
     max_raw_scrobbles: int = 2000
     log_level: str = "INFO"
+    timezone: str = "UTC"
     weekly_enabled: bool = True
     weekly_playlist_prefix: str | None = None
     weekly_privacy_status: str | None = None
@@ -356,6 +388,19 @@ class Settings:
         recency_min_plays = _str_to_int(os.getenv("RECENCY_MIN_PLAYS"), 1)
         recency_min_plays = max(recency_min_plays, 1)
 
+        recency_normalization = (_strip_inline_comment(os.getenv("RECENCY_NORMALIZATION")) or "linear").strip().lower()
+        if recency_normalization not in _VALID_NORMALIZATIONS:
+            recency_normalization = "linear"
+        recency_velocity_weight = _str_to_float(os.getenv("RECENCY_VELOCITY_WEIGHT"), 0.0)
+        if not 0.0 <= recency_velocity_weight <= 1.0:
+            recency_velocity_weight = 0.0
+        recency_session_weighting = _str_to_bool(os.getenv("RECENCY_SESSION_WEIGHTING"), False)
+        recency_session_start, recency_session_end = _parse_session_hours(os.getenv("RECENCY_SESSION_HOURS"))
+        timezone = (_strip_inline_comment(os.getenv("TIMEZONE")) or "UTC").strip()
+        recency_session_timezone = (
+            _strip_inline_comment(os.getenv("RECENCY_SESSION_TIMEZONE")) or _strip_inline_comment(os.getenv("WEEKLY_TIMEZONE")) or timezone
+        ).strip()
+
         max_raw_scrobbles = _str_to_int(os.getenv("MAX_RAW_SCROBBLES"), 2000)
         if max_raw_scrobbles == 0:
             max_raw_scrobbles = 999999  # Effectively unlimited
@@ -371,7 +416,7 @@ class Settings:
         weekly_privacy_status = _resolve_privacy_setting("WEEKLY_PLAYLIST_PRIVACY", "WEEKLY_MAKE_PUBLIC", default="PRIVATE", inherit=True)
 
         weekly_week_start = _strip_inline_comment(os.getenv("WEEKLY_WEEK_START")) or "MON"
-        weekly_timezone = _strip_inline_comment(os.getenv("WEEKLY_TIMEZONE")) or "UTC"
+        weekly_timezone = _strip_inline_comment(os.getenv("WEEKLY_TIMEZONE")) or timezone
         weekly_keep_weeks = _str_to_int(os.getenv("WEEKLY_KEEP_WEEKS"), 2)
         api_max_retries = _str_to_int(os.getenv("API_MAX_RETRIES"), 3)
         search_max_workers = _str_to_int(os.getenv("SEARCH_MAX_WORKERS"), 2)
@@ -425,6 +470,13 @@ class Settings:
             recency_half_life_hours=recency_half_life_hours,
             recency_play_weight=recency_play_weight,
             recency_min_plays=recency_min_plays,
+            recency_normalization=recency_normalization,
+            recency_velocity_weight=recency_velocity_weight,
+            recency_session_weighting=recency_session_weighting,
+            recency_session_start=recency_session_start,
+            recency_session_end=recency_session_end,
+            recency_session_timezone=recency_session_timezone,
+            timezone=timezone,
             max_raw_scrobbles=max_raw_scrobbles,
             log_level=log_level,
             weekly_enabled=weekly_enabled,
