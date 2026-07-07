@@ -173,6 +173,8 @@ def run(settings: Settings) -> None:
             half_life_hours=settings.recency_half_life_hours,
             play_weight=settings.recency_play_weight,
             min_plays=settings.recency_min_plays,
+            normalization=settings.recency_normalization,
+            velocity_weight=settings.recency_velocity_weight,
         )
         candidate_cap = max(settings.limit * (settings.backfill_passes + 1), settings.limit)
         tracks: Sequence[Scrobble | WeightedTrack] = weighted[:candidate_cap]
@@ -194,6 +196,12 @@ def run(settings: Settings) -> None:
                 half_life_hours=settings.recency_half_life_hours,
                 play_weight=settings.recency_play_weight,
                 min_plays=settings.recency_min_plays,
+                normalization=settings.recency_normalization,
+                velocity_weight=settings.recency_velocity_weight,
+                session_weighting=settings.recency_session_weighting,
+                session_start=settings.recency_session_start,
+                session_end=settings.recency_session_end,
+                session_timezone=settings.recency_session_timezone,
             )
             log.info(
                 "Aggregated to %d unique tracks (half-life=%.1fh). Resolving on YTM...",

@@ -38,6 +38,12 @@ These two are the only settings you *have* to configure. Everything else has sen
 
 ## Common settings
 
+### General
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `TIMEZONE` | `UTC` | Default IANA timezone (e.g. `Europe/Berlin`, `America/New_York`). Weekly-playlist week boundaries and session hours inherit this unless they set their own timezone. |
+
 ### Main Playlist
 
 | Variable | Default | Description |
@@ -60,12 +66,19 @@ These two are the only settings you *have* to configure. Everything else has sen
     - `RECENCY_PLAY_WEIGHT`: lower (e.g. `0.3`) to favor what you've heard *lately*, higher (e.g. `0.9`) to favor what you play *most*.
     - `RECENCY_HALF_LIFE_HOURS`: lower (e.g. `24`) to make the playlist react faster to new listens, higher (e.g. `168`) for a slower-moving feel.
 
+    For the exact scoring formulas and how much each knob actually moves the ranking, see [Recency Weighting](how-it-works.md#recency-weighting) in *How It Works*.
+
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `USE_RECENCY_WEIGHTING` | `true` | Rank by play count + recency (`false` = most recent first) |
 | `RECENCY_HALF_LIFE_HOURS` | `48.0` | How fast recency decays (lower = favor newer tracks) |
 | `RECENCY_PLAY_WEIGHT` | `0.7` | Balance: `0.0` = pure recency, `1.0` = pure play count |
 | `RECENCY_MIN_PLAYS` | `1` | Minimum scrobbles within fetched window for a track to qualify (`1` = no gate) |
+| `RECENCY_NORMALIZATION` | `linear` | How play counts convert to a score. `linear` divides by the top track (a single 500-play outlier flattens everything below it). `log` applies `log1p` first to tame outliers so heavy hitters don't dominate. `rank` ignores absolute counts and scores each track by its percentile position - the most balanced spread. |
+| `RECENCY_VELOCITY_WEIGHT` | `0.0` | Blend in a *trending* signal based on plays-per-day (how tightly a track's plays cluster in time). `0.0` = off. Raise it to favor tracks you're bingeing right now over ones played the same number of times spread across months. |
+| `RECENCY_SESSION_WEIGHTING` | `false` | Give extra weight to plays made during your preferred listening hours over background/late-night scrobbles. Only applies when scoring from the fetched scrobble window - it's a no-op with `USE_LOCAL_LASTFM_DB` (which keeps no per-scrobble timestamps). |
+| `RECENCY_SESSION_HOURS` | `9-23` | Preferred listening window as `START-END` in 24-hour local time. Half-open `[start, end)` and may wrap past midnight (e.g. `22-4`). Used only when session weighting is on. |
+| `RECENCY_SESSION_TIMEZONE` | *(TIMEZONE)* | IANA timezone for the session window (e.g. `America/New_York`). Blank inherits the general `TIMEZONE` (which itself defaults to `UTC`). |
 
 ### Weekly Playlists
 
@@ -73,7 +86,7 @@ These two are the only settings you *have* to configure. Everything else has sen
 |----------|---------|-------------|
 | `WEEKLY_ENABLED` | `true` | Create weekly playlist snapshots |
 | `WEEKLY_WEEK_START` | `MON` | Day the week starts (`MON`-`SUN`) |
-| `WEEKLY_TIMEZONE` | `UTC` | Timezone for week boundary calculation |
+| `WEEKLY_TIMEZONE` | *(TIMEZONE)* | Timezone for week boundary calculation. Blank inherits the general `TIMEZONE`. |
 | `WEEKLY_KEEP_WEEKS` | `2` | How many weeks to keep (`0` = keep all) |
 | `WEEKLY_PLAYLIST_PREFIX` | *(from playlist name)* | Override name prefix (empty = derive from `PLAYLIST_NAME`) |
 | `WEEKLY_PLAYLIST_PRIVACY` | *(inherit)* | `PRIVATE`/`UNLISTED`/`PUBLIC` (empty = inherit `PLAYLIST_PRIVACY`). Preferred over `WEEKLY_MAKE_PUBLIC`. |

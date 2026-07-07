@@ -60,7 +60,7 @@ def test_get_scoring_rows_respects_min_plays(tmp_path):
     db.ingest_scrobbles([_sc("A", "Twice", now), _sc("A", "Twice", now), _sc("B", "Once", now)])
     rows = db.get_scoring_rows(min_plays=2)
     assert len(rows) == 1
-    artist, track, _album, plays, _last = rows[0]
+    artist, track, _album, plays, _first, _last = rows[0]
     assert (artist.lower(), track.lower()) == ("a", "twice")
     assert plays == 2
 

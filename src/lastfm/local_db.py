@@ -171,8 +171,8 @@ class LocalScrobbleDB:
         if full:
             self.set_meta(_META_LAST_FULL_SYNC, now)
 
-    def get_scoring_rows(self, min_plays: int = 1) -> list[tuple[str, str, str, int, int]]:
-        """Return ``(artist, track, album, plays, last_played_uts)`` rows for scoring.
+    def get_scoring_rows(self, min_plays: int = 1) -> list[tuple[str, str, str, int, int, int]]:
+        """Return ``(artist, track, album, plays, first_played_uts, last_played_uts)`` rows for scoring.
 
         Filters out tracks below ``min_plays``. Rows with a NULL timestamp
         fall back to 0 (treated as very old by the recency decay).
@@ -180,13 +180,24 @@ class LocalScrobbleDB:
         with self._cursor() as cur:
             cur.execute(
                 """SELECT artist, track, COALESCE(album, '') AS album, plays,
+                          COALESCE(first_played_uts, 0) AS first_played_uts,
                           COALESCE(last_played_uts, 0) AS last_played_uts
                    FROM scrobbles
                    WHERE plays >= ?
                    ORDER BY plays DESC""",
                 (max(min_plays, 1),),
             )
-            return [(r["artist"], r["track"], r["album"], int(r["plays"]), int(r["last_played_uts"])) for r in cur.fetchall()]
+            return [
+                (
+                    r["artist"],
+                    r["track"],
+                    r["album"],
+                    int(r["plays"]),
+                    int(r["first_played_uts"]),
+                    int(r["last_played_uts"]),
+                )
+                for r in cur.fetchall()
+            ]
 
     def get_top_tracks(self, limit: int = 20) -> list[dict[str, Any]]:
         """Return tracks ordered by lifetime play count descending."""
