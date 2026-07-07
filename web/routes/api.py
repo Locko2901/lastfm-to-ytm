@@ -22,6 +22,7 @@ from ..services import (
     PRIVACY_SETTINGS,
     bulk_delete_search_cache,
     bulk_delete_tag_cache,
+    check_env_completeness,
     clear_failure_log,
     clear_playlist_cache_all,
     clear_search_cache_all,
@@ -30,6 +31,8 @@ from ..services import (
     delete_custom_playlist_data,
     delete_ytm_playlist,
     discover_ytm_playlists,
+    download_example_from_github,
+    example_download_info,
     get_artist_blacklist_data,
     get_artist_suggestions,
     get_cache_stats,
@@ -61,6 +64,7 @@ from ..services import (
     load_search_cache,
     parse_env_file,
     prune_old_weeklies_ytm,
+    reconcile_env_file,
     remove_playlist_from_cache,
     remove_track_from_playlist_cache,
     reset_history_db,
@@ -315,6 +319,46 @@ def settings_update() -> ResponseReturnValue:
     except OSError as e:
         logger.error(f"Failed to update settings: {e}")
         return jsonify({"error": _("Failed to save settings")}), 500
+
+
+@api_bp.route("/settings/completeness")
+def settings_completeness() -> ResponseReturnValue:
+    """Report .env keys missing versus .env.example (for the auto-import banner).
+
+    Returns ``missing_keys``/``missing_count`` plus ``env_present`` and
+    ``example_present``. When ``.env.example`` is absent, includes a ``download``
+    object with GitHub URLs so the UI can prompt the user to re-download it.
+    """
+    info = check_env_completeness()
+    if not info.get("example_present"):
+        info["download"] = example_download_info()
+    return jsonify(info)
+
+
+@api_bp.route("/settings/reconcile", methods=["POST"])
+def settings_reconcile() -> ResponseReturnValue:
+    """Import missing keys from .env.example with optimized defaults.
+
+    Regenerates .env to match the example's order/comments while preserving all
+    existing user values, creating a timestamped backup first.
+    """
+    try:
+        result = reconcile_env_file()
+    except FileNotFoundError:
+        return jsonify({"error": _(".env.example not found")}), 404
+    except OSError as e:
+        logger.error(f"Failed to reconcile .env: {e}")
+        return jsonify({"error": _("Failed to import settings")}), 500
+    return jsonify({"status": "ok", **result})
+
+
+@api_bp.route("/settings/download-example", methods=["POST"])
+def settings_download_example() -> ResponseReturnValue:
+    """Download .env.example from GitHub for the running build's version/channel."""
+    result = download_example_from_github()
+    if not result.get("ok"):
+        return jsonify({"error": _("Could not download .env.example"), **result}), 502
+    return jsonify({"status": "ok", **result})
 
 
 @api_bp.route("/webhook/test", methods=["POST"])

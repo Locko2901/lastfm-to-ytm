@@ -168,6 +168,44 @@ def migrate_env_to_runtime() -> bool:
     return True
 
 
+def _dotenv_keys(path: Path) -> list[str]:
+    """Return the ordered KEY names defined in an env-style file (best effort)."""
+    keys: list[str] = []
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return keys
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        keys.append(line.partition("=")[0].strip())
+    return keys
+
+
+def warn_env_incomplete() -> None:
+    """Log a one-line warning when .env is missing keys added in newer versions.
+
+    Compares the on-disk ``.env`` against ``.env.example`` and lists any keys
+    present only in the template. Purely informational and never raises - safe
+    to call from any process entry point right after ``migrate_env_to_runtime``.
+    No-op when either file is absent (a missing ``.env`` is first-time setup).
+    """
+    env_file = PROJECT_ROOT / ".env"
+    example_file = PROJECT_ROOT / ".env.example"
+    if not env_file.exists() or not example_file.exists():
+        return
+    current = set(_dotenv_keys(env_file))
+    missing = [key for key in _dotenv_keys(example_file) if key not in current]
+    if not missing:
+        return
+    logging.getLogger(__name__).warning(
+        "Your .env is missing %d setting(s) added in a newer version: %s. Open the dashboard Settings tab to import optimized defaults.",
+        len(missing),
+        ", ".join(missing),
+    )
+
+
 def _strip_inline_comment(val: str | None) -> str | None:
     if val is None:
         return None

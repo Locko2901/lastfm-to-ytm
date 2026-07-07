@@ -161,9 +161,10 @@ def index() -> ResponseReturnValue:
 
 def main() -> None:
     """Run the Flask development server."""
-    from src.config import migrate_env_to_runtime
+    from src.config import migrate_env_to_runtime, warn_env_incomplete
 
     migrate_env_to_runtime()
+    warn_env_incomplete()
     logger.info("Starting web dashboard at http://127.0.0.1:2002")
     try:
         init_scheduler_from_env()

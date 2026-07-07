@@ -45,6 +45,33 @@ def test_overrides_endpoint(client, web_paths):
     assert len(body["blacklist"]) == 1
 
 
+def test_settings_completeness_endpoint(client, web_paths, monkeypatch):
+    from web.services import env as env_mod
+
+    monkeypatch.setattr(env_mod, "ENV_EXAMPLE_FILE", web_paths["ENV_FILE"].parent / ".env.example")
+    web_paths["ENV_FILE"].write_text("A=1\n", encoding="utf-8")
+    env_mod.ENV_EXAMPLE_FILE.write_text("A=1\nB=2\n", encoding="utf-8")
+
+    resp = client.get("/api/settings/completeness")
+    assert resp.status_code == 200
+    assert resp.get_json()["missing_keys"] == ["B"]
+
+
+def test_settings_reconcile_endpoint(client, web_paths, monkeypatch):
+    from web.services import env as env_mod
+
+    monkeypatch.setattr(env_mod, "ENV_EXAMPLE_FILE", web_paths["ENV_FILE"].parent / ".env.example")
+    web_paths["ENV_FILE"].write_text("A=keep\n", encoding="utf-8")
+    env_mod.ENV_EXAMPLE_FILE.write_text("A=default\nB=new # c\n", encoding="utf-8")
+
+    resp = client.post("/api/settings/reconcile")
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert body["status"] == "ok"
+    assert body["imported"] == ["B"]
+    assert "A=keep" in web_paths["ENV_FILE"].read_text(encoding="utf-8")
+
+
 def test_stats_endpoint(client, web_paths):
     sc = SearchCache(str(web_paths["SEARCH_CACHE_FILE"]))
     sc.set("A", "1", "vidAAAAAAAA")

@@ -9,6 +9,28 @@
 
 ---
 
+## Keeping `.env` up to date
+
+When you update to a newer version, new settings may be added to `.env.example` that your existing `.env` doesn't have yet. The tool detects this automatically:
+
+- **Startup warning**: CLI and web processes log a one-line warning at startup listing any keys present in `.env.example` but missing from your `.env`. Nothing is written automatically.
+- **Dashboard banner**: Open the **Settings** modal and a dismissible banner appears when keys are missing. Click **Import defaults** to add them.
+
+**Import defaults** regenerates your `.env` from the `.env.example` template:
+
+- Existing values are always preserved - nothing you've set is changed or removed.
+- Missing keys are inserted in their correct position with the project's optimized defaults.
+- Inline comments are refreshed to match the current template.
+- Any custom keys not in the template are kept at the bottom under a preserved section.
+- A timestamped backup (`runtime/backups/.env.bak-YYYYMMDD-HHMMSS`) of your previous `.env` is always created first.
+
+Imported defaults take effect after the next restart, so a restart banner follows the import.
+
+!!! note "Missing `.env.example`?"
+    If the `.env.example` template itself is missing (e.g. a partial checkout), the banner offers a **Download template** button that fetches the correct `.env.example` for your installed version/channel from GitHub, plus a link to view it manually.
+
+---
+
 ## Required: Credentials
 
 These two are the only settings you *have* to configure. Everything else has sensible defaults.
