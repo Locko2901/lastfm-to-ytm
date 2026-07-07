@@ -2,7 +2,7 @@
 
 import traceback
 
-from src.config import Settings, configure_logging, migrate_env_to_runtime
+from src.config import Settings, configure_logging, migrate_env_to_runtime, warn_env_incomplete
 from src.main import run as _run
 from src.observability import extract_http_status, save_failure_log
 
@@ -12,6 +12,7 @@ def run() -> None:
     migrate_env_to_runtime()
     settings = Settings.from_env()
     configure_logging(settings.log_level)
+    warn_env_incomplete()
     try:
         _run(settings)
     except Exception as e:

@@ -615,3 +615,45 @@ def test_migrate_env_ignores_non_runtime_keys(monkeypatch, tmp_path):
     env_file.write_text("SOME_OTHER_PATH=cache/thing.json\n", encoding="utf-8")
     assert config_mod.migrate_env_to_runtime() is False
     assert env_file.read_text(encoding="utf-8") == "SOME_OTHER_PATH=cache/thing.json\n"
+
+
+def _prep_env_example(monkeypatch, tmp_path):
+    """Point PROJECT_ROOT at tmp_path and return (.env, .env.example) paths."""
+    monkeypatch.setattr(config_mod, "PROJECT_ROOT", tmp_path)
+    return tmp_path / ".env", tmp_path / ".env.example"
+
+
+def test_dotenv_keys_parses_ordered_keys(tmp_path):
+    path = tmp_path / ".env"
+    path.write_text("# header\nA=1\n\nB=2 # inline\nC=three\n", encoding="utf-8")
+    assert config_mod._dotenv_keys(path) == ["A", "B", "C"]
+
+
+def test_dotenv_keys_missing_file_is_empty(tmp_path):
+    assert config_mod._dotenv_keys(tmp_path / "nope") == []
+
+
+def test_warn_env_incomplete_logs_missing_keys(monkeypatch, tmp_path, caplog):
+    env_file, example_file = _prep_env_example(monkeypatch, tmp_path)
+    env_file.write_text("A=1\n", encoding="utf-8")
+    example_file.write_text("A=1\nB=2\nC=3\n", encoding="utf-8")
+    with caplog.at_level("WARNING"):
+        config_mod.warn_env_incomplete()
+    assert any("B" in r.message and "C" in r.message for r in caplog.records)
+
+
+def test_warn_env_incomplete_silent_when_complete(monkeypatch, tmp_path, caplog):
+    env_file, example_file = _prep_env_example(monkeypatch, tmp_path)
+    env_file.write_text("A=1\nB=2\n", encoding="utf-8")
+    example_file.write_text("A=x\nB=y\n", encoding="utf-8")
+    with caplog.at_level("WARNING"):
+        config_mod.warn_env_incomplete()
+    assert not caplog.records
+
+
+def test_warn_env_incomplete_noop_without_env(monkeypatch, tmp_path, caplog):
+    _env_file, example_file = _prep_env_example(monkeypatch, tmp_path)
+    example_file.write_text("A=1\n", encoding="utf-8")
+    with caplog.at_level("WARNING"):
+        config_mod.warn_env_incomplete()
+    assert not caplog.records

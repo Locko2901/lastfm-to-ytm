@@ -90,8 +90,11 @@ import {
   confirmClearLocalLastfm,
   confirmLocalLastfmImportMerge,
   confirmLocalLastfmImportReplace,
+  dismissEnvUpdateBanner,
   dismissReloadBanner,
   dismissRestartBanner,
+  downloadEnvExample,
+  importMissingSettings,
   initSettings,
   loadSettings,
   localLastfmExport,
@@ -227,6 +230,9 @@ window.checkFailureLog = checkFailureLog
 
 window.dismissRestartBanner = dismissRestartBanner
 window.dismissReloadBanner = dismissReloadBanner
+window.dismissEnvUpdateBanner = dismissEnvUpdateBanner
+window.importMissingSettings = importMissingSettings
+window.downloadEnvExample = downloadEnvExample
 window.restartServer = restartServer
 window.testWebhook = testWebhook
 

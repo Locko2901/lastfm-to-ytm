@@ -69,10 +69,11 @@ preload_app = _preload_env == "true" if _preload_env else _auto_preload
 def on_starting(server):
     """Called just before the master process is initialized."""
     try:
-        from src.config import migrate_env_to_runtime
+        from src.config import migrate_env_to_runtime, warn_env_incomplete
 
         if migrate_env_to_runtime():
             server.log.info("Migrated legacy cache/ paths in .env to runtime/")
+        warn_env_incomplete()
     except Exception as e:
         server.log.warning(f"Could not migrate .env cache/ paths: {e}")
 

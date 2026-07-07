@@ -119,6 +119,8 @@ export async function loadSettings() {
 
     const form = document.getElementById("settingsForm")
     if (form) window._originalSettings = readFormSettings(form)
+
+    checkEnvCompleteness()
   } catch (_error) {
     showToast(_("Failed to load settings"), "error")
   }
@@ -251,6 +253,102 @@ function showReloadBanner() {
 
 export function dismissReloadBanner() {
   removeBanner("reloadBanner")
+}
+
+let _envUpdateBannerDismissed = false
+
+export async function checkEnvCompleteness() {
+  if (_envUpdateBannerDismissed) return
+  try {
+    const resp = await fetch("/api/settings/completeness")
+    if (!resp.ok) return
+    const info = await resp.json()
+    if (info.example_present === false && info.env_present) {
+      showExampleMissingBanner(info.download || {})
+    } else if (info.missing_count > 0) {
+      showMissingSettingsBanner(info.missing_count)
+    } else {
+      removeBanner("envUpdateBanner")
+    }
+  } catch (_error) {
+    // Non-critical: silently ignore completeness check failures.
+  }
+}
+
+function showMissingSettingsBanner(count) {
+  insertBanner(
+    "envUpdateBanner",
+    "auth-required-banner",
+    `
+    <div class="auth-banner-content">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v6"></path><path d="m8 5 4 3 4-3"></path>
+        <path d="M20 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6"></path>
+      </svg>
+      <span>${_("Your configuration is missing %(count)s new setting(s) from a recent update.", { count })}</span>
+      <button class="btn btn-sm btn-primary" data-action="importMissingSettings">${_("Import defaults")}</button>
+      <button class="auth-banner-close" data-action="dismissEnvUpdateBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+  `,
+  )
+}
+
+function showExampleMissingBanner(download) {
+  const link = download.blob_url
+    ? ` <a href="${escapeHtml(download.blob_url)}" target="_blank" rel="noopener noreferrer">${_("view on GitHub")}</a>`
+    : ""
+  insertBanner(
+    "envUpdateBanner",
+    "auth-required-banner",
+    `
+    <div class="auth-banner-content">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <span>${_("The .env.example template is missing. Re-download it for your version to enable default imports.")}${link}</span>
+      <button class="btn btn-sm btn-primary" data-action="downloadEnvExample">${_("Download template")}</button>
+      <button class="auth-banner-close" data-action="dismissEnvUpdateBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+  `,
+  )
+}
+
+export function dismissEnvUpdateBanner() {
+  _envUpdateBannerDismissed = true
+  removeBanner("envUpdateBanner")
+}
+
+export async function importMissingSettings() {
+  try {
+    const resp = await fetch("/api/settings/reconcile", { method: "POST" })
+    const data = await resp.json()
+    if (!resp.ok) throw new Error(data.error || _("Failed to import settings"))
+    removeBanner("envUpdateBanner")
+    const count = Array.isArray(data.imported) ? data.imported.length : 0
+    if (data.backup) {
+      showToast(_("Imported %(count)s setting(s). Backup saved as %(backup)s.", { count, backup: data.backup }), "success")
+    } else {
+      showToast(_("Imported %(count)s setting(s).", { count }), "success")
+    }
+    await loadSettings()
+    showRestartBanner()
+  } catch (error) {
+    showToast(error.message || _("Failed to import settings"), "error")
+  }
+}
+
+export async function downloadEnvExample() {
+  try {
+    const resp = await fetch("/api/settings/download-example", { method: "POST" })
+    const data = await resp.json()
+    if (!resp.ok) throw new Error(data.error || _("Could not download .env.example"))
+    removeBanner("envUpdateBanner")
+    showToast(_("Downloaded the latest .env.example template."), "success")
+    await checkEnvCompleteness()
+  } catch (error) {
+    showToast(error.message || _("Could not download .env.example"), "error")
+  }
 }
 
 export async function testWebhook() {
