@@ -74,8 +74,10 @@ Pass any generator flag through, for example:
    even on a developer machine with a live `.env`, and lets the Playlists
    tab render a stable library scan without touching YouTube Music.
 4. **Frozen clock**  an init script monkey-patches `globalThis.Date` and
-   `Date.now()` to a fixed instant (`2026-05-28T10:00:00Z`), so relative
-   time labels ("45 minutes ago") don't drift between regenerations.
+   `Date.now()` to a fixed instant (`2026-05-28T10:00:00Z` - an arbitrary
+   reference chosen so it sits shortly after the fixture timestamps; the
+   exact value carries no significance), so relative time labels
+   ("45 minutes ago") don't drift between regenerations.
 5. **UI driving**  tabs and modals are opened by calling the dashboard's
    own `window.*` entry points (`switchTab`, `showSettingsModal`,
    `openSyncDrawer`, `showSetupWizard`, `showTeleporterModal`) instead of

@@ -283,6 +283,8 @@ Anything else controls behaviour, not access.
 !!! info "`.env` file permissions"
     The dashboard writes `.env` with `0600` (owner read/write only) whenever it
     updates settings ([`web/services/env.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/web/services/env.py)).
+    On a **CLI-only install** the sync engine never rewrites `.env`, so its
+    permissions are whatever you (or your editor / `cp`) left them at.
     The file is still **plaintext** - a static analyser will flag
     "clear-text storage of sensitive information" because secrets live in it by
     design. That alert is expected: there is no key-management layer, and the
