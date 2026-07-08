@@ -1109,6 +1109,7 @@ def history_status() -> ResponseReturnValue:
     stats = db.get_overview_stats()
     stats["enabled"] = True
     stats["db_size_bytes"] = db.get_db_size_bytes()
+    stats["near_misses"] = db.get_near_miss_count()
 
     local_db = get_local_scrobble_db()
     stats["local_lastfm_enabled"] = local_db is not None
@@ -1424,6 +1425,25 @@ def history_trend() -> ResponseReturnValue:
     except (ValueError, TypeError):
         days = 30
     return jsonify({"trend": db.get_sync_trend(days)})
+
+
+@api_bp.route("/history/near-misses")
+def history_near_misses() -> ResponseReturnValue:
+    """Get tracks that resolved but ranked just past the playlist LIMIT cutoff."""
+    db = get_history_db()
+    if not db:
+        return jsonify({"error": _("History database is not enabled")}), 400
+
+    try:
+        limit = min(int(request.args.get("limit", 50)), 200)
+        offset = max(int(request.args.get("offset", 0)), 0)
+    except (ValueError, TypeError):
+        limit, offset = 50, 0
+
+    rows = db.get_near_misses(limit, offset)
+    total = db.get_near_miss_count()
+    cutoff = rows[0]["cutoff"] if rows else None
+    return jsonify({"near_misses": rows, "total": total, "cutoff": cutoff, "limit": limit, "offset": offset})
 
 
 def _get_gunicorn_master_pid() -> int | None:

@@ -6,6 +6,7 @@ let currentSubtab = "tracks"
 let trackPage = 0
 let syncPage = 0
 let actionPage = 0
+let nearMissPage = 0
 let trackSearch = ""
 let trackFoundFilter = "all"
 let trendDays = 7
@@ -145,6 +146,7 @@ function switchHistorySubtab(tab) {
   else if (tab === "syncs") loadHistorySyncs()
   else if (tab === "actions") loadHistoryActions()
   else if (tab === "top") loadHistoryTopTracks()
+  else if (tab === "near-misses") loadHistoryNearMisses()
   else if (tab === "trend") loadHistoryTrend()
 }
 
@@ -158,6 +160,8 @@ export function switchHistoryView(tab = "tracks", filter = "all") {
     syncPage = 0
   } else if (tab === "actions") {
     actionPage = 0
+  } else if (tab === "near-misses") {
+    nearMissPage = 0
   }
 
   applyHistorySubtab(tab)
@@ -175,6 +179,7 @@ export async function loadHistoryData() {
   else if (currentSubtab === "syncs") loadHistorySyncs()
   else if (currentSubtab === "actions") loadHistoryActions()
   else if (currentSubtab === "top") loadHistoryTopTracks()
+  else if (currentSubtab === "near-misses") loadHistoryNearMisses()
   else if (currentSubtab === "trend") loadHistoryTrend()
 }
 
@@ -193,6 +198,7 @@ async function loadHistoryStats() {
     setText("histStatCacheRate", data.cache_hit_rate != null ? `${data.cache_hit_rate}%` : "–")
     setText("histStatApiCalls", data.total_api_searches)
     setText("histStatActions", data.total_actions)
+    setText("histStatNearMisses", data.near_misses != null ? data.near_misses : "–")
 
     updateBackfillSection(data)
   } catch (_e) {}
@@ -420,6 +426,57 @@ async function loadHistoryTopTracks() {
       .join("")
   } catch (_e) {
     list.innerHTML = `<div class="empty-state"><p class="text-muted">${_("Failed to load top tracks")}</p></div>`
+  }
+}
+
+async function loadHistoryNearMisses() {
+  const list = document.getElementById("historyNearMissList")
+  if (!list) return
+
+  const params = new URLSearchParams({ limit: PAGE_SIZE, offset: nearMissPage * PAGE_SIZE })
+
+  try {
+    const r = await fetch(`/api/history/near-misses?${params}`)
+    if (!r.ok) return
+    const data = await r.json()
+
+    if (!data.near_misses.length) {
+      list.innerHTML = `<div class="empty-state"><p class="text-muted">${_("No near-misses from the last sync - every resolved track fit within your LIMIT.")}</p></div>`
+      setPagination("historyNearMissPagination", 0, 0, () => {})
+      return
+    }
+
+    list.innerHTML = data.near_misses
+      .map(t => {
+        const scoreBadge = t.score != null ? `<span class="badge badge-muted">${_("score")} ${t.score.toFixed(3)}</span>` : ""
+        const playsBadge = t.plays != null ? `<span class="badge badge-muted">${t.plays}\u00d7 ${_("played")}</span>` : ""
+        return `
+      <div class="track-item" data-artist="${escAttr(t.artist.toLowerCase())}" data-title="${escAttr(t.title.toLowerCase())}" data-original-artist="${escAttr(t.artist)}" data-original-title="${escAttr(t.title)}">
+        <div class="track-info">
+          <span class="track-artist"><span class="badge badge-warning">#${t.rank}</span> ${esc(t.artist)}</span>
+          <span class="track-title">${esc(t.title)}</span>
+        </div>
+        <div class="track-ytm">
+          ${
+            t.video_id
+              ? `<a href="https://music.youtube.com/watch?v=${esc(t.video_id)}" target="_blank" rel="noopener">${esc(t.yt_title || t.title)}</a>`
+              : `<span class="text-muted">${_("Not found")}</span>`
+          }
+          <span class="track-ytm-id">
+            ${scoreBadge}
+            ${playsBadge}
+          </span>
+        </div>
+      </div>`
+      })
+      .join("")
+
+    setPagination("historyNearMissPagination", data.total, nearMissPage, p => {
+      nearMissPage = p
+      loadHistoryNearMisses()
+    })
+  } catch (_e) {
+    list.innerHTML = `<div class="empty-state"><p class="text-muted">${_("Failed to load near-misses")}</p></div>`
   }
 }
 

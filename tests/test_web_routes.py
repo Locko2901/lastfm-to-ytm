@@ -151,6 +151,9 @@ def test_history_status_does_not_clobber_total_tracks(client, monkeypatch, tmp_p
         def get_db_size_bytes(self):
             return 100
 
+        def get_near_miss_count(self):
+            return 0
+
     now = int(time.time())
     local = LocalScrobbleDB(tmp_path / "lfm.db")
     local.ingest_scrobbles([Scrobble("A", "Hit", "", now), Scrobble("A", "Hit", "", now), Scrobble("B", "Deep", "", now)])
@@ -178,6 +181,9 @@ def test_history_status_without_local_lastfm(client, monkeypatch):
 
         def get_db_size_bytes(self):
             return 100
+
+        def get_near_miss_count(self):
+            return 0
 
     monkeypatch.setattr(api, "is_history_enabled", lambda: True)
     monkeypatch.setattr(api, "get_history_db", _FakeHistoryDB)
@@ -222,6 +228,54 @@ def test_history_top_tracks_requires_history_db(client, monkeypatch):
 
     monkeypatch.setattr(api, "get_history_db", lambda: None)
     resp = client.get("/api/history/top-tracks")
+    assert resp.status_code == 400
+
+
+def test_history_near_misses_returns_ranked_rows(client, monkeypatch):
+    """Near-misses endpoint returns rows with the cutoff from the first row."""
+    from web.routes import api
+
+    class _FakeHistoryDB:
+        def get_near_misses(self, limit, offset):
+            assert (limit, offset) == (50, 0)
+            return [
+                {"artist": "A", "title": "Close", "video_id": "v1", "score": 0.42, "plays": 3, "rank": 101, "cutoff": 100},
+            ]
+
+        def get_near_miss_count(self):
+            return 1
+
+    monkeypatch.setattr(api, "get_history_db", _FakeHistoryDB)
+    body = client.get("/api/history/near-misses").get_json()
+    assert body["total"] == 1
+    assert body["cutoff"] == 100
+    assert body["near_misses"][0]["title"] == "Close"
+
+
+def test_history_near_misses_empty_cutoff_none(client, monkeypatch):
+    """With no near-misses stored, cutoff is null."""
+    from web.routes import api
+
+    class _FakeHistoryDB:
+        def get_near_misses(self, _limit, _offset):
+            return []
+
+        def get_near_miss_count(self):
+            return 0
+
+    monkeypatch.setattr(api, "get_history_db", _FakeHistoryDB)
+    body = client.get("/api/history/near-misses").get_json()
+    assert body["total"] == 0
+    assert body["cutoff"] is None
+    assert body["near_misses"] == []
+
+
+def test_history_near_misses_requires_history_db(client, monkeypatch):
+    """History DB off: near-misses endpoint returns 400."""
+    from web.routes import api
+
+    monkeypatch.setattr(api, "get_history_db", lambda: None)
+    resp = client.get("/api/history/near-misses")
     assert resp.status_code == 400
 
 
