@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-07 14:23+0200\n"
+"POT-Creation-Date: 2026-07-08 10:21+0200\n"
 "PO-Revision-Date: 2026-03-13 15:44+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -69,18 +69,18 @@ msgstr ""
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr ""
 
-#: web/routes/api.py:321 web/static/js/modules/settings.js:159
-#: web/static/js/modules/settings.js:196
+#: web/routes/api.py:321 web/static/js/modules/settings.js:157
+#: web/static/js/modules/settings.js:194
 msgid "Failed to save settings"
 msgstr ""
 
-#: web/routes/api.py:351 web/static/js/modules/settings.js:326
-#: web/static/js/modules/settings.js:337
+#: web/routes/api.py:351 web/static/js/modules/settings.js:324
+#: web/static/js/modules/settings.js:335
 msgid "Failed to import settings"
 msgstr ""
 
-#: web/routes/api.py:360 web/static/js/modules/settings.js:345
-#: web/static/js/modules/settings.js:350
+#: web/routes/api.py:360 web/static/js/modules/settings.js:343
+#: web/static/js/modules/settings.js:348
 msgid "Could not download .env.example"
 msgstr ""
 
@@ -174,8 +174,8 @@ msgstr ""
 
 #: web/routes/api.py:1098 web/static/js/modules/history.js:1017
 #: web/static/js/modules/history.js:1026 web/static/js/modules/modals.js:671
-#: web/static/js/modules/modals.js:690 web/static/js/modules/settings.js:695
-#: web/static/js/modules/settings.js:704
+#: web/static/js/modules/modals.js:690 web/static/js/modules/settings.js:824
+#: web/static/js/modules/settings.js:833
 #: web/static/js/modules/teleporter.js:233
 #: web/static/js/modules/teleporter.js:242
 msgid "Import failed"
@@ -366,7 +366,7 @@ msgid "No cached playlists."
 msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:275
-#: web/static/js/modules/history.js:1019 web/static/js/modules/settings.js:697
+#: web/static/js/modules/history.js:1019 web/static/js/modules/settings.js:826
 msgid "tracks"
 msgstr ""
 
@@ -386,7 +386,7 @@ msgstr ""
 #: web/templates/partials/_panel_history.html:109
 #: web/templates/partials/_panel_history.html:118
 #: web/templates/partials/_panel_history.html:134
-#: web/templates/partials/_panel_settings.html:638
+#: web/templates/partials/_panel_settings.html:520
 msgid "Loading..."
 msgstr ""
 
@@ -483,99 +483,99 @@ msgstr ""
 msgid "Removed track from cached template"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:31
+#: web/static/js/modules/customPlaylists.js:38
 msgid "Edit Custom Playlist"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:48
+#: web/static/js/modules/customPlaylists.js:55
 #: web/templates/partials/_modals.html:355
 msgid "Add Custom Playlist"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:89
+#: web/static/js/modules/customPlaylists.js:97
 msgid "Please enter a playlist name"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:94
+#: web/static/js/modules/customPlaylists.js:102
 msgid "Please enter at least one artist"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:99
+#: web/static/js/modules/customPlaylists.js:107
 #: web/static/js/modules/modals.js:485
 msgid "Please enter at least one tag"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:164
+#: web/static/js/modules/customPlaylists.js:172
 msgid "Custom playlist saved!"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:168
+#: web/static/js/modules/customPlaylists.js:176
 msgid "Failed to save custom playlist"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:203
+#: web/static/js/modules/customPlaylists.js:211
 msgid "Custom playlist deleted"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:207
+#: web/static/js/modules/customPlaylists.js:215
 msgid "Failed to delete custom playlist"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:248
+#: web/static/js/modules/customPlaylists.js:256
 #: web/static/js/modules/history.js:268
 msgid "Failed to load tracks"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:260
+#: web/static/js/modules/customPlaylists.js:268
 #: web/templates/partials/_panel_custompl.html:65
 msgid "blacklisted"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:270
+#: web/static/js/modules/customPlaylists.js:278
 msgid "Track already blacklisted"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:285
-#: web/static/js/modules/customPlaylists.js:373
+#: web/static/js/modules/customPlaylists.js:293
+#: web/static/js/modules/customPlaylists.js:381
 msgid "blacklisted from"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:297
+#: web/static/js/modules/customPlaylists.js:305
 #: web/static/js/modules/modals.js:460 web/static/js/modules/modals.js:469
 msgid "Failed to blacklist track"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:321
-#: web/static/js/modules/customPlaylists.js:395
+#: web/static/js/modules/customPlaylists.js:329
+#: web/static/js/modules/customPlaylists.js:403
 msgid "restored in"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:333
+#: web/static/js/modules/customPlaylists.js:341
 msgid "Failed to restore track"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:364
+#: web/static/js/modules/customPlaylists.js:372
 msgid "Artist already blacklisted"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:377
+#: web/static/js/modules/customPlaylists.js:385
 msgid "Failed to blacklist artist"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:399
+#: web/static/js/modules/customPlaylists.js:407
 msgid "Failed to restore artist"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:417
-#: web/static/js/modules/customPlaylists.js:466
+#: web/static/js/modules/customPlaylists.js:425
+#: web/static/js/modules/customPlaylists.js:474
 msgid "Syncing"
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:462
+#: web/static/js/modules/customPlaylists.js:470
 msgid "Syncing all custom playlists..."
 msgstr ""
 
-#: web/static/js/modules/customPlaylists.js:466
+#: web/static/js/modules/customPlaylists.js:474
 msgid "playlist(s)"
 msgstr ""
 
@@ -608,12 +608,12 @@ msgstr ""
 msgid "Invalid theme file"
 msgstr ""
 
-#: web/static/js/modules/history.js:210 web/static/js/modules/settings.js:722
+#: web/static/js/modules/history.js:210 web/static/js/modules/settings.js:851
 msgid "lookups"
 msgstr ""
 
 #: web/static/js/modules/history.js:210 web/static/js/modules/history.js:1019
-#: web/static/js/modules/settings.js:722
+#: web/static/js/modules/settings.js:851
 msgid "syncs"
 msgstr ""
 
@@ -638,12 +638,12 @@ msgid "No syncs recorded yet"
 msgstr ""
 
 #: web/static/js/modules/history.js:310
-#: web/templates/partials/_modals.html:1153
+#: web/templates/partials/_modals.html:1155
 msgid "Resolved"
 msgstr ""
 
 #: web/static/js/modules/history.js:311
-#: web/templates/partials/_modals.html:1161 web/templates/partials/_tabs.html:8
+#: web/templates/partials/_modals.html:1163 web/templates/partials/_tabs.html:8
 msgid "Cache"
 msgstr ""
 
@@ -681,7 +681,7 @@ msgid "Success"
 msgstr ""
 
 #: web/static/js/modules/history.js:451 web/static/js/modules/history.js:688
-#: web/templates/partials/_modals.html:1177
+#: web/templates/partials/_modals.html:1179
 msgid "Error"
 msgstr ""
 
@@ -743,11 +743,11 @@ msgid "rows pruned"
 msgstr ""
 
 #: web/static/js/modules/history.js:971 web/static/js/modules/modals.js:635
-#: web/static/js/modules/settings.js:652
+#: web/static/js/modules/settings.js:781
 msgid "Please select a JSON file"
 msgstr ""
 
-#: web/static/js/modules/history.js:987 web/static/js/modules/settings.js:665
+#: web/static/js/modules/history.js:987 web/static/js/modules/settings.js:794
 #: web/templates/partials/_panel_history.html:52
 msgid "Tracks"
 msgstr ""
@@ -758,18 +758,18 @@ msgid "Syncs"
 msgstr ""
 
 #: web/static/js/modules/history.js:987
-#: web/templates/partials/_modals.html:1098
+#: web/templates/partials/_modals.html:1100
 #: web/templates/partials/_panel_history.html:46
 #: web/templates/partials/_panel_history.html:54
 msgid "Actions"
 msgstr ""
 
 #: web/static/js/modules/history.js:993 web/static/js/modules/modals.js:654
-#: web/static/js/modules/settings.js:671
+#: web/static/js/modules/settings.js:800
 msgid "Invalid JSON file"
 msgstr ""
 
-#: web/static/js/modules/history.js:1019 web/static/js/modules/settings.js:697
+#: web/static/js/modules/history.js:1019 web/static/js/modules/settings.js:826
 msgid "Imported:"
 msgstr ""
 
@@ -893,7 +893,7 @@ msgstr ""
 #: web/static/js/modules/modals.js:823
 #: web/templates/macros/_track_actions.html:30
 #: web/templates/partials/_custompl_tracks.html:20
-#: web/templates/partials/_modals.html:1106
+#: web/templates/partials/_modals.html:1108
 #: web/templates/partials/_panel_cache.html:50
 #: web/templates/partials/_panel_playlist.html:76
 #: web/templates/partials/_panel_tags.html:46
@@ -908,7 +908,7 @@ msgstr ""
 #: web/templates/partials/_custompl_tracks.html:38
 #: web/templates/partials/_modals.html:123
 #: web/templates/partials/_modals.html:193
-#: web/templates/partials/_modals.html:1107 web/templates/partials/_tabs.html:5
+#: web/templates/partials/_modals.html:1109 web/templates/partials/_tabs.html:5
 msgid "Blacklist"
 msgstr ""
 
@@ -1007,7 +1007,7 @@ msgstr ""
 msgid "Export downloaded"
 msgstr ""
 
-#: web/static/js/modules/modals.js:650 web/templates/partials/_modals.html:1165
+#: web/static/js/modules/modals.js:650 web/templates/partials/_modals.html:1167
 #: web/templates/partials/_panel_playlist.html:22
 #: web/templates/partials/_stats.html:9 web/templates/partials/_tabs.html:4
 msgid "Overrides"
@@ -1081,7 +1081,7 @@ msgstr ""
 
 #: web/static/js/modules/playlistGraph.js:77
 #: web/static/js/modules/playlistGraph.js:89
-#: web/templates/partials/_modals.html:1074
+#: web/templates/partials/_modals.html:1076
 msgid "Score"
 msgstr ""
 
@@ -1103,12 +1103,12 @@ msgid "Hide Graph"
 msgstr ""
 
 #: web/static/js/modules/playlists.js:35
-#: web/templates/partials/_modals.html:531
+#: web/templates/partials/_modals.html:533
 msgid "Open"
 msgstr ""
 
 #: web/static/js/modules/playlists.js:36
-#: web/templates/partials/_modals.html:476
+#: web/templates/partials/_modals.html:477
 #: web/templates/partials/_panel_custompl.html:88
 msgid "Delete"
 msgstr ""
@@ -1161,126 +1161,126 @@ msgstr ""
 msgid "Pruned %(n)s playlists"
 msgstr ""
 
-#: web/static/js/modules/settings.js:87 web/static/js/modules/settings.js:125
+#: web/static/js/modules/settings.js:87 web/static/js/modules/settings.js:123
 msgid "Failed to load settings"
 msgstr ""
 
-#: web/static/js/modules/settings.js:183
+#: web/static/js/modules/settings.js:181
 msgid "Settings saved successfully!"
 msgstr ""
 
-#: web/static/js/modules/settings.js:222
+#: web/static/js/modules/settings.js:220
 msgid "Settings saved. Restart the server to apply changes."
 msgstr ""
 
-#: web/static/js/modules/settings.js:223 web/static/js/modules/settings.js:393
+#: web/static/js/modules/settings.js:221 web/static/js/modules/settings.js:391
 msgid "Restart Now"
 msgstr ""
 
-#: web/static/js/modules/settings.js:246
+#: web/static/js/modules/settings.js:244
 msgid "Display settings changed. Reload the page to update."
 msgstr ""
 
-#: web/static/js/modules/settings.js:247
+#: web/static/js/modules/settings.js:245
 msgid "Reload"
 msgstr ""
 
-#: web/static/js/modules/settings.js:288
+#: web/static/js/modules/settings.js:286
 #, python-format
 msgid ""
 "Your configuration is missing %(count)s new setting(s) from a recent "
 "update."
 msgstr ""
 
-#: web/static/js/modules/settings.js:289
+#: web/static/js/modules/settings.js:287
 msgid "Import defaults"
 msgstr ""
 
-#: web/static/js/modules/settings.js:298
+#: web/static/js/modules/settings.js:296
 msgid "view on GitHub"
 msgstr ""
 
-#: web/static/js/modules/settings.js:309
+#: web/static/js/modules/settings.js:307
 msgid ""
 "The .env.example template is missing. Re-download it for your version to "
 "enable default imports."
 msgstr ""
 
-#: web/static/js/modules/settings.js:310
+#: web/static/js/modules/settings.js:308
 msgid "Download template"
 msgstr ""
 
-#: web/static/js/modules/settings.js:330
+#: web/static/js/modules/settings.js:328
 #, python-format
 msgid "Imported %(count)s setting(s). Backup saved as %(backup)s."
 msgstr ""
 
-#: web/static/js/modules/settings.js:332
+#: web/static/js/modules/settings.js:330
 #, python-format
 msgid "Imported %(count)s setting(s)."
 msgstr ""
 
-#: web/static/js/modules/settings.js:347
+#: web/static/js/modules/settings.js:345
 msgid "Downloaded the latest .env.example template."
 msgstr ""
 
-#: web/static/js/modules/settings.js:358
+#: web/static/js/modules/settings.js:356
 msgid "Enter a webhook URL first"
 msgstr ""
 
-#: web/static/js/modules/settings.js:369
+#: web/static/js/modules/settings.js:367
 msgid "Test webhook sent successfully!"
 msgstr ""
 
-#: web/static/js/modules/settings.js:371 web/static/js/modules/settings.js:374
+#: web/static/js/modules/settings.js:369 web/static/js/modules/settings.js:372
 msgid "Webhook test failed"
 msgstr ""
 
-#: web/static/js/modules/settings.js:382
+#: web/static/js/modules/settings.js:380
 msgid "Restarting..."
 msgstr ""
 
-#: web/static/js/modules/settings.js:387
+#: web/static/js/modules/settings.js:385
 msgid "Server restarting..."
 msgstr ""
 
-#: web/static/js/modules/settings.js:390
+#: web/static/js/modules/settings.js:388
 msgid "Failed to restart server"
 msgstr ""
 
-#: web/static/js/modules/settings.js:416
+#: web/static/js/modules/settings.js:414
 msgid "Server may have restarted. Please refresh manually."
 msgstr ""
 
-#: web/static/js/modules/settings.js:575 web/static/js/modules/settings.js:582
+#: web/static/js/modules/settings.js:704 web/static/js/modules/settings.js:711
 msgid "Not yet synced \\u2014 run a sync to build the local history database."
 msgstr ""
 
-#: web/static/js/modules/settings.js:584
+#: web/static/js/modules/settings.js:713
 msgid "unique tracks"
 msgstr ""
 
-#: web/static/js/modules/settings.js:584
+#: web/static/js/modules/settings.js:713
 msgid "plays"
 msgstr ""
 
-#: web/static/js/modules/settings.js:599 web/static/js/modules/settings.js:604
+#: web/static/js/modules/settings.js:728 web/static/js/modules/settings.js:733
 msgid "Failed to clear Last.fm history"
 msgstr ""
 
-#: web/static/js/modules/settings.js:601
+#: web/static/js/modules/settings.js:730
 msgid "Last.fm history cleared"
 msgstr ""
 
-#: web/static/js/modules/settings.js:747
+#: web/static/js/modules/settings.js:876
 msgid "APScheduler not installed"
 msgstr ""
 
-#: web/static/js/modules/settings.js:760
+#: web/static/js/modules/settings.js:889
 msgid "Automation Active"
 msgstr ""
 
-#: web/static/js/modules/settings.js:760
+#: web/static/js/modules/settings.js:889
 msgid "Automation Disabled"
 msgstr ""
 
@@ -1297,7 +1297,7 @@ msgid "Reconnect YouTube Music"
 msgstr ""
 
 #: web/static/js/modules/setup.js:65 web/templates/partials/_modals.html:83
-#: web/templates/partials/_modals.html:517
+#: web/templates/partials/_modals.html:519
 msgid "Connect YouTube Music"
 msgstr ""
 
@@ -1333,7 +1333,7 @@ msgstr ""
 msgid "Set Up Auth"
 msgstr ""
 
-#: web/static/js/modules/setup.js:269 web/templates/partials/_modals.html:503
+#: web/static/js/modules/setup.js:269 web/templates/partials/_modals.html:505
 #: web/templates/partials/_panel_custompl.html:82
 msgid "Sync"
 msgstr ""
@@ -1408,7 +1408,12 @@ msgstr ""
 msgid "Add a tag..."
 msgstr ""
 
-#: web/static/js/modules/tagInput.js:218
+#: web/static/js/modules/tagInput.js:128
+#: web/templates/partials/_panel_overrides.html:51
+msgid "Remove"
+msgstr ""
+
+#: web/static/js/modules/tagInput.js:220
 msgid "Add"
 msgstr ""
 
@@ -1534,6 +1539,7 @@ msgid "Server time"
 msgstr ""
 
 #: web/templates/dashboard.html:48 web/templates/dashboard.html:57
+#: web/templates/partials/_panel_settings.html:81
 msgid "Notifications"
 msgstr ""
 
@@ -1543,13 +1549,13 @@ msgstr ""
 
 #: web/templates/dashboard.html:60
 #: web/templates/partials/_modal_cache_admin.html:142
-#: web/templates/partials/_modals.html:644
-#: web/templates/partials/_modals.html:734
-#: web/templates/partials/_modals.html:827
-#: web/templates/partials/_modals.html:1023
-#: web/templates/partials/_modals.html:1105
-#: web/templates/partials/_modals.html:1183
-#: web/templates/partials/_panel_settings.html:807
+#: web/templates/partials/_modals.html:646
+#: web/templates/partials/_modals.html:736
+#: web/templates/partials/_modals.html:829
+#: web/templates/partials/_modals.html:1025
+#: web/templates/partials/_modals.html:1107
+#: web/templates/partials/_modals.html:1185
+#: web/templates/partials/_panel_settings.html:915
 msgid "Close"
 msgstr ""
 
@@ -1595,7 +1601,7 @@ msgstr ""
 
 #: web/templates/macros/_track_actions.html:72
 #: web/templates/partials/_modals.html:333
-#: web/templates/partials/_modals.html:1078
+#: web/templates/partials/_modals.html:1080
 msgid "Tags"
 msgstr ""
 
@@ -1722,17 +1728,17 @@ msgid "Let's get you set up! First, enter your Last.fm credentials."
 msgstr ""
 
 #: web/templates/partials/_modals.html:51
-#: web/templates/partials/_panel_settings.html:35
+#: web/templates/partials/_panel_settings.html:114
 msgid "Last.fm Username"
 msgstr ""
 
 #: web/templates/partials/_modals.html:52
-#: web/templates/partials/_panel_settings.html:36
+#: web/templates/partials/_panel_settings.html:115
 msgid "Your Last.fm username"
 msgstr ""
 
 #: web/templates/partials/_modals.html:55
-#: web/templates/partials/_panel_settings.html:40
+#: web/templates/partials/_panel_settings.html:119
 msgid "Last.fm API Key"
 msgstr ""
 
@@ -1788,14 +1794,14 @@ msgstr ""
 #: web/templates/partials/_modals.html:263
 #: web/templates/partials/_modals.html:303
 #: web/templates/partials/_modals.html:343
-#: web/templates/partials/_modals.html:447
-#: web/templates/partials/_modals.html:475
-#: web/templates/partials/_modals.html:502
-#: web/templates/partials/_modals.html:568
-#: web/templates/partials/_modals.html:665
-#: web/templates/partials/_modals.html:757
-#: web/templates/partials/_modals.html:1192
-#: web/templates/partials/_modals.html:1217
+#: web/templates/partials/_modals.html:448
+#: web/templates/partials/_modals.html:476
+#: web/templates/partials/_modals.html:504
+#: web/templates/partials/_modals.html:570
+#: web/templates/partials/_modals.html:667
+#: web/templates/partials/_modals.html:759
+#: web/templates/partials/_modals.html:1194
+#: web/templates/partials/_modals.html:1219
 msgid "Cancel"
 msgstr ""
 
@@ -1803,7 +1809,7 @@ msgstr ""
 #: web/templates/partials/_modals.html:179
 #: web/templates/partials/_modals.html:215
 #: web/templates/partials/_modals.html:286
-#: web/templates/partials/_modals.html:1054
+#: web/templates/partials/_modals.html:1056
 msgid "Artist"
 msgstr ""
 
@@ -1830,7 +1836,7 @@ msgstr ""
 
 #: web/templates/partials/_modals.html:183
 #: web/templates/partials/_modals.html:290
-#: web/templates/partials/_modals.html:1058
+#: web/templates/partials/_modals.html:1060
 msgid "Title"
 msgstr ""
 
@@ -1889,7 +1895,7 @@ msgid "Save Tags"
 msgstr ""
 
 #: web/templates/partials/_modals.html:367
-#: web/templates/partials/_panel_settings.html:162
+#: web/templates/partials/_panel_settings.html:252
 msgid "Playlist Name"
 msgstr ""
 
@@ -1920,8 +1926,8 @@ msgid "Description"
 msgstr ""
 
 #: web/templates/partials/_modals.html:380
-#: web/templates/partials/_panel_settings.html:168
-msgid "Custom description (leave empty for auto-generated)"
+#: web/templates/partials/_panel_settings.html:257
+msgid "Custom description"
 msgstr ""
 
 #: web/templates/partials/_modals.html:381
@@ -1937,23 +1943,23 @@ msgid "Inherit from default"
 msgstr ""
 
 #: web/templates/partials/_modals.html:387
-#: web/templates/partials/_panel_settings.html:181
-#: web/templates/partials/_panel_settings.html:289
-#: web/templates/partials/_panel_settings.html:338
+#: web/templates/partials/_panel_settings.html:270
+#: web/templates/partials/_panel_settings.html:306
+#: web/templates/partials/_panel_settings.html:355
 msgid "Public"
 msgstr ""
 
 #: web/templates/partials/_modals.html:388
-#: web/templates/partials/_panel_settings.html:180
-#: web/templates/partials/_panel_settings.html:288
-#: web/templates/partials/_panel_settings.html:337
+#: web/templates/partials/_panel_settings.html:269
+#: web/templates/partials/_panel_settings.html:305
+#: web/templates/partials/_panel_settings.html:354
 msgid "Unlisted"
 msgstr ""
 
 #: web/templates/partials/_modals.html:389
-#: web/templates/partials/_panel_settings.html:179
-#: web/templates/partials/_panel_settings.html:287
-#: web/templates/partials/_panel_settings.html:336
+#: web/templates/partials/_panel_settings.html:268
+#: web/templates/partials/_panel_settings.html:304
+#: web/templates/partials/_panel_settings.html:353
 msgid "Private"
 msgstr ""
 
@@ -1986,520 +1992,529 @@ msgid "Match Mode"
 msgstr ""
 
 #: web/templates/partials/_modals.html:406
-msgid "Any (track has at least one tag)"
+msgid "Any"
 msgstr ""
 
 #: web/templates/partials/_modals.html:407
-msgid "All (track has all tags)"
+#: web/templates/partials/_panel_cache.html:18
+#: web/templates/partials/_panel_history.html:63
+#: web/templates/partials/_panel_history.html:79
+#: web/templates/partials/_panel_playlist.html:21
+#: web/templates/partials/_panel_tags.html:16
+msgid "All"
 msgstr ""
 
-#: web/templates/partials/_modals.html:411
-#: web/templates/partials/_panel_settings.html:172
-msgid "Track Limit"
+#: web/templates/partials/_modals.html:409
+msgid "Any = track has at least one tag; All = track has every tag"
 msgstr ""
 
-#: web/templates/partials/_modals.html:417
+#: web/templates/partials/_modals.html:414
 msgid "No Limit"
 msgstr ""
 
-#: web/templates/partials/_modals.html:419
+#: web/templates/partials/_modals.html:416
 msgid "Include as many matching tracks as possible"
 msgstr ""
 
-#: web/templates/partials/_modals.html:424
-#: web/templates/partials/_panel_settings.html:398
+#: web/templates/partials/_modals.html:419
+#: web/templates/partials/_panel_settings.html:261
+msgid "Track Limit"
+msgstr ""
+
+#: web/templates/partials/_modals.html:425
+#: web/templates/partials/_panel_settings.html:490
 msgid "Backfill"
 msgstr ""
 
-#: web/templates/partials/_modals.html:426
+#: web/templates/partials/_modals.html:427
 msgid "Fetch more scrobbles if the limit is not met"
 msgstr ""
 
-#: web/templates/partials/_modals.html:431
+#: web/templates/partials/_modals.html:432
 msgid "Include in auto-sync"
 msgstr ""
 
-#: web/templates/partials/_modals.html:433
+#: web/templates/partials/_modals.html:434
 msgid "Sync this playlist during scheduled runs"
 msgstr ""
 
-#: web/templates/partials/_modals.html:436
+#: web/templates/partials/_modals.html:437
 msgid "Blacklist (optional)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:437
+#: web/templates/partials/_modals.html:438
 msgid "artist|title (one per line)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:438
+#: web/templates/partials/_modals.html:439
 msgid "Exclude specific tracks from this playlist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:441
+#: web/templates/partials/_modals.html:442
 msgid "Artist Blacklist (optional)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:442
+#: web/templates/partials/_modals.html:443
 msgid "artist name (one per line)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:443
+#: web/templates/partials/_modals.html:444
 msgid "Exclude all tracks by these artists from this playlist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:448
+#: web/templates/partials/_modals.html:449
 msgid "Save Playlist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:456
+#: web/templates/partials/_modals.html:457
 msgid "Delete Playlist"
 msgstr ""
 
-#: web/templates/partials/_modals.html:466
+#: web/templates/partials/_modals.html:467
 msgid "Are you sure you want to delete"
 msgstr ""
 
-#: web/templates/partials/_modals.html:470
+#: web/templates/partials/_modals.html:471
 msgid "Also delete from YouTube Music"
 msgstr ""
 
-#: web/templates/partials/_modals.html:484
+#: web/templates/partials/_modals.html:485
 msgid "Sync Custom Playlists"
 msgstr ""
 
-#: web/templates/partials/_modals.html:494
+#: web/templates/partials/_modals.html:495
 msgid ""
 "Pick which playlists to rebuild. Leave everything unchecked to sync all "
 "of them."
 msgstr ""
 
-#: web/templates/partials/_modals.html:496
+#: web/templates/partials/_modals.html:498
 msgid "Select all"
 msgstr ""
 
-#: web/templates/partials/_modals.html:497
+#: web/templates/partials/_modals.html:499
 msgid "Clear"
 msgstr ""
 
-#: web/templates/partials/_modals.html:532
+#: web/templates/partials/_modals.html:534
 msgid "and make sure you're logged in"
 msgstr ""
 
-#: web/templates/partials/_modals.html:535
+#: web/templates/partials/_modals.html:537
 msgid "Open DevTools"
 msgstr ""
 
-#: web/templates/partials/_modals.html:535
+#: web/templates/partials/_modals.html:537
 msgid "or"
 msgstr ""
 
-#: web/templates/partials/_modals.html:535
+#: web/templates/partials/_modals.html:537
 msgid "on Mac"
 msgstr ""
 
-#: web/templates/partials/_modals.html:536
+#: web/templates/partials/_modals.html:538
 msgid "Network"
 msgstr ""
 
-#: web/templates/partials/_modals.html:537
-#: web/templates/partials/_modals.html:550
+#: web/templates/partials/_modals.html:539
+#: web/templates/partials/_modals.html:552
 msgid "tab"
 msgstr ""
 
-#: web/templates/partials/_modals.html:540
+#: web/templates/partials/_modals.html:542
 msgid "Filter by"
 msgstr ""
 
-#: web/templates/partials/_modals.html:541
+#: web/templates/partials/_modals.html:543
 msgid "in the search bar. If nothing appears, scroll down or click"
 msgstr ""
 
-#: web/templates/partials/_modals.html:542
+#: web/templates/partials/_modals.html:544
 msgid "Library"
 msgstr ""
 
-#: web/templates/partials/_modals.html:543
+#: web/templates/partials/_modals.html:545
 msgid "in the top bar."
 msgstr ""
 
-#: web/templates/partials/_modals.html:547
+#: web/templates/partials/_modals.html:549
 msgid "right-click the request"
 msgstr ""
 
-#: web/templates/partials/_modals.html:547
+#: web/templates/partials/_modals.html:549
 msgid "Copy"
 msgstr ""
 
-#: web/templates/partials/_modals.html:548
+#: web/templates/partials/_modals.html:550
 msgid "Copy Request Headers"
 msgstr ""
 
-#: web/templates/partials/_modals.html:550
+#: web/templates/partials/_modals.html:552
 msgid "click the request name"
 msgstr ""
 
-#: web/templates/partials/_modals.html:550
+#: web/templates/partials/_modals.html:552
 msgid "Headers"
 msgstr ""
 
-#: web/templates/partials/_modals.html:551
+#: web/templates/partials/_modals.html:553
 msgid "copy everything from"
 msgstr ""
 
-#: web/templates/partials/_modals.html:553
+#: web/templates/partials/_modals.html:555
 msgid "to the end of \"Request headers\", or right-click"
 msgstr ""
 
-#: web/templates/partials/_modals.html:553
+#: web/templates/partials/_modals.html:555
 msgid "Copy as cURL"
 msgstr ""
 
-#: web/templates/partials/_modals.html:559
+#: web/templates/partials/_modals.html:561
 msgid "Paste request headers or cURL command here..."
 msgstr ""
 
-#: web/templates/partials/_modals.html:575
+#: web/templates/partials/_modals.html:577
 msgid "Connect"
 msgstr ""
 
-#: web/templates/partials/_modals.html:591
-#: web/templates/partials/_panel_settings.html:746
-#: web/templates/partials/_panel_settings.html:762
-#: web/templates/partials/_panel_settings.html:779
+#: web/templates/partials/_modals.html:593
+#: web/templates/partials/_panel_settings.html:789
+#: web/templates/partials/_panel_settings.html:806
+#: web/templates/partials/_panel_settings.html:823
 msgid "Export / Import"
 msgstr ""
 
-#: web/templates/partials/_modals.html:603
-#: web/templates/partials/_modals.html:692
-#: web/templates/partials/_modals.html:785
-#: web/templates/partials/_modals.html:864
-#: web/templates/partials/_modals.html:1213
+#: web/templates/partials/_modals.html:605
+#: web/templates/partials/_modals.html:694
+#: web/templates/partials/_modals.html:787
+#: web/templates/partials/_modals.html:866
+#: web/templates/partials/_modals.html:1215
 msgid "Export"
 msgstr ""
 
-#: web/templates/partials/_modals.html:604
+#: web/templates/partials/_modals.html:606
 msgid "Download overrides and blacklist as a JSON file for backup or sharing."
 msgstr ""
 
-#: web/templates/partials/_modals.html:613
+#: web/templates/partials/_modals.html:615
 msgid "Export All"
 msgstr ""
 
-#: web/templates/partials/_modals.html:615
+#: web/templates/partials/_modals.html:617
 msgid "Overrides Only"
 msgstr ""
 
-#: web/templates/partials/_modals.html:616
+#: web/templates/partials/_modals.html:618
 msgid "Blacklist Only"
 msgstr ""
 
-#: web/templates/partials/_modals.html:618
+#: web/templates/partials/_modals.html:620
 msgid "Tag Overrides Only"
 msgstr ""
 
-#: web/templates/partials/_modals.html:623
-#: web/templates/partials/_modals.html:639
-#: web/templates/partials/_modals.html:710
-#: web/templates/partials/_modals.html:803
-#: web/templates/partials/_modals.html:961
-#: web/templates/partials/_modals.html:1214
+#: web/templates/partials/_modals.html:625
+#: web/templates/partials/_modals.html:641
+#: web/templates/partials/_modals.html:712
+#: web/templates/partials/_modals.html:805
+#: web/templates/partials/_modals.html:963
+#: web/templates/partials/_modals.html:1216
 msgid "Import"
 msgstr ""
 
-#: web/templates/partials/_modals.html:625
+#: web/templates/partials/_modals.html:627
 msgid ""
 "Import overrides and blacklist from a previously exported JSON file. "
 "Existing entries will be preserved."
 msgstr ""
 
-#: web/templates/partials/_modals.html:634
-#: web/templates/partials/_modals.html:721
-#: web/templates/partials/_modals.html:814
+#: web/templates/partials/_modals.html:636
+#: web/templates/partials/_modals.html:723
+#: web/templates/partials/_modals.html:816
 msgid "Drop a JSON file here or click to browse"
 msgstr ""
 
-#: web/templates/partials/_modals.html:652
-#: web/templates/partials/_modals.html:666
-#: web/templates/partials/_panel_settings.html:540
+#: web/templates/partials/_modals.html:654
+#: web/templates/partials/_modals.html:668
+#: web/templates/partials/_panel_settings.html:724
 msgid "Clear History Database"
 msgstr ""
 
-#: web/templates/partials/_modals.html:662
+#: web/templates/partials/_modals.html:664
 msgid ""
 "This will permanently delete all history data (tracks, syncs, actions). "
 "Continue?"
 msgstr ""
 
-#: web/templates/partials/_modals.html:680
-#: web/templates/partials/_panel_settings.html:489
-#: web/templates/partials/_panel_settings.html:752
+#: web/templates/partials/_modals.html:682
+#: web/templates/partials/_panel_settings.html:671
+#: web/templates/partials/_panel_settings.html:795
 msgid "History Database"
 msgstr ""
 
-#: web/templates/partials/_modals.html:694
+#: web/templates/partials/_modals.html:696
 msgid ""
 "Download the full history database (tracks, syncs, actions) as a "
 "plaintext JSON dump."
 msgstr ""
 
-#: web/templates/partials/_modals.html:704
-#: web/templates/partials/_modals.html:797
+#: web/templates/partials/_modals.html:706
+#: web/templates/partials/_modals.html:799
 msgid "Download JSON Dump"
 msgstr ""
 
-#: web/templates/partials/_modals.html:712
+#: web/templates/partials/_modals.html:714
 msgid ""
 "Restore a previously exported history dump. Merge is idempotent (re-"
 "importing the same file inserts zero new rows). Replace wipes the "
 "existing database first."
 msgstr ""
 
-#: web/templates/partials/_modals.html:727
-#: web/templates/partials/_modals.html:820
+#: web/templates/partials/_modals.html:729
+#: web/templates/partials/_modals.html:822
 msgid "Merge"
 msgstr ""
 
-#: web/templates/partials/_modals.html:728
-#: web/templates/partials/_modals.html:821
+#: web/templates/partials/_modals.html:730
+#: web/templates/partials/_modals.html:823
 msgid "Replace"
 msgstr ""
 
-#: web/templates/partials/_modals.html:742
-#: web/templates/partials/_modals.html:758
-#: web/templates/partials/_panel_settings.html:480
+#: web/templates/partials/_modals.html:744
+#: web/templates/partials/_modals.html:760
+#: web/templates/partials/_panel_settings.html:662
 msgid "Clear Last.fm History"
 msgstr ""
 
-#: web/templates/partials/_modals.html:753
+#: web/templates/partials/_modals.html:755
 msgid ""
 "This permanently deletes all locally stored scrobbles and resets the sync"
 " watermark. The next sync will re-crawl your full Last.fm history. "
 "Continue?"
 msgstr ""
 
-#: web/templates/partials/_modals.html:773
-#: web/templates/partials/_panel_settings.html:458
-#: web/templates/partials/_panel_settings.html:768
+#: web/templates/partials/_modals.html:775
+#: web/templates/partials/_panel_settings.html:640
+#: web/templates/partials/_panel_settings.html:812
 msgid "Local Last.fm History"
 msgstr ""
 
-#: web/templates/partials/_modals.html:787
+#: web/templates/partials/_modals.html:789
 msgid ""
 "Download your full local scrobble history (artist, track, play counts) as"
 " a plaintext JSON dump."
 msgstr ""
 
-#: web/templates/partials/_modals.html:805
+#: web/templates/partials/_modals.html:807
 msgid ""
 "Restore a previously exported scrobble dump. Merge is idempotent (re-"
 "importing the same file changes nothing). Replace wipes the existing "
 "database first."
 msgstr ""
 
-#: web/templates/partials/_modals.html:842
-#: web/templates/partials/_panel_settings.html:785
+#: web/templates/partials/_modals.html:844
+#: web/templates/partials/_panel_settings.html:829
 msgid "Teleporter"
 msgstr ""
 
-#: web/templates/partials/_modals.html:860
+#: web/templates/partials/_modals.html:862
 msgid ""
 "This backup contains sensitive data (API keys, auth tokens). Keep it "
 "secure."
 msgstr ""
 
-#: web/templates/partials/_modals.html:865
+#: web/templates/partials/_modals.html:867
 msgid "Bundle all config files into an encrypted backup."
 msgstr ""
 
-#: web/templates/partials/_modals.html:867
+#: web/templates/partials/_modals.html:869
 msgid "Encryption Password"
 msgstr ""
 
-#: web/templates/partials/_modals.html:869
+#: web/templates/partials/_modals.html:871
 msgid "Enter a password (min. 8 characters)"
 msgstr ""
 
-#: web/templates/partials/_modals.html:872
-#: web/templates/partials/_modals.html:988
+#: web/templates/partials/_modals.html:874
+#: web/templates/partials/_modals.html:990
 msgid "Show password"
 msgstr ""
 
-#: web/templates/partials/_modals.html:891
+#: web/templates/partials/_modals.html:893
 msgid "Include cache files"
 msgstr ""
 
-#: web/templates/partials/_modals.html:902
+#: web/templates/partials/_modals.html:904
 msgid "Search cache"
 msgstr ""
 
-#: web/templates/partials/_modals.html:904
+#: web/templates/partials/_modals.html:906
 msgid ""
 "Cached YouTube Music search results. Avoids re-searching tracks on a new "
 "instance."
 msgstr ""
 
-#: web/templates/partials/_modals.html:910
+#: web/templates/partials/_modals.html:912
 msgid "Playlist cache"
 msgstr ""
 
-#: web/templates/partials/_modals.html:912
+#: web/templates/partials/_modals.html:914
 msgid ""
 "Stores playlist IDs and desired track state. Needed to resume syncing "
 "without recreating playlists."
 msgstr ""
 
-#: web/templates/partials/_modals.html:918
+#: web/templates/partials/_modals.html:920
 msgid "Tag cache"
 msgstr ""
 
-#: web/templates/partials/_modals.html:919
+#: web/templates/partials/_modals.html:921
 msgid "Cached Last.fm tag lookups. Avoids re-fetching tags for every track."
 msgstr ""
 
-#: web/templates/partials/_modals.html:925
+#: web/templates/partials/_modals.html:927
 msgid "Theme overrides"
 msgstr ""
 
-#: web/templates/partials/_modals.html:926
+#: web/templates/partials/_modals.html:928
 msgid "Your custom color scheme for the dashboard (per base theme)."
 msgstr ""
 
-#: web/templates/partials/_modals.html:932
+#: web/templates/partials/_modals.html:934
 msgid "History database"
 msgstr ""
 
-#: web/templates/partials/_modals.html:934
+#: web/templates/partials/_modals.html:936
 msgid ""
 "Track lookups, sync runs, and action log. Merged into the target instance"
 " on import."
 msgstr ""
 
-#: web/templates/partials/_modals.html:940
+#: web/templates/partials/_modals.html:942
 msgid "Local Last.fm database"
 msgstr ""
 
-#: web/templates/partials/_modals.html:942
+#: web/templates/partials/_modals.html:944
 msgid ""
 "Your full Last.fm scrobble history with lifetime play counts. Merged into"
 " the target instance on import."
 msgstr ""
 
-#: web/templates/partials/_modals.html:954
+#: web/templates/partials/_modals.html:956
 msgid "Export Encrypted Backup"
 msgstr ""
 
-#: web/templates/partials/_modals.html:962
+#: web/templates/partials/_modals.html:964
 msgid "Restore config from an encrypted backup file."
 msgstr ""
 
-#: web/templates/partials/_modals.html:970
+#: web/templates/partials/_modals.html:972
 msgid "Drop a .bin backup file here or click to browse"
 msgstr ""
 
-#: web/templates/partials/_modals.html:975
+#: web/templates/partials/_modals.html:977
 msgid "Remove file"
 msgstr ""
 
-#: web/templates/partials/_modals.html:984
+#: web/templates/partials/_modals.html:986
 msgid "Decryption Password"
 msgstr ""
 
-#: web/templates/partials/_modals.html:986
+#: web/templates/partials/_modals.html:988
 msgid "Enter the password used during export"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1009
+#: web/templates/partials/_modals.html:1011
 msgid "Preview"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1017
+#: web/templates/partials/_modals.html:1019
 msgid "Restore Backup"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1038
+#: web/templates/partials/_modals.html:1040
 msgid "Track Details"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1062
+#: web/templates/partials/_modals.html:1064
 msgid "Video ID"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1066
+#: web/templates/partials/_modals.html:1068
 msgid "YouTube Title"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1070
+#: web/templates/partials/_modals.html:1072
 msgid "Source"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1082
-#: web/templates/partials/_modals.html:1137
+#: web/templates/partials/_modals.html:1084
+#: web/templates/partials/_modals.html:1139
 msgid "Status"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1086
+#: web/templates/partials/_modals.html:1088
 msgid "Seen"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1090
+#: web/templates/partials/_modals.html:1092
 msgid "First Seen"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1094
+#: web/templates/partials/_modals.html:1096
 msgid "Last Seen"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1121
+#: web/templates/partials/_modals.html:1123
 msgid "Sync Details"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1141
+#: web/templates/partials/_modals.html:1143
 msgid "Started"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1145
+#: web/templates/partials/_modals.html:1147
 msgid "Finished"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1149
+#: web/templates/partials/_modals.html:1151
 msgid "Duration"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1157
+#: web/templates/partials/_modals.html:1159
 #: web/templates/partials/_panel_history.html:26
 #: web/templates/partials/_panel_history.html:65
 msgid "Missed"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1169
+#: web/templates/partials/_modals.html:1171
 #: web/templates/partials/_panel_history.html:42
 msgid "API Searches"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1173
+#: web/templates/partials/_modals.html:1175
 msgid "Playlist Ops"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1191
+#: web/templates/partials/_modals.html:1193
 msgid "Customize Theme"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1202
+#: web/templates/partials/_modals.html:1204
 msgid ""
 "Pick a color for each token. Changes preview live; nothing is saved until"
 " you click Save."
 msgstr ""
 
-#: web/templates/partials/_modals.html:1212
+#: web/templates/partials/_modals.html:1214
 msgid "Discard customizations for the current base theme"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1212
+#: web/templates/partials/_modals.html:1214
 msgid "Reset to parent"
 msgstr ""
 
-#: web/templates/partials/_modals.html:1218
-#: web/templates/partials/_panel_settings.html:816
+#: web/templates/partials/_modals.html:1220
+#: web/templates/partials/_panel_settings.html:924
 msgid "Save"
 msgstr ""
 
@@ -2538,14 +2553,6 @@ msgstr ""
 
 #: web/templates/partials/_panel_cache.html:16
 msgid "Search cached tracks..."
-msgstr ""
-
-#: web/templates/partials/_panel_cache.html:18
-#: web/templates/partials/_panel_history.html:63
-#: web/templates/partials/_panel_history.html:79
-#: web/templates/partials/_panel_playlist.html:21
-#: web/templates/partials/_panel_tags.html:16
-msgid "All"
 msgstr ""
 
 #: web/templates/partials/_panel_cache.html:20
@@ -2754,10 +2761,6 @@ msgstr ""
 msgid "Tag Override"
 msgstr ""
 
-#: web/templates/partials/_panel_overrides.html:51
-msgid "Remove"
-msgstr ""
-
 #: web/templates/partials/_panel_overrides.html:64
 msgid "No Overrides"
 msgstr ""
@@ -2817,217 +2820,351 @@ msgid ""
 "autogenerated playlists."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:31
-msgid "Credentials"
+#: web/templates/partials/_panel_settings.html:25
+msgid "Settings categories"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:37
-msgid "Your Last.fm username for scrobble fetching"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:42
-msgid "Get yours at"
+#: web/templates/partials/_panel_settings.html:32
+msgid "General"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:45
-msgid "YouTube Music Auth"
+msgid "Appearance"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:53
-msgid "Regenerate"
+#: web/templates/partials/_panel_settings.html:56
+#: web/templates/partials/_tabs.html:11
+msgid "Playlists"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:57
-msgid "Checking..."
+#: web/templates/partials/_panel_settings.html:65
+msgid "Ranking & Search"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:60
-msgid "Update browser.json with new credentials from your browser"
+#: web/templates/partials/_panel_settings.html:73
+#: web/templates/partials/_panel_settings.html:515
+msgid "Automation"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:72
-msgid "Display"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:76
-msgid "Theme"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:78
-msgid "Dark (Default)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:79
-msgid "Light"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:82
-msgid "Color scheme for the interface"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:88
-msgid "Use custom colors"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:91
-msgid "Apply your saved custom colors on top of the selected theme."
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:93
-msgid "Customize colors"
+#: web/templates/partials/_panel_settings.html:90
+msgid "Data & Storage"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:97
-msgid "Language"
+msgid "Advanced"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:103
-msgid "Interface language (requires reload)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:108
-msgid "Use 24-hour clock"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:112
-msgid "Date format"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:114
-msgid "Auto (browser locale)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:115
-msgid "Day/Month (31/12)"
+#: web/templates/partials/_panel_settings.html:110
+msgid "Credentials"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:116
-msgid "Month/Day (12/31)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:118
-msgid "How dates are displayed in the interface"
+msgid "Your Last.fm username for scrobble fetching"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:121
-#: web/templates/partials/_panel_settings.html:315
+msgid "Get yours at"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:125
+msgid "YouTube Music Auth"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:134
+msgid "Regenerate"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:138
+msgid "Checking..."
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:141
+msgid "Update browser.json with new credentials from your browser"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:160
+msgid "Theme & Language"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:164
+msgid "Theme"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:166
+msgid "Dark (Default)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:167
+msgid "Light"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:170
+msgid "Color scheme for the interface"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:174
+msgid "Language"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:180
+msgid "Interface language (requires reload)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:183
+msgid "Date format"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:185
+msgid "Auto (browser locale)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:186
+msgid "Day/Month (31/12)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:187
+msgid "Month/Day (12/31)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:189
+msgid "How dates are displayed in the interface"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:192
+#: web/templates/partials/_panel_settings.html:332
 msgid "Timezone"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:124
+#: web/templates/partials/_panel_settings.html:195
 msgid ""
 "Default IANA timezone (e.g. Europe/Berlin, America/New_York) used for "
 "weekly-playlist week boundaries and session hours. Weekly and session "
 "timezones inherit this unless overridden."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:129
-msgid "Display tips"
+#: web/templates/partials/_panel_settings.html:200
+msgid "Use custom colors"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:131
-msgid "Show the helper info banners at the top of each tab"
+#: web/templates/partials/_panel_settings.html:203
+msgid "Apply your saved custom colors on top of the selected theme."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:136
-msgid "Show \"Now Playing\" from Last.fm"
+#: web/templates/partials/_panel_settings.html:205
+msgid "Customize colors"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:138
-msgid "Display currently playing track in the header"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:141
-msgid "Now Playing Poll Interval (seconds)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:143
-msgid "How often to check for currently playing track (5-120 seconds)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:158
-msgid "Main Playlist"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:163
-msgid "Last.fm Recents (auto)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:166
-msgid "Playlist Description"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:169
-msgid "Leave empty to auto-generate based on Last.fm username and ranking mode"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:174
-msgid "Target number of tracks in playlist"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:177
-msgid "Playlist Visibility"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:187
-msgid "Deduplicate tracks"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:201
-msgid "Track Ranking"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:207
-msgid "Use recency weighting"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:209
-msgid "Rank by play count + recency (off = most recent first)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:212
-msgid "Recency Half-Life (hours)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:214
-msgid "How fast recency decays (lower = favor newer tracks)"
+#: web/templates/partials/_panel_settings.html:211
+msgid "Use 24-hour clock"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:217
-msgid "Play Weight (0.0-1.0)"
+msgid "Display tips"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:219
-msgid "0.0 = pure recency, 1.0 = pure play count"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:222
-msgid "Minimum Plays"
+msgid "Show the helper info banners at the top of each tab"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:224
+msgid "Show \"Now Playing\" from Last.fm"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:226
+msgid "Display currently playing track in the header"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:229
+msgid "Now Playing Poll Interval (seconds)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:231
+msgid "How often to check for currently playing track (5-120 seconds)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:248
+msgid "Main Playlist"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:253
+msgid "Last.fm Recents (auto)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:256
+msgid "Playlist Description"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:258
+msgid "Leave empty to auto-generate based on Last.fm username and ranking mode"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:263
+msgid "Target number of tracks in playlist"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:266
+msgid "Playlist Visibility"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:276
+msgid "Deduplicate tracks"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:291
+msgid "Weekly Playlists"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:297
+msgid "Enable weekly playlists"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:301
+msgid "Weekly Playlist Visibility"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:303
+#: web/templates/partials/_panel_settings.html:352
+msgid "Inherit from main"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:310
+msgid "Week Start Day"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:312
+msgid "Monday"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:313
+msgid "Tuesday"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:314
+msgid "Wednesday"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:315
+msgid "Thursday"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:316
+msgid "Friday"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:317
+msgid "Saturday"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:318
+msgid "Sunday"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:322
+msgid "Keep Weeks"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:324
+msgid "How many weeks to keep (0 = keep all)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:327
+msgid "Playlist Prefix"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:328
+msgid "(derived from main name)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:329
+msgid "Override weekly playlist name prefix"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:334
+msgid ""
+"E.g., Europe/Berlin, America/New_York. Leave blank to inherit the general"
+" timezone."
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:346
+#: web/templates/partials/_tabs.html:10
+msgid "Custom Playlists"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:350
+msgid "Custom Playlist Visibility"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:359
+msgid "Minimum Tag Count"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:361
+msgid "Minimum Last.fm tag vote count to include"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:364
+msgid "Sleep Between Tag Fetches (seconds)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:366
+msgid "Delay between tag API calls to avoid rate limiting"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:381
+msgid "Track Ranking"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:387
+msgid "Use recency weighting"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:389
+msgid "Rank by play count + recency (off = most recent first)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:392
+msgid "Recency Half-Life (hours)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:394
+msgid "How fast recency decays (lower = favor newer tracks)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:397
+msgid "Play Weight (0.0-1.0)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:399
+msgid "0.0 = pure recency, 1.0 = pure play count"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:402
+msgid "Minimum Plays"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:405
 msgid ""
 "Gate tracks: must be scrobbled at least this many times in the fetched "
 "window (1 = no gate)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:227
+#: web/templates/partials/_panel_settings.html:408
 msgid "Play-count normalization"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:229
+#: web/templates/partials/_panel_settings.html:410
 msgid "Linear (default)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:230
+#: web/templates/partials/_panel_settings.html:411
 msgid "Logarithmic"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:231
+#: web/templates/partials/_panel_settings.html:412
 msgid "Percentile rank"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:234
+#: web/templates/partials/_panel_settings.html:415
 msgid ""
 "How play counts convert to a score. Linear divides by the top track (one "
 "500-play outlier flattens everything else). Logarithmic compresses big "
@@ -3035,11 +3172,11 @@ msgid ""
 "and scores by position, giving the most balanced spread."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:237
+#: web/templates/partials/_panel_settings.html:418
 msgid "Velocity Weight (0.0-1.0)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:240
+#: web/templates/partials/_panel_settings.html:421
 msgid ""
 "Blends in a trending signal based on plays-per-day (how tightly a track’s"
 " plays cluster in time). 0.0 = off. Raise it to favor tracks you are "
@@ -3047,11 +3184,11 @@ msgid ""
 "across months."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:245
+#: web/templates/partials/_panel_settings.html:426
 msgid "Session weighting"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:248
+#: web/templates/partials/_panel_settings.html:429
 msgid ""
 "Give extra weight to plays that happened during your preferred listening "
 "hours (e.g. an evening session) over background/late-night scrobbles. "
@@ -3059,473 +3196,369 @@ msgid ""
 " Last.fm DB."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:251
+#: web/templates/partials/_panel_settings.html:432
 msgid "Session Hours"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:254
+#: web/templates/partials/_panel_settings.html:435
 msgid ""
 "Preferred listening window as START-END in 24h local time (half-open, may"
 " wrap past midnight, e.g. 22-4). Used only when session weighting is on."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:257
+#: web/templates/partials/_panel_settings.html:438
 msgid "Session Timezone"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:260
+#: web/templates/partials/_panel_settings.html:441
 msgid ""
 "IANA timezone for the session window (e.g. America/New_York). Leave blank"
 " to inherit the general timezone."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:274
-msgid "Weekly Playlists"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:280
-msgid "Enable weekly playlists"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:284
-msgid "Weekly Playlist Visibility"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:286
-#: web/templates/partials/_panel_settings.html:335
-msgid "Inherit from main"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:293
-msgid "Week Start Day"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:295
-msgid "Monday"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:296
-msgid "Tuesday"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:297
-msgid "Wednesday"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:298
-msgid "Thursday"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:299
-msgid "Friday"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:300
-msgid "Saturday"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:301
-msgid "Sunday"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:305
-msgid "Keep Weeks"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:307
-msgid "How many weeks to keep (0 = keep all)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:310
-msgid "Playlist Prefix"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:311
-msgid "(derived from main name)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:312
-msgid "Override weekly playlist name prefix"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:317
-msgid ""
-"E.g., Europe/Berlin, America/New_York. Leave blank to inherit the general"
-" timezone."
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:329
-#: web/templates/partials/_tabs.html:10
-msgid "Custom Playlists"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:333
-msgid "Custom Playlist Visibility"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:342
-msgid "Minimum Tag Count"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:344
-msgid "Minimum Last.fm tag vote count to include"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:347
-msgid "Sleep Between Tag Fetches (seconds)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:349
-msgid "Delay between tag API calls to avoid rate limiting"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:361
+#: web/templates/partials/_panel_settings.html:453
 msgid "Search Behavior"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:367
+#: web/templates/partials/_panel_settings.html:459
 msgid "Use anonymous search"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:369
+#: web/templates/partials/_panel_settings.html:461
 msgid "Recommended for better search results"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:372
+#: web/templates/partials/_panel_settings.html:464
 msgid "Early Termination Score (0.0-1.0)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:374
+#: web/templates/partials/_panel_settings.html:466
 msgid "Stop search early if match score exceeds this"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:377
+#: web/templates/partials/_panel_settings.html:469
 msgid "Sleep Between Searches (seconds)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:379
+#: web/templates/partials/_panel_settings.html:471
 msgid "Delay between searches to avoid rate limiting"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:382
+#: web/templates/partials/_panel_settings.html:474
 msgid "Max Search Workers"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:384
+#: web/templates/partials/_panel_settings.html:476
 msgid "Parallel search threads (higher = faster but more API load)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:402
+#: web/templates/partials/_panel_settings.html:494
 msgid "Max Raw Scrobbles"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:404
+#: web/templates/partials/_panel_settings.html:496
 msgid "Max scrobbles to fetch (0 = unlimited)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:407
+#: web/templates/partials/_panel_settings.html:499
 msgid "Backfill Passes"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:409
+#: web/templates/partials/_panel_settings.html:501
 msgid "Additional fetch attempts if below LIMIT (0 = disabled)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:422
-msgid "Caching"
+#: web/templates/partials/_panel_settings.html:527
+msgid "Enable automated sync"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:426
-msgid "Search Cache TTL (days)"
+#: web/templates/partials/_panel_settings.html:529
+msgid "Automatically run sync at scheduled intervals"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:428
-msgid "Days before cached searches expire (0 = never)"
+#: web/templates/partials/_panel_settings.html:534
+msgid "Include custom playlists"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:431
-msgid "Not-Found Cache TTL (days)"
+#: web/templates/partials/_panel_settings.html:536
+msgid "Also sync custom tag & artist playlists after each scheduled run"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:433
-msgid "Days before \"not found\" results are retried"
+#: web/templates/partials/_panel_settings.html:539
+msgid "Custom sync frequency"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:436
-msgid "Tag Cache TTL (days)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:438
-msgid "Days before cached tags expire (0 = never)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:451
-msgid "Local Databases"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:454
+#: web/templates/partials/_panel_settings.html:541
 msgid ""
-"Optional local SQLite databases stored under cache/. They power richer "
-"playlist ranking and analytics and never leave your instance. Back them "
-"up from Data Management below."
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:463
-msgid "Use local Last.fm database"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:466
-msgid ""
-"Crawl your full Last.fm scrobble history into a local database and rank "
-"playlists by lifetime plays + recency. The first sync downloads your "
-"entire history (may take a while); later syncs only fetch new scrobbles."
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:470
-msgid ""
-"Heads up: enabling this changes how the main playlist is built (lifetime "
-"plays instead of recent tracks), so the resulting playlist may look "
-"noticeably different."
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:483
-msgid ""
-"Clearing resets the sync watermark, so the next sync re-crawls your full "
-"Last.fm history. Backup and restore from Data Management below."
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:494
-msgid "Enable history database"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:496
-msgid ""
-"Store track lookups, sync runs, and actions in a local SQLite database "
-"for analytics"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:502
-msgid "Max DB Size (MB)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:504
-msgid "Auto-prune oldest records when exceeded. 0 = unlimited."
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:507
-msgid "Retention (days)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:509
-msgid ""
-"Auto-delete syncs &amp; actions older than N days after each sync. 0 = "
-"keep forever."
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:514
-msgid ""
-"Import existing data from your search cache and overrides into the "
-"history database."
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:524
-msgid "Backfill from Cache"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:532
-msgid "Vacuum &amp; Prune"
+"Run custom playlist sync every N main syncs (1 = every time, 3 = every "
+"3rd sync)"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:544
-msgid "Backup and restore the history database from Data Management below."
+msgid "Schedule Type"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:557
-msgid "Webhooks"
+#: web/templates/partials/_panel_settings.html:546
+msgid "Interval (every N hours)"
 msgstr ""
 
+#: web/templates/partials/_panel_settings.html:547
 #: web/templates/partials/_panel_settings.html:561
-msgid "Webhook URL"
+msgid "Cron Expression"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:551
+msgid "Interval (hours)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:553
+msgid "How often to sync (e.g., 6 = every 6 hours)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:556
+msgid "Starting at (optional)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:558
+msgid "Anchor time for intervals (e.g., 00:00 → 0, 6, 12, 18h)"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:563
+msgid "Standard cron format: minute hour day month weekday (server time)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:572
+msgid "Next run:"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:585
+msgid "Webhooks"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:589
+msgid "Webhook URL"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:592
 msgid ""
 "Receives a JSON POST with sync results. Works with ntfy, Discord, Slack, "
 "or any HTTP endpoint."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:566
+#: web/templates/partials/_panel_settings.html:595
 msgid "Send notifications for"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:569
+#: web/templates/partials/_panel_settings.html:598
 msgid "Errors only"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:570
+#: web/templates/partials/_panel_settings.html:599
 msgid "All syncs"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:578
+#: web/templates/partials/_panel_settings.html:607
 msgid "Test"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:581
+#: web/templates/partials/_panel_settings.html:610
 msgid "Choose when to send webhook notifications"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:586
+#: web/templates/partials/_panel_settings.html:615
 msgid "Allow private/LAN webhook URLs"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:589
+#: web/templates/partials/_panel_settings.html:618
 msgid ""
 "Enable only if your webhook points to a local address (e.g. a self-hosted"
 " ntfy or Gotify on your network). Off by default to prevent server-side "
 "request forgery."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:600
-msgid "Reliability & Retries"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:604
-msgid "YTM API Max Retries"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:608
-msgid "Last.fm Max Retries"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:612
-msgid "Max Consecutive Empty Pages"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:614
-msgid "Stop after N pages with no new tracks"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:619
-msgid "Force IPv4 for Last.fm"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:621
-msgid "Helps with flaky Last.fm IPv6 connections"
-msgstr ""
-
 #: web/templates/partials/_panel_settings.html:633
-msgid "Automation"
+msgid "Local Databases"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:636
+msgid ""
+"Optional local SQLite databases stored under cache/. They power richer "
+"playlist ranking and analytics and never leave your instance. Back them "
+"up from Data Management below."
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:645
-msgid "Enable automated sync"
+msgid "Use local Last.fm database"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:647
-msgid "Automatically run sync at scheduled intervals"
+#: web/templates/partials/_panel_settings.html:648
+msgid ""
+"Crawl your full Last.fm scrobble history into a local database and rank "
+"playlists by lifetime plays + recency. The first sync downloads your "
+"entire history (may take a while); later syncs only fetch new scrobbles."
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:652
-msgid "Include custom playlists"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:654
-msgid "Also sync custom tag & artist playlists after each scheduled run"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:657
-msgid "Custom sync frequency"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:659
 msgid ""
-"Run custom playlist sync every N main syncs (1 = every time, 3 = every "
-"3rd sync)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:662
-msgid "Schedule Type"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:664
-msgid "Interval (every N hours)"
+"Heads up: enabling this changes how the main playlist is built (lifetime "
+"plays instead of recent tracks), so the resulting playlist may look "
+"noticeably different."
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:665
-#: web/templates/partials/_panel_settings.html:679
-msgid "Cron Expression"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:669
-msgid "Interval (hours)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:671
-msgid "How often to sync (e.g., 6 = every 6 hours)"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:674
-msgid "Starting at (optional)"
+msgid ""
+"Clearing resets the sync watermark, so the next sync re-crawls your full "
+"Last.fm history. Backup and restore from Data Management below."
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:676
-msgid "Anchor time for intervals (e.g., 00:00 → 0, 6, 12, 18h)"
+msgid "Enable history database"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:681
-msgid "Standard cron format: minute hour day month weekday (server time)"
+#: web/templates/partials/_panel_settings.html:678
+msgid ""
+"Store track lookups, sync runs, and actions in a local SQLite database "
+"for analytics"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:690
-msgid "Next run:"
+#: web/templates/partials/_panel_settings.html:684
+msgid "Max DB Size (MB)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:704
-msgid "Logging"
+#: web/templates/partials/_panel_settings.html:686
+msgid "Auto-prune oldest records when exceeded. 0 = unlimited."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:708
-msgid "Log Level"
+#: web/templates/partials/_panel_settings.html:689
+msgid "Retention (days)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:691
+msgid ""
+"Auto-delete syncs &amp; actions older than N days after each sync. 0 = "
+"keep forever."
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:697
+msgid ""
+"Import existing data from your search cache and overrides into the "
+"history database."
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:707
+msgid "Backfill from Cache"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:715
+msgid "Vacuum &amp; Prune"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:728
+msgid "Backup and restore the history database from Data Management below."
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:742
+msgid "Caching"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:746
+msgid "Search Cache TTL (days)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:748
+msgid "Days before cached searches expire (0 = never)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:751
+msgid "Not-Found Cache TTL (days)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:753
+msgid "Days before \"not found\" results are retried"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:756
+msgid "Tag Cache TTL (days)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:758
+msgid "Days before cached tags expire (0 = never)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:771
 msgid "Data Management"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:731
+#: web/templates/partials/_panel_settings.html:774
 msgid ""
 "Back up, restore, or migrate your data. Each option covers a different "
 "scope."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:736
+#: web/templates/partials/_panel_settings.html:779
 msgid "Overrides &amp; Blacklist"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:737
+#: web/templates/partials/_panel_settings.html:780
 msgid "Manual fixes, tag overrides, and the blacklist (JSON, plaintext)."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:753
+#: web/templates/partials/_panel_settings.html:797
 msgid ""
 "Full track / sync / action log as a JSON dump (plaintext). Import "
 "supports merge or replace."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:770
+#: web/templates/partials/_panel_settings.html:814
 msgid ""
 "Full scrobble history (artist, track, play counts) as a JSON dump "
 "(plaintext). Import supports merge or replace."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:786
+#: web/templates/partials/_panel_settings.html:831
 msgid ""
 "Encrypted bundle (AES-256-GCM) of everything above plus caches - for "
 "moving between instances."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:795
+#: web/templates/partials/_panel_settings.html:840
 msgid "Open Teleporter"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:853
+msgid "Reliability & Retries"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:857
+msgid "YTM API Max Retries"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:861
+msgid "Last.fm Max Retries"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:865
+msgid "Max Consecutive Empty Pages"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:867
+msgid "Stop after N pages with no new tracks"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:872
+msgid "Force IPv4 for Last.fm"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:874
+msgid "Helps with flaky Last.fm IPv6 connections"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:889
+msgid "Logging"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:893
+msgid "Log Level"
 msgstr ""
 
 #: web/templates/partials/_panel_sync.html:10
@@ -3626,10 +3659,6 @@ msgstr ""
 
 #: web/templates/partials/_tabs.html:3
 msgid "Playlist"
-msgstr ""
-
-#: web/templates/partials/_tabs.html:11
-msgid "Playlists"
 msgstr ""
 
 #: web/templates/partials/_tabs.html:12

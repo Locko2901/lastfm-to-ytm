@@ -125,7 +125,9 @@ function addTag(state, tag, focus = true) {
   const removeBtn = document.createElement("button")
   removeBtn.type = "button"
   removeBtn.className = "tag-input-pill-remove"
-  removeBtn.innerHTML = "&times;"
+  removeBtn.setAttribute("aria-label", _("Remove"))
+  removeBtn.innerHTML =
+    '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>'
   removeBtn.addEventListener("click", e => {
     e.stopPropagation()
     state.tags = state.tags.filter(t => t !== tag)

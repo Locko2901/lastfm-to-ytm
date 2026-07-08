@@ -21,779 +21,887 @@
     </div>
     <div class="modal-body">
       <form id="settingsForm" class="settings-form" autocomplete="off">
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="m7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-            {{ _('Credentials') }}
-          </h3>
-          <div class="settings-grid">
-            <div class="form-group">
-              <label for="LASTFM_USER">{{ _('Last.fm Username') }}</label>
-              <input type="text" id="LASTFM_USER" name="LASTFM_USER" placeholder="{{ _('Your Last.fm username') }}" autocomplete="off">
-              <span class="form-hint">{{ _('Your Last.fm username for scrobble fetching') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="LASTFM_API_KEY">{{ _('Last.fm API Key') }}</label>
-              <input type="text" id="LASTFM_API_KEY" name="LASTFM_API_KEY" placeholder="••••••••" autocomplete="off" data-secret="true">
-              <span class="form-hint">{{ _('Get yours at') }} <a href="https://www.last.fm/api/account/create" target="_blank">last.fm/api</a></span>
-            </div>
-            <div class="form-group">
-              <label>{{ _('YouTube Music Auth') }}</label>
-              <div class="ytm-auth-row">
-                <button type="button" class="btn btn-secondary" data-action="showModal" data-modal="authModal">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
-                    </path>
-                  </svg>
-                  {{ _('Regenerate') }}
-                </button>
-                <span id="ytmAuthStatus" class="auth-status">
-                  <span class="auth-status-dot"></span>
-                  <span class="auth-status-text">{{ _('Checking...') }}</span>
-                </span>
-              </div>
-              <span class="form-hint">{{ _('Update browser.json with new credentials from your browser') }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            {{ _('Display') }}
-          </h3>
-          <div class="settings-grid">
-            <div class="form-group">
-              <label for="theme-select">{{ _('Theme') }}</label>
-              <select id="theme-select">
-                <option value="dark">{{ _('Dark (Default)') }}</option>
-                <option value="light">{{ _('Light') }}</option>
-              </select>
-              <span class="form-hint">
-                {{ _('Color scheme for the interface') }}
-              </span>
-            </div>
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="custom-theme-toggle">
-                <span>{{ _('Use custom colors') }}</span>
-              </label>
-              <span class="form-hint">
-                {{ _('Apply your saved custom colors on top of the selected theme.') }}
-                &middot;
-                <button type="button" class="link-button" data-action="showCustomThemeModal">{{ _('Customize colors') }}</button>
-              </span>
-            </div>
-            <div class="form-group">
-              <label for="locale-select">{{ _('Language') }}</label>
-              <select id="locale-select">
-                {% for code, name in available_locales %}
-                <option value="{{ code }}">{{ name }}</option>
-                {% endfor %}
-              </select>
-              <span class="form-hint">{{ _('Interface language (requires reload)') }}</span>
-            </div>
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="USE_24_HOUR_CLOCK" name="USE_24_HOUR_CLOCK">
-                <span>{{ _('Use 24-hour clock') }}</span>
-              </label>
-            </div>
-            <div class="form-group">
-              <label for="DATE_FORMAT">{{ _('Date format') }}</label>
-              <select id="DATE_FORMAT" name="DATE_FORMAT">
-                <option value="auto">{{ _('Auto (browser locale)') }}</option>
-                <option value="DMY">{{ _('Day/Month (31/12)') }}</option>
-                <option value="MDY">{{ _('Month/Day (12/31)') }}</option>
-              </select>
-              <span class="form-hint">{{ _('How dates are displayed in the interface') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="TIMEZONE">{{ _('Timezone') }}</label>
-              <input type="text" id="TIMEZONE" name="TIMEZONE" placeholder="UTC">
-              <span
-                class="form-hint">{{ _('Default IANA timezone (e.g. Europe/Berlin, America/New_York) used for weekly-playlist week boundaries and session hours. Weekly and session timezones inherit this unless overridden.') }}</span>
-            </div>
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="DISPLAY_TIPS" name="DISPLAY_TIPS">
-                <span>{{ _('Display tips') }}</span>
-              </label>
-              <span class="form-hint">{{ _('Show the helper info banners at the top of each tab') }}</span>
-            </div>
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="NOW_PLAYING_ENABLED" name="NOW_PLAYING_ENABLED">
-                <span>{{ _('Show "Now Playing" from Last.fm') }}</span>
-              </label>
-              <span class="form-hint">{{ _('Display currently playing track in the header') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="NOW_PLAYING_INTERVAL">{{ _('Now Playing Poll Interval (seconds)') }}</label>
-              <input type="number" id="NOW_PLAYING_INTERVAL" name="NOW_PLAYING_INTERVAL" min="5" max="120" step="1" placeholder="15">
-              <span class="form-hint">{{ _('How often to check for currently playing track (5-120 seconds)') }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M21 15V6"></path>
-              <path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path>
-              <path d="M12 12H3"></path>
-              <path d="M16 6H3"></path>
-              <path d="M12 18H3"></path>
-            </svg>
-            {{ _('Main Playlist') }}
-          </h3>
-          <div class="settings-grid">
-            <div class="form-group">
-              <label for="PLAYLIST_NAME">{{ _('Playlist Name') }}</label>
-              <input type="text" id="PLAYLIST_NAME" name="PLAYLIST_NAME" placeholder="{{ _('Last.fm Recents (auto)') }}">
-            </div>
-            <div class="form-group">
-              <label for="PLAYLIST_DESCRIPTION">{{ _('Playlist Description') }}</label>
-              <input type="text" id="PLAYLIST_DESCRIPTION" name="PLAYLIST_DESCRIPTION"
-                placeholder="{{ _('Custom description (leave empty for auto-generated)') }}">
-              <span class="form-hint">{{ _('Leave empty to auto-generate based on Last.fm username and ranking mode') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="LIMIT">{{ _('Track Limit') }}</label>
-              <input type="number" id="LIMIT" name="LIMIT" min="1" max="5000" placeholder="100">
-              <span class="form-hint">{{ _('Target number of tracks in playlist') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="MAKE_PUBLIC">{{ _('Playlist Visibility') }}</label>
-              <select id="MAKE_PUBLIC" name="MAKE_PUBLIC">
-                <option value="PRIVATE">{{ _('Private') }}</option>
-                <option value="UNLISTED">{{ _('Unlisted') }}</option>
-                <option value="PUBLIC">{{ _('Public') }}</option>
-              </select>
-            </div>
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="DEDUPLICATE" name="DEDUPLICATE">
-                <span>{{ _('Deduplicate tracks') }}</span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <line x1="18" y1="20" x2="18" y2="10"></line>
-              <line x1="12" y1="20" x2="12" y2="4"></line>
-              <line x1="6" y1="20" x2="6" y2="14"></line>
-            </svg>
-            {{ _('Track Ranking') }}
-          </h3>
-          <div class="settings-grid">
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="USE_RECENCY_WEIGHTING" name="USE_RECENCY_WEIGHTING">
-                <span>{{ _('Use recency weighting') }}</span>
-              </label>
-              <span class="form-hint">{{ _('Rank by play count + recency (off = most recent first)') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="RECENCY_HALF_LIFE_HOURS">{{ _('Recency Half-Life (hours)') }}</label>
-              <input type="text" id="RECENCY_HALF_LIFE_HOURS" name="RECENCY_HALF_LIFE_HOURS" inputmode="decimal" placeholder="48.0">
-              <span class="form-hint">{{ _('How fast recency decays (lower = favor newer tracks)') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="RECENCY_PLAY_WEIGHT">{{ _('Play Weight (0.0-1.0)') }}</label>
-              <input type="text" id="RECENCY_PLAY_WEIGHT" name="RECENCY_PLAY_WEIGHT" inputmode="decimal" placeholder="0.7">
-              <span class="form-hint">{{ _('0.0 = pure recency, 1.0 = pure play count') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="RECENCY_MIN_PLAYS">{{ _('Minimum Plays') }}</label>
-              <input type="text" id="RECENCY_MIN_PLAYS" name="RECENCY_MIN_PLAYS" inputmode="numeric" placeholder="1">
-              <span class="form-hint">{{ _('Gate tracks: must be scrobbled at least this many times in the fetched window (1 = no gate)') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="RECENCY_NORMALIZATION">{{ _('Play-count normalization') }}</label>
-              <select id="RECENCY_NORMALIZATION" name="RECENCY_NORMALIZATION">
-                <option value="linear">{{ _('Linear (default)') }}</option>
-                <option value="log">{{ _('Logarithmic') }}</option>
-                <option value="rank">{{ _('Percentile rank') }}</option>
-              </select>
-              <span
-                class="form-hint">{{ _('How play counts convert to a score. Linear divides by the top track (one 500-play outlier flattens everything else). Logarithmic compresses big outliers so heavy hitters do not dominate. Rank ignores absolute counts and scores by position, giving the most balanced spread.') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="RECENCY_VELOCITY_WEIGHT">{{ _('Velocity Weight (0.0-1.0)') }}</label>
-              <input type="text" id="RECENCY_VELOCITY_WEIGHT" name="RECENCY_VELOCITY_WEIGHT" inputmode="decimal" placeholder="0.0">
-              <span
-                class="form-hint">{{ _('Blends in a trending signal based on plays-per-day (how tightly a track\u2019s plays cluster in time). 0.0 = off. Raise it to favor tracks you are bingeing right now over ones played the same number of times spread across months.') }}</span>
-            </div>
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="RECENCY_SESSION_WEIGHTING" name="RECENCY_SESSION_WEIGHTING">
-                <span>{{ _('Session weighting') }}</span>
-              </label>
-              <span
-                class="form-hint">{{ _('Give extra weight to plays that happened during your preferred listening hours (e.g. an evening session) over background/late-night scrobbles. Only applies when scoring from the fetched scrobble window, not the local Last.fm DB.') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="RECENCY_SESSION_HOURS">{{ _('Session Hours') }}</label>
-              <input type="text" id="RECENCY_SESSION_HOURS" name="RECENCY_SESSION_HOURS" placeholder="9-23">
-              <span
-                class="form-hint">{{ _('Preferred listening window as START-END in 24h local time (half-open, may wrap past midnight, e.g. 22-4). Used only when session weighting is on.') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="RECENCY_SESSION_TIMEZONE">{{ _('Session Timezone') }}</label>
-              <input type="text" id="RECENCY_SESSION_TIMEZONE" name="RECENCY_SESSION_TIMEZONE" placeholder="UTC">
-              <span
-                class="form-hint">{{ _('IANA timezone for the session window (e.g. America/New_York). Leave blank to inherit the general timezone.') }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            {{ _('Weekly Playlists') }}
-          </h3>
-          <div class="settings-grid">
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="WEEKLY_ENABLED" name="WEEKLY_ENABLED">
-                <span>{{ _('Enable weekly playlists') }}</span>
-              </label>
-            </div>
-            <div class="form-group">
-              <label for="WEEKLY_MAKE_PUBLIC">{{ _('Weekly Playlist Visibility') }}</label>
-              <select id="WEEKLY_MAKE_PUBLIC" name="WEEKLY_MAKE_PUBLIC">
-                <option value="">{{ _('Inherit from main') }}</option>
-                <option value="PRIVATE">{{ _('Private') }}</option>
-                <option value="UNLISTED">{{ _('Unlisted') }}</option>
-                <option value="PUBLIC">{{ _('Public') }}</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="WEEKLY_WEEK_START">{{ _('Week Start Day') }}</label>
-              <select id="WEEKLY_WEEK_START" name="WEEKLY_WEEK_START">
-                <option value="MON">{{ _('Monday') }}</option>
-                <option value="TUE">{{ _('Tuesday') }}</option>
-                <option value="WED">{{ _('Wednesday') }}</option>
-                <option value="THU">{{ _('Thursday') }}</option>
-                <option value="FRI">{{ _('Friday') }}</option>
-                <option value="SAT">{{ _('Saturday') }}</option>
-                <option value="SUN">{{ _('Sunday') }}</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="WEEKLY_KEEP_WEEKS">{{ _('Keep Weeks') }}</label>
-              <input type="number" id="WEEKLY_KEEP_WEEKS" name="WEEKLY_KEEP_WEEKS" min="0" placeholder="2">
-              <span class="form-hint">{{ _('How many weeks to keep (0 = keep all)') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="WEEKLY_PLAYLIST_PREFIX">{{ _('Playlist Prefix') }}</label>
-              <input type="text" id="WEEKLY_PLAYLIST_PREFIX" name="WEEKLY_PLAYLIST_PREFIX" placeholder="{{ _('(derived from main name)') }}">
-              <span class="form-hint">{{ _('Override weekly playlist name prefix') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="WEEKLY_TIMEZONE">{{ _('Timezone') }}</label>
-              <input type="text" id="WEEKLY_TIMEZONE" name="WEEKLY_TIMEZONE" placeholder="UTC">
-              <span class="form-hint">{{ _('E.g., Europe/Berlin, America/New_York. Leave blank to inherit the general timezone.') }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-              <line x1="7" y1="7" x2="7.01" y2="7"></line>
-            </svg>
-            {{ _('Custom Playlists') }}
-          </h3>
-          <div class="settings-grid">
-            <div class="form-group">
-              <label for="CUSTOM_PLAYLISTS_PRIVACY">{{ _('Custom Playlist Visibility') }}</label>
-              <select id="CUSTOM_PLAYLISTS_PRIVACY" name="CUSTOM_PLAYLISTS_PRIVACY">
-                <option value="">{{ _('Inherit from main') }}</option>
-                <option value="PRIVATE">{{ _('Private') }}</option>
-                <option value="UNLISTED">{{ _('Unlisted') }}</option>
-                <option value="PUBLIC">{{ _('Public') }}</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="TAG_MIN_COUNT">{{ _('Minimum Tag Count') }}</label>
-              <input type="number" id="TAG_MIN_COUNT" name="TAG_MIN_COUNT" min="1" placeholder="10">
-              <span class="form-hint">{{ _('Minimum Last.fm tag vote count to include') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="TAG_SLEEP_BETWEEN">{{ _('Sleep Between Tag Fetches (seconds)') }}</label>
-              <input type="text" id="TAG_SLEEP_BETWEEN" name="TAG_SLEEP_BETWEEN" inputmode="decimal" placeholder="0.25">
-              <span class="form-hint">{{ _('Delay between tag API calls to avoid rate limiting') }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.3-4.3"></path>
-            </svg>
-            {{ _('Search Behavior') }}
-          </h3>
-          <div class="settings-grid">
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="USE_ANON_SEARCH" name="USE_ANON_SEARCH">
-                <span>{{ _('Use anonymous search') }}</span>
-              </label>
-              <span class="form-hint">{{ _('Recommended for better search results') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="EARLY_TERMINATION_SCORE">{{ _('Early Termination Score (0.0-1.0)') }}</label>
-              <input type="text" id="EARLY_TERMINATION_SCORE" name="EARLY_TERMINATION_SCORE" inputmode="decimal" placeholder="0.9">
-              <span class="form-hint">{{ _('Stop search early if match score exceeds this') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="SLEEP_BETWEEN_SEARCHES">{{ _('Sleep Between Searches (seconds)') }}</label>
-              <input type="text" id="SLEEP_BETWEEN_SEARCHES" name="SLEEP_BETWEEN_SEARCHES" inputmode="decimal" placeholder="0.25">
-              <span class="form-hint">{{ _('Delay between searches to avoid rate limiting') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="SEARCH_MAX_WORKERS">{{ _('Max Search Workers') }}</label>
-              <input type="number" id="SEARCH_MAX_WORKERS" name="SEARCH_MAX_WORKERS" min="1" max="10" placeholder="2">
-              <span class="form-hint">{{ _('Parallel search threads (higher = faster but more API load)') }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
-              <path d="M21 3v5h-5"></path>
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
-              <path d="M8 16H3v5"></path>
-            </svg>
-            {{ _('Backfill') }}
-          </h3>
-          <div class="settings-grid">
-            <div class="form-group">
-              <label for="MAX_RAW_SCROBBLES">{{ _('Max Raw Scrobbles') }}</label>
-              <input type="number" id="MAX_RAW_SCROBBLES" name="MAX_RAW_SCROBBLES" min="0" placeholder="2000">
-              <span class="form-hint">{{ _('Max scrobbles to fetch (0 = unlimited)') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="BACKFILL_PASSES">{{ _('Backfill Passes') }}</label>
-              <input type="number" id="BACKFILL_PASSES" name="BACKFILL_PASSES" min="0" placeholder="3">
-              <span class="form-hint">{{ _('Additional fetch attempts if below LIMIT (0 = disabled)') }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-              <polyline points="17 21 17 13 7 13 7 21"></polyline>
-              <polyline points="7 3 7 8 15 8"></polyline>
-            </svg>
-            {{ _('Caching') }}
-          </h3>
-          <div class="settings-grid">
-            <div class="form-group">
-              <label for="CACHE_SEARCH_TTL_DAYS">{{ _('Search Cache TTL (days)') }}</label>
-              <input type="number" id="CACHE_SEARCH_TTL_DAYS" name="CACHE_SEARCH_TTL_DAYS" min="0" placeholder="30">
-              <span class="form-hint">{{ _('Days before cached searches expire (0 = never)') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="CACHE_NOTFOUND_TTL_DAYS">{{ _('Not-Found Cache TTL (days)') }}</label>
-              <input type="number" id="CACHE_NOTFOUND_TTL_DAYS" name="CACHE_NOTFOUND_TTL_DAYS" min="0" placeholder="7">
-              <span class="form-hint">{{ _('Days before "not found" results are retried') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="TAG_CACHE_TTL_DAYS">{{ _('Tag Cache TTL (days)') }}</label>
-              <input type="number" id="TAG_CACHE_TTL_DAYS" name="TAG_CACHE_TTL_DAYS" min="0" placeholder="90">
-              <span class="form-hint">{{ _('Days before cached tags expire (0 = never)') }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M3 12a9 3 0 0 0 18 0V6a9 3 0 0 0-18 0Z"></path>
-              <path d="M3 6a9 3 0 0 0 18 0"></path>
-              <path d="M3 12a9 3 0 0 0 18 0"></path>
-            </svg>
-            {{ _('Local Databases') }}
-          </h3>
-          <p class="settings-help">
-            {{ _('Optional local SQLite databases stored under cache/. They power richer playlist ranking and analytics and never leave your instance. Back them up from Data Management below.') }}
-          </p>
-
-          <div class="settings-subsection">
-            <h4 class="settings-subsection-title">{{ _('Local Last.fm History') }}</h4>
-            <div class="settings-grid">
-              <div class="form-group form-group-checkbox">
-                <label>
-                  <input type="checkbox" id="USE_LOCAL_LASTFM_DB" name="USE_LOCAL_LASTFM_DB">
-                  <span>{{ _('Use local Last.fm database') }}</span>
-                </label>
-                <span
-                  class="form-hint">{{ _('Crawl your full Last.fm scrobble history into a local database and rank playlists by lifetime plays + recency. The first sync downloads your entire history (may take a while); later syncs only fetch new scrobbles.') }}</span>
-              </div>
-            </div>
-            <p class="settings-help" style="color: var(--warning, #b58900);">
-              {{ _('Heads up: enabling this changes how the main playlist is built (lifetime plays instead of recent tracks), so the resulting playlist may look noticeably different.') }}
-            </p>
-            <div id="localLastfmStatus" class="form-hint" style="margin-top: 0.5rem;"></div>
-            <div id="localLastfmActions" style="display: none; margin-top: 0.75rem;">
-              <button type="button" class="btn btn-danger" data-action="clearLocalLastfm">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round">
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                </svg>
-                {{ _('Clear Last.fm History') }}
-              </button>
-              <p class="settings-help" style="margin-top: 0.5rem;">
-                {{ _('Clearing resets the sync watermark, so the next sync re-crawls your full Last.fm history. Backup and restore from Data Management below.') }}
-              </p>
-            </div>
-          </div>
-
-          <div class="settings-subsection">
-            <h4 class="settings-subsection-title">{{ _('History Database') }}</h4>
-            <div class="settings-grid">
-              <div class="form-group form-group-checkbox">
-                <label>
-                  <input type="checkbox" id="HISTORY_DB_ENABLED" name="HISTORY_DB_ENABLED">
-                  <span>{{ _('Enable history database') }}</span>
-                </label>
-                <span class="form-hint">{{ _('Store track lookups, sync runs, and actions in a local SQLite database for analytics') }}</span>
-              </div>
-            </div>
-            <div id="historyBackfillSection" class="history-backfill-section" style="display: none; margin-top: 1rem;">
-              <div class="settings-grid" style="margin-bottom: 1rem;">
-                <div class="form-group">
-                  <label for="HISTORY_MAX_SIZE_MB">{{ _('Max DB Size (MB)') }}</label>
-                  <input type="number" id="HISTORY_MAX_SIZE_MB" name="HISTORY_MAX_SIZE_MB" min="0" step="1" placeholder="0">
-                  <span class="form-hint">{{ _('Auto-prune oldest records when exceeded. 0 = unlimited.') }}</span>
-                </div>
-                <div class="form-group">
-                  <label for="HISTORY_RETENTION_DAYS">{{ _('Retention (days)') }}</label>
-                  <input type="number" id="HISTORY_RETENTION_DAYS" name="HISTORY_RETENTION_DAYS" min="0" step="1" placeholder="0">
-                  <span class="form-hint">{{ _('Auto-delete syncs &amp; actions older than N days after each sync. 0 = keep forever.') }}</span>
-                </div>
-              </div>
-              <div id="historyDbStatus" class="form-hint" style="margin-top: 0.5rem; margin-bottom: 0.75rem;"></div>
-              <p class="settings-help">
-                {{ _('Import existing data from your search cache and overrides into the history database.') }}
-              </p>
-              <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                <button type="button" class="btn btn-secondary" data-action="historyBackfill">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                  </svg>
-                  {{ _('Backfill from Cache') }}
-                </button>
-                <button type="button" class="btn btn-secondary" data-action="historyVacuum">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-                  </svg>
-                  {{ _('Vacuum &amp; Prune') }}
-                </button>
-                <button type="button" class="btn btn-danger" data-action="clearHistory">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                  {{ _('Clear History Database') }}
-                </button>
-              </div>
-              <p class="settings-help" style="margin-top: 0.75rem;">
-                {{ _('Backup and restore the history database from Data Management below.') }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-            </svg>
-            {{ _('Webhooks') }}
-          </h3>
-          <div class="settings-grid">
-            <div class="form-group" style="grid-column: 1 / -1;">
-              <label for="WEBHOOK_URL">{{ _('Webhook URL') }}</label>
-              <input type="url" id="WEBHOOK_URL" name="WEBHOOK_URL" placeholder="https://ntfy.sh/mytopic">
-              <span class="form-hint">{{ _('Receives a JSON POST with sync results. Works with ntfy, Discord, Slack, or any HTTP endpoint.') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="WEBHOOK_EVENTS">{{ _('Send notifications for') }}</label>
-              <div style="display: flex; gap: 0.5rem; align-items: center;">
-                <select id="WEBHOOK_EVENTS" name="WEBHOOK_EVENTS" style="flex: 1;">
-                  <option value="error">{{ _('Errors only') }}</option>
-                  <option value="all">{{ _('All syncs') }}</option>
-                </select>
-                <button type="button" class="btn btn-secondary" data-action="testWebhook">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                  </svg>
-                  {{ _('Test') }}
-                </button>
-              </div>
-              <span class="form-hint">{{ _('Choose when to send webhook notifications') }}</span>
-            </div>
-            <div class="form-group form-group-checkbox" style="grid-column: 1 / -1;">
-              <label>
-                <input type="checkbox" id="WEBHOOK_ALLOW_PRIVATE" name="WEBHOOK_ALLOW_PRIVATE">
-                <span>{{ _('Allow private/LAN webhook URLs') }}</span>
-              </label>
-              <span
-                class="form-hint">{{ _('Enable only if your webhook points to a local address (e.g. a self-hosted ntfy or Gotify on your network). Off by default to prevent server-side request forgery.') }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            </svg>
-            {{ _('Reliability & Retries') }}
-          </h3>
-          <div class="settings-grid">
-            <div class="form-group">
-              <label for="API_MAX_RETRIES">{{ _('YTM API Max Retries') }}</label>
-              <input type="number" id="API_MAX_RETRIES" name="API_MAX_RETRIES" min="0" placeholder="3">
-            </div>
-            <div class="form-group">
-              <label for="LASTFM_MAX_RETRIES">{{ _('Last.fm Max Retries') }}</label>
-              <input type="number" id="LASTFM_MAX_RETRIES" name="LASTFM_MAX_RETRIES" min="0" placeholder="5">
-            </div>
-            <div class="form-group">
-              <label for="LASTFM_MAX_CONSECUTIVE_EMPTY">{{ _('Max Consecutive Empty Pages') }}</label>
-              <input type="number" id="LASTFM_MAX_CONSECUTIVE_EMPTY" name="LASTFM_MAX_CONSECUTIVE_EMPTY" min="1" placeholder="3">
-              <span class="form-hint">{{ _('Stop after N pages with no new tracks') }}</span>
-            </div>
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="LASTFM_FORCE_IPV4" name="LASTFM_FORCE_IPV4">
-                <span>{{ _('Force IPv4 for Last.fm') }}</span>
-              </label>
-              <span class="form-hint">{{ _('Helps with flaky Last.fm IPv6 connections') }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            {{ _('Automation') }}
-          </h3>
-          <div id="schedulerStatus" class="scheduler-status" style="display: none;">
-            <div class="scheduler-status-badge">
-              <span class="scheduler-status-dot"></span>
-              <span class="scheduler-status-text">{{ _('Loading...') }}</span>
-            </div>
-          </div>
-          <div class="settings-grid">
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="AUTO_SYNC_ENABLED" name="AUTO_SYNC_ENABLED">
-                <span>{{ _('Enable automated sync') }}</span>
-              </label>
-              <span class="form-hint">{{ _('Automatically run sync at scheduled intervals') }}</span>
-            </div>
-            <div class="form-group form-group-checkbox">
-              <label>
-                <input type="checkbox" id="AUTO_TAG_SYNC_ENABLED" name="AUTO_TAG_SYNC_ENABLED">
-                <span>{{ _('Include custom playlists') }}</span>
-              </label>
-              <span class="form-hint">{{ _('Also sync custom tag & artist playlists after each scheduled run') }}</span>
-            </div>
-            <div class="form-group" id="tagSyncFrequencyGroup">
-              <label for="AUTO_TAG_SYNC_FREQUENCY">{{ _('Custom sync frequency') }}</label>
-              <input type="number" id="AUTO_TAG_SYNC_FREQUENCY" name="AUTO_TAG_SYNC_FREQUENCY" min="1" max="100" placeholder="1" value="1">
-              <span class="form-hint">{{ _('Run custom playlist sync every N main syncs (1 = every time, 3 = every 3rd sync)') }}</span>
-            </div>
-            <div class="form-group">
-              <label for="AUTO_SYNC_TYPE">{{ _('Schedule Type') }}</label>
-              <select id="AUTO_SYNC_TYPE" name="AUTO_SYNC_TYPE">
-                <option value="interval">{{ _('Interval (every N hours)') }}</option>
-                <option value="cron">{{ _('Cron Expression') }}</option>
-              </select>
-            </div>
-            <div class="form-group auto-sync-interval" id="intervalHoursGroup">
-              <label for="AUTO_SYNC_INTERVAL_HOURS">{{ _('Interval (hours)') }}</label>
-              <input type="text" id="AUTO_SYNC_INTERVAL_HOURS" name="AUTO_SYNC_INTERVAL_HOURS" inputmode="decimal" placeholder="6">
-              <span class="form-hint">{{ _('How often to sync (e.g., 6 = every 6 hours)') }}</span>
-            </div>
-            <div class="form-group auto-sync-interval" id="startTimeGroup">
-              <label for="AUTO_SYNC_START_TIME">{{ _('Starting at (optional)') }}</label>
-              <input type="time" id="AUTO_SYNC_START_TIME" name="AUTO_SYNC_START_TIME" placeholder="00:00">
-              <span class="form-hint">{{ _('Anchor time for intervals (e.g., 00:00 → 0, 6, 12, 18h)') }}</span>
-            </div>
-            <div class="form-group auto-sync-cron" id="cronExpressionGroup">
-              <label for="AUTO_SYNC_CRON">{{ _('Cron Expression') }}</label>
-              <input type="text" id="AUTO_SYNC_CRON" name="AUTO_SYNC_CRON" placeholder="0 */6 * * *">
-              <span class="form-hint">{{ _('Standard cron format: minute hour day month weekday (server time)') }}</span>
-            </div>
-          </div>
-          <div id="nextRunInfo" class="scheduler-next-run" style="display: none;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            <span>{{ _('Next run:') }} <strong id="nextRunTime">–</strong></span>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            {{ _('Logging') }}
-          </h3>
-          <div class="settings-grid">
-            <div class="form-group">
-              <label for="LOG_LEVEL">{{ _('Log Level') }}</label>
-              <select id="LOG_LEVEL" name="LOG_LEVEL">
-                <option value="DEBUG">DEBUG</option>
-                <option value="INFO">INFO</option>
-                <option value="WARNING">WARNING</option>
-                <option value="ERROR">ERROR</option>
-                <option value="CRITICAL">CRITICAL</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3 class="settings-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-            {{ _('Data Management') }}
-          </h3>
-          <p class="settings-help">
-            {{ _('Back up, restore, or migrate your data. Each option covers a different scope.') }}
-          </p>
-
-          <div class="data-mgmt-group">
-            <div class="data-mgmt-label">
-              <strong>{{ _('Overrides &amp; Blacklist') }}</strong>
-              <span class="form-hint">{{ _('Manual fixes, tag overrides, and the blacklist (JSON, plaintext).') }}</span>
-            </div>
-            <button type="button" class="btn btn-secondary" data-action="showExportImportModal">
+        <div class="settings-layout">
+          <nav class="settings-nav" aria-label="{{ _('Settings categories') }}">
+            <button type="button" class="settings-nav-item active" data-settings-nav="general">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="m7 11V7a5 5 0 0 1 10 0v4"></path>
               </svg>
-              {{ _('Export / Import') }}
+              <span>{{ _('General') }}</span>
             </button>
-          </div>
-
-          <div id="historyDataMgmtGroup" class="data-mgmt-group" style="display: none;">
-            <div class="data-mgmt-label">
-              <strong>{{ _('History Database') }}</strong>
-              <span class="form-hint">{{ _('Full track / sync / action log as a JSON dump (plaintext). Import supports merge or replace.') }}</span>
-            </div>
-            <button type="button" class="btn btn-secondary" data-action="showHistoryDataModal">
+            <button type="button" class="settings-nav-item" data-settings-nav="appearance">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-              </svg>
-              {{ _('Export / Import') }}
-            </button>
-          </div>
-
-          <div id="localLastfmDataMgmtGroup" class="data-mgmt-group" style="display: none;">
-            <div class="data-mgmt-label">
-              <strong>{{ _('Local Last.fm History') }}</strong>
-              <span
-                class="form-hint">{{ _('Full scrobble history (artist, track, play counts) as a JSON dump (plaintext). Import supports merge or replace.') }}</span>
-            </div>
-            <button type="button" class="btn btn-secondary" data-action="showLocalLastfmDataModal">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-              </svg>
-              {{ _('Export / Import') }}
-            </button>
-          </div>
-
-          <div class="data-mgmt-group">
-            <div class="data-mgmt-label">
-              <strong>{{ _('Teleporter') }}</strong>
-              <span class="form-hint">{{ _('Encrypted bundle (AES-256-GCM) of everything above plus caches - for moving between instances.') }}</span>
-            </div>
-            <button type="button" class="btn btn-secondary" data-action="showTeleporterModal">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83">
+                <circle cx="13.5" cy="6.5" r=".5"></circle>
+                <circle cx="17.5" cy="10.5" r=".5"></circle>
+                <circle cx="8.5" cy="7.5" r=".5"></circle>
+                <circle cx="6.5" cy="12.5" r=".5"></circle>
+                <path
+                  d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z">
                 </path>
               </svg>
-              {{ _('Open Teleporter') }}
+              <span>{{ _('Appearance') }}</span>
             </button>
+            <button type="button" class="settings-nav-item" data-settings-nav="playlists">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M21 15V6"></path>
+                <path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path>
+                <path d="M12 12H3"></path>
+                <path d="M16 6H3"></path>
+                <path d="M12 18H3"></path>
+              </svg>
+              <span>{{ _('Playlists') }}</span>
+            </button>
+            <button type="button" class="settings-nav-item" data-settings-nav="ranking">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+              <span>{{ _('Ranking & Search') }}</span>
+            </button>
+            <button type="button" class="settings-nav-item" data-settings-nav="automation">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>{{ _('Automation') }}</span>
+            </button>
+            <button type="button" class="settings-nav-item" data-settings-nav="notifications">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              <span>{{ _('Notifications') }}</span>
+            </button>
+            <button type="button" class="settings-nav-item" data-settings-nav="data">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M3 12a9 3 0 0 0 18 0V6a9 3 0 0 0-18 0Z"></path>
+                <path d="M3 6a9 3 0 0 0 18 0"></path>
+                <path d="M3 12a9 3 0 0 0 18 0"></path>
+              </svg>
+              <span>{{ _('Data & Storage') }}</span>
+            </button>
+            <button type="button" class="settings-nav-item" data-settings-nav="advanced">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <span>{{ _('Advanced') }}</span>
+            </button>
+          </nav>
+
+          <div class="settings-pages">
+            <div class="settings-page active" data-settings-page="general">
+              <div class="settings-section" data-settings-section="credentials">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="m7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  {{ _('Credentials') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group">
+                    <label for="LASTFM_USER">{{ _('Last.fm Username') }}</label>
+                    <input type="text" id="LASTFM_USER" name="LASTFM_USER" placeholder="{{ _('Your Last.fm username') }}" autocomplete="off">
+                    <span class="form-hint">{{ _('Your Last.fm username for scrobble fetching') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="LASTFM_API_KEY">{{ _('Last.fm API Key') }}</label>
+                    <input type="text" id="LASTFM_API_KEY" name="LASTFM_API_KEY" placeholder="••••••••" autocomplete="off" data-secret="true">
+                    <span class="form-hint">{{ _('Get yours at') }} <a href="https://www.last.fm/api/account/create"
+                        target="_blank">last.fm/api</a></span>
+                  </div>
+                  <div class="form-group">
+                    <label>{{ _('YouTube Music Auth') }}</label>
+                    <div class="ytm-auth-row">
+                      <button type="button" class="btn btn-secondary" data-action="showModal" data-modal="authModal">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <path
+                            d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
+                          </path>
+                        </svg>
+                        {{ _('Regenerate') }}
+                      </button>
+                      <span id="ytmAuthStatus" class="auth-status">
+                        <span class="auth-status-dot"></span>
+                        <span class="auth-status-text">{{ _('Checking...') }}</span>
+                      </span>
+                    </div>
+                    <span class="form-hint">{{ _('Update browser.json with new credentials from your browser') }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-page" data-settings-page="appearance">
+              <div class="settings-section" data-settings-section="appearance">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="13.5" cy="6.5" r=".5"></circle>
+                    <circle cx="17.5" cy="10.5" r=".5"></circle>
+                    <circle cx="8.5" cy="7.5" r=".5"></circle>
+                    <circle cx="6.5" cy="12.5" r=".5"></circle>
+                    <path
+                      d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z">
+                    </path>
+                  </svg>
+                  {{ _('Theme & Language') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group">
+                    <label for="theme-select">{{ _('Theme') }}</label>
+                    <select id="theme-select">
+                      <option value="dark">{{ _('Dark (Default)') }}</option>
+                      <option value="light">{{ _('Light') }}</option>
+                    </select>
+                    <span class="form-hint">
+                      {{ _('Color scheme for the interface') }}
+                    </span>
+                  </div>
+                  <div class="form-group">
+                    <label for="locale-select">{{ _('Language') }}</label>
+                    <select id="locale-select">
+                      {% for code, name in available_locales %}
+                      <option value="{{ code }}">{{ name }}</option>
+                      {% endfor %}
+                    </select>
+                    <span class="form-hint">{{ _('Interface language (requires reload)') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="DATE_FORMAT">{{ _('Date format') }}</label>
+                    <select id="DATE_FORMAT" name="DATE_FORMAT">
+                      <option value="auto">{{ _('Auto (browser locale)') }}</option>
+                      <option value="DMY">{{ _('Day/Month (31/12)') }}</option>
+                      <option value="MDY">{{ _('Month/Day (12/31)') }}</option>
+                    </select>
+                    <span class="form-hint">{{ _('How dates are displayed in the interface') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="TIMEZONE">{{ _('Timezone') }}</label>
+                    <input type="text" id="TIMEZONE" name="TIMEZONE" placeholder="UTC">
+                    <span
+                      class="form-hint">{{ _('Default IANA timezone (e.g. Europe/Berlin, America/New_York) used for weekly-playlist week boundaries and session hours. Weekly and session timezones inherit this unless overridden.') }}</span>
+                  </div>
+                  <div class="form-group form-group-checkbox">
+                    <label>
+                      <input type="checkbox" id="custom-theme-toggle">
+                      <span>{{ _('Use custom colors') }}</span>
+                    </label>
+                    <span class="form-hint">
+                      {{ _('Apply your saved custom colors on top of the selected theme.') }}
+                      &middot;
+                      <button type="button" class="link-button" data-action="showCustomThemeModal">{{ _('Customize colors') }}</button>
+                    </span>
+                  </div>
+                  <div class="form-group form-group-checkbox">
+                    <label>
+                      <input type="checkbox" id="USE_24_HOUR_CLOCK" name="USE_24_HOUR_CLOCK">
+                      <span>{{ _('Use 24-hour clock') }}</span>
+                    </label>
+                  </div>
+                  <div class="form-group form-group-checkbox">
+                    <label>
+                      <input type="checkbox" id="DISPLAY_TIPS" name="DISPLAY_TIPS">
+                      <span>{{ _('Display tips') }}</span>
+                    </label>
+                    <span class="form-hint">{{ _('Show the helper info banners at the top of each tab') }}</span>
+                  </div>
+                  <div class="form-group form-group-checkbox">
+                    <label>
+                      <input type="checkbox" id="NOW_PLAYING_ENABLED" name="NOW_PLAYING_ENABLED">
+                      <span>{{ _('Show "Now Playing" from Last.fm') }}</span>
+                    </label>
+                    <span class="form-hint">{{ _('Display currently playing track in the header') }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="NOW_PLAYING_ENABLED">
+                    <label for="NOW_PLAYING_INTERVAL">{{ _('Now Playing Poll Interval (seconds)') }}</label>
+                    <input type="number" id="NOW_PLAYING_INTERVAL" name="NOW_PLAYING_INTERVAL" min="5" max="120" step="1" placeholder="15">
+                    <span class="form-hint">{{ _('How often to check for currently playing track (5-120 seconds)') }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-page" data-settings-page="playlists">
+              <div class="settings-section" data-settings-section="main_playlist">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M21 15V6"></path>
+                    <path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path>
+                    <path d="M12 12H3"></path>
+                    <path d="M16 6H3"></path>
+                    <path d="M12 18H3"></path>
+                  </svg>
+                  {{ _('Main Playlist') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group">
+                    <label for="PLAYLIST_NAME">{{ _('Playlist Name') }}</label>
+                    <input type="text" id="PLAYLIST_NAME" name="PLAYLIST_NAME" placeholder="{{ _('Last.fm Recents (auto)') }}">
+                  </div>
+                  <div class="form-group">
+                    <label for="PLAYLIST_DESCRIPTION">{{ _('Playlist Description') }}</label>
+                    <input type="text" id="PLAYLIST_DESCRIPTION" name="PLAYLIST_DESCRIPTION" placeholder="{{ _('Custom description') }}">
+                    <span class="form-hint">{{ _('Leave empty to auto-generate based on Last.fm username and ranking mode') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="LIMIT">{{ _('Track Limit') }}</label>
+                    <input type="number" id="LIMIT" name="LIMIT" min="1" max="5000" placeholder="100">
+                    <span class="form-hint">{{ _('Target number of tracks in playlist') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="MAKE_PUBLIC">{{ _('Playlist Visibility') }}</label>
+                    <select id="MAKE_PUBLIC" name="MAKE_PUBLIC">
+                      <option value="PRIVATE">{{ _('Private') }}</option>
+                      <option value="UNLISTED">{{ _('Unlisted') }}</option>
+                      <option value="PUBLIC">{{ _('Public') }}</option>
+                    </select>
+                  </div>
+                  <div class="form-group form-group-checkbox">
+                    <label>
+                      <input type="checkbox" id="DEDUPLICATE" name="DEDUPLICATE">
+                      <span>{{ _('Deduplicate tracks') }}</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-section" data-settings-section="weekly_playlists">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  {{ _('Weekly Playlists') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group form-group-checkbox">
+                    <label>
+                      <input type="checkbox" id="WEEKLY_ENABLED" name="WEEKLY_ENABLED">
+                      <span>{{ _('Enable weekly playlists') }}</span>
+                    </label>
+                  </div>
+                  <div class="form-group" data-show-if="WEEKLY_ENABLED">
+                    <label for="WEEKLY_MAKE_PUBLIC">{{ _('Weekly Playlist Visibility') }}</label>
+                    <select id="WEEKLY_MAKE_PUBLIC" name="WEEKLY_MAKE_PUBLIC">
+                      <option value="">{{ _('Inherit from main') }}</option>
+                      <option value="PRIVATE">{{ _('Private') }}</option>
+                      <option value="UNLISTED">{{ _('Unlisted') }}</option>
+                      <option value="PUBLIC">{{ _('Public') }}</option>
+                    </select>
+                  </div>
+                  <div class="form-group" data-show-if="WEEKLY_ENABLED">
+                    <label for="WEEKLY_WEEK_START">{{ _('Week Start Day') }}</label>
+                    <select id="WEEKLY_WEEK_START" name="WEEKLY_WEEK_START">
+                      <option value="MON">{{ _('Monday') }}</option>
+                      <option value="TUE">{{ _('Tuesday') }}</option>
+                      <option value="WED">{{ _('Wednesday') }}</option>
+                      <option value="THU">{{ _('Thursday') }}</option>
+                      <option value="FRI">{{ _('Friday') }}</option>
+                      <option value="SAT">{{ _('Saturday') }}</option>
+                      <option value="SUN">{{ _('Sunday') }}</option>
+                    </select>
+                  </div>
+                  <div class="form-group" data-show-if="WEEKLY_ENABLED">
+                    <label for="WEEKLY_KEEP_WEEKS">{{ _('Keep Weeks') }}</label>
+                    <input type="number" id="WEEKLY_KEEP_WEEKS" name="WEEKLY_KEEP_WEEKS" min="0" placeholder="2">
+                    <span class="form-hint">{{ _('How many weeks to keep (0 = keep all)') }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="WEEKLY_ENABLED">
+                    <label for="WEEKLY_PLAYLIST_PREFIX">{{ _('Playlist Prefix') }}</label>
+                    <input type="text" id="WEEKLY_PLAYLIST_PREFIX" name="WEEKLY_PLAYLIST_PREFIX" placeholder="{{ _('(derived from main name)') }}">
+                    <span class="form-hint">{{ _('Override weekly playlist name prefix') }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="WEEKLY_ENABLED">
+                    <label for="WEEKLY_TIMEZONE">{{ _('Timezone') }}</label>
+                    <input type="text" id="WEEKLY_TIMEZONE" name="WEEKLY_TIMEZONE" placeholder="UTC">
+                    <span class="form-hint">{{ _('E.g., Europe/Berlin, America/New_York. Leave blank to inherit the general timezone.') }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-section" data-settings-section="custom_playlists">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                  </svg>
+                  {{ _('Custom Playlists') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group">
+                    <label for="CUSTOM_PLAYLISTS_PRIVACY">{{ _('Custom Playlist Visibility') }}</label>
+                    <select id="CUSTOM_PLAYLISTS_PRIVACY" name="CUSTOM_PLAYLISTS_PRIVACY">
+                      <option value="">{{ _('Inherit from main') }}</option>
+                      <option value="PRIVATE">{{ _('Private') }}</option>
+                      <option value="UNLISTED">{{ _('Unlisted') }}</option>
+                      <option value="PUBLIC">{{ _('Public') }}</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="TAG_MIN_COUNT">{{ _('Minimum Tag Count') }}</label>
+                    <input type="number" id="TAG_MIN_COUNT" name="TAG_MIN_COUNT" min="1" placeholder="10">
+                    <span class="form-hint">{{ _('Minimum Last.fm tag vote count to include') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="TAG_SLEEP_BETWEEN">{{ _('Sleep Between Tag Fetches (seconds)') }}</label>
+                    <input type="text" id="TAG_SLEEP_BETWEEN" name="TAG_SLEEP_BETWEEN" inputmode="decimal" placeholder="0.25">
+                    <span class="form-hint">{{ _('Delay between tag API calls to avoid rate limiting') }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-page" data-settings-page="ranking">
+              <div class="settings-section" data-settings-section="track_ranking">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                  </svg>
+                  {{ _('Track Ranking') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group form-group-checkbox">
+                    <label>
+                      <input type="checkbox" id="USE_RECENCY_WEIGHTING" name="USE_RECENCY_WEIGHTING">
+                      <span>{{ _('Use recency weighting') }}</span>
+                    </label>
+                    <span class="form-hint">{{ _('Rank by play count + recency (off = most recent first)') }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="USE_RECENCY_WEIGHTING">
+                    <label for="RECENCY_HALF_LIFE_HOURS">{{ _('Recency Half-Life (hours)') }}</label>
+                    <input type="text" id="RECENCY_HALF_LIFE_HOURS" name="RECENCY_HALF_LIFE_HOURS" inputmode="decimal" placeholder="48.0">
+                    <span class="form-hint">{{ _('How fast recency decays (lower = favor newer tracks)') }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="USE_RECENCY_WEIGHTING">
+                    <label for="RECENCY_PLAY_WEIGHT">{{ _('Play Weight (0.0-1.0)') }}</label>
+                    <input type="text" id="RECENCY_PLAY_WEIGHT" name="RECENCY_PLAY_WEIGHT" inputmode="decimal" placeholder="0.7">
+                    <span class="form-hint">{{ _('0.0 = pure recency, 1.0 = pure play count') }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="USE_RECENCY_WEIGHTING">
+                    <label for="RECENCY_MIN_PLAYS">{{ _('Minimum Plays') }}</label>
+                    <input type="text" id="RECENCY_MIN_PLAYS" name="RECENCY_MIN_PLAYS" inputmode="numeric" placeholder="1">
+                    <span
+                      class="form-hint">{{ _('Gate tracks: must be scrobbled at least this many times in the fetched window (1 = no gate)') }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="USE_RECENCY_WEIGHTING">
+                    <label for="RECENCY_NORMALIZATION">{{ _('Play-count normalization') }}</label>
+                    <select id="RECENCY_NORMALIZATION" name="RECENCY_NORMALIZATION">
+                      <option value="linear">{{ _('Linear (default)') }}</option>
+                      <option value="log">{{ _('Logarithmic') }}</option>
+                      <option value="rank">{{ _('Percentile rank') }}</option>
+                    </select>
+                    <span
+                      class="form-hint">{{ _('How play counts convert to a score. Linear divides by the top track (one 500-play outlier flattens everything else). Logarithmic compresses big outliers so heavy hitters do not dominate. Rank ignores absolute counts and scores by position, giving the most balanced spread.') }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="USE_RECENCY_WEIGHTING">
+                    <label for="RECENCY_VELOCITY_WEIGHT">{{ _('Velocity Weight (0.0-1.0)') }}</label>
+                    <input type="text" id="RECENCY_VELOCITY_WEIGHT" name="RECENCY_VELOCITY_WEIGHT" inputmode="decimal" placeholder="0.0">
+                    <span
+                      class="form-hint">{{ _('Blends in a trending signal based on plays-per-day (how tightly a track\u2019s plays cluster in time). 0.0 = off. Raise it to favor tracks you are bingeing right now over ones played the same number of times spread across months.') }}</span>
+                  </div>
+                  <div class="form-group form-group-checkbox" data-show-if="USE_RECENCY_WEIGHTING">
+                    <label>
+                      <input type="checkbox" id="RECENCY_SESSION_WEIGHTING" name="RECENCY_SESSION_WEIGHTING">
+                      <span>{{ _('Session weighting') }}</span>
+                    </label>
+                    <span
+                      class="form-hint">{{ _('Give extra weight to plays that happened during your preferred listening hours (e.g. an evening session) over background/late-night scrobbles. Only applies when scoring from the fetched scrobble window, not the local Last.fm DB.') }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="USE_RECENCY_WEIGHTING RECENCY_SESSION_WEIGHTING">
+                    <label for="RECENCY_SESSION_HOURS">{{ _('Session Hours') }}</label>
+                    <input type="text" id="RECENCY_SESSION_HOURS" name="RECENCY_SESSION_HOURS" placeholder="9-23">
+                    <span
+                      class="form-hint">{{ _('Preferred listening window as START-END in 24h local time (half-open, may wrap past midnight, e.g. 22-4). Used only when session weighting is on.') }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="USE_RECENCY_WEIGHTING RECENCY_SESSION_WEIGHTING">
+                    <label for="RECENCY_SESSION_TIMEZONE">{{ _('Session Timezone') }}</label>
+                    <input type="text" id="RECENCY_SESSION_TIMEZONE" name="RECENCY_SESSION_TIMEZONE" placeholder="UTC">
+                    <span
+                      class="form-hint">{{ _('IANA timezone for the session window (e.g. America/New_York). Leave blank to inherit the general timezone.') }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-section" data-settings-section="search_behavior">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                  </svg>
+                  {{ _('Search Behavior') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group form-group-checkbox">
+                    <label>
+                      <input type="checkbox" id="USE_ANON_SEARCH" name="USE_ANON_SEARCH">
+                      <span>{{ _('Use anonymous search') }}</span>
+                    </label>
+                    <span class="form-hint">{{ _('Recommended for better search results') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="EARLY_TERMINATION_SCORE">{{ _('Early Termination Score (0.0-1.0)') }}</label>
+                    <input type="text" id="EARLY_TERMINATION_SCORE" name="EARLY_TERMINATION_SCORE" inputmode="decimal" placeholder="0.9">
+                    <span class="form-hint">{{ _('Stop search early if match score exceeds this') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="SLEEP_BETWEEN_SEARCHES">{{ _('Sleep Between Searches (seconds)') }}</label>
+                    <input type="text" id="SLEEP_BETWEEN_SEARCHES" name="SLEEP_BETWEEN_SEARCHES" inputmode="decimal" placeholder="0.25">
+                    <span class="form-hint">{{ _('Delay between searches to avoid rate limiting') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="SEARCH_MAX_WORKERS">{{ _('Max Search Workers') }}</label>
+                    <input type="number" id="SEARCH_MAX_WORKERS" name="SEARCH_MAX_WORKERS" min="1" max="10" placeholder="2">
+                    <span class="form-hint">{{ _('Parallel search threads (higher = faster but more API load)') }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-section" data-settings-section="backfill">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                    <path d="M21 3v5h-5"></path>
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                    <path d="M8 16H3v5"></path>
+                  </svg>
+                  {{ _('Backfill') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group">
+                    <label for="MAX_RAW_SCROBBLES">{{ _('Max Raw Scrobbles') }}</label>
+                    <input type="number" id="MAX_RAW_SCROBBLES" name="MAX_RAW_SCROBBLES" min="0" placeholder="2000">
+                    <span class="form-hint">{{ _('Max scrobbles to fetch (0 = unlimited)') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="BACKFILL_PASSES">{{ _('Backfill Passes') }}</label>
+                    <input type="number" id="BACKFILL_PASSES" name="BACKFILL_PASSES" min="0" placeholder="3">
+                    <span class="form-hint">{{ _('Additional fetch attempts if below LIMIT (0 = disabled)') }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-page" data-settings-page="automation">
+              <div class="settings-section" data-settings-section="automation">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  {{ _('Automation') }}
+                </h3>
+                <div id="schedulerStatus" class="scheduler-status" style="display: none;">
+                  <div class="scheduler-status-badge">
+                    <span class="scheduler-status-dot"></span>
+                    <span class="scheduler-status-text">{{ _('Loading...') }}</span>
+                  </div>
+                </div>
+                <div class="settings-grid">
+                  <div class="form-group form-group-checkbox">
+                    <label>
+                      <input type="checkbox" id="AUTO_SYNC_ENABLED" name="AUTO_SYNC_ENABLED">
+                      <span>{{ _('Enable automated sync') }}</span>
+                    </label>
+                    <span class="form-hint">{{ _('Automatically run sync at scheduled intervals') }}</span>
+                  </div>
+                  <div class="form-group form-group-checkbox">
+                    <label>
+                      <input type="checkbox" id="AUTO_TAG_SYNC_ENABLED" name="AUTO_TAG_SYNC_ENABLED">
+                      <span>{{ _('Include custom playlists') }}</span>
+                    </label>
+                    <span class="form-hint">{{ _('Also sync custom tag & artist playlists after each scheduled run') }}</span>
+                  </div>
+                  <div class="form-group" id="tagSyncFrequencyGroup" data-show-if="AUTO_TAG_SYNC_ENABLED">
+                    <label for="AUTO_TAG_SYNC_FREQUENCY">{{ _('Custom sync frequency') }}</label>
+                    <input type="number" id="AUTO_TAG_SYNC_FREQUENCY" name="AUTO_TAG_SYNC_FREQUENCY" min="1" max="100" placeholder="1" value="1">
+                    <span class="form-hint">{{ _('Run custom playlist sync every N main syncs (1 = every time, 3 = every 3rd sync)') }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="AUTO_SYNC_ENABLED">
+                    <label for="AUTO_SYNC_TYPE">{{ _('Schedule Type') }}</label>
+                    <select id="AUTO_SYNC_TYPE" name="AUTO_SYNC_TYPE">
+                      <option value="interval">{{ _('Interval (every N hours)') }}</option>
+                      <option value="cron">{{ _('Cron Expression') }}</option>
+                    </select>
+                  </div>
+                  <div class="form-group auto-sync-interval" id="intervalHoursGroup" data-show-if="AUTO_SYNC_ENABLED AUTO_SYNC_TYPE=interval">
+                    <label for="AUTO_SYNC_INTERVAL_HOURS">{{ _('Interval (hours)') }}</label>
+                    <input type="text" id="AUTO_SYNC_INTERVAL_HOURS" name="AUTO_SYNC_INTERVAL_HOURS" inputmode="decimal" placeholder="6">
+                    <span class="form-hint">{{ _('How often to sync (e.g., 6 = every 6 hours)') }}</span>
+                  </div>
+                  <div class="form-group auto-sync-interval" id="startTimeGroup" data-show-if="AUTO_SYNC_ENABLED AUTO_SYNC_TYPE=interval">
+                    <label for="AUTO_SYNC_START_TIME">{{ _('Starting at (optional)') }}</label>
+                    <input type="time" id="AUTO_SYNC_START_TIME" name="AUTO_SYNC_START_TIME" placeholder="00:00">
+                    <span class="form-hint">{{ _('Anchor time for intervals (e.g., 00:00 → 0, 6, 12, 18h)') }}</span>
+                  </div>
+                  <div class="form-group auto-sync-cron" id="cronExpressionGroup" data-show-if="AUTO_SYNC_ENABLED AUTO_SYNC_TYPE=cron">
+                    <label for="AUTO_SYNC_CRON">{{ _('Cron Expression') }}</label>
+                    <input type="text" id="AUTO_SYNC_CRON" name="AUTO_SYNC_CRON" placeholder="0 */6 * * *">
+                    <span class="form-hint">{{ _('Standard cron format: minute hour day month weekday (server time)') }}</span>
+                  </div>
+                </div>
+                <div id="nextRunInfo" class="scheduler-next-run" style="display: none;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>{{ _('Next run:') }} <strong id="nextRunTime">–</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-page" data-settings-page="notifications">
+              <div class="settings-section" data-settings-section="webhooks">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                  </svg>
+                  {{ _('Webhooks') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group" style="grid-column: 1 / -1;">
+                    <label for="WEBHOOK_URL">{{ _('Webhook URL') }}</label>
+                    <input type="url" id="WEBHOOK_URL" name="WEBHOOK_URL" placeholder="https://ntfy.sh/mytopic">
+                    <span
+                      class="form-hint">{{ _('Receives a JSON POST with sync results. Works with ntfy, Discord, Slack, or any HTTP endpoint.') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="WEBHOOK_EVENTS">{{ _('Send notifications for') }}</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                      <select id="WEBHOOK_EVENTS" name="WEBHOOK_EVENTS" style="flex: 1;">
+                        <option value="error">{{ _('Errors only') }}</option>
+                        <option value="all">{{ _('All syncs') }}</option>
+                      </select>
+                      <button type="button" class="btn btn-secondary" data-action="testWebhook">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <line x1="22" y1="2" x2="11" y2="13"></line>
+                          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                        {{ _('Test') }}
+                      </button>
+                    </div>
+                    <span class="form-hint">{{ _('Choose when to send webhook notifications') }}</span>
+                  </div>
+                  <div class="form-group form-group-checkbox" style="grid-column: 1 / -1;">
+                    <label>
+                      <input type="checkbox" id="WEBHOOK_ALLOW_PRIVATE" name="WEBHOOK_ALLOW_PRIVATE">
+                      <span>{{ _('Allow private/LAN webhook URLs') }}</span>
+                    </label>
+                    <span
+                      class="form-hint">{{ _('Enable only if your webhook points to a local address (e.g. a self-hosted ntfy or Gotify on your network). Off by default to prevent server-side request forgery.') }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-page" data-settings-page="data">
+              <div class="settings-section" data-settings-section="local_databases">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M3 12a9 3 0 0 0 18 0V6a9 3 0 0 0-18 0Z"></path>
+                    <path d="M3 6a9 3 0 0 0 18 0"></path>
+                    <path d="M3 12a9 3 0 0 0 18 0"></path>
+                  </svg>
+                  {{ _('Local Databases') }}
+                </h3>
+                <p class="settings-help">
+                  {{ _('Optional local SQLite databases stored under cache/. They power richer playlist ranking and analytics and never leave your instance. Back them up from Data Management below.') }}
+                </p>
+
+                <div class="settings-subsection">
+                  <h4 class="settings-subsection-title">{{ _('Local Last.fm History') }}</h4>
+                  <div class="settings-grid">
+                    <div class="form-group form-group-checkbox">
+                      <label>
+                        <input type="checkbox" id="USE_LOCAL_LASTFM_DB" name="USE_LOCAL_LASTFM_DB">
+                        <span>{{ _('Use local Last.fm database') }}</span>
+                      </label>
+                      <span
+                        class="form-hint">{{ _('Crawl your full Last.fm scrobble history into a local database and rank playlists by lifetime plays + recency. The first sync downloads your entire history (may take a while); later syncs only fetch new scrobbles.') }}</span>
+                    </div>
+                  </div>
+                  <p class="settings-help" style="color: var(--warning, #b58900);">
+                    {{ _('Heads up: enabling this changes how the main playlist is built (lifetime plays instead of recent tracks), so the resulting playlist may look noticeably different.') }}
+                  </p>
+                  <div id="localLastfmStatus" class="form-hint" style="margin-top: 0.5rem;"></div>
+                  <div id="localLastfmActions" style="display: none; margin-top: 0.75rem;">
+                    <button type="button" class="btn btn-danger" data-action="clearLocalLastfm">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                      {{ _('Clear Last.fm History') }}
+                    </button>
+                    <p class="settings-help" style="margin-top: 0.5rem;">
+                      {{ _('Clearing resets the sync watermark, so the next sync re-crawls your full Last.fm history. Backup and restore from Data Management below.') }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="settings-subsection">
+                  <h4 class="settings-subsection-title">{{ _('History Database') }}</h4>
+                  <div class="settings-grid">
+                    <div class="form-group form-group-checkbox">
+                      <label>
+                        <input type="checkbox" id="HISTORY_DB_ENABLED" name="HISTORY_DB_ENABLED">
+                        <span>{{ _('Enable history database') }}</span>
+                      </label>
+                      <span class="form-hint">{{ _('Store track lookups, sync runs, and actions in a local SQLite database for analytics') }}</span>
+                    </div>
+                  </div>
+                  <div id="historyBackfillSection" class="history-backfill-section" style="display: none; margin-top: 1rem;">
+                    <div class="settings-grid" style="margin-bottom: 1rem;">
+                      <div class="form-group">
+                        <label for="HISTORY_MAX_SIZE_MB">{{ _('Max DB Size (MB)') }}</label>
+                        <input type="number" id="HISTORY_MAX_SIZE_MB" name="HISTORY_MAX_SIZE_MB" min="0" step="1" placeholder="0">
+                        <span class="form-hint">{{ _('Auto-prune oldest records when exceeded. 0 = unlimited.') }}</span>
+                      </div>
+                      <div class="form-group">
+                        <label for="HISTORY_RETENTION_DAYS">{{ _('Retention (days)') }}</label>
+                        <input type="number" id="HISTORY_RETENTION_DAYS" name="HISTORY_RETENTION_DAYS" min="0" step="1" placeholder="0">
+                        <span class="form-hint">{{ _('Auto-delete syncs &amp; actions older than N days after each sync. 0 = keep forever.') }}</span>
+                      </div>
+                    </div>
+                    <div id="historyDbStatus" class="form-hint" style="margin-top: 0.5rem; margin-bottom: 0.75rem;">
+                    </div>
+                    <p class="settings-help">
+                      {{ _('Import existing data from your search cache and overrides into the history database.') }}
+                    </p>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                      <button type="button" class="btn btn-secondary" data-action="historyBackfill">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="7 10 12 15 17 10"></polyline>
+                          <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        {{ _('Backfill from Cache') }}
+                      </button>
+                      <button type="button" class="btn btn-secondary" data-action="historyVacuum">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                        </svg>
+                        {{ _('Vacuum &amp; Prune') }}
+                      </button>
+                      <button type="button" class="btn btn-danger" data-action="clearHistory">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                          </path>
+                        </svg>
+                        {{ _('Clear History Database') }}
+                      </button>
+                    </div>
+                    <p class="settings-help" style="margin-top: 0.75rem;">
+                      {{ _('Backup and restore the history database from Data Management below.') }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-section" data-settings-section="caching">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                  </svg>
+                  {{ _('Caching') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group">
+                    <label for="CACHE_SEARCH_TTL_DAYS">{{ _('Search Cache TTL (days)') }}</label>
+                    <input type="number" id="CACHE_SEARCH_TTL_DAYS" name="CACHE_SEARCH_TTL_DAYS" min="0" placeholder="30">
+                    <span class="form-hint">{{ _('Days before cached searches expire (0 = never)') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="CACHE_NOTFOUND_TTL_DAYS">{{ _('Not-Found Cache TTL (days)') }}</label>
+                    <input type="number" id="CACHE_NOTFOUND_TTL_DAYS" name="CACHE_NOTFOUND_TTL_DAYS" min="0" placeholder="7">
+                    <span class="form-hint">{{ _('Days before "not found" results are retried') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="TAG_CACHE_TTL_DAYS">{{ _('Tag Cache TTL (days)') }}</label>
+                    <input type="number" id="TAG_CACHE_TTL_DAYS" name="TAG_CACHE_TTL_DAYS" min="0" placeholder="90">
+                    <span class="form-hint">{{ _('Days before cached tags expire (0 = never)') }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-section" data-settings-section="data_management">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  {{ _('Data Management') }}
+                </h3>
+                <p class="settings-help">
+                  {{ _('Back up, restore, or migrate your data. Each option covers a different scope.') }}
+                </p>
+
+                <div class="data-mgmt-group">
+                  <div class="data-mgmt-label">
+                    <strong>{{ _('Overrides &amp; Blacklist') }}</strong>
+                    <span class="form-hint">{{ _('Manual fixes, tag overrides, and the blacklist (JSON, plaintext).') }}</span>
+                  </div>
+                  <button type="button" class="btn btn-secondary" data-action="showExportImportModal">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    {{ _('Export / Import') }}
+                  </button>
+                </div>
+
+                <div id="historyDataMgmtGroup" class="data-mgmt-group" style="display: none;">
+                  <div class="data-mgmt-label">
+                    <strong>{{ _('History Database') }}</strong>
+                    <span
+                      class="form-hint">{{ _('Full track / sync / action log as a JSON dump (plaintext). Import supports merge or replace.') }}</span>
+                  </div>
+                  <button type="button" class="btn btn-secondary" data-action="showHistoryDataModal">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    {{ _('Export / Import') }}
+                  </button>
+                </div>
+
+                <div id="localLastfmDataMgmtGroup" class="data-mgmt-group" style="display: none;">
+                  <div class="data-mgmt-label">
+                    <strong>{{ _('Local Last.fm History') }}</strong>
+                    <span
+                      class="form-hint">{{ _('Full scrobble history (artist, track, play counts) as a JSON dump (plaintext). Import supports merge or replace.') }}</span>
+                  </div>
+                  <button type="button" class="btn btn-secondary" data-action="showLocalLastfmDataModal">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    {{ _('Export / Import') }}
+                  </button>
+                </div>
+
+                <div class="data-mgmt-group">
+                  <div class="data-mgmt-label">
+                    <strong>{{ _('Teleporter') }}</strong>
+                    <span
+                      class="form-hint">{{ _('Encrypted bundle (AES-256-GCM) of everything above plus caches - for moving between instances.') }}</span>
+                  </div>
+                  <button type="button" class="btn btn-secondary" data-action="showTeleporterModal">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83">
+                      </path>
+                    </svg>
+                    {{ _('Open Teleporter') }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-page" data-settings-page="advanced">
+              <div class="settings-section" data-settings-section="reliability">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                  {{ _('Reliability & Retries') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group">
+                    <label for="API_MAX_RETRIES">{{ _('YTM API Max Retries') }}</label>
+                    <input type="number" id="API_MAX_RETRIES" name="API_MAX_RETRIES" min="0" placeholder="3">
+                  </div>
+                  <div class="form-group">
+                    <label for="LASTFM_MAX_RETRIES">{{ _('Last.fm Max Retries') }}</label>
+                    <input type="number" id="LASTFM_MAX_RETRIES" name="LASTFM_MAX_RETRIES" min="0" placeholder="5">
+                  </div>
+                  <div class="form-group">
+                    <label for="LASTFM_MAX_CONSECUTIVE_EMPTY">{{ _('Max Consecutive Empty Pages') }}</label>
+                    <input type="number" id="LASTFM_MAX_CONSECUTIVE_EMPTY" name="LASTFM_MAX_CONSECUTIVE_EMPTY" min="1" placeholder="3">
+                    <span class="form-hint">{{ _('Stop after N pages with no new tracks') }}</span>
+                  </div>
+                  <div class="form-group form-group-checkbox">
+                    <label>
+                      <input type="checkbox" id="LASTFM_FORCE_IPV4" name="LASTFM_FORCE_IPV4">
+                      <span>{{ _('Force IPv4 for Last.fm') }}</span>
+                    </label>
+                    <span class="form-hint">{{ _('Helps with flaky Last.fm IPv6 connections') }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-section" data-settings-section="logging">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  {{ _('Logging') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group">
+                    <label for="LOG_LEVEL">{{ _('Log Level') }}</label>
+                    <select id="LOG_LEVEL" name="LOG_LEVEL">
+                      <option value="DEBUG">DEBUG</option>
+                      <option value="INFO">INFO</option>
+                      <option value="WARNING">WARNING</option>
+                      <option value="ERROR">ERROR</option>
+                      <option value="CRITICAL">CRITICAL</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
