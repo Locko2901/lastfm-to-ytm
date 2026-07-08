@@ -22,6 +22,13 @@ export function onCustomPlaylistKindChange() {
   applyKindVisibility(document.getElementById("custompl-kind").value)
 }
 
+function applyLimitVisibility(noLimit) {
+  const limitInput = document.getElementById("custompl-limit")
+  const limitGroup = document.getElementById("custompl-limit-group")
+  if (limitInput) limitInput.disabled = noLimit
+  if (limitGroup) limitGroup.style.display = noLimit ? "none" : ""
+}
+
 export function showCustomPlaylistModal(editIndex = -1) {
   document.getElementById("custompl-edit-index").value = editIndex
   const limitInput = document.getElementById("custompl-limit")
@@ -62,6 +69,7 @@ export function showCustomPlaylistModal(editIndex = -1) {
     document.getElementById("custompl-blacklist-artists").value = ""
   }
   applyKindVisibility(document.getElementById("custompl-kind").value)
+  applyLimitVisibility(document.getElementById("custompl-no-limit").checked)
   showModal("customPlaylistModal")
 }
 
@@ -402,7 +410,7 @@ export async function unblacklistArtistFromPlaylist(index, artist) {
 
 export function initCustomPlaylists() {
   document.getElementById("custompl-no-limit")?.addEventListener("change", e => {
-    document.getElementById("custompl-limit").disabled = e.target.checked
+    applyLimitVisibility(e.target.checked)
   })
   document.getElementById("custompl-kind")?.addEventListener("change", () => onCustomPlaylistKindChange())
 }

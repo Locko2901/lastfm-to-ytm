@@ -103,12 +103,10 @@ export async function loadSettings() {
 
     const typeSelect = document.getElementById("AUTO_SYNC_TYPE")
     if (typeSelect) {
-      const section = typeSelect.closest(".settings-section")
-      if (section) {
-        section.classList.toggle("schedule-type-cron", typeSelect.value === "cron")
-      }
+      typeSelect.value = settings.AUTO_SYNC_TYPE || typeSelect.options[0]?.value || ""
     }
 
+    if (window._updateConditionalSettings) window._updateConditionalSettings()
     const themeSelect = document.getElementById("theme-select")
     if (themeSelect) {
       themeSelect.value = localStorage.getItem("ytm-theme") || "dark"
@@ -489,7 +487,9 @@ export function initSettings(switchTabFn) {
 
   initTheme()
   initLocale()
-  initSchedulerTypeToggle()
+  initSettingsNav()
+  initCollapsibleSections()
+  initConditionalSettings()
   initHistoryDbToggle()
   initLocalLastfmToggle()
   initLocalLastfmImportDropzone()
@@ -512,19 +512,148 @@ export function initSettings(switchTabFn) {
   }
 }
 
-function initSchedulerTypeToggle() {
-  const typeSelect = document.getElementById("AUTO_SYNC_TYPE")
-  const section = typeSelect?.closest(".settings-section")
+function initSettingsNav() {
+  const nav = document.querySelector(".settings-nav")
+  if (!nav) return
+  const items = [...nav.querySelectorAll(".settings-nav-item")]
+  const pages = [...document.querySelectorAll(".settings-page")]
 
-  if (!typeSelect || !section) return
-
-  const updateVisibility = () => {
-    const isCron = typeSelect.value === "cron"
-    section.classList.toggle("schedule-type-cron", isCron)
+  const activate = target => {
+    for (const item of items) {
+      item.classList.toggle("active", item.dataset.settingsNav === target)
+    }
+    for (const page of pages) {
+      page.classList.toggle("active", page.dataset.settingsPage === target)
+    }
+    const scroller = document.querySelector(".settings-pages")
+    if (scroller) scroller.scrollTop = 0
   }
 
-  typeSelect.addEventListener("change", updateVisibility)
-  updateVisibility()
+  for (const item of items) {
+    item.addEventListener("click", () => activate(item.dataset.settingsNav))
+  }
+}
+
+const SETTINGS_COLLAPSE_KEY = "ytm-settings-collapsed"
+
+function loadCollapsedSections() {
+  try {
+    const raw = localStorage.getItem(SETTINGS_COLLAPSE_KEY)
+    if (!raw) return new Set()
+    const parsed = JSON.parse(raw)
+    return new Set(Array.isArray(parsed) ? parsed : [])
+  } catch (_e) {
+    return new Set()
+  }
+}
+
+function saveCollapsedSections(collapsed) {
+  try {
+    localStorage.setItem(SETTINGS_COLLAPSE_KEY, JSON.stringify([...collapsed]))
+  } catch (_e) {}
+}
+
+const CHEVRON_SVG = `<svg class="settings-section-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`
+
+function initCollapsibleSections() {
+  const sections = document.querySelectorAll(".settings-section[data-settings-section]")
+  if (!sections.length) return
+
+  const collapsed = loadCollapsedSections()
+
+  for (const section of sections) {
+    const key = section.dataset.settingsSection
+    const title = section.querySelector(":scope > .settings-section-title")
+    if (!key || !title) continue
+
+    let body = section.querySelector(":scope > .settings-section-body")
+    if (!body) {
+      body = document.createElement("div")
+      body.className = "settings-section-body"
+      const rest = [...section.children].filter(child => child !== title)
+      for (const child of rest) body.appendChild(child)
+      section.appendChild(body)
+    }
+
+    section.classList.add("is-collapsible")
+    if (!title.querySelector(".settings-section-chevron")) {
+      title.insertAdjacentHTML("beforeend", CHEVRON_SVG)
+    }
+    title.setAttribute("data-settings-toggle", "")
+    title.setAttribute("role", "button")
+    title.setAttribute("tabindex", "0")
+
+    const applyState = isCollapsed => {
+      section.classList.toggle("collapsed", isCollapsed)
+      title.setAttribute("aria-expanded", isCollapsed ? "false" : "true")
+    }
+
+    applyState(collapsed.has(key))
+
+    const toggle = () => {
+      const nowCollapsed = !section.classList.contains("collapsed")
+      applyState(nowCollapsed)
+      if (nowCollapsed) collapsed.add(key)
+      else collapsed.delete(key)
+      saveCollapsedSections(collapsed)
+    }
+
+    title.addEventListener("click", toggle)
+    title.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault()
+        toggle()
+      }
+    })
+  }
+}
+
+function evaluateShowIf(spec) {
+  return spec
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .every(cond => {
+      const [id, rawValue] = cond.split("=")
+      const ctrl = document.getElementById(id)
+      if (!ctrl) return true
+      if (rawValue !== undefined) {
+        const wanted = rawValue.split("|")
+        return wanted.includes(ctrl.value)
+      }
+      if (ctrl.type === "checkbox") return ctrl.checked
+      return Boolean(ctrl.value)
+    })
+}
+
+function updateConditionalSettings() {
+  const form = document.getElementById("settingsForm")
+  if (!form) return
+  for (const el of form.querySelectorAll("[data-show-if]")) {
+    const spec = el.getAttribute("data-show-if")
+    el.classList.toggle("setting-hidden", !evaluateShowIf(spec))
+  }
+}
+
+function initConditionalSettings() {
+  const form = document.getElementById("settingsForm")
+  if (!form) return
+
+  const controllerIds = new Set()
+  for (const el of form.querySelectorAll("[data-show-if]")) {
+    for (const cond of el.getAttribute("data-show-if").trim().split(/\s+/)) {
+      const id = cond.split("=")[0]
+      if (id) controllerIds.add(id)
+    }
+  }
+
+  for (const id of controllerIds) {
+    const ctrl = document.getElementById(id)
+    if (ctrl) ctrl.addEventListener("change", updateConditionalSettings)
+  }
+
+  window._updateConditionalSettings = updateConditionalSettings
+  updateConditionalSettings()
 }
 
 function refreshHistoryBackfillVisibility() {
@@ -773,11 +902,5 @@ async function updateSchedulerUI(status) {
     }
   }
 
-  const typeSelect = document.getElementById("AUTO_SYNC_TYPE")
-  if (typeSelect) {
-    const section = typeSelect.closest(".settings-section")
-    if (section) {
-      section.classList.toggle("schedule-type-cron", typeSelect.value === "cron")
-    }
-  }
+  if (window._updateConditionalSettings) window._updateConditionalSettings()
 }

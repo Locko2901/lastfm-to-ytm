@@ -406,6 +406,29 @@
     gap: 0.75rem;
   }
 
+  .settings-form .form-group:not(.form-group-checkbox) {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-form .form-group:not(.form-group-checkbox) > label {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    margin-bottom: 0.375rem;
+  }
+
+  .settings-form .form-group:not(.form-group-checkbox) > input,
+  .settings-form .form-group:not(.form-group-checkbox) > select {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .settings-form .form-group:not(.form-group-checkbox) > .form-hint {
+    grid-column: 1;
+    grid-row: 3;
+    margin-top: 0.25rem;
+  }
+
   .settings-section {
     padding: 1rem;
     margin-bottom: 0.75rem;
@@ -434,6 +457,40 @@
 
   .settings-modal-overlay {
     padding: 0.5rem;
+  }
+
+  .settings-layout {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .settings-nav {
+    flex: 0 0 auto;
+    flex-direction: row;
+    gap: 0.375rem;
+    padding: 0.625rem 0.75rem;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .settings-nav-item {
+    width: auto;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .settings-nav-item span {
+    display: none;
+  }
+
+  .settings-nav-item.active span {
+    display: inline;
+  }
+
+  .settings-pages {
+    padding: 1rem;
   }
 
   .auth-modal,
