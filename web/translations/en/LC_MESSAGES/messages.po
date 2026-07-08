@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-08 10:21+0200\n"
+"POT-Creation-Date: 2026-07-08 15:06+0200\n"
 "PO-Revision-Date: 2026-03-13 15:44+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -172,8 +172,8 @@ msgstr ""
 msgid "Preview failed"
 msgstr ""
 
-#: web/routes/api.py:1098 web/static/js/modules/history.js:1017
-#: web/static/js/modules/history.js:1026 web/static/js/modules/modals.js:671
+#: web/routes/api.py:1098 web/static/js/modules/history.js:1074
+#: web/static/js/modules/history.js:1083 web/static/js/modules/modals.js:671
 #: web/static/js/modules/modals.js:690 web/static/js/modules/settings.js:824
 #: web/static/js/modules/settings.js:833
 #: web/static/js/modules/teleporter.js:233
@@ -181,35 +181,35 @@ msgstr ""
 msgid "Import failed"
 msgstr ""
 
-#: web/routes/api.py:1128 web/routes/api.py:1151 web/routes/api.py:1171
-#: web/routes/api.py:1185 web/routes/api.py:1209 web/routes/api.py:1312
-#: web/routes/api.py:1335 web/routes/api.py:1345 web/routes/api.py:1372
-#: web/routes/api.py:1392 web/routes/api.py:1420
+#: web/routes/api.py:1129 web/routes/api.py:1152 web/routes/api.py:1172
+#: web/routes/api.py:1186 web/routes/api.py:1210 web/routes/api.py:1313
+#: web/routes/api.py:1336 web/routes/api.py:1346 web/routes/api.py:1373
+#: web/routes/api.py:1393 web/routes/api.py:1421 web/routes/api.py:1435
 msgid "History database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1175
+#: web/routes/api.py:1176
 msgid "Sync record not found"
 msgstr ""
 
-#: web/routes/api.py:1253 web/routes/api.py:1264 web/routes/api.py:1284
+#: web/routes/api.py:1254 web/routes/api.py:1265 web/routes/api.py:1285
 msgid "Local Last.fm database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1288 web/routes/api.py:1396
+#: web/routes/api.py:1289 web/routes/api.py:1397
 msgid "No file uploaded"
 msgstr ""
 
-#: web/routes/api.py:1291 web/routes/api.py:1399
+#: web/routes/api.py:1292 web/routes/api.py:1400
 msgid "Invalid import mode"
 msgstr ""
 
-#: web/routes/api.py:1296 web/routes/api.py:1404
+#: web/routes/api.py:1297 web/routes/api.py:1405
 #, python-format
 msgid "Invalid JSON file: %(err)s"
 msgstr ""
 
-#: web/routes/api.py:1302 web/routes/api.py:1410
+#: web/routes/api.py:1303 web/routes/api.py:1411
 msgid "Invalid import file"
 msgstr ""
 
@@ -366,7 +366,7 @@ msgid "No cached playlists."
 msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:275
-#: web/static/js/modules/history.js:1019 web/static/js/modules/settings.js:826
+#: web/static/js/modules/history.js:1076 web/static/js/modules/settings.js:826
 msgid "tracks"
 msgstr ""
 
@@ -381,11 +381,12 @@ msgstr ""
 #: web/templates/partials/_modal_cache_admin.html:110
 #: web/templates/partials/_modal_cache_admin.html:119
 #: web/templates/partials/_modal_cache_admin.html:134
-#: web/templates/partials/_panel_history.html:70
-#: web/templates/partials/_panel_history.html:92
-#: web/templates/partials/_panel_history.html:109
-#: web/templates/partials/_panel_history.html:118
-#: web/templates/partials/_panel_history.html:134
+#: web/templates/partials/_panel_history.html:75
+#: web/templates/partials/_panel_history.html:97
+#: web/templates/partials/_panel_history.html:114
+#: web/templates/partials/_panel_history.html:123
+#: web/templates/partials/_panel_history.html:144
+#: web/templates/partials/_panel_history.html:161
 #: web/templates/partials/_panel_settings.html:520
 msgid "Loading..."
 msgstr ""
@@ -522,7 +523,7 @@ msgid "Failed to delete custom playlist"
 msgstr ""
 
 #: web/static/js/modules/customPlaylists.js:256
-#: web/static/js/modules/history.js:268
+#: web/static/js/modules/history.js:274
 msgid "Failed to load tracks"
 msgstr ""
 
@@ -608,184 +609,199 @@ msgstr ""
 msgid "Invalid theme file"
 msgstr ""
 
-#: web/static/js/modules/history.js:210 web/static/js/modules/settings.js:851
+#: web/static/js/modules/history.js:216 web/static/js/modules/settings.js:851
 msgid "lookups"
 msgstr ""
 
-#: web/static/js/modules/history.js:210 web/static/js/modules/history.js:1019
+#: web/static/js/modules/history.js:216 web/static/js/modules/history.js:1076
 #: web/static/js/modules/settings.js:851
 msgid "syncs"
 msgstr ""
 
-#: web/static/js/modules/history.js:233 web/static/js/modules/history.js:391
+#: web/static/js/modules/history.js:239 web/static/js/modules/history.js:397
 msgid "No tracks found"
 msgstr ""
 
-#: web/static/js/modules/history.js:250 web/static/js/modules/history.js:403
+#: web/static/js/modules/history.js:256 web/static/js/modules/history.js:409
+#: web/static/js/modules/history.js:463
 msgid "Not found"
 msgstr ""
 
-#: web/static/js/modules/history.js:255 web/static/js/modules/history.js:405
+#: web/static/js/modules/history.js:261 web/static/js/modules/history.js:411
 msgid "seen"
 msgstr ""
 
-#: web/static/js/modules/history.js:256
+#: web/static/js/modules/history.js:262
 msgid "missed"
 msgstr ""
 
-#: web/static/js/modules/history.js:287
+#: web/static/js/modules/history.js:293
 msgid "No syncs recorded yet"
 msgstr ""
 
-#: web/static/js/modules/history.js:310
+#: web/static/js/modules/history.js:316
 #: web/templates/partials/_modals.html:1155
 msgid "Resolved"
 msgstr ""
 
-#: web/static/js/modules/history.js:311
+#: web/static/js/modules/history.js:317
 #: web/templates/partials/_modals.html:1163 web/templates/partials/_tabs.html:8
 msgid "Cache"
 msgstr ""
 
-#: web/static/js/modules/history.js:312
+#: web/static/js/modules/history.js:318
 msgid "API"
 msgstr ""
 
-#: web/static/js/modules/history.js:324
+#: web/static/js/modules/history.js:330
 msgid "Failed to load syncs"
 msgstr ""
 
-#: web/static/js/modules/history.js:342
+#: web/static/js/modules/history.js:348
 msgid "No actions recorded yet"
 msgstr ""
 
-#: web/static/js/modules/history.js:377
+#: web/static/js/modules/history.js:383
 msgid "Failed to load actions"
 msgstr ""
 
-#: web/static/js/modules/history.js:405
+#: web/static/js/modules/history.js:411 web/static/js/modules/history.js:452
 msgid "played"
 msgstr ""
 
-#: web/static/js/modules/history.js:422
+#: web/static/js/modules/history.js:428
 msgid "Failed to load top tracks"
 msgstr ""
 
-#: web/static/js/modules/history.js:440
+#: web/static/js/modules/history.js:444
+msgid ""
+"No near-misses from the last sync — every resolved track fit within your "
+"LIMIT."
+msgstr ""
+
+#: web/static/js/modules/history.js:451
+msgid "score"
+msgstr ""
+
+#: web/static/js/modules/history.js:479
+msgid "Failed to load near-misses"
+msgstr ""
+
+#: web/static/js/modules/history.js:497
 msgid "No sync data yet"
 msgstr ""
 
-#: web/static/js/modules/history.js:450 web/static/js/modules/history.js:687
-#: web/templates/partials/_panel_history.html:80
+#: web/static/js/modules/history.js:507 web/static/js/modules/history.js:744
+#: web/templates/partials/_panel_history.html:85
 msgid "Success"
 msgstr ""
 
-#: web/static/js/modules/history.js:451 web/static/js/modules/history.js:688
+#: web/static/js/modules/history.js:508 web/static/js/modules/history.js:745
 #: web/templates/partials/_modals.html:1179
 msgid "Error"
 msgstr ""
 
-#: web/static/js/modules/history.js:452 web/static/js/modules/history.js:689
+#: web/static/js/modules/history.js:509 web/static/js/modules/history.js:746
 msgid "Cache Rate"
 msgstr ""
 
-#: web/static/js/modules/history.js:453 web/static/js/modules/history.js:690
+#: web/static/js/modules/history.js:510 web/static/js/modules/history.js:747
 #: web/templates/partials/_panel_history.html:34
 msgid "Avg Duration"
 msgstr ""
 
-#: web/static/js/modules/history.js:457
+#: web/static/js/modules/history.js:514
 msgid "Failed to load trend data"
 msgstr ""
 
-#: web/static/js/modules/history.js:691
+#: web/static/js/modules/history.js:748
 msgid "Avg Resolved"
 msgstr ""
 
-#: web/static/js/modules/history.js:692
+#: web/static/js/modules/history.js:749
 msgid "Avg Missed"
 msgstr ""
 
-#: web/static/js/modules/history.js:874 web/static/js/modules/history.js:880
+#: web/static/js/modules/history.js:931 web/static/js/modules/history.js:937
 msgid "Backfill failed"
 msgstr ""
 
-#: web/static/js/modules/history.js:877
+#: web/static/js/modules/history.js:934
 msgid "Backfill complete:"
 msgstr ""
 
-#: web/static/js/modules/history.js:877
+#: web/static/js/modules/history.js:934
 msgid "cache"
 msgstr ""
 
-#: web/static/js/modules/history.js:877
+#: web/static/js/modules/history.js:934
 msgid "override entries"
 msgstr ""
 
-#: web/static/js/modules/history.js:902 web/static/js/modules/history.js:907
+#: web/static/js/modules/history.js:959 web/static/js/modules/history.js:964
 msgid "Failed to clear history database"
 msgstr ""
 
-#: web/static/js/modules/history.js:904
+#: web/static/js/modules/history.js:961
 msgid "History database cleared"
 msgstr ""
 
-#: web/static/js/modules/history.js:916 web/static/js/modules/history.js:923
+#: web/static/js/modules/history.js:973 web/static/js/modules/history.js:980
 msgid "Vacuum failed"
 msgstr ""
 
-#: web/static/js/modules/history.js:920
+#: web/static/js/modules/history.js:977
 msgid "Vacuum complete:"
 msgstr ""
 
-#: web/static/js/modules/history.js:920
+#: web/static/js/modules/history.js:977
 msgid "rows pruned"
 msgstr ""
 
-#: web/static/js/modules/history.js:971 web/static/js/modules/modals.js:635
+#: web/static/js/modules/history.js:1028 web/static/js/modules/modals.js:635
 #: web/static/js/modules/settings.js:781
 msgid "Please select a JSON file"
 msgstr ""
 
-#: web/static/js/modules/history.js:987 web/static/js/modules/settings.js:794
-#: web/templates/partials/_panel_history.html:52
+#: web/static/js/modules/history.js:1044 web/static/js/modules/settings.js:794
+#: web/templates/partials/_panel_history.html:56
 msgid "Tracks"
 msgstr ""
 
-#: web/static/js/modules/history.js:987
-#: web/templates/partials/_panel_history.html:53
+#: web/static/js/modules/history.js:1044
+#: web/templates/partials/_panel_history.html:57
 msgid "Syncs"
 msgstr ""
 
-#: web/static/js/modules/history.js:987
+#: web/static/js/modules/history.js:1044
 #: web/templates/partials/_modals.html:1100
 #: web/templates/partials/_panel_history.html:46
-#: web/templates/partials/_panel_history.html:54
+#: web/templates/partials/_panel_history.html:58
 msgid "Actions"
 msgstr ""
 
-#: web/static/js/modules/history.js:993 web/static/js/modules/modals.js:654
+#: web/static/js/modules/history.js:1050 web/static/js/modules/modals.js:654
 #: web/static/js/modules/settings.js:800
 msgid "Invalid JSON file"
 msgstr ""
 
-#: web/static/js/modules/history.js:1019 web/static/js/modules/settings.js:826
+#: web/static/js/modules/history.js:1076 web/static/js/modules/settings.js:826
 msgid "Imported:"
 msgstr ""
 
-#: web/static/js/modules/history.js:1019
+#: web/static/js/modules/history.js:1076
 msgid "actions"
 msgstr ""
 
-#: web/static/js/modules/history.js:1067
+#: web/static/js/modules/history.js:1124
 msgid "Added override"
 msgstr ""
 
-#: web/static/js/modules/history.js:1068
+#: web/static/js/modules/history.js:1125
 msgid "Removed override"
 msgstr ""
 
-#: web/static/js/modules/history.js:1069 web/static/js/modules/modals.js:288
+#: web/static/js/modules/history.js:1126 web/static/js/modules/modals.js:288
 #: web/static/js/modules/modals.js:824
 #: web/templates/partials/_custompl_tracks.html:21
 #: web/templates/partials/_panel_cache.html:22
@@ -796,68 +812,68 @@ msgstr ""
 msgid "Blacklisted"
 msgstr ""
 
-#: web/static/js/modules/history.js:1070
+#: web/static/js/modules/history.js:1127
 msgid "Unblacklisted"
 msgstr ""
 
-#: web/static/js/modules/history.js:1071
+#: web/static/js/modules/history.js:1128
 msgid "Cleared cache entry"
 msgstr ""
 
-#: web/static/js/modules/history.js:1072
+#: web/static/js/modules/history.js:1129
 msgid "Added tag override"
 msgstr ""
 
-#: web/static/js/modules/history.js:1073
+#: web/static/js/modules/history.js:1130
 msgid "Removed tag override"
 msgstr ""
 
-#: web/static/js/modules/history.js:1074
+#: web/static/js/modules/history.js:1131
 msgid "Cleared tag cache"
 msgstr ""
 
-#: web/static/js/modules/history.js:1075
+#: web/static/js/modules/history.js:1132
 msgid "Backfill from cache"
 msgstr ""
 
-#: web/static/js/modules/history.js:1076
+#: web/static/js/modules/history.js:1133
 msgid "Backfill from overrides"
 msgstr ""
 
-#: web/static/js/modules/history.js:1077
+#: web/static/js/modules/history.js:1134
 msgid "Sync started"
 msgstr ""
 
-#: web/static/js/modules/history.js:1078
+#: web/static/js/modules/history.js:1135
 msgid "Sync completed"
 msgstr ""
 
-#: web/static/js/modules/history.js:1079
+#: web/static/js/modules/history.js:1136
 msgid "Sync failed"
 msgstr ""
 
-#: web/static/js/modules/history.js:1080
+#: web/static/js/modules/history.js:1137
 msgid "Custom playlist synced"
 msgstr ""
 
-#: web/static/js/modules/history.js:1081
+#: web/static/js/modules/history.js:1138
 msgid "Custom playlist failed"
 msgstr ""
 
-#: web/static/js/modules/history.js:1082
+#: web/static/js/modules/history.js:1139
 msgid "YouTube substitution"
 msgstr ""
 
-#: web/static/js/modules/history.js:1135
+#: web/static/js/modules/history.js:1192
 msgid "Previous"
 msgstr ""
 
-#: web/static/js/modules/history.js:1136 web/static/js/modules/setup.js:69
+#: web/static/js/modules/history.js:1193 web/static/js/modules/setup.js:69
 #: web/static/js/modules/setup.js:120 web/templates/partials/_modals.html:90
 msgid "Next"
 msgstr ""
 
-#: web/static/js/modules/history.js:1141
+#: web/static/js/modules/history.js:1198
 msgid "total"
 msgstr ""
 
@@ -1363,7 +1379,7 @@ msgid "Completed"
 msgstr ""
 
 #: web/static/js/modules/sync.js:105
-#: web/templates/partials/_panel_history.html:81
+#: web/templates/partials/_panel_history.html:86
 msgid "Failed"
 msgstr ""
 
@@ -1997,8 +2013,8 @@ msgstr ""
 
 #: web/templates/partials/_modals.html:407
 #: web/templates/partials/_panel_cache.html:18
-#: web/templates/partials/_panel_history.html:63
-#: web/templates/partials/_panel_history.html:79
+#: web/templates/partials/_panel_history.html:68
+#: web/templates/partials/_panel_history.html:84
 #: web/templates/partials/_panel_playlist.html:21
 #: web/templates/partials/_panel_tags.html:16
 msgid "All"
@@ -2482,7 +2498,7 @@ msgstr ""
 
 #: web/templates/partials/_modals.html:1159
 #: web/templates/partials/_panel_history.html:26
-#: web/templates/partials/_panel_history.html:65
+#: web/templates/partials/_panel_history.html:70
 msgid "Missed"
 msgstr ""
 
@@ -2663,7 +2679,7 @@ msgid "Total Tracks"
 msgstr ""
 
 #: web/templates/partials/_panel_history.html:21
-#: web/templates/partials/_panel_history.html:64
+#: web/templates/partials/_panel_history.html:69
 msgid "Found"
 msgstr ""
 
@@ -2675,56 +2691,68 @@ msgstr ""
 msgid "Cache Hit Rate"
 msgstr ""
 
-#: web/templates/partials/_panel_history.html:55
+#: web/templates/partials/_panel_history.html:50
+#: web/templates/partials/_panel_history.html:60
+msgid "Near Misses"
+msgstr ""
+
+#: web/templates/partials/_panel_history.html:59
 msgid "Top Tracks"
 msgstr ""
 
-#: web/templates/partials/_panel_history.html:56
+#: web/templates/partials/_panel_history.html:61
 msgid "Trend"
 msgstr ""
 
-#: web/templates/partials/_panel_history.html:61
+#: web/templates/partials/_panel_history.html:66
 #: web/templates/partials/_panel_playlist.html:19
 msgid "Search tracks..."
 msgstr ""
 
-#: web/templates/partials/_panel_history.html:84
-#: web/templates/partials/_panel_history.html:101
+#: web/templates/partials/_panel_history.html:89
+#: web/templates/partials/_panel_history.html:106
 msgid "From"
 msgstr ""
 
-#: web/templates/partials/_panel_history.html:86
-#: web/templates/partials/_panel_history.html:103
+#: web/templates/partials/_panel_history.html:91
+#: web/templates/partials/_panel_history.html:108
 msgid "To"
 msgstr ""
 
-#: web/templates/partials/_panel_history.html:126
+#: web/templates/partials/_panel_history.html:139
+msgid ""
+"Recently scrobbled tracks that were found on YouTube Music but ranked "
+"just past the playlist LIMIT. Raise LIMIT or tune the recency settings to"
+" include them."
+msgstr ""
+
+#: web/templates/partials/_panel_history.html:153
 msgid "7 days"
 msgstr ""
 
-#: web/templates/partials/_panel_history.html:127
+#: web/templates/partials/_panel_history.html:154
 msgid "14 days"
 msgstr ""
 
-#: web/templates/partials/_panel_history.html:128
+#: web/templates/partials/_panel_history.html:155
 msgid "30 days"
 msgstr ""
 
-#: web/templates/partials/_panel_history.html:129
+#: web/templates/partials/_panel_history.html:156
 msgid "90 days"
 msgstr ""
 
-#: web/templates/partials/_panel_history.html:148
+#: web/templates/partials/_panel_history.html:175
 msgid "History Database Disabled"
 msgstr ""
 
-#: web/templates/partials/_panel_history.html:149
+#: web/templates/partials/_panel_history.html:176
 msgid ""
 "Enable the history database in Settings to track songs, syncs, and "
 "actions over time."
 msgstr ""
 
-#: web/templates/partials/_panel_history.html:150
+#: web/templates/partials/_panel_history.html:177
 msgid "Open Settings"
 msgstr ""
 

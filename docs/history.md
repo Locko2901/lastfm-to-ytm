@@ -2,15 +2,16 @@
 
 An optional local SQLite database that tracks all synced songs, actions, and sync runs for audit and visibility.
 
-When enabled, a dedicated **History** tab appears in the web dashboard with five sub-views:
+When enabled, a dedicated **History** tab appears in the web dashboard with six sub-views:
 
 - **Tracks** - every song seen, with how often it was found vs. missed, first/last seen dates, and direct links to the matched video
 - **Syncs** - every sync run with duration, track counts, cache hit rate, and API call totals
 - **Actions** - every user action (override added, blacklist added, cache cleared, etc.)
 - **Top Tracks** - your most-found tracks across the whole history
+- **Near Misses** - tracks from the most recent main sync that resolved on YouTube Music but ranked just past your `LIMIT` cutoff (see below)
 - **Trend** - sync activity and match rates over time
 
-Plus a stat-card bar across the top (totals, average sync duration, cache hit rate, API searches, action count) that doubles as a quick filter. You don't need to open the database file directly - everything is browsable in the UI.
+Plus a stat-card bar across the top (totals, average sync duration, cache hit rate, API searches, action count, near-miss count) that doubles as a quick filter. You don't need to open the database file directly - everything is browsable in the UI.
 
 ??? example "Screenshot: History tab"
     ![History](screenshots/history.png)
@@ -24,6 +25,17 @@ The database stores three types of records:
 - **Actions** - user-initiated actions like adding overrides, blacklisting, or clearing cache entries (logged by the web dashboard)
 
 When `HISTORY_MAX_SIZE_MB` is set to a non-zero value, the database auto-prunes the oldest records when the file exceeds the specified size. When `HISTORY_RETENTION_DAYS` is set, every successful main sync also deletes any `syncs` and `actions` rows older than the cutoff and `VACUUM`s the file to reclaim space. Track rows are kept (they are cumulative lookup state, not history).
+
+## Near Misses
+
+The main playlist keeps only the top `LIMIT` tracks after ranking your recent scrobbles by recency and play count. Tracks that resolve to a real YouTube Music video but fall just past that cutoff are recorded as **near-misses** - "listened recently, but didn't quite make the playlist".
+
+The **Near Misses** sub-view lists them ordered by rank (closest to the cutoff first), each with its recency-weighted score and play count. This is the most useful data for tuning:
+
+- If songs you care about consistently show up as near-misses, raise `LIMIT`.
+- If stale tracks are crowding out fresh ones, lower `RECENCY_HALF_LIFE_HOURS` (or raise the recency weight) so recency counts for more.
+
+Only the most recent main sync's near-misses are kept - the list is replaced on every run, and at most 100 rows (the ones closest to the cutoff) are stored. Near-misses are only meaningful with recency weighting enabled; scores and play counts are shown when available.
 
 ## "Seen" vs "Played"
 

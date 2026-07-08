@@ -16,6 +16,7 @@ from ..observability import (
     describe_sync_error,
     fire_webhook,
     get_history_db,
+    record_near_misses_to_history,
     record_sync_error,
     record_tracks_to_history,
     save_failure_log,
@@ -412,6 +413,9 @@ def _record_to_history(
             cache_misses=cache_stats["misses"],
             override_hits=override_stats_h.get("total_overrides", 0),
         )
+
+    sync_id = int(sync_id_str) if sync_id_str else None
+    record_near_misses_to_history(db, run_log_mappings, ctx.search_cache, settings.limit, sync_id)
 
     if settings.history_retention_days > 0:
         db.prune_by_age(settings.history_retention_days)

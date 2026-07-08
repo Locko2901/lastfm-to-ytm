@@ -13,7 +13,9 @@ from typing import Any
 
 log = logging.getLogger(__name__)
 
-_SCHEMA_VERSION = 3
+_SCHEMA_VERSION = 4
+
+_NEAR_MISS_CAP = 100
 
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS schema_version (
@@ -74,6 +76,22 @@ CREATE TABLE IF NOT EXISTS actions (
 
 CREATE INDEX IF NOT EXISTS idx_actions_timestamp   ON actions(timestamp);
 CREATE INDEX IF NOT EXISTS idx_actions_action_type ON actions(action_type);
+
+CREATE TABLE IF NOT EXISTS near_misses (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    sync_id     INTEGER,
+    recorded_at TEXT    NOT NULL,
+    artist      TEXT    NOT NULL,
+    title       TEXT    NOT NULL,
+    video_id    TEXT,
+    yt_title    TEXT,
+    score       REAL,
+    plays       INTEGER,
+    rank        INTEGER NOT NULL,
+    cutoff      INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_near_misses_rank ON near_misses(rank);
 """
 
 
@@ -124,6 +142,8 @@ class HistoryDB:
                     self._migrate_v1_to_v2(conn)
                 if current < 3:
                     self._migrate_v2_to_v3(conn)
+                if current < 4:
+                    self._migrate_v3_to_v4(conn)
                 conn.commit()
         log.debug("History DB initialized at %s (schema v%d)", self._db_path, _SCHEMA_VERSION)
 
@@ -168,6 +188,30 @@ class HistoryDB:
         cur.execute("ALTER TABLE tracks ADD COLUMN times_missed INTEGER NOT NULL DEFAULT 0")
         cur.execute("UPDATE schema_version SET version = 3")
         log.info("Migrated history DB schema v2 → v3 (added times_missed)")
+
+    def _migrate_v3_to_v4(self, conn: sqlite3.Connection) -> None:
+        """Migrate schema v3 → v4: add near_misses table."""
+        cur = conn.cursor()
+        cur.executescript("""
+            CREATE TABLE IF NOT EXISTS near_misses (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                sync_id     INTEGER,
+                recorded_at TEXT    NOT NULL,
+                artist      TEXT    NOT NULL,
+                title       TEXT    NOT NULL,
+                video_id    TEXT,
+                yt_title    TEXT,
+                score       REAL,
+                plays       INTEGER,
+                rank        INTEGER NOT NULL,
+                cutoff      INTEGER NOT NULL
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_near_misses_rank ON near_misses(rank);
+
+            UPDATE schema_version SET version = 4;
+        """)
+        log.info("Migrated history DB schema v3 → v4 (added near_misses)")
 
     def close(self) -> None:
         """Close the thread-local database connection."""
@@ -729,7 +773,7 @@ class HistoryDB:
 
         Format: {"schema_version": N, "exported_at": iso, "tables": {name: [rows]}}.
         """
-        tables = ("tracks", "syncs", "actions")
+        tables = ("tracks", "syncs", "actions", "near_misses")
         out: dict[str, list[dict[str, Any]]] = {}
         with self._cursor() as cur:
             for table in tables:
@@ -757,12 +801,13 @@ class HistoryDB:
         if not isinstance(tables, dict):
             raise ValueError("Malformed export: missing 'tables'")
 
-        counts = {"tracks": 0, "syncs": 0, "actions": 0}
+        counts = {"tracks": 0, "syncs": 0, "actions": 0, "near_misses": 0}
         with self._cursor() as cur:
             if mode == "replace":
                 cur.execute("DELETE FROM actions")
                 cur.execute("DELETE FROM syncs")
                 cur.execute("DELETE FROM tracks")
+                cur.execute("DELETE FROM near_misses")
 
             for row in tables.get("tracks", []):
                 cur.execute(
@@ -856,6 +901,26 @@ class HistoryDB:
                 )
                 counts["actions"] += cur.rowcount
 
+            for row in tables.get("near_misses", []):
+                cur.execute(
+                    """INSERT INTO near_misses
+                           (sync_id, recorded_at, artist, title, video_id, yt_title, score, plays, rank, cutoff)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        row.get("sync_id"),
+                        row.get("recorded_at") or datetime.now(UTC).isoformat(),
+                        row.get("artist"),
+                        row.get("title"),
+                        row.get("video_id"),
+                        row.get("yt_title"),
+                        row.get("score"),
+                        row.get("plays"),
+                        row.get("rank") or 0,
+                        row.get("cutoff") or 0,
+                    ),
+                )
+                counts["near_misses"] += cur.rowcount
+
         log.info(
             "Imported history (%s): tracks=%d syncs=%d actions=%d",
             mode,
@@ -871,6 +936,7 @@ class HistoryDB:
             cur.execute("DELETE FROM actions")
             cur.execute("DELETE FROM syncs")
             cur.execute("DELETE FROM tracks")
+            cur.execute("DELETE FROM near_misses")
         self.vacuum()
         log.info("Cleared all history data")
 
@@ -903,3 +969,57 @@ class HistoryDB:
                 (cutoff,),
             )
             return [dict(row) for row in cur.fetchall()]
+
+    def record_near_misses(self, sync_id: int | None, rows: list[dict[str, Any]], cutoff: int) -> int:
+        """Replace stored near-misses with this run's ranked-but-dropped tracks.
+
+        Near-misses are tracks that resolved to a video but fell just past the
+        playlist ``cutoff`` (``LIMIT``) — the most useful data for tuning
+        ``LIMIT`` and recency knobs. Only the most recent run is kept, so this
+        clears any previous rows first. ``rows`` items provide artist, title,
+        and optional video_id/yt_title/score/plays; ``rank`` is assigned from
+        their order (1-based, starting at ``cutoff + 1``). At most
+        ``_NEAR_MISS_CAP`` rows (closest to the cutoff) are stored.
+        """
+        now = datetime.now(UTC).isoformat()
+        capped = rows[:_NEAR_MISS_CAP]
+        with self._cursor() as cur:
+            cur.execute("DELETE FROM near_misses")
+            for i, r in enumerate(capped):
+                artist = r.get("artist")
+                title = r.get("title")
+                if not artist or not title:
+                    continue
+                cur.execute(
+                    """INSERT INTO near_misses
+                           (sync_id, recorded_at, artist, title, video_id, yt_title, score, plays, rank, cutoff)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        sync_id,
+                        now,
+                        artist,
+                        title,
+                        r.get("video_id"),
+                        r.get("yt_title"),
+                        r.get("score"),
+                        r.get("plays"),
+                        cutoff + i + 1,
+                        cutoff,
+                    ),
+                )
+        return len(capped)
+
+    def get_near_misses(self, limit: int = 50, offset: int = 0) -> list[dict[str, Any]]:
+        """Return stored near-misses ordered by rank (closest to the cutoff first)."""
+        with self._cursor() as cur:
+            cur.execute(
+                "SELECT * FROM near_misses ORDER BY rank ASC LIMIT ? OFFSET ?",
+                (limit, offset),
+            )
+            return [dict(row) for row in cur.fetchall()]
+
+    def get_near_miss_count(self) -> int:
+        """Return the number of stored near-miss rows."""
+        with self._cursor() as cur:
+            cur.execute("SELECT COUNT(*) FROM near_misses")
+            return int(cur.fetchone()[0])

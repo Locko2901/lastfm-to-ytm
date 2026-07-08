@@ -232,3 +232,81 @@ def test_import_invalid_mode_raises(db):
 def test_import_future_schema_raises(db):
     with pytest.raises(ValueError):
         db.import_from_dict({"schema_version": 999, "tables": {}})
+
+
+def test_record_near_misses_stores_ranked_rows(db):
+    rows = [
+        {"artist": "A", "title": "Close", "video_id": "v1", "score": 0.42, "plays": 3},
+        {"artist": "B", "title": "Closer", "video_id": "v2", "score": 0.40, "plays": 2},
+    ]
+    stored = db.record_near_misses(sync_id=7, rows=rows, cutoff=100)
+    assert stored == 2
+    got = db.get_near_misses()
+    assert [r["rank"] for r in got] == [101, 102]
+    assert got[0]["title"] == "Close"
+    assert got[0]["cutoff"] == 100
+    assert got[0]["sync_id"] == 7
+    assert db.get_near_miss_count() == 2
+
+
+def test_record_near_misses_replaces_previous(db):
+    db.record_near_misses(1, [{"artist": "A", "title": "Old", "video_id": "v1"}], cutoff=50)
+    db.record_near_misses(2, [{"artist": "B", "title": "New", "video_id": "v2"}], cutoff=50)
+    got = db.get_near_misses()
+    assert len(got) == 1
+    assert got[0]["title"] == "New"
+
+
+def test_record_near_misses_empty_clears(db):
+    db.record_near_misses(1, [{"artist": "A", "title": "Old", "video_id": "v1"}], cutoff=50)
+    assert db.record_near_misses(2, [], cutoff=50) == 0
+    assert db.get_near_miss_count() == 0
+
+
+def test_record_near_misses_caps_rows(db):
+    rows = [{"artist": "A", "title": f"T{i}", "video_id": f"v{i}"} for i in range(150)]
+    stored = db.record_near_misses(1, rows, cutoff=10)
+    assert stored == 100
+    assert db.get_near_miss_count() == 100
+
+
+def test_record_near_misses_skips_blank_artist_title(db):
+    rows = [
+        {"artist": "", "title": "Blank", "video_id": "v1"},
+        {"artist": "A", "title": "Good", "video_id": "v2"},
+    ]
+    db.record_near_misses(1, rows, cutoff=5)
+    got = db.get_near_misses()
+    assert len(got) == 1
+    assert got[0]["title"] == "Good"
+
+
+def test_near_misses_pagination(db):
+    rows = [{"artist": "A", "title": f"T{i}", "video_id": f"v{i}"} for i in range(5)]
+    db.record_near_misses(1, rows, cutoff=0)
+    page1 = db.get_near_misses(limit=2, offset=0)
+    page2 = db.get_near_misses(limit=2, offset=2)
+    assert [r["rank"] for r in page1] == [1, 2]
+    assert [r["rank"] for r in page2] == [3, 4]
+
+
+def test_clear_all_wipes_near_misses(db):
+    db.record_near_misses(1, [{"artist": "A", "title": "T", "video_id": "v1"}], cutoff=10)
+    db.clear_all()
+    assert db.get_near_miss_count() == 0
+
+
+def test_near_misses_export_import_roundtrip(db, tmp_path):
+    db.record_near_misses(3, [{"artist": "A", "title": "T", "video_id": "v1", "score": 0.5, "plays": 4}], cutoff=20)
+    export = db.export_to_dict()
+    assert "near_misses" in export["tables"]
+
+    other = HistoryDB(str(tmp_path / "other.db"))
+    try:
+        counts = other.import_from_dict(export, mode="replace")
+        assert counts["near_misses"] == 1
+        got = other.get_near_misses()
+        assert got[0]["title"] == "T"
+        assert got[0]["rank"] == 21
+    finally:
+        other.close()

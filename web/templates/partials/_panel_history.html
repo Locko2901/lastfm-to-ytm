@@ -45,6 +45,10 @@
         <div class="stat-value yellow" id="histStatActions">–</div>
         <div class="stat-label">{{ _('Actions') }}</div>
       </div>
+      <div class="stat-card" data-action="switchHistoryView" data-history-view-tab="near-misses" style="cursor: pointer;">
+        <div class="stat-value" id="histStatNearMisses">–</div>
+        <div class="stat-label">{{ _('Near Misses') }}</div>
+      </div>
     </div>
   </div>
 
@@ -53,6 +57,7 @@
     <button class="filter-chip" data-history-tab="syncs">{{ _('Syncs') }}</button>
     <button class="filter-chip" data-history-tab="actions">{{ _('Actions') }}</button>
     <button class="filter-chip" data-history-tab="top">{{ _('Top Tracks') }}</button>
+    <button class="filter-chip" data-history-tab="near-misses">{{ _('Near Misses') }}</button>
     <button class="filter-chip" data-history-tab="trend">{{ _('Trend') }}</button>
   </div>
 
@@ -118,6 +123,28 @@
         <p class="text-muted">{{ _('Loading...') }}</p>
       </div>
     </div>
+  </div>
+
+  <div class="history-subpanel" id="history-near-misses">
+    <div class="panel-description">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <line x1="12" y1="2" x2="12" y2="6"></line>
+        <line x1="12" y1="18" x2="12" y2="22"></line>
+        <line x1="2" y1="12" x2="6" y2="12"></line>
+        <line x1="18" y1="12" x2="22" y2="12"></line>
+        <circle cx="12" cy="12" r="4"></circle>
+      </svg>
+      <p>
+        {{ _('Recently scrobbled tracks that were found on YouTube Music but ranked just past the playlist LIMIT. Raise LIMIT or tune the recency settings to include them.') }}
+      </p>
+    </div>
+    <div class="track-list" id="historyNearMissList">
+      <div class="empty-state">
+        <p class="text-muted">{{ _('Loading...') }}</p>
+      </div>
+    </div>
+    <div class="history-pagination" id="historyNearMissPagination"></div>
   </div>
 
   <div class="history-subpanel" id="history-trend">
