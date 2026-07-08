@@ -11,7 +11,7 @@
     "format:templates": "js-beautify --type html --indent-size 2 --wrap-line-length 150 --end-with-newline --templating django --replace web/templates/*.html web/templates/**/*.html"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.1",
-    "js-beautify": "^1.15.4"
+    "@biomejs/biome": "2.5.2",
+    "js-beautify": "^2.0.3"
   }
 }
