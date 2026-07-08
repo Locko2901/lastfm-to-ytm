@@ -21,8 +21,8 @@ This tool has two sync flows: the **main playlist** (covered below) and, optiona
 6. Create or update YouTube Music playlist(s) with rate-limit-friendly delays (`SLEEP_BETWEEN_SEARCHES`)
 7. If `WEEKLY_ENABLED=true`, update the weekly playlist snapshot (see [Weekly Playlists](#weekly-playlists))
 
-!!! note "Playlist lifecycle"
-    On the **first** run, the tool creates a new YouTube Music playlist named by `PLAYLIST_NAME`. On every subsequent run it finds the existing playlist by name and updates it in place. The tool manages only the playlist(s) it creates - manual edits to those playlists are reverted on the next run to match the tool's logic. Other playlists in your library are never touched.
+!!! warning "Playlist lifecycle - manual edits are reverted"
+    On the **first** run, the tool creates a new YouTube Music playlist named by `PLAYLIST_NAME`. On every subsequent run it finds the existing playlist by name and updates it in place. The tool manages only the playlist(s) it creates - **any manual edits you make to those playlists (adding, removing, or reordering tracks) are overwritten on the next run** to match the tool's computed state. To keep a track permanently, use an [override or blacklist](overrides.md) instead of editing the playlist directly. Other playlists in your library are never touched.
 
 ---
 
@@ -95,6 +95,14 @@ When `USE_RECENCY_WEIGHTING=false`, the tool simply takes the most recent unique
 
 All three produce scores in `[0, 1]`, so they plug into the same final-score blend without changing the meaning of `RECENCY_PLAY_WEIGHT`.
 
+**How this affects the final playlist:** normalization changes the `play_score`, which feeds the final ranking, which decides *which* tracks survive the `LIMIT` cutoff and in *what order*. So switching strategies can visibly reshape the playlist even though the underlying scrobbles are identical:
+
+- `linear` lets a few heavy-rotation tracks dominate the top of the list and squeezes everything else toward the bottom, so near the `LIMIT` cutoff selection is driven mostly by recency. Best when you *want* your top plays to lead.
+- `log` keeps mid-tier tracks competitive, so more of your moderately-played songs make the cut and the ordering feels less top-heavy.
+- `rank` flattens the play-count contribution to pure ordering, which gives recency (via `RECENCY_PLAY_WEIGHT`) the most influence over borderline tracks near the cutoff - expect the most varied, least outlier-driven playlist.
+
+The effect is largest when your play counts are skewed (a handful of tracks with far more plays than the rest) and when the playlist is near `LIMIT` so the cutoff actually excludes tracks. With a flat play-count distribution or a playlist well under `LIMIT`, the three strategies produce nearly identical results.
+
 ### Velocity (trending) weight
 
 `RECENCY_VELOCITY_WEIGHT` (default `0.0` = off) blends a **trending** signal into the final score:
@@ -119,6 +127,7 @@ Key nuances:
 - It rewards **bursts**: 5 plays in one day scores `5.0/day`, whereas 5 plays spread over 5 days scores `1.0/day`.
 - It uses the **raw** play count, *not* the session-weighted count, so it is independent of session weighting.
 - A single-play track scores `1/1 = 1.0`, so at high weights one-off plays can rank surprisingly high - another reason the default is off and low values are recommended.
+- Because it feeds the same final score, it does more than reorder: a trending track can be **pushed above the `LIMIT` cutoff** and pull an older, higher-total-play track *out* of the playlist entirely. Larger weights change membership more aggressively.
 
 ### Session weighting
 
@@ -128,6 +137,7 @@ Key nuances:
 - The local hour is computed in `RECENCY_SESSION_TIMEZONE` (blank inherits the general `TIMEZONE`, then `UTC`).
 - The boosted count feeds the play-count normalization above, so it interacts with `RECENCY_NORMALIZATION` but **not** velocity (which uses raw counts).
 - It requires per-scrobble timestamps, so it is a **no-op** when `USE_LOCAL_LASTFM_DB=true` (the local history DB keeps only aggregated counts).
+- Because the boost feeds the score, it can change *which* tracks make the playlist near the `LIMIT` cutoff, not just their order: a song you mostly play during your listening window is nudged up, while equally-played background/late-night tracks can drop below the cutoff. The effect is mild (1.5&times; per in-window play), so it mostly nudges borderline tracks rather than reshuffling the whole list.
 
 ---
 

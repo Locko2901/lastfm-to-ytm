@@ -45,6 +45,8 @@ The 70/30 split weights token overlap (order-independent) more heavily, while `S
 
 `score_candidate()` produces a 0.0-1.0 match score for each YouTube Music result.
 
+The weights below sum to `1.0` and apply to the **base score only** (each similarity is itself in the `0-1` range). Bonuses are then added and penalties subtracted on top, so the intermediate score can drift above `1.0` or below `0.0`; the function's final `return` clamps it back into `[0.0, 1.0]`.
+
 ### Base Score Components
 
 | Component | Weight | Function |
@@ -111,3 +113,11 @@ Early rejection if scores are too low:
 - Videos: +`0.05` extra (harder to accept user uploads)
 - Early termination: `max(EARLY_TERMINATION_SCORE, base + video_extra)`
 - Grace zone: candidates within `0.06` of threshold are accepted with a debug log
+
+!!! info "Effect of `EARLY_TERMINATION_SCORE` on match quality"
+    This is a **speed vs. accuracy** knob, and it can change *which video ends up in the playlist*:
+
+    - **Lower it** (e.g. `0.75`) &rarr; the search stops as soon as a "good enough" candidate appears, saving API calls and time, but it may lock in a worse match (a live version, a user upload) before a better one is found.
+    - **Raise it** (e.g. `0.95`) &rarr; the search keeps exploring queries and filters for a near-perfect match, improving accuracy at the cost of more API calls and slower syncs.
+
+    It never affects *which tracks* are in the playlist - only *which YouTube video* each track resolves to.

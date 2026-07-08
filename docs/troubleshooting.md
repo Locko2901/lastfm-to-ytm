@@ -68,7 +68,7 @@ If none of these match, check the sync console (or `./run-docker.sh --logs`) for
 
 ### Stale cache results
 
-- Cached search results expire after `CACHE_SEARCH_TTL_DAYS` (default: 30). If a video has been removed or a better match exists, open the **cache management modal** (database icon in the dashboard header) &rarr; *Search cache* tab and bulk-delete the affected entries, or delete `runtime/.search_cache.json` entirely.
+- Cached search results expire after `CACHE_SEARCH_TTL_DAYS` (default: 30). If a video has been removed or a better match exists, open the **cache management modal** (database icon in the dashboard header - see [Web Dashboard](dashboard.md)) &rarr; *Search cache* tab and bulk-delete the affected entries, or delete `runtime/.search_cache.json` entirely.
 - "Not found" entries are retried after `CACHE_NOTFOUND_TTL_DAYS` (default: 7). To force an immediate retry, clear the entry from the cache.
 
 ---

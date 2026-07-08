@@ -9,6 +9,22 @@
 
 ---
 
+## Quick reference: the settings you'll actually touch
+
+| Setting | Default | What it does |
+|---|---|---|
+| `LASTFM_USER` | *(required)* | Your Last.fm username |
+| `LASTFM_API_KEY` | *(required)* | Your Last.fm API key |
+| `PLAYLIST_NAME` | `Last.fm Recents (auto)` | Name of the synced playlist |
+| `PLAYLIST_PRIVACY` | `PRIVATE` | `PRIVATE`, `UNLISTED`, or `PUBLIC` |
+| `LIMIT` | `100` | Target number of tracks |
+| `RECENCY_PLAY_WEIGHT` | `0.7` | `0.0` = pure recency &harr; `1.0` = pure play count |
+| `RECENCY_HALF_LIFE_HOURS` | `48.0` | How fast recency decays (lower = favor newer) |
+| `WEEKLY_ENABLED` | `true` | Create weekly snapshot playlists |
+| `TIMEZONE` | `UTC` | IANA timezone for week boundaries / session hours |
+
+---
+
 ## Keeping `.env` up to date
 
 When you update to a newer version, new settings may be added to `.env.example` that your existing `.env` doesn't have yet. The tool detects this automatically:
@@ -95,7 +111,7 @@ These two are the only settings you *have* to configure. Everything else has sen
 | `USE_RECENCY_WEIGHTING` | `true` | Rank by play count + recency (`false` = most recent first) |
 | `RECENCY_HALF_LIFE_HOURS` | `48.0` | How fast recency decays (lower = favor newer tracks) |
 | `RECENCY_PLAY_WEIGHT` | `0.7` | Balance: `0.0` = pure recency, `1.0` = pure play count |
-| `RECENCY_MIN_PLAYS` | `1` | Minimum scrobbles within fetched window for a track to qualify (`1` = no gate) |
+| `RECENCY_MIN_PLAYS` | `1` | Minimum scrobbles within the fetched window for a track to qualify (`1` = no gate). Acts as a hard filter: raise it (e.g. `3`) to keep only songs you've actually revisited, which **shrinks the playlist** and can leave it below `LIMIT` if few tracks clear the bar. |
 | `RECENCY_NORMALIZATION` | `linear` | How play counts convert to a score. `linear` divides by the top track (a single 500-play outlier flattens everything below it). `log` applies `log1p` first to tame outliers so heavy hitters don't dominate. `rank` ignores absolute counts and scores each track by its percentile position - the most balanced spread. |
 | `RECENCY_VELOCITY_WEIGHT` | `0.0` | Blend in a *trending* signal based on plays-per-day (how tightly a track's plays cluster in time). `0.0` = off. Raise it to favor tracks you're bingeing right now over ones played the same number of times spread across months. |
 | `RECENCY_SESSION_WEIGHTING` | `false` | Give extra weight to plays made during your preferred listening hours over background/late-night scrobbles. Only applies when scoring from the fetched scrobble window - it's a no-op with `USE_LOCAL_LASTFM_DB` (which keeps no per-scrobble timestamps). |
@@ -126,7 +142,7 @@ These settings only apply when running the web dashboard.
 | `AUTO_SYNC_START_TIME` | | HH:MM anchor for interval start (e.g., `00:00`) |
 | `AUTO_SYNC_CRON` | `0 */6 * * *` | Cron expression (cron mode) |
 | `AUTO_TAG_SYNC_ENABLED` | `false` | Also sync custom playlists (tags & artists) after each scheduled run |
-| `AUTO_TAG_SYNC_FREQUENCY` | `1` | Run tag sync every N main syncs (`1` = every time) |
+| `AUTO_TAG_SYNC_FREQUENCY` | `1` | Run tag sync every N main syncs (`1` = every time). Higher values (e.g. `4`) cut API load but let custom playlists **lag behind** the main one - they only refresh every Nth scheduled run. |
 | `USE_24_HOUR_CLOCK` | `true` | Display times in 24-hour format |
 | `DATE_FORMAT` | `auto` | Date display format: `auto` (browser locale), `DMY` (31/12), or `MDY` (12/31) |
 | `NOW_PLAYING_ENABLED` | `true` | Show "Now Playing" from Last.fm in the header |
@@ -193,8 +209,8 @@ explicitly only if you need a file in a non-default location.
 
     | Variable | Default | Description |
     |----------|---------|-------------|
-    | `MAX_RAW_SCROBBLES` | `2000` | Max scrobbles to fetch (`0` = unlimited) |
-    | `BACKFILL_PASSES` | `3` | Additional fetch attempts if below `LIMIT` (`0` = disabled) |
+    | `MAX_RAW_SCROBBLES` | `2000` | Safety **ceiling** on scrobbles fetched (`0` = unlimited). Fetching normally stops earlier - as soon as `LIMIT` unique tracks have been collected - so this cap only bites when your listening is repetitive (many plays across few unique tracks). When it does bite it limits how many plays accumulate per track, which affects play-count ranking and the `RECENCY_MIN_PLAYS` gate (both count plays only within the fetched scrobbles). |
+    | `BACKFILL_PASSES` | `3` | Additional fetch attempts if below `LIMIT` (`0` = disabled). When the first pass resolves fewer than `LIMIT` tracks, backfill pulls in **older** scrobbles to fill the gap - so a sparse recent history yields a playlist padded with less-recent tracks rather than a short one. |
 
 ??? note "Caching"
 
@@ -203,8 +219,8 @@ explicitly only if you need a file in a non-default location.
     | `CACHE_PLAYLIST_FILE` | `runtime/.playlist_cache.json` | Path to playlist cache |
     | `CACHE_SEARCH_FILE` | `runtime/.search_cache.json` | Path to search cache |
     | `CACHE_OVERRIDES_FILE` | `config/search_overrides.json` | Path to search overrides |
-    | `CACHE_SEARCH_TTL_DAYS` | `30` | Days before cached searches expire (`0` = never) |
-    | `CACHE_NOTFOUND_TTL_DAYS` | `7` | Days before "not found" results are retried (`0` = don't cache) |
+    | `CACHE_SEARCH_TTL_DAYS` | `30` | Days before cached searches expire (`0` = never). On expiry the track is re-searched, so a match can **change** if YTM now has a better upload (or the old video was removed). |
+    | `CACHE_NOTFOUND_TTL_DAYS` | `7` | Days before "not found" results are retried (`0` = don't cache). After this, previously unmatched tracks get another chance and may **newly appear** in the playlist once they become findable. |
 
 ??? note "Custom playlists"
 
@@ -226,8 +242,8 @@ explicitly only if you need a file in a non-default location.
     |----------|---------|-------------|
     | `HISTORY_DB_ENABLED` | `false` | Track all songs, syncs, and actions in a local SQLite DB |
     | `HISTORY_DB_FILE` | `runtime/history.db` | Path to the history database file |
-    | `HISTORY_MAX_SIZE_MB` | `0` | Auto-prune oldest records when exceeded (`0` = unlimited) |
-    | `HISTORY_RETENTION_DAYS` | `0` | After each sync, delete `syncs` &amp; `actions` rows older than N days (`0` = keep forever). `tracks` are always retained. |
+    | `HISTORY_MAX_SIZE_MB` | `0` | Auto-prune oldest records when exceeded (`0` = unlimited). When it prunes, the oldest `syncs`/`actions` rows are deleted, so the History tab loses its earliest data (older trends and past syncs disappear). |
+    | `HISTORY_RETENTION_DAYS` | `0` | After each sync, delete `syncs` &amp; `actions` rows older than N days (`0` = keep forever). `tracks` are always retained. Lowering it keeps the History tab focused on recent activity but trims long-term trend charts. |
 
     See [History Database](history.md) for what's tracked and the dashboard view.
 
@@ -237,7 +253,7 @@ explicitly only if you need a file in a non-default location.
     |----------|---------|-------------|
     | `USE_LOCAL_LASTFM_DB` | `false` | Build the main playlist from your full local scrobble history (lifetime plays + recency) instead of recent tracks. **Changes playlist behaviour.** |
     | `LASTFM_LOCAL_DB_FILE` | `runtime/lastfm_history.db` | Path to the local Last.fm history database file |
-    | `LASTFM_LOCAL_DB_MAX_SCROBBLES` | `0` | Safety cap on scrobbles ingested per crawl (`0` = unlimited) |
+    | `LASTFM_LOCAL_DB_MAX_SCROBBLES` | `0` | Safety cap on scrobbles ingested per crawl (`0` = unlimited). More than a safety valve: a non-zero cap **scopes the playlist to a slice of your history** - e.g. `10000` builds rankings from your 10k most recent lifetime scrobbles, so older favourites never enter the pool. |
 
     See [Local Last.fm History](local-history.md) for how the full crawl and incremental updates work.
 

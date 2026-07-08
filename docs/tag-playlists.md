@@ -23,6 +23,12 @@ After fetching, `"add"` mode tag overrides are merged into the result (this allo
 
 Tags with fewer votes than `TAG_MIN_COUNT` (default: 10) are filtered out to avoid noise.
 
+!!! info "How `TAG_MIN_COUNT` shapes the playlist"
+    This threshold decides how many tags each track is allowed to carry, which in turn decides how many tracks qualify:
+
+    - **Raise it** (e.g. `50`) &rarr; only strong, widely-agreed tags survive, so fewer tracks match your `tags` and the playlist gets **smaller and more precise** (and may struggle to reach `limit`, leaning harder on backfill).
+    - **Lower it** (e.g. `1`) &rarr; niche and noisy tags count too, so **more tracks match** and the playlist grows, at the cost of the occasional off-genre song.
+
 If backfilling is enabled and a playlist has not reached its target track count after filtering, the tool automatically fetches more scrobbles and repeats until the limit is met or no more data is available.
 
 ---
@@ -80,7 +86,7 @@ cp config/custom_playlists.json.example config/custom_playlists.json
 | `description` | no | Optional playlist description (empty = auto-generated) |
 | `tags` | tag playlists | Last.fm tags to match against (required when `kind` is `"tags"`) |
 | `artists` | artist playlists | Lowercase artist names to include (required when `kind` is `"artists"`) |
-| `match` | no | `"any"` (track has at least one tag, default) or `"all"` (track has every tag). Tag playlists only |
+| `match` | no | `"any"` (track has at least one tag, default) or `"all"` (track has every tag). Tag playlists only. `"any"` casts a wide net &rarr; **bigger** playlist; `"all"` is strict AND logic &rarr; **smaller, tightly-filtered** playlist (e.g. `["ambient", "electronic"]` with `"all"` keeps only tracks tagged *both*) |
 | `limit` | no | Target number of tracks (default: `50`) |
 | `backfill` | no | Fetch more scrobbles if filtering doesn't reach the limit (default: `true`) |
 | `privacy` | no | Per-playlist visibility: `"PUBLIC"`, `"UNLISTED"`, or `"PRIVATE"` (omit/empty to inherit the global `CUSTOM_PLAYLISTS_PRIVACY` setting) |
