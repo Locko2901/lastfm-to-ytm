@@ -402,7 +402,7 @@ def test_get_discovery_seed_options_from_local_db(flask_app, monkeypatch):
                 ("Aphex Twin", "Xtal", "SAW 85-92", 20, 0, 0),
             ]
 
-    monkeypatch.setattr(data, "get_local_scrobble_db", lambda: _FakeDB())
+    monkeypatch.setattr(data, "get_local_scrobble_db", _FakeDB)
 
     with flask_app.app_context():
         options = data.get_discovery_seed_options()
