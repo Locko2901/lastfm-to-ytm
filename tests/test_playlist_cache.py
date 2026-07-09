@@ -129,3 +129,51 @@ def test_persists_across_instances(tmp_path):
     path = str(tmp_path / ".playlist_cache.json")
     PlaylistCache(path).set_template("P", "PL1", ["a", "b"])
     assert PlaylistCache(path).get_template("P") == ["a", "b"]
+
+
+def test_set_template_stores_role(tmp_path):
+    pc = _pc(tmp_path)
+    pc.set_template("Main", "PL1", ["a"], role="main")
+    assert pc.find_by_role("main") == ("Main", "PL1")
+
+
+def test_set_template_preserves_role_when_omitted(tmp_path):
+    pc = _pc(tmp_path)
+    pc.set_template("Main", "PL1", ["a"], role="main")
+    pc.set_template("Main", "PL1", ["a", "b"])  # no role passed
+    assert pc.find_by_role("main") == ("Main", "PL1")
+
+
+def test_find_by_role_miss_returns_none(tmp_path):
+    pc = _pc(tmp_path)
+    pc.set_template("Main", "PL1", ["a"], role="main")
+    assert pc.find_by_role("weekly:2024-01-01") is None
+    assert pc.find_by_role("") is None
+
+
+def test_find_by_role_ambiguous_returns_none(tmp_path):
+    pc = _pc(tmp_path)
+    pc.set_template("A", "PL1", ["a"], role="custom:dup")
+    pc.set_template("B", "PL2", ["b"], role="custom:dup")
+    assert pc.find_by_role("custom:dup") is None
+
+
+def test_rename_moves_entry_and_preserves_role(tmp_path):
+    pc = _pc(tmp_path)
+    pc.set_template("Old Name", "PL1", ["a", "b"], role="main")
+    assert pc.rename("Old Name", "New Name") is True
+    assert pc.get_id("Old Name") is None
+    assert pc.get_id("New Name") == "PL1"
+    assert pc.get_template("New Name") == ["a", "b"]
+    assert pc.find_by_role("main") == ("New Name", "PL1")
+
+
+def test_rename_same_name_is_noop(tmp_path):
+    pc = _pc(tmp_path)
+    pc.set_template("P", "PL1", ["a"])
+    assert pc.rename("P", "P") is False
+
+
+def test_rename_missing_entry_returns_false(tmp_path):
+    pc = _pc(tmp_path)
+    assert pc.rename("Missing", "New") is False

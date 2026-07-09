@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-09 13:55+0200\n"
+"POT-Creation-Date: 2026-07-09 21:08+0200\n"
 "PO-Revision-Date: 2026-05-13 11:41+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -6688,5 +6688,97 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "No matches"
+#~ msgstr ""
+
+#~ msgid "Failed to load recap"
+#~ msgstr ""
+
+#~ msgid "No recap data yet - run a sync to get started."
+#~ msgstr ""
+
+#~ msgid "Total Plays"
+#~ msgstr ""
+
+#~ msgid "Unique Tracks"
+#~ msgstr ""
+
+#~ msgid "Listening Span"
+#~ msgstr ""
+
+#~ msgid "Top Artist"
+#~ msgstr ""
+
+#~ msgid "Match Rate"
+#~ msgstr ""
+
+#~ msgid "Avg Match Score"
+#~ msgstr ""
+
+#~ msgid "Your all-time recap"
+#~ msgstr ""
+
+#~ msgid "Top Artists"
+#~ msgstr ""
+
+#~ msgid "Tracks Matched"
+#~ msgstr ""
+
+#~ msgid "Syncs Run"
+#~ msgstr ""
+
+#~ msgid "Cache Hits"
+#~ msgstr ""
+
+#~ msgid "Tracks Blacklisted"
+#~ msgstr ""
+
+#~ msgid "Manual Overrides"
+#~ msgstr ""
+
+#~ msgid "Discovered Tracks"
+#~ msgstr ""
+
+#~ msgid "How this tool curated your music"
+#~ msgstr ""
+
+#~ msgid "Where your matches came from"
+#~ msgstr ""
+
+#~ msgid "Most stubborn tracks"
+#~ msgstr ""
+
+#~ msgid "Tracks that most often failed to resolve to a YouTube Music match."
+#~ msgstr ""
+
+#~ msgid "today"
+#~ msgstr ""
+
+#~ msgid "days"
+#~ msgstr ""
+
+#~ msgid "years"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Your all-time listening recap - "
+#~ "top artists and tracks from your "
+#~ "Last.fm library, plus how this tool "
+#~ "has curated them. Computed locally from"
+#~ " your history."
+#~ msgstr ""
+
+#~ msgid "Loading your recap..."
+#~ msgstr ""
+
+#~ msgid "Recap unavailable"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Enable the history database or the "
+#~ "local Last.fm library in Settings to "
+#~ "build your recap."
+#~ msgstr ""
+
+#~ msgid "Recap"
 #~ msgstr ""
 

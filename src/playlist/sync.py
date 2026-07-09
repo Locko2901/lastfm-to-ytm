@@ -9,7 +9,7 @@ from ytmusicapi import YTMusic
 from ytmusicapi.exceptions import YTMusicServerError
 
 from ..observability.http_status import extract_http_status, is_rate_limited, is_retryable
-from ..ytm import create_playlist_with_items, get_existing_playlist_by_name
+from ..ytm import create_playlist_with_items, get_or_rename_playlist
 from .metrics import _query_counter
 
 if TYPE_CHECKING:
@@ -557,27 +557,31 @@ def upsert_playlist(
     privacy: str,
     video_ids: list[str],
     max_retries: int = 3,
+    *,
+    role: str | None = None,
 ) -> str | None:
     """Create or sync a playlist, returning the playlist ID.
 
-    Skips sync when the cached template already matches.
+    Skips sync when the cached template already matches. When ``role`` is given,
+    a rename of the playlist (its name changed but ``role`` stayed the same) is
+    detected and the existing YTM playlist is retitled instead of duplicated.
     Returns the playlist ID on success, None on failure.
     """
-    existing_id = get_existing_playlist_by_name(ytm, name, cache=playlist_cache)
+    existing_id = get_or_rename_playlist(ytm, name, cache=playlist_cache, role=role)
     template_changed = playlist_cache.template_changed(name, video_ids)
 
     if existing_id:
         if template_changed:
             log.info("Syncing playlist '%s'...", name)
             sync_playlist(ytm, existing_id, video_ids, max_retries=max_retries)
-            playlist_cache.set_template(name, existing_id, video_ids)
+            playlist_cache.set_template(name, existing_id, video_ids, role=role)
         else:
             log.info("Playlist '%s' already up to date", name)
             playlist_cache.touch(name)
         return existing_id
 
     log.info("Creating playlist '%s'...", name)
-    pl_id = create_playlist_with_items(ytm, name, desc, privacy, video_ids, cache=playlist_cache)
+    pl_id = create_playlist_with_items(ytm, name, desc, privacy, video_ids, cache=playlist_cache, role=role)
     log.info(
         "Created playlist '%s' with %d tracks: https://music.youtube.com/playlist?list=%s",
         name,

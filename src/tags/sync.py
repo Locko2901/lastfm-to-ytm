@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import contextlib
+import hashlib
+import json
 import logging
 import os
 import traceback
@@ -25,6 +27,29 @@ if TYPE_CHECKING:
     from ..recency import WeightedTrack
 
 log = logging.getLogger(__name__)
+
+
+def _custom_playlist_role(config: CustomPlaylistConfig) -> str:
+    """Build a stable rename-detection role from a custom playlist's definition.
+
+    The role is derived from what the playlist *is* (kind, tags, artists,
+    discovery seeds) rather than its name, so renaming the playlist keeps the
+    same role and the existing YTM playlist is retitled instead of duplicated.
+    Two playlists with identical definitions share a role, in which case rename
+    detection safely backs off (see ``PlaylistCache.find_by_role``).
+    """
+    payload = {
+        "kind": config.kind,
+        "tags": sorted(config.tags),
+        "artists": sorted(config.artists),
+        "match": config.match,
+        "discovery_seed": config.discovery_seed,
+        "discovery_seed_auto": config.discovery_seed_auto,
+        "discovery_seed_artists": sorted(config.discovery_seed_artists),
+        "discovery_seed_tracks": sorted(f"{a}\u0000{t}" for a, t in config.discovery_seed_tracks),
+    }
+    digest = hashlib.sha1(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+    return f"custom:{digest}"
 
 
 @dataclass(frozen=True)
@@ -296,6 +321,7 @@ def sync_custom_playlists(
                 privacy,
                 video_ids,
                 max_retries=settings.api_max_retries,
+                role=_custom_playlist_role(config),
             )
             _record_custom_playlist_sync(settings, config.name, len(video_ids), config.limit)
         except InvalidVideoIDsError as e:

@@ -58,6 +58,60 @@ def get_existing_playlist_by_name(
     return None
 
 
+def get_or_rename_playlist(
+    ytm: YTMusic,
+    name: str,
+    cache: PlaylistCache | None = None,
+    *,
+    role: str | None = None,
+) -> str | None:
+    """Resolve a managed playlist's ID, renaming it in place if it was renamed.
+
+    First tries the normal name-based lookup. If that misses but the cache holds
+    an entry with the same ``role`` under a different name, the playlist was
+    renamed (e.g. the user changed ``PLAYLIST_NAME``): the existing YTM playlist
+    is retitled via ``edit_playlist`` and the cache key migrated, avoiding a
+    duplicate playlist. Returns the playlist ID, or ``None`` when it must be
+    created fresh.
+    """
+    existing_id = get_existing_playlist_by_name(ytm, name, cache=cache)
+    if existing_id:
+        return existing_id
+
+    if cache is None or not role:
+        return None
+
+    prev = cache.find_by_role(role)
+    if not prev:
+        return None
+    prev_name, prev_id = prev
+    if prev_name == name or not prev_id:
+        return None
+
+    try:
+        playlist = ytm.get_playlist(prev_id, limit=0)
+        if not playlist or playlist.get("id") != prev_id:
+            cache.remove(prev_name)
+            return None
+    except Exception as e:
+        error_str = str(e)
+        if "Unable to find 'contents'" in error_str or "404" in error_str:
+            log.info("Previously-tracked playlist '%s' (%s) is gone, dropping from cache", prev_name, prev_id)
+            cache.remove(prev_name)
+        else:
+            log.warning("Could not verify playlist '%s' for rename: %s", prev_name, e)
+        return None
+
+    log.info("Detected playlist rename '%s' -> '%s' (%s); renaming in place", prev_name, name, prev_id)
+    try:
+        ytm.edit_playlist(prev_id, title=name)
+    except Exception as e:
+        log.warning("Failed to rename playlist '%s' -> '%s' on YouTube Music: %s", prev_name, name, e)
+        return None
+    cache.rename(prev_name, name)
+    return prev_id
+
+
 def add_items_fallback(ytm: YTMusic, pl_id: str, video_ids: list[str], chunk_size: int = 75) -> None:
     """Add items to playlist in chunks with single-item fallback on error."""
     for start in range(0, len(video_ids), chunk_size):
@@ -80,6 +134,8 @@ def create_playlist_with_items(
     privacy: str,
     video_ids: list[str],
     cache: PlaylistCache | None = None,
+    *,
+    role: str | None = None,
 ) -> str:
     """Create a playlist and cache its template (ID + video IDs)."""
     try:
@@ -96,6 +152,6 @@ def create_playlist_with_items(
     log.info("Created playlist '%s' with ID: %s", name, pl_id)
 
     if cache:
-        cache.set_template(name, pl_id, video_ids)
+        cache.set_template(name, pl_id, video_ids, role=role)
 
     return pl_id

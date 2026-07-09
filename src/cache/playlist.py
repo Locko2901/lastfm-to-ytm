@@ -50,20 +50,71 @@ class PlaylistCache(JSONCache[Any]):
                 return list(video_ids)
         return None
 
-    def set_template(self, playlist_name: str, playlist_id: str, video_ids: list[str]) -> None:
-        """Cache playlist ID and template."""
+    def set_template(self, playlist_name: str, playlist_id: str, video_ids: list[str], *, role: str | None = None) -> None:
+        """Cache playlist ID and template.
+
+        ``role`` is a stable identity marker (e.g. ``"main"`` or ``"weekly:2026-07-06"``)
+        used to detect renames: when a playlist's name changes, its role stays the
+        same so the existing YTM playlist can be found and renamed in place instead
+        of creating a duplicate. When ``role`` is ``None`` any existing role on the
+        entry is preserved.
+        """
         log.info(
             "Caching template: '%s' -> %s (%d videos)",
             playlist_name,
             playlist_id,
             len(video_ids),
         )
-        self._cache[playlist_name] = {
+        entry: dict[str, Any] = {
             "id": playlist_id,
             "video_ids": video_ids,
             "last_updated": datetime.now(UTC).isoformat(),
         }
+        if role is not None:
+            entry["role"] = role
+        else:
+            existing = self._cache.get(playlist_name)
+            if isinstance(existing, dict) and existing.get("role"):
+                entry["role"] = existing["role"]
+        self._cache[playlist_name] = entry
         self._save()
+
+    def find_by_role(self, role: str) -> tuple[str, str] | None:
+        """Find a cached playlist by its stable ``role`` marker.
+
+        Returns ``(name, playlist_id)`` when exactly one entry carries the role
+        and has an ID. Returns ``None`` when there is no match or the match is
+        ambiguous (multiple entries share the role), so callers never rename the
+        wrong playlist.
+        """
+        if not role:
+            return None
+        matches: list[tuple[str, str]] = []
+        for name, entry in self._cache.items():
+            if isinstance(entry, dict) and entry.get("role") == role:
+                pid = entry.get("id")
+                if pid:
+                    matches.append((name, str(pid)))
+        if len(matches) == 1:
+            return matches[0]
+        return None
+
+    def rename(self, old_name: str, new_name: str) -> bool:
+        """Move a cached entry from ``old_name`` to ``new_name``, preserving its data.
+
+        Returns True when the entry was moved, False otherwise.
+        """
+        if old_name == new_name:
+            return False
+        entry = self._cache.get(old_name)
+        if not isinstance(entry, dict):
+            return False
+        entry["last_updated"] = datetime.now(UTC).isoformat()
+        self._cache[new_name] = entry
+        del self._cache[old_name]
+        self._save()
+        log.info("Renamed cache entry '%s' -> '%s'", old_name, new_name)
+        return True
 
     def template_changed(self, playlist_name: str, new_video_ids: list[str]) -> bool:
         """Check if template changed."""

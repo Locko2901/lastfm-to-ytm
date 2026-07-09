@@ -45,6 +45,38 @@ def _start_of_week(dt: datetime, week_start: int) -> datetime:
     return sow
 
 
+def _rename_weekly_in_place(ytm: YTMusic, cache: PlaylistCache, weekly_name: str, weekly_role: str) -> str | None:
+    """Rename an existing weekly playlist in place when its prefix changed.
+
+    When ``WEEKLY_PLAYLIST_PREFIX`` (or the derived prefix) changes, the current
+    week's playlist keeps the same ``weekly_role`` but a new name. Retitle the
+    existing YTM playlist and migrate the cache key instead of creating a
+    duplicate. Returns the playlist ID when renamed, else ``None``.
+    """
+    prev = cache.find_by_role(weekly_role)
+    if not prev:
+        return None
+    prev_name, prev_id = prev
+    if prev_name == weekly_name or not prev_id:
+        return None
+    try:
+        playlist = ytm.get_playlist(prev_id, limit=0)
+        if not playlist or playlist.get("id") != prev_id:
+            cache.remove(prev_name)
+            return None
+    except Exception as e:
+        log.warning("Could not verify weekly playlist '%s' for rename: %s", prev_name, e)
+        return None
+    log.info("Detected weekly rename '%s' -> '%s' (%s); renaming in place", prev_name, weekly_name, prev_id)
+    try:
+        ytm.edit_playlist(prev_id, title=weekly_name)
+    except Exception as e:
+        log.warning("Failed to rename weekly playlist on YouTube Music: %s", e)
+        return None
+    cache.rename(prev_name, weekly_name)
+    return prev_id
+
+
 def _derive_weekly_prefix(main_playlist_name: str) -> str:
     s = main_playlist_name.strip()
     lower = s.lower()
@@ -165,6 +197,7 @@ def update_weekly_playlist(
     now = datetime.now(tz)
     sow = _start_of_week(now, week_start)
     weekly_name = _weekly_playlist_name(base_prefix, sow.date())
+    weekly_role = f"weekly:{sow.date().isoformat()}"
 
     weekly_privacy = getattr(settings, "weekly_privacy_status", None) or settings.privacy_status
 
@@ -177,6 +210,8 @@ def update_weekly_playlist(
     )
 
     weekly_id: str | None = get_existing_playlist_by_name(ytm, weekly_name, cache=cache)
+    if not weekly_id and cache is not None:
+        weekly_id = _rename_weekly_in_place(ytm, cache, weekly_name, weekly_role)
     weekly_template = cache.get_template(weekly_name) if cache else None
     template_changed = weekly_template != valid_video_ids if weekly_template is not None else True
 
@@ -237,6 +272,6 @@ def update_weekly_playlist(
             log.warning("Failed to clear songs from old weeklies in cache: %s", e)
 
     if weekly_id and cache:
-        cache.set_template(weekly_name, weekly_id, valid_video_ids)
+        cache.set_template(weekly_name, weekly_id, valid_video_ids, role=weekly_role)
 
     return weekly_id
