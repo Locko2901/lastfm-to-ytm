@@ -384,6 +384,7 @@ class Settings:
     use_local_lastfm_db: bool = False
     lastfm_local_db_file: str = str(RUNTIME_DIR / "lastfm_history.db")
     lastfm_local_db_max_scrobbles: int = 0
+    discovery_rediscover_days: int = 0
     webhook_url: str = ""
     webhook_events: str = "error"
     webhook_allow_private: bool = False
@@ -486,6 +487,7 @@ class Settings:
         use_local_lastfm_db = _str_to_bool(os.getenv("USE_LOCAL_LASTFM_DB"), False)
         lastfm_local_db_file = _runtime_file("LASTFM_LOCAL_DB_FILE", "lastfm_history.db")
         lastfm_local_db_max_scrobbles = _str_to_int(os.getenv("LASTFM_LOCAL_DB_MAX_SCROBBLES"), 0)
+        discovery_rediscover_days = max(_str_to_int(os.getenv("DISCOVERY_REDISCOVER_DAYS"), 0), 0)
         webhook_url = (_strip_inline_comment(os.getenv("WEBHOOK_URL")) or "").strip()
         webhook_events = (_strip_inline_comment(os.getenv("WEBHOOK_EVENTS")) or "error").strip().lower()
         if webhook_events not in {"all", "error"}:
@@ -548,6 +550,7 @@ class Settings:
             use_local_lastfm_db=use_local_lastfm_db,
             lastfm_local_db_file=lastfm_local_db_file,
             lastfm_local_db_max_scrobbles=lastfm_local_db_max_scrobbles,
+            discovery_rediscover_days=discovery_rediscover_days,
             webhook_url=webhook_url,
             webhook_events=webhook_events,
             webhook_allow_private=webhook_allow_private,
@@ -570,6 +573,11 @@ class CustomPlaylistConfig:
     auto_sync: bool = True
     description: str = ""
     privacy: str | None = None
+    discovery_seed: str = "artists"
+    discovery_seed_auto: bool = True
+    discovery_seed_artists: tuple[str, ...] = ()
+    discovery_seed_tracks: tuple[tuple[str, str], ...] = ()
+    discovery_exclude_scrobbled: bool = True
 
 
 def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
@@ -592,7 +600,7 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
     for entry in playlists:
         name = entry.get("name")
         kind = entry.get("kind", "tags")
-        if kind not in ("tags", "artists"):
+        if kind not in ("tags", "artists", "discovery"):
             kind = "tags"
 
         raw_artists = entry.get("artists", [])
@@ -629,6 +637,31 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
         if isinstance(raw_privacy, str) and raw_privacy.strip().upper() in _VALID_PRIVACY:
             privacy = raw_privacy.strip().upper()
 
+        discovery_seed = entry.get("discovery_seed", "artists")
+        if discovery_seed not in ("artists", "tracks"):
+            discovery_seed = "artists"
+
+        discovery_seed_auto = entry.get("discovery_seed_auto", True)
+        if not isinstance(discovery_seed_auto, bool):
+            discovery_seed_auto = True
+
+        raw_seed_artists = entry.get("discovery_seed_artists", [])
+        discovery_seed_artists = tuple(a.strip() for a in raw_seed_artists if isinstance(a, str) and a.strip())
+
+        raw_seed_tracks = entry.get("discovery_seed_tracks", [])
+        seed_tracks: list[tuple[str, str]] = []
+        for item in raw_seed_tracks:
+            if isinstance(item, dict):
+                artist = str(item.get("artist", "")).strip()
+                track = str(item.get("track", "")).strip()
+                if artist and track:
+                    seed_tracks.append((artist, track))
+        discovery_seed_tracks = tuple(seed_tracks)
+
+        discovery_exclude_scrobbled = entry.get("discovery_exclude_scrobbled", True)
+        if not isinstance(discovery_exclude_scrobbled, bool):
+            discovery_exclude_scrobbled = True
+
         configs.append(
             CustomPlaylistConfig(
                 name=name,
@@ -643,6 +676,11 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
                 auto_sync=auto_sync,
                 description=description,
                 privacy=privacy,
+                discovery_seed=discovery_seed,
+                discovery_seed_auto=discovery_seed_auto,
+                discovery_seed_artists=discovery_seed_artists,
+                discovery_seed_tracks=discovery_seed_tracks,
+                discovery_exclude_scrobbled=discovery_exclude_scrobbled,
             )
         )
 

@@ -45,6 +45,7 @@ import {
 } from "./modules/customTheme.js"
 import { initDelegation } from "./modules/delegation.js"
 import { initEvents, onEvent } from "./modules/events.js"
+import { toggleCustomPlaylistExport, togglePlaylistExport } from "./modules/exportMenu.js"
 import { filterCache, filterNotFound, filterTags, filterTracks, goToFilter, initFilters } from "./modules/filters.js"
 import {
   clearHistory,
@@ -167,6 +168,8 @@ window.filterNotFound = filterNotFound
 window.filterCache = filterCache
 window.filterTags = filterTags
 window.togglePlaylistGraph = togglePlaylistGraph
+window.togglePlaylistExport = togglePlaylistExport
+window.toggleCustomPlaylistExport = toggleCustomPlaylistExport
 
 window.showModal = showModal
 window.closeModal = closeModal

@@ -3,8 +3,11 @@
 from .fetch import (
     disable_ipv4_only,
     enable_ipv4_only,
+    fetch_artist_top_tracks,
     fetch_recent,
     fetch_recent_with_diversity,
+    fetch_similar_artists,
+    fetch_similar_tracks,
     fetch_track_tags,
     iter_all_scrobbles,
 )
@@ -16,8 +19,11 @@ __all__ = [
     "Scrobble",
     "disable_ipv4_only",
     "enable_ipv4_only",
+    "fetch_artist_top_tracks",
     "fetch_recent",
     "fetch_recent_with_diversity",
+    "fetch_similar_artists",
+    "fetch_similar_tracks",
     "fetch_track_tags",
     "iter_all_scrobbles",
 ]

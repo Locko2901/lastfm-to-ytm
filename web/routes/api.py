@@ -38,9 +38,11 @@ from ..services import (
     get_cache_stats,
     get_cached_tracks,
     get_custom_playlist_tracks,
+    get_discovery_seed_options,
     get_history_db,
     get_last_sync_time,
     get_local_scrobble_db,
+    get_main_playlist_name,
     get_not_found_tracks,
     get_overrides_data,
     get_playlist_cache_summary,
@@ -67,6 +69,7 @@ from ..services import (
     reconcile_env_file,
     remove_playlist_from_cache,
     remove_track_from_playlist_cache,
+    render_export,
     reset_history_db,
     reset_local_scrobble_db,
     save_custom_playlists_config,
@@ -486,7 +489,7 @@ def custom_playlists_save() -> ResponseReturnValue:
             continue
         name = entry.get("name", "").strip()
         kind = entry.get("kind", "tags")
-        if kind not in ("tags", "artists"):
+        if kind not in ("tags", "artists", "discovery"):
             kind = "tags"
         tags = entry.get("tags", [])
         if not isinstance(tags, list) or not all(isinstance(t, str) for t in tags):
@@ -499,6 +502,30 @@ def custom_playlists_save() -> ResponseReturnValue:
         match = entry.get("match", "any")
         if match not in ("any", "all"):
             match = "any"
+        discovery_seed = entry.get("discovery_seed", "artists")
+        if discovery_seed not in ("artists", "tracks"):
+            discovery_seed = "artists"
+        discovery_seed_auto = entry.get("discovery_seed_auto", True)
+        if not isinstance(discovery_seed_auto, bool):
+            discovery_seed_auto = True
+        raw_seed_artists = entry.get("discovery_seed_artists", [])
+        if not isinstance(raw_seed_artists, list):
+            raw_seed_artists = []
+        discovery_seed_artists = [a.strip() for a in raw_seed_artists if isinstance(a, str) and a.strip()]
+        raw_seed_tracks = entry.get("discovery_seed_tracks", [])
+        if not isinstance(raw_seed_tracks, list):
+            raw_seed_tracks = []
+        discovery_seed_tracks = []
+        for item in raw_seed_tracks:
+            if not isinstance(item, dict):
+                continue
+            seed_artist = str(item.get("artist", "")).strip()
+            seed_track = str(item.get("track", "")).strip()
+            if seed_artist and seed_track:
+                discovery_seed_tracks.append({"artist": seed_artist, "track": seed_track})
+        discovery_exclude_scrobbled = entry.get("discovery_exclude_scrobbled", True)
+        if not isinstance(discovery_exclude_scrobbled, bool):
+            discovery_exclude_scrobbled = True
         limit = entry.get("limit", 50)
         if not isinstance(limit, int) or limit < 0:
             limit = 50
@@ -536,6 +563,11 @@ def custom_playlists_save() -> ResponseReturnValue:
                 "backfill": backfill,
                 "auto_sync": auto_sync,
                 "privacy": privacy,
+                "discovery_seed": discovery_seed,
+                "discovery_seed_auto": discovery_seed_auto,
+                "discovery_seed_artists": discovery_seed_artists,
+                "discovery_seed_tracks": discovery_seed_tracks,
+                "discovery_exclude_scrobbled": discovery_exclude_scrobbled,
             }
         )
 
@@ -545,6 +577,12 @@ def custom_playlists_save() -> ResponseReturnValue:
     except OSError as e:
         logger.error(f"Failed to save custom playlists: {e}")
         return jsonify({"error": _("Failed to save custom playlists")}), 500
+
+
+@api_bp.route("/discovery/seed-options")
+def discovery_seed_options() -> ResponseReturnValue:
+    """Return candidate seed artists/tracks for the discovery manual seed picker."""
+    return jsonify(get_discovery_seed_options())
 
 
 @api_bp.route("/tag-overrides")
@@ -1496,6 +1534,54 @@ def cache_playlist_tracks() -> ResponseReturnValue:
     if not name:
         return jsonify({"error": "name is required"}), 400
     return jsonify({"name": name, "tracks": get_playlist_cache_tracks(name)})
+
+
+def _safe_filename(name: str) -> str:
+    """Reduce an arbitrary playlist name to a filesystem-safe download slug."""
+    slug = "".join(c if c.isalnum() or c in (" ", "-", "_") else "_" for c in name).strip()
+    slug = "_".join(slug.split())
+    return slug or "playlist"
+
+
+def _export_playlist_response(name: str, tracks: list[dict[str, Any]], fmt: str) -> ResponseReturnValue:
+    """Build a file-download Response for a playlist's tracks in the given format."""
+    rendered = render_export(name, tracks, fmt)
+    if rendered is None:
+        return jsonify({"error": _("Unsupported export format")}), 400
+    body, mimetype, ext = rendered
+    filename = f"{_safe_filename(name)}.{ext}"
+    return Response(
+        body,
+        mimetype=mimetype,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@api_bp.route("/playlist/export")
+def playlist_export() -> ResponseReturnValue:
+    """Download a cached playlist's tracks as M3U, CSV, or JSON."""
+    name = request.args.get("name", "").strip() or get_main_playlist_name()
+    fmt = request.args.get("format", "json").strip().lower()
+    if not name:
+        return jsonify({"error": _("name is required")}), 400
+    tracks = get_playlist_cache_tracks(name)
+    if not tracks:
+        return jsonify({"error": _("Playlist has no cached tracks to export")}), 404
+    return _export_playlist_response(name, tracks, fmt)
+
+
+@api_bp.route("/custom-playlists/<int:index>/export")
+def custom_playlist_export(index: int) -> ResponseReturnValue:
+    """Download a custom playlist's tracks as M3U, CSV, or JSON."""
+    fmt = request.args.get("format", "json").strip().lower()
+    playlists = load_custom_playlists_config()
+    if index < 0 or index >= len(playlists):
+        return jsonify({"error": _("Invalid playlist index")}), 404
+    name = playlists[index].get("name", f"playlist-{index}")
+    tracks = get_custom_playlist_tracks(index)
+    if not tracks:
+        return jsonify({"error": _("Playlist has no cached tracks to export")}), 404
+    return _export_playlist_response(name, tracks, fmt)
 
 
 @api_bp.route("/cache/search/all", methods=["DELETE"])

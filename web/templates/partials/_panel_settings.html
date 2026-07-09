@@ -365,6 +365,12 @@
                     <input type="text" id="TAG_SLEEP_BETWEEN" name="TAG_SLEEP_BETWEEN" inputmode="decimal" placeholder="0.25">
                     <span class="form-hint">{{ _('Delay between tag API calls to avoid rate limiting') }}</span>
                   </div>
+                  <div class="form-group">
+                    <label for="DISCOVERY_REDISCOVER_DAYS">{{ _('Discovery Rediscover Window (days)') }}</label>
+                    <input type="number" id="DISCOVERY_REDISCOVER_DAYS" name="DISCOVERY_REDISCOVER_DAYS" min="0" step="1" placeholder="0">
+                    <span
+                      class="form-hint">{{ _('For discovery playlists that exclude already-heard tracks: only treat tracks played within the last N days as "already heard". Older favourites become eligible to resurface. 0 = exclude your entire history. Works with both recent scrobbles and the local database.') }}</span>
+                  </div>
                 </div>
               </div>
             </div>

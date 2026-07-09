@@ -253,3 +253,39 @@
   text-align: center;
   margin: 1rem 0;
 }
+
+.export-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.export-options {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 7rem;
+  padding: 0.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.export-options[hidden] {
+  display: none;
+}
+
+.export-options a {
+  padding: 0.4rem 0.6rem;
+  border-radius: calc(var(--radius) - 2px);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.export-options a:hover {
+  background: var(--bg-secondary);
+}

@@ -105,3 +105,16 @@ def sync_local_history(settings: Settings) -> LocalScrobbleDB:
         db.get_track_count(),
     )
     return db
+
+
+def scrobbles_from_local_history(settings: Settings) -> list[Scrobble]:
+    """Sync the local Last.fm DB and return its tracks as ``Scrobble`` objects.
+
+    Rows are ordered most-played first (so play-count ranking is preserved when
+    downstream code derives seeds via a ``Counter``) and each track's timestamp
+    is its most recent play (used by discovery's rediscover window).
+    """
+    db = sync_local_history(settings)
+    rows = db.get_scoring_rows(min_plays=1)
+    db.close()
+    return [Scrobble(artist=artist, track=track, album=album, ts=last_uts) for artist, track, album, _plays, _first, last_uts in rows]

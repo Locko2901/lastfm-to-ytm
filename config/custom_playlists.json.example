@@ -30,6 +30,35 @@
       "artists": ["radiohead", "aphex twin"],
       "limit": 50,
       "backfill": true
+    },
+    {
+      "name": "Discover Weekly (auto)",
+      "kind": "discovery",
+      "discovery_seed": "artists",
+      "limit": 50,
+      "privacy": "PRIVATE"
+    },
+    {
+      "name": "Discover from Favourite Artists",
+      "kind": "discovery",
+      "discovery_seed": "artists",
+      "discovery_seed_auto": false,
+      "discovery_seed_artists": ["radiohead", "boards of canada"],
+      "limit": 50,
+      "privacy": "PRIVATE"
+    },
+    {
+      "name": "Discover from Favourite Tracks",
+      "kind": "discovery",
+      "discovery_seed": "tracks",
+      "discovery_seed_auto": false,
+      "discovery_seed_tracks": [
+        { "artist": "Radiohead", "track": "Weird Fishes/Arpeggi" },
+        { "artist": "Aphex Twin", "track": "Xtal" }
+      ],
+      "discovery_exclude_scrobbled": false,
+      "limit": 50,
+      "privacy": "PRIVATE"
     }
   ]
 }

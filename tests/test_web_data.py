@@ -324,3 +324,90 @@ def test_get_custom_playlist_tracks_resolves_video_ids(flask_app, web_paths):
 def test_get_custom_playlist_tracks_invalid_index(flask_app):
     with flask_app.app_context():
         assert data.get_custom_playlist_tracks(5) == []
+
+
+def _export_tracks() -> list[dict[str, object]]:
+    return [
+        {"artist": "Boards of Canada", "title": "Roygbiv", "video_id": "vidROYGBIV01", "yt_title": "Roygbiv (Official)"},
+        {"artist": "Aphex Twin", "title": "Xtal", "video_id": "vidXTAL00001", "yt_title": None},
+    ]
+
+
+def test_render_export_json_shape():
+    from web.services.export import render_export
+
+    body, mimetype, ext = render_export("My List", _export_tracks(), "json")
+    assert mimetype == "application/json"
+    assert ext == "json"
+    payload = json.loads(body)
+    assert payload["playlist"] == "My List"
+    assert payload["track_count"] == 2
+    assert payload["tracks"][0]["url"] == "https://music.youtube.com/watch?v=vidROYGBIV01"
+
+
+def test_render_export_csv_has_header_and_rows():
+    from web.services.export import render_export
+
+    body, mimetype, ext = render_export("My List", _export_tracks(), "csv")
+    assert mimetype == "text/csv"
+    assert ext == "csv"
+    lines = body.strip().splitlines()
+    assert lines[0] == "artist,title,video_id,yt_title,url"
+    assert "Boards of Canada" in lines[1]
+    assert len(lines) == 3
+
+
+def test_render_export_m3u_extinf_lines():
+    from web.services.export import render_export
+
+    body, mimetype, ext = render_export("My List", _export_tracks(), "m3u")
+    assert mimetype == "audio/x-mpegurl"
+    assert ext == "m3u8"
+    assert body.startswith("#EXTM3U")
+    assert "#PLAYLIST:My List" in body
+    assert "#EXTINF:-1,Boards of Canada - Roygbiv" in body
+    assert "https://music.youtube.com/watch?v=vidXTAL00001" in body
+
+
+def test_render_export_unknown_format_returns_none():
+    from web.services.export import render_export
+
+    assert render_export("My List", _export_tracks(), "xml") is None
+
+
+def test_get_discovery_seed_options_from_search_cache(flask_app, web_paths, monkeypatch):
+    monkeypatch.setattr(data, "get_local_scrobble_db", lambda: None)
+    sc = _search_cache(web_paths)
+    sc.set("Boards of Canada", "Roygbiv", "vidROYGBIV01")
+    sc.set("Aphex Twin", "Xtal", "vidXTAL00001")
+    sc.set("Aphex Twin", "Windowlicker", "vidWINDOW001")
+
+    with flask_app.app_context():
+        options = data.get_discovery_seed_options()
+
+    assert options["source"] == "search_cache"
+    assert options["artists"] == ["Aphex Twin", "Boards of Canada"]
+    track_pairs = {(t["artist"], t["title"]) for t in options["tracks"]}
+    assert ("Boards of Canada", "Roygbiv") in track_pairs
+    assert ("Aphex Twin", "Xtal") in track_pairs
+    assert len(options["tracks"]) == 3
+
+
+def test_get_discovery_seed_options_from_local_db(flask_app, monkeypatch):
+    class _FakeDB:
+        def get_scoring_rows(self, min_plays=1):  # noqa: ARG002
+            return [
+                ("Radiohead", "Idioteque", "Kid A", 50, 0, 0),
+                ("Radiohead", "Everything In Its Right Place", "Kid A", 30, 0, 0),
+                ("Aphex Twin", "Xtal", "SAW 85-92", 20, 0, 0),
+            ]
+
+    monkeypatch.setattr(data, "get_local_scrobble_db", lambda: _FakeDB())
+
+    with flask_app.app_context():
+        options = data.get_discovery_seed_options()
+
+    assert options["source"] == "local_db"
+    assert options["artists"] == ["Radiohead", "Aphex Twin"]
+    assert options["tracks"][0] == {"artist": "Radiohead", "title": "Idioteque"}
+    assert len(options["tracks"]) == 3

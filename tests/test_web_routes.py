@@ -500,6 +500,75 @@ def test_custom_playlists_post_cleans_and_saves(client, web_paths):
     assert cleaned["limit"] == 50
 
 
+def test_custom_playlists_post_saves_discovery(client, web_paths):
+    payload = {
+        "playlists": [
+            {"name": "Discover", "kind": "discovery", "discovery_seed": "tracks", "limit": 30},
+            {"name": "BadSeed", "kind": "discovery", "discovery_seed": "bogus"},
+        ]
+    }
+    resp = client.post("/api/custom-playlists", json=payload)
+    assert resp.status_code == 200
+    assert resp.get_json()["count"] == 2
+
+    saved = json.loads(web_paths["CUSTOM_PLAYLISTS_FILE"].read_text())["playlists"]
+    assert saved[0]["kind"] == "discovery"
+    assert saved[0]["discovery_seed"] == "tracks"
+    assert saved[1]["discovery_seed"] == "artists"
+
+
+def test_custom_playlists_post_saves_manual_discovery_seeds(client, web_paths):
+    payload = {
+        "playlists": [
+            {
+                "name": "Discover Manual",
+                "kind": "discovery",
+                "discovery_seed": "tracks",
+                "discovery_seed_auto": False,
+                "discovery_seed_artists": ["Radiohead", "  "],
+                "discovery_seed_tracks": [
+                    {"artist": "Radiohead", "track": "Idioteque"},
+                    {"artist": " ", "track": "skip"},
+                ],
+                "limit": 30,
+            }
+        ]
+    }
+    resp = client.post("/api/custom-playlists", json=payload)
+    assert resp.status_code == 200
+
+    saved = json.loads(web_paths["CUSTOM_PLAYLISTS_FILE"].read_text())["playlists"]
+    cleaned = saved[0]
+    assert cleaned["discovery_seed_auto"] is False
+    assert cleaned["discovery_seed_artists"] == ["Radiohead"]
+    assert cleaned["discovery_seed_tracks"] == [{"artist": "Radiohead", "track": "Idioteque"}]
+
+
+def test_custom_playlists_post_saves_exclude_scrobbled(client, web_paths):
+    payload = {
+        "playlists": [
+            {"name": "Default", "kind": "discovery"},
+            {"name": "Include Heard", "kind": "discovery", "discovery_exclude_scrobbled": False},
+        ]
+    }
+    resp = client.post("/api/custom-playlists", json=payload)
+    assert resp.status_code == 200
+
+    saved = json.loads(web_paths["CUSTOM_PLAYLISTS_FILE"].read_text())["playlists"]
+    assert saved[0]["discovery_exclude_scrobbled"] is True
+    assert saved[1]["discovery_exclude_scrobbled"] is False
+
+
+def test_discovery_seed_options_endpoint(client):
+    resp = client.get("/api/discovery/seed-options")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert "artists" in data
+    assert "tracks" in data
+    assert isinstance(data["artists"], list)
+    assert isinstance(data["tracks"], list)
+
+
 def test_cache_clear_search_all(client, web_paths):
     sc = SearchCache(str(web_paths["SEARCH_CACHE_FILE"]))
     sc.set("A", "1", "vidAAAAAAAA")
@@ -631,3 +700,69 @@ def test_export_import_round_trip(client, web_paths):
 def test_import_no_data_returns_400(client):
     resp = client.post("/import", json={})
     assert resp.status_code == 400
+
+
+def _seed_playlist_cache(web_paths, name: str, video_ids: list[str]) -> None:
+    from src.cache.playlist import PlaylistCache
+
+    pc = PlaylistCache(str(web_paths["PLAYLIST_CACHE_FILE"]))
+    pc.set_template(name, "PLID", video_ids)
+
+
+def test_playlist_export_json(client, web_paths):
+    _seed_playlist_cache(web_paths, "Recents", ["vidAAAAAAAA1"])
+    sc = SearchCache(str(web_paths["SEARCH_CACHE_FILE"]))
+    sc.set("Artist", "Song", "vidAAAAAAAA1", yt_title="Song (Official)")
+
+    resp = client.get("/api/playlist/export?name=Recents&format=json")
+    assert resp.status_code == 200
+    assert "attachment" in resp.headers["Content-Disposition"]
+    assert 'filename="Recents.json"' in resp.headers["Content-Disposition"]
+    payload = json.loads(resp.get_data(as_text=True))
+    assert payload["track_count"] == 1
+
+
+def test_playlist_export_m3u_and_csv(client, web_paths):
+    _seed_playlist_cache(web_paths, "Recents", ["vidAAAAAAAA1"])
+    sc = SearchCache(str(web_paths["SEARCH_CACHE_FILE"]))
+    sc.set("Artist", "Song", "vidAAAAAAAA1")
+
+    resp = client.get("/api/playlist/export?name=Recents&format=m3u")
+    assert resp.status_code == 200
+    assert resp.get_data(as_text=True).startswith("#EXTM3U")
+
+    resp = client.get("/api/playlist/export?name=Recents&format=csv")
+    assert resp.status_code == 200
+    assert resp.headers["Content-Disposition"].endswith('.csv"')
+
+
+def test_playlist_export_bad_format_returns_400(client, web_paths):
+    _seed_playlist_cache(web_paths, "Recents", ["vidAAAAAAAA1"])
+    sc = SearchCache(str(web_paths["SEARCH_CACHE_FILE"]))
+    sc.set("Artist", "Song", "vidAAAAAAAA1")
+
+    resp = client.get("/api/playlist/export?name=Recents&format=xml")
+    assert resp.status_code == 400
+
+
+def test_playlist_export_empty_returns_404(client):
+    resp = client.get("/api/playlist/export?name=Ghost&format=json")
+    assert resp.status_code == 404
+
+
+def test_custom_playlist_export(client, web_paths):
+    cfg = [{"name": "Chill", "tags": ["chill"], "blacklist": []}]
+    web_paths["CUSTOM_PLAYLISTS_FILE"].write_text(json.dumps({"playlists": cfg}))
+    _seed_playlist_cache(web_paths, "Chill", ["vidCHILL0001"])
+    sc = SearchCache(str(web_paths["SEARCH_CACHE_FILE"]))
+    sc.set("Chill Artist", "Chill Song", "vidCHILL0001")
+
+    resp = client.get("/api/custom-playlists/0/export?format=json")
+    assert resp.status_code == 200
+    assert "attachment" in resp.headers["Content-Disposition"]
+
+
+def test_custom_playlist_export_invalid_index_returns_404(client, web_paths):
+    web_paths["CUSTOM_PLAYLISTS_FILE"].write_text(json.dumps({"playlists": []}))
+    resp = client.get("/api/custom-playlists/9/export?format=json")
+    assert resp.status_code == 404

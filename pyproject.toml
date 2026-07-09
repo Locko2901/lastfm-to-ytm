@@ -83,6 +83,7 @@ ignore = [
 "tests/screenshots/*.py" = ["T20", "D", "E501"] # dev-only CLI: prints + literal fixture rows
 "tests/test_*.py" = ["D", "PLR2004"]            # tests: no docstrings, allow literal assertions
 "tests/test_webhook.py" = ["D", "PLR2004", "ARG001"] # + stub signatures must match socket.getaddrinfo / requests.post
+"tests/test_discovery.py" = ["D", "PLR2004", "ARG001"] # + stub signatures must match the Last.fm fetch helpers
 "tests/conftest.py" = ["ARG001"] # web fixtures depend on each other for monkeypatch side effects
 "tests/frontend/*.py" = ["D", "PLR2004", "SLF001"] # frontend tests: no docstrings, literal assertions, reuse fixture-server helpers
 
