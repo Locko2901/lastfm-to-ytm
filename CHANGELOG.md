@@ -4,6 +4,42 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.5.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.4.0...v2.5.0) (2026-07-09)
+
+
+### Features
+
+* add near-misses view to history dashboard ([9bb4f6a](https://github.com/Locko2901/lastfm-to-ytm/commit/9bb4f6a92023f6d48276445a3fba46d2d870ab09))
+* add play-count normalization, velocity/session weighting and unified TIMEZONE ([72dde30](https://github.com/Locko2901/lastfm-to-ytm/commit/72dde300e18607757c2a4ccb6e0d84b1d962d416))
+* discovery playlists and playlist export ([5cd88b6](https://github.com/Locko2901/lastfm-to-ytm/commit/5cd88b61fabec1f8e1f36c6b71e4f2a81fe1dac0))
+* **web:** add dry-run sync preview ([19efb67](https://github.com/Locko2901/lastfm-to-ytm/commit/19efb67bfd3149aa89a60e12a28948405a8b4302))
+* **web:** detect incomplete .env and import missing keys from example ([a3e64b8](https://github.com/Locko2901/lastfm-to-ytm/commit/a3e64b890c9a530d5170272cf82b8ff6e081153e))
+* **web:** redesign settings & custom playlist modals with row layout and conditional fields ([73b7bff](https://github.com/Locko2901/lastfm-to-ytm/commit/73b7bff85404b48ed76e6dfe10c33a917eedc4d4))
+
+
+### Bug Fixes
+
+* rename playlists in place instead of creating duplicates ([b77e3bc](https://github.com/Locko2901/lastfm-to-ytm/commit/b77e3bcdfdc501bc6ce68b36e873f3aefd53cfca))
+
+
+### Documentation
+
+* add Spotify as an alternate playlist target in README roadmap ([1105354](https://github.com/Locko2901/lastfm-to-ytm/commit/110535415446362b51d2acf55923879f50d3646d))
+* document play-count normalization strategies and role-based playlist rename ([73fd1da](https://github.com/Locko2901/lastfm-to-ytm/commit/73fd1da0e575480c33a35d8db6090dfbd2ab59cb))
+* fix inaccuracies and improve clarity across docs ([49964b3](https://github.com/Locko2901/lastfm-to-ytm/commit/49964b325330e808668fd4cc5cd792439fda0a59))
+* refresh dashboard screenshots for latest features ([dbcea62](https://github.com/Locko2901/lastfm-to-ytm/commit/dbcea6271a277a7c5933cc55d25ed32b1bb46760))
+
+
+### Tests
+
+* inline unnecessary lambda to satisfy ruff PLW0108 ([4a7ed6c](https://github.com/Locko2901/lastfm-to-ytm/commit/4a7ed6c10c17f44b49b01c7ef784ccabb2b9d1c9))
+
+
+### Build
+
+* **deps-dev:** bump the npm-dev group with 2 updates ([#35](https://github.com/Locko2901/lastfm-to-ytm/issues/35)) ([5685a3d](https://github.com/Locko2901/lastfm-to-ytm/commit/5685a3de4fa96a65256c74d5a7a8adb0091f9bf4))
+* **deps-dev:** bump the python-dev group with 6 updates ([#36](https://github.com/Locko2901/lastfm-to-ytm/issues/36)) ([a90e39d](https://github.com/Locko2901/lastfm-to-ytm/commit/a90e39dca5768df6455ec7787f7ca2d6b0369ff5))
+
 ## [2.4.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.3.0...v2.4.0) (2026-07-01)
 
 
