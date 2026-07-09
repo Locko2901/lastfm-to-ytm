@@ -39,8 +39,12 @@ def _read_playlist_filter() -> set[str] | None:
     return cleaned or None
 
 
-def run_tags(settings: Settings) -> None:
-    """Run only the custom tag-based playlist sync."""
+def run_tags(settings: Settings, *, dry_run: bool = False) -> None:
+    """Run only the custom tag-based playlist sync.
+
+    When ``dry_run`` is ``True``, playlists are resolved but never written to
+    YouTube Music; a per-playlist preview is saved for the dashboard instead.
+    """
     _start = time.monotonic()
     ctx = build_context(settings)
 
@@ -52,14 +56,14 @@ def run_tags(settings: Settings) -> None:
         log.warning("No recent scrobbles found. Exiting.")
         return
 
-    log.info("Running custom playlist sync only...")
+    log.info("Running custom playlist %s only...", "dry run" if dry_run else "sync")
 
     only_names = _read_playlist_filter()
     if only_names:
         log.info("Restricting sync to %d requested playlist(s): %s", len(only_names), ", ".join(sorted(only_names)))
 
     try:
-        summary = sync_custom_playlists(ctx, recents, track_to_vid={}, only_names=only_names)
+        summary = sync_custom_playlists(ctx, recents, track_to_vid={}, only_names=only_names, dry_run=dry_run)
     except Exception as e:
         log.exception("Custom playlist sync failed: %s", e)
         save_failure_log(f"Custom playlist sync failed: {e}", traceback.format_exc(), sync_type="tags")
@@ -74,6 +78,10 @@ def run_tags(settings: Settings) -> None:
 
     ctx.search_cache.log_metrics("Search")
     ctx.playlist_cache.log_metrics("Playlist")
+
+    if dry_run:
+        log.info("Dry run complete: no playlists were modified")
+        return
 
     tag_override_stats = ctx.tag_overrides.stats()
     if tag_override_stats["total"] > 0:

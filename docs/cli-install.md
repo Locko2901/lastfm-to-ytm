@@ -133,6 +133,17 @@ python run_tags.py    # or just: lastfm-ytm-tags
 # uv users: uv run run_tags.py
 ```
 
+### Preview (dry run)
+
+Set `SYNC_DRY_RUN=1` to resolve tracks and compute what *would* change without touching YouTube Music. Nothing is added, removed, or reordered:
+
+```bash
+SYNC_DRY_RUN=1 python run.py        # preview the main playlist (+ weekly, if enabled)
+SYNC_DRY_RUN=1 python run_tags.py   # preview custom playlists
+```
+
+A per-playlist summary (added / removed / reordered) is logged to the console, and the full preview is written to `cache/.dry_run_preview.json` - the same file the web dashboard reads for its preview view.
+
 For what actually happens during a sync, see [How It Works](how-it-works.md).
 
 ---

@@ -423,7 +423,14 @@ export function syncCustomPlaylist(index) {
   const pl = playlistsData[index]
   if (!pl?.name) return
   showToast(`${_("Syncing")} ${pl.name}...`, "info")
-  runSyncCustomPlaylists([pl.name])
+  runSyncCustomPlaylists([pl.name], { dryRun: false })
+}
+
+export function previewCustomPlaylist(index) {
+  const pl = playlistsData[index]
+  if (!pl?.name) return
+  showToast(`${_("Previewing")} ${pl.name}...`, "info")
+  runSyncCustomPlaylists([pl.name], { dryRun: true })
 }
 
 export function showSyncPlaylistsModal() {
@@ -433,17 +440,19 @@ export function showSyncPlaylistsModal() {
   playlistsData.forEach((pl, i) => {
     const label = document.createElement("label")
     label.className = "sync-pl-item"
-    const cb = document.createElement("input")
-    cb.type = "checkbox"
-    cb.className = "sync-pl-check"
-    cb.dataset.index = String(i)
     const span = document.createElement("span")
     span.className = "sync-pl-name"
     span.textContent = pl.name
-    label.appendChild(cb)
+    const cb = document.createElement("input")
+    cb.type = "checkbox"
+    cb.className = "sync-pl-check toggle-switch"
+    cb.dataset.index = String(i)
     label.appendChild(span)
+    label.appendChild(cb)
     list.appendChild(label)
   })
+  const dryToggle = document.getElementById("syncPlDryRun")
+  if (dryToggle) dryToggle.checked = false
   showModal("syncPlaylistsModal")
 }
 
@@ -464,13 +473,14 @@ export function syncPlaylistsSelectNone() {
 export function confirmSyncPlaylists() {
   const checked = [...document.querySelectorAll(".sync-pl-check:checked")]
   const names = checked.map(cb => playlistsData[parseInt(cb.dataset.index, 10)]?.name).filter(Boolean)
+  const dryRun = Boolean(document.getElementById("syncPlDryRun")?.checked)
   closeModal("syncPlaylistsModal")
 
   if (!names.length) {
-    showToast(_("Syncing all custom playlists..."), "info")
-    runSyncCustomPlaylists([])
+    showToast(dryRun ? _("Previewing all custom playlists...") : _("Syncing all custom playlists..."), "info")
+    runSyncCustomPlaylists([], { dryRun })
     return
   }
-  showToast(`${_("Syncing")} ${names.length} ${_("playlist(s)")}...`, "info")
-  runSyncCustomPlaylists(names)
+  showToast(`${dryRun ? _("Previewing") : _("Syncing")} ${names.length} ${_("playlist(s)")}...`, "info")
+  runSyncCustomPlaylists(names, { dryRun })
 }

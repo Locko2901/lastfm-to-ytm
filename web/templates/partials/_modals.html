@@ -479,6 +479,29 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="syncPreviewModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h2>{{ _('Sync Preview') }}</h2>
+      <button class="modal-close" data-action="closeModal" data-modal="syncPreviewModal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="preview-intro">{{ _('This is a dry run - no changes were made to YouTube Music.') }}</p>
+      <div id="syncPreviewContent"></div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="syncPreviewModal">{{ _('Close') }}</button>
+      <button type="button" class="btn btn-primary" data-action="runSyncFromPreview">{{ _('Apply Sync') }}</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="syncPlaylistsModal">
   <div class="modal">
     <div class="modal-header">
@@ -500,9 +523,18 @@
       </div>
       <div class="sync-pl-list" id="sync-pl-list"></div>
     </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="syncPlaylistsModal">{{ _('Cancel') }}</button>
-      <button type="button" class="btn btn-primary" data-action="confirmSyncPlaylists" id="sync-pl-confirm-btn">{{ _('Sync') }}</button>
+    <div class="modal-footer sync-pl-footer">
+      <label class="option-toggle-row option-toggle-inline" title="{{ _('Preview changes without touching YouTube Music') }}">
+        <span class="option-toggle-text">
+          <strong>{{ _('Dry run') }}</strong>
+          <small>{{ _('Preview without syncing') }}</small>
+        </span>
+        <input type="checkbox" id="syncPlDryRun" class="toggle-switch">
+      </label>
+      <div class="sync-pl-footer-actions">
+        <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="syncPlaylistsModal">{{ _('Cancel') }}</button>
+        <button type="button" class="btn btn-primary" data-action="confirmSyncPlaylists" id="sync-pl-confirm-btn">{{ _('Sync') }}</button>
+      </div>
     </div>
   </div>
 </div>

@@ -154,7 +154,7 @@ python run_tags.py  # or: lastfm-ytm-tags
 ```
 
 !!! warning
-    `python run.py` only runs the main playlist sync. Custom playlists must be triggered separately via `run_tags.py` or from the web dashboard (**Custom Playlist Sync** in the run menu).
+    `python run.py` only runs the main playlist sync. Custom playlists must be triggered separately via `run_tags.py` or from the web dashboard (the **Sync** / **Sync Multiple…** buttons on the **Custom Playlists** tab).
 
 ### Syncing specific playlists
 

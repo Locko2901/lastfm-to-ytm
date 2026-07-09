@@ -58,3 +58,22 @@ def clear_failure_log() -> None:
     if log_file.exists():
         log_file.unlink()
         log.debug("Cleared failure log")
+
+
+def save_dry_run_preview(playlists: list[dict[str, Any]], *, kind: str = "main") -> None:
+    """Save the latest dry-run sync preview for the web dashboard.
+
+    Args:
+        playlists: One preview dict per playlist (see ``build_sync_preview``).
+        kind: The sync kind that produced the preview (``"main"`` or ``"custom"``).
+    """
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    preview_file = CACHE_DIR / ".dry_run_preview.json"
+    data = {
+        "timestamp": datetime.now(UTC).isoformat(),
+        "kind": kind,
+        "playlists": playlists,
+    }
+    with preview_file.open("w") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    log.info("Saved dry-run preview (%s) with %d playlist(s) to %s", kind, len(playlists), preview_file)

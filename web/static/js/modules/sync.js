@@ -1,11 +1,16 @@
 import { onEvent } from "./events.js"
 import { _ } from "./i18n.js"
+import { closeModal, showModal } from "./modals.js"
 import { insertBanner, refreshPanel, removeBanner, showToast, updateNowPlayingPosition } from "./utils.js"
 
 let syncEventSource = null
 let manualSyncInProgress = false
+let previewMode = false
 let userScrolledAway = false
 let scrollHandler = null
+let lastPreviewScript = "run.py"
+let lastPreviewPlaylists = null
+let suppressNextDataBanner = false
 
 export function toggleSyncDrawer() {
   const drawer = document.getElementById("syncDrawer")
@@ -25,33 +30,22 @@ export function closeSyncDrawer() {
   requestAnimationFrame(() => updateNowPlayingPosition())
 }
 
-export function toggleRunMenu() {
-  const menu = document.getElementById("syncRunMenu")
-  if (!menu) return
-  const isOpen = menu.classList.contains("open")
-  menu.classList.toggle("open", !isOpen)
-  if (!isOpen) {
-    const close = e => {
-      if (!e.target.closest(".sync-run-wrapper")) {
-        menu.classList.remove("open")
-        document.removeEventListener("click", close)
-      }
-    }
-    requestAnimationFrame(() => document.addEventListener("click", close))
-  }
-}
-
 export function runSyncDefault() {
-  runSync("run.py")
+  runSync("run.py", null, { dryRun: false })
 }
 
-export function runSyncCustom() {
-  document.getElementById("syncRunMenu")?.classList.remove("open")
-  runSync("run_tags.py")
+export function previewSync() {
+  showToast(_("Previewing sync - no changes will be made..."), "info")
+  runSync("run.py", null, { dryRun: true })
 }
 
-export function runSyncCustomPlaylists(names) {
-  runSync("run_tags.py", names)
+export function runSyncFromPreview() {
+  closeModal("syncPreviewModal")
+  runSync(lastPreviewScript, lastPreviewPlaylists, { dryRun: false })
+}
+
+export function runSyncCustomPlaylists(names, options = {}) {
+  runSync("run_tags.py", names, options)
 }
 
 function classifyLine(text) {
@@ -102,14 +96,28 @@ function attachSyncStream() {
 
       const success = data.exit_code === 0
       indicator.className = `sync-indicator ${success ? "success" : "error"}`
-      statusText.textContent = success ? _("Completed") : _("Failed")
       runBtn.style.display = ""
       stopBtn.style.display = "none"
+      manualSyncInProgress = false
+
+      if (previewMode) {
+        previewMode = false
+        statusText.textContent = success ? _("Preview ready") : _("Preview failed")
+        if (success) {
+          showToast(_("Sync preview ready"), "success")
+          loadAndShowPreview()
+        } else {
+          showToast(_("Preview failed. Check output for errors."), "error")
+        }
+        if (window.checkFailureLog) window.checkFailureLog()
+        return
+      }
+
+      statusText.textContent = success ? _("Completed") : _("Failed")
 
       showToast(success ? _("Sync completed successfully!") : _("Sync failed. Check output for errors."), success ? "success" : "error")
 
       if (window.refreshStats) window.refreshStats()
-      manualSyncInProgress = false
 
       if (success) {
         refreshPanel("playlist")
@@ -180,7 +188,13 @@ export async function reattachRunningSync() {
   attachSyncStream()
 }
 
-export async function runSync(script = "run.py", playlists = null) {
+export async function runSync(script = "run.py", playlists = null, options = {}) {
+  const preview = Boolean(options.dryRun)
+  previewMode = preview
+  if (preview) {
+    lastPreviewScript = script
+    lastPreviewPlaylists = playlists
+  }
   const output = document.getElementById("syncOutput")
   const indicator = document.getElementById("syncIndicator")
   const statusText = document.getElementById("syncStatusText")
@@ -205,7 +219,7 @@ export async function runSync(script = "run.py", playlists = null) {
 
   output.innerHTML = ""
   indicator.className = "sync-indicator running"
-  statusText.textContent = _("Running...")
+  statusText.textContent = preview ? _("Previewing...") : _("Running...")
   runBtn.style.display = "none"
   stopBtn.style.display = ""
 
@@ -213,6 +227,9 @@ export async function runSync(script = "run.py", playlists = null) {
     const body = { script }
     if (Array.isArray(playlists) && playlists.length) {
       body.playlists = playlists
+    }
+    if (preview) {
+      body.dry_run = true
     }
     const response = await fetch("/run_sync", {
       method: "POST",
@@ -227,6 +244,7 @@ export async function runSync(script = "run.py", playlists = null) {
     attachSyncStream()
   } catch (error) {
     manualSyncInProgress = false
+    previewMode = false
     indicator.className = "sync-indicator error"
     statusText.textContent = `Error: ${error.message}`
     runBtn.style.display = ""
@@ -235,8 +253,169 @@ export async function runSync(script = "run.py", playlists = null) {
   }
 }
 
+async function loadAndShowPreview() {
+  let data
+  try {
+    const res = await fetch("/preview_result")
+    if (!res.ok) throw new Error("request failed")
+    data = await res.json()
+  } catch (_e) {
+    showToast(_("Failed to load sync preview"), "error")
+    return
+  }
+  if (!data || data.available === false) {
+    showToast(_("No preview data available"), "error")
+    return
+  }
+  renderSyncPreview(data)
+  showModal("syncPreviewModal")
+}
+
+function previewTrackRow(t, kind) {
+  const li = document.createElement("li")
+  li.className = `preview-track preview-${kind}`
+
+  const main = document.createElement("div")
+  main.className = "preview-track-main"
+  const title = document.createElement("span")
+  title.className = "preview-track-title"
+  title.textContent = t.title || t.video_id || ""
+  const artist = document.createElement("span")
+  artist.className = "preview-track-artist"
+  artist.textContent = t.artist || ""
+  main.appendChild(title)
+  main.appendChild(artist)
+  li.appendChild(main)
+
+  const meta = document.createElement("div")
+  meta.className = "preview-track-meta"
+  if (typeof t.score === "number") {
+    const score = document.createElement("span")
+    score.className = "preview-badge preview-badge-score"
+    score.textContent = `${_("score")} ${t.score.toFixed(3)}`
+    meta.appendChild(score)
+  }
+  if (typeof t.plays === "number") {
+    const plays = document.createElement("span")
+    plays.className = "preview-badge"
+    plays.textContent = `${t.plays} ${_("plays")}`
+    meta.appendChild(plays)
+  }
+  if (t.source) {
+    const src = document.createElement("span")
+    src.className = "preview-badge preview-badge-muted"
+    src.textContent = t.source
+    meta.appendChild(src)
+  }
+  li.appendChild(meta)
+  return li
+}
+
+function previewSection(titleText, tracks, kind) {
+  const section = document.createElement("div")
+  section.className = "preview-section"
+  const heading = document.createElement("h3")
+  heading.className = "preview-section-title"
+  heading.textContent = `${titleText} (${tracks.length})`
+  section.appendChild(heading)
+  if (!tracks.length) {
+    const empty = document.createElement("p")
+    empty.className = "preview-empty"
+    empty.textContent = _("None")
+    section.appendChild(empty)
+    return section
+  }
+  const list = document.createElement("ul")
+  list.className = "preview-track-list"
+  for (const t of tracks) {
+    list.appendChild(previewTrackRow(t, kind))
+  }
+  section.appendChild(list)
+  return section
+}
+
+function renderPlaylistPreview(container, data) {
+  const s = data.summary || {}
+
+  const header = document.createElement("div")
+  header.className = "preview-summary"
+  const name = document.createElement("div")
+  name.className = "preview-playlist-name"
+  name.textContent = data.playlist_name || ""
+  if (!data.exists) {
+    const badge = document.createElement("span")
+    badge.className = "preview-badge preview-badge-new"
+    badge.textContent = _("Would be created")
+    name.appendChild(document.createTextNode(" "))
+    name.appendChild(badge)
+  }
+  header.appendChild(name)
+
+  const stats = document.createElement("div")
+  stats.className = "preview-stats"
+  const items = [
+    { label: _("Added"), value: s.added || 0, cls: "added" },
+    { label: _("Removed"), value: s.removed || 0, cls: "removed" },
+    { label: _("Unchanged"), value: s.unchanged || 0, cls: "unchanged" },
+  ]
+  for (const it of items) {
+    const chip = document.createElement("span")
+    chip.className = `preview-stat preview-stat-${it.cls}`
+    chip.textContent = `${it.value} ${it.label}`
+    stats.appendChild(chip)
+  }
+  if (s.reordered) {
+    const chip = document.createElement("span")
+    chip.className = "preview-stat preview-stat-reorder"
+    chip.textContent = _("Reordered")
+    stats.appendChild(chip)
+  }
+  if (data.misses) {
+    const chip = document.createElement("span")
+    chip.className = "preview-stat preview-stat-miss"
+    chip.textContent = `${data.misses} ${_("not found")}`
+    stats.appendChild(chip)
+  }
+  header.appendChild(stats)
+  container.appendChild(header)
+
+  if (!s.added && !s.removed && !s.reordered) {
+    const uptodate = document.createElement("p")
+    uptodate.className = "preview-uptodate"
+    uptodate.textContent = _("Playlist is already up to date - no changes needed.")
+    container.appendChild(uptodate)
+    return
+  }
+
+  container.appendChild(previewSection(_("Tracks to add"), data.added || [], "add"))
+  container.appendChild(previewSection(_("Tracks to remove"), data.removed || [], "remove"))
+}
+
+function renderSyncPreview(data) {
+  const container = document.getElementById("syncPreviewContent")
+  if (!container) return
+  container.innerHTML = ""
+
+  const playlists = Array.isArray(data.playlists) ? data.playlists : []
+  if (!playlists.length) {
+    const empty = document.createElement("p")
+    empty.className = "preview-empty"
+    empty.textContent = _("No preview data available")
+    container.appendChild(empty)
+    return
+  }
+
+  for (const playlist of playlists) {
+    const block = document.createElement("div")
+    block.className = "preview-playlist-block"
+    renderPlaylistPreview(block, playlist)
+    container.appendChild(block)
+  }
+}
+
 export async function stopSync() {
   manualSyncInProgress = false
+  suppressNextDataBanner = true
   if (syncEventSource) {
     syncEventSource.close()
     syncEventSource = null
@@ -351,6 +530,10 @@ export function startDataWatcher() {
     prevRunning = running
     if (running || !wasRunning) return
     if (manualSyncInProgress) return
+    if (suppressNextDataBanner) {
+      suppressNextDataBanner = false
+      return
+    }
     showDataUpdateBanner()
     if (window.checkFailureLog) window.checkFailureLog()
   })

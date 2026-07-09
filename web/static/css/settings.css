@@ -123,51 +123,6 @@
 
 .settings-form .form-group-checkbox > label > input[type="checkbox"] {
   order: 1;
-  -webkit-appearance: none;
-  appearance: none;
-  position: relative;
-  flex-shrink: 0;
-  width: 38px;
-  height: 22px;
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  border-radius: 999px;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  transition:
-    background var(--transition),
-    border-color var(--transition);
-}
-
-.settings-form .form-group-checkbox > label > input[type="checkbox"]::before {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--text-muted);
-  transition:
-    transform var(--transition),
-    background var(--transition);
-}
-
-.settings-form .form-group-checkbox > label > input[type="checkbox"]:checked {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-
-.settings-form .form-group-checkbox > label > input[type="checkbox"]:checked::before {
-  transform: translateX(16px);
-  background: #fff;
-}
-
-.settings-form .form-group-checkbox > label > input[type="checkbox"]:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
 }
 
 .settings-form .form-group-checkbox > .form-hint {
