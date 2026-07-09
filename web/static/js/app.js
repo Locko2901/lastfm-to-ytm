@@ -23,6 +23,7 @@ import {
   editCustomPlaylist,
   initCustomPlaylists,
   loadPlaylistsData,
+  previewCustomPlaylist,
   saveCustomPlaylist,
   showCustomPlaylistModal,
   showSyncPlaylistsModal,
@@ -124,13 +125,13 @@ import {
   goToSyncAndRun,
   initSyncDrawerResize,
   openSyncDrawer,
+  previewSync,
   reattachRunningSync,
   runSync,
-  runSyncCustom,
   runSyncDefault,
+  runSyncFromPreview,
   startDataWatcher,
   stopSync,
-  toggleRunMenu,
   toggleSyncDrawer,
 } from "./modules/sync.js"
 import { initTabs, switchTab } from "./modules/tabs.js"
@@ -200,9 +201,9 @@ window.toggleSyncDrawer = toggleSyncDrawer
 window.openSyncDrawer = openSyncDrawer
 window.closeSyncDrawer = closeSyncDrawer
 window.runSync = runSync
-window.toggleRunMenu = toggleRunMenu
 window.runSyncDefault = runSyncDefault
-window.runSyncCustom = runSyncCustom
+window.previewSync = previewSync
+window.runSyncFromPreview = runSyncFromPreview
 window.stopSync = stopSync
 window.goToSyncAndRun = goToSyncAndRun
 
@@ -251,6 +252,7 @@ window.confirmDeletePlaylist = confirmDeletePlaylist
 window.saveCustomPlaylist = saveCustomPlaylist
 window.togglePlaylistPreview = togglePlaylistPreview
 window.syncCustomPlaylist = syncCustomPlaylist
+window.previewCustomPlaylist = previewCustomPlaylist
 window.showSyncPlaylistsModal = showSyncPlaylistsModal
 window.syncPlaylistsSelectAll = syncPlaylistsSelectAll
 window.syncPlaylistsSelectNone = syncPlaylistsSelectNone

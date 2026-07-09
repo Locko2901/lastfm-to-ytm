@@ -117,6 +117,25 @@ def _build_weekly_desc(
     return f"{base_desc}\nWeekly rolling mirror for {user}. Week of {week_start_dt.date().isoformat()} (start={week_start_label}, tz={tz_name})."
 
 
+def compute_weekly_name(settings: Settings) -> str | None:
+    """Return the current week's playlist name, or ``None`` when weekly is disabled.
+
+    Pure helper (no API calls) used by the dry-run preview to name the weekly
+    snapshot the same way ``update_weekly_playlist`` would.
+    """
+    if not bool(getattr(settings, "weekly_enabled", True)):
+        return None
+
+    base_prefix = getattr(settings, "weekly_playlist_prefix", None)
+    if not base_prefix:
+        base_prefix = _derive_weekly_prefix(settings.playlist_name)
+
+    tz = _tz_from_name(str(getattr(settings, "weekly_timezone", "UTC")))
+    week_start = _parse_week_start(str(getattr(settings, "weekly_week_start", "MON")))
+    sow = _start_of_week(datetime.now(tz), week_start)
+    return _weekly_playlist_name(base_prefix, sow.date())
+
+
 def update_weekly_playlist(
     ytm: YTMusic,
     get_existing_playlist_by_name: Callable[..., Any],

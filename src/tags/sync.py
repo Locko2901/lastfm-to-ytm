@@ -9,9 +9,11 @@ from typing import TYPE_CHECKING, Any
 
 from ..config import load_custom_playlists
 from ..lastfm import fetch_recent_with_diversity
-from ..playlist import upsert_playlist
+from ..observability import save_dry_run_preview
+from ..playlist import build_sync_preview, current_tracks_from_playlist, upsert_playlist
 from ..playlist.sync import InvalidVideoIDsError, _evict_from_cache
 from ..search import resolve_tracks_to_video_ids
+from ..ytm import get_existing_playlist_by_name
 from .filter import filter_tracks_by_artists, filter_tracks_by_tags
 from .resolver import resolve_tags_for_tracks
 
@@ -38,11 +40,16 @@ def sync_custom_playlists(
     recents: list[Scrobble],
     track_to_vid: dict[tuple[str, str], str],
     only_names: set[str] | None = None,
+    *,
+    dry_run: bool = False,
 ) -> TagSyncSummary:
     """Sync tag-based custom playlists.
 
     When ``only_names`` is provided, only playlists whose (case-insensitive) name
     is in the set are synced. This powers per-playlist syncs from the dashboard.
+
+    When ``dry_run`` is ``True``, playlists are resolved as usual but never written
+    to YouTube Music; instead a per-playlist preview is saved for the dashboard.
     """
     settings = ctx.settings
 
@@ -73,6 +80,7 @@ def sync_custom_playlists(
     default_privacy = settings.custom_playlists_privacy_status or settings.privacy_status
     candidate_keys: set[tuple[str, str]] = set()
     missed_keys: set[tuple[str, str]] = set()
+    dry_run_previews: list[dict[str, Any]] = []
 
     tag_map: dict[tuple[str, str], list[dict[str, Any]]] = {}
     if any(c.kind == "tags" for c in configs):
@@ -229,6 +237,29 @@ def sync_custom_playlists(
             artist, track_name = vid_to_track.get(vid, ("?", "?"))
             log.info("  %3d. %s - %s", i, artist, track_name)
 
+        if dry_run:
+            existing_id = get_existing_playlist_by_name(ctx.ytm, config.name, cache=ctx.playlist_cache)
+            current_tracks = _fetch_current_tracks_for_preview(ctx, existing_id)
+            resolved_details = {vid: {"artist": at[0], "title": at[1], "source": "custom"} for vid, at in vid_to_track.items()}
+            preview = build_sync_preview(
+                playlist_name=config.name,
+                playlist_id=existing_id,
+                current_tracks=current_tracks,
+                desired_video_ids=video_ids,
+                resolved_details=resolved_details,
+            )
+            dry_run_previews.append(preview)
+            summary = preview["summary"]
+            log.info(
+                "Dry run preview [%s]: +%d added, -%d removed, %d unchanged, reordered=%s (no changes applied)",
+                config.name,
+                summary["added"],
+                summary["removed"],
+                summary["unchanged"],
+                summary["reordered"],
+            )
+            continue
+
         if config.kind == "artists":
             default_desc = f"Auto-generated artist playlist ({', '.join(config.artists)})"
         else:
@@ -301,12 +332,27 @@ def sync_custom_playlists(
 
     ctx.tag_cache.log_metrics("Tag")
 
+    if dry_run:
+        save_dry_run_preview(dry_run_previews, kind="custom")
+
     resolved_keys = {key for key in candidate_keys if key in track_to_vid}
     return TagSyncSummary(
         tracks_total=len(candidate_keys),
         tracks_resolved=len(resolved_keys),
         tracks_missed=len(missed_keys),
     )
+
+
+def _fetch_current_tracks_for_preview(ctx: RuntimeContext, playlist_id: str | None) -> list[dict[str, Any]]:
+    """Best-effort read of a custom playlist's current tracks for a dry-run diff."""
+    if not playlist_id:
+        return []
+    try:
+        playlist = ctx.ytm.get_playlist(playlist_id, limit=None)
+    except Exception as e:
+        log.warning("Dry run: failed to fetch current playlist state for preview: %s", e)
+        return []
+    return current_tracks_from_playlist(playlist)
 
 
 def _filter_for_config(

@@ -1,5 +1,6 @@
 """CLI entrypoint (tag playlist sync)."""
 
+import os
 import traceback
 
 from src.config import Settings, configure_logging, migrate_env_to_runtime, warn_env_incomplete
@@ -13,8 +14,9 @@ def run() -> None:
     settings = Settings.from_env()
     configure_logging(settings.log_level)
     warn_env_incomplete()
+    dry_run = os.environ.get("SYNC_DRY_RUN") == "1"
     try:
-        _run_tags(settings)
+        _run_tags(settings, dry_run=dry_run)
     except Exception as e:
         error_msg = str(e)
         status = extract_http_status(error_msg)

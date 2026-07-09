@@ -2,8 +2,8 @@
   <div class="sync-drawer-resize" id="syncDrawerResize"></div>
   <div class="sync-drawer-header" data-action="toggleSyncDrawer">
     <div class="sync-drawer-title">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
         <polyline points="4 17 10 11 4 5"></polyline>
         <line x1="12" y1="19" x2="20" y2="19"></line>
       </svg>
@@ -12,35 +12,32 @@
       <span class="sync-status-text" id="syncStatusText">{{ _('Ready') }}</span>
     </div>
     <div class="sync-drawer-actions">
-      <div class="sync-run-wrapper" id="runSyncBtn">
-        <button class="btn btn-sm btn-primary sync-run-main" data-action="runSyncDefault" data-stop-propagation>
-          <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-          </svg>
-          {{ _('Run') }}
-        </button>
-        <button class="btn btn-sm btn-primary sync-run-caret" data-action="toggleRunMenu" data-stop-propagation title="{{ _('More sync options') }}">
-          <svg class="btn-caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
-            stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </button>
-        <div class="sync-run-menu" id="syncRunMenu">
-          <button class="sync-run-option" data-action="runSyncCustom" data-stop-propagation>
-            <strong>{{ _('Custom Playlist Sync') }}</strong>
-            <small>{{ _('Build custom tag & artist playlists') }}</small>
-          </button>
-        </div>
-      </div>
-      <button class="btn btn-sm btn-danger" id="stopSyncBtn" data-action="stopSync" data-stop-propagation style="display:none">
+      <button class="btn btn-sm btn-icon" data-action="previewSync" data-stop-propagation
+        title="{{ _('Preview changes (dry run)') }}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 3h6"></path>
+          <path d="M10 3v6.5L5.2 17.1A2 2 0 0 0 6.9 20h10.2a2 2 0 0 0 1.7-2.9L14 9.5V3"></path>
+          <path d="M7.5 14h9"></path>
+        </svg>
+      </button>
+      <button class="btn btn-sm btn-primary" id="runSyncBtn" data-action="runSyncDefault" data-stop-propagation>
+        <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        {{ _('Run') }}
+      </button>
+      <button class="btn btn-sm btn-danger" id="stopSyncBtn" data-action="stopSync" data-stop-propagation
+        style="display:none">
         <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="currentColor">
           <rect x="6" y="6" width="12" height="12"></rect>
         </svg>
         {{ _('Stop') }}
       </button>
-      <button class="btn btn-sm btn-icon sync-drawer-toggle" data-action="toggleSyncDrawer" data-stop-propagation title="{{ _('Toggle console') }}">
-        <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round">
+      <button class="btn btn-sm btn-icon sync-drawer-toggle" data-action="toggleSyncDrawer" data-stop-propagation
+        title="{{ _('Toggle console') }}">
+        <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="18 15 12 9 6 15"></polyline>
         </svg>
       </button>

@@ -36,6 +36,7 @@ def web_paths(monkeypatch, tmp_path):
         "RUN_LOG_FILE": tmp_path / ".last_run_log.json",
         "FAILURE_LOG_FILE": tmp_path / ".last_failure.json",
         "CUSTOM_PLAYLISTS_FILE": tmp_path / "custom_playlists.json",
+        "DRY_RUN_PREVIEW_FILE": tmp_path / ".dry_run_preview.json",
     }
     for name, path in paths.items():
         monkeypatch.setattr(data, name, path)

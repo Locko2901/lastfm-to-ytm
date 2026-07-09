@@ -34,6 +34,42 @@ def test_mappings_endpoint_empty(client):
     assert resp.get_json()["mappings"] == []
 
 
+def test_preview_result_empty(client):
+    resp = client.get("/preview_result")
+    assert resp.status_code == 200
+    assert resp.get_json() == {"available": False}
+
+
+def test_preview_result_returns_saved_preview(client, web_paths):
+    import json as _json
+
+    preview = {
+        "timestamp": "2026-01-01T00:00:00+00:00",
+        "kind": "main",
+        "playlists": [
+            {
+                "playlist_name": "My Playlist",
+                "playlist_id": "PL123",
+                "exists": True,
+                "summary": {"current_count": 1, "desired_count": 2, "added": 1, "removed": 0, "unchanged": 1, "reordered": False},
+                "added": [{"video_id": "vidBBBBBBBB", "artist": "B", "title": "Song B", "score": 0.8, "plays": 2, "source": "search"}],
+                "removed": [],
+                "misses": 0,
+            }
+        ],
+    }
+    web_paths["DRY_RUN_PREVIEW_FILE"].write_text(_json.dumps(preview), encoding="utf-8")
+
+    resp = client.get("/preview_result")
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert body["available"] is True
+    assert body["kind"] == "main"
+    assert body["playlists"][0]["playlist_name"] == "My Playlist"
+    assert body["playlists"][0]["summary"]["added"] == 1
+    assert body["playlists"][0]["added"][0]["video_id"] == "vidBBBBBBBB"
+
+
 def test_overrides_endpoint(client, web_paths):
     ov = SearchOverrides(str(web_paths["OVERRIDES_FILE"]))
     ov.set("A", "1", "vidAAAAAAAA", reason="r")

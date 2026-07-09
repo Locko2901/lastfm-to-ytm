@@ -33,6 +33,8 @@ def _run_sync_process(
     db: HistoryDB | None = None,
     trigger: str = "web",
     playlist_filter: list[str] | None = None,
+    *,
+    dry_run: bool = False,
 ) -> None:
     """Run sync in background."""
     from ..services.state import reset_output
@@ -40,6 +42,9 @@ def _run_sync_process(
     ALLOWED_SCRIPTS = {"run.py", "run_tags.py"}
     if script not in ALLOWED_SCRIPTS:
         script = "run.py"
+
+    if dry_run:
+        db = None
 
     sync_type = "tags" if script == "run_tags.py" else "main"
     sync_id = db.start_sync(sync_type=sync_type, trigger=trigger) if db else None
@@ -67,6 +72,10 @@ def _run_sync_process(
         env = {**__import__("os").environ, "SYNC_TRIGGER": trigger}
         if sync_id is not None:
             env["HISTORY_SYNC_ID"] = str(sync_id)
+        if dry_run:
+            env["SYNC_DRY_RUN"] = "1"
+        else:
+            env.pop("SYNC_DRY_RUN", None)
         if script == "run_tags.py" and playlist_filter:
             env["CUSTOM_PLAYLIST_FILTER"] = json.dumps(playlist_filter)
         else:
@@ -145,6 +154,8 @@ def _run_sync_process(
             from ..services import notifications as _notif
 
             label = "Custom playlist sync" if script == "run_tags.py" else "Sync"
+            if dry_run:
+                label = "Sync preview"
             if exit_code == 0:
                 _notif.add(f"{label} finished successfully", type_="success", source=f"sync:{trigger}")
             else:
@@ -184,16 +195,32 @@ def run_sync() -> ResponseReturnValue:
             names = [str(n).strip() for n in raw if isinstance(n, str) and str(n).strip()]
             playlist_filter = names or None
 
+    dry_run = bool(data.get("dry_run"))
+
     with sync_lock:
         if sync_state["running"]:
             return jsonify({"error": _("Sync already running")}), 400
         sync_state["running"] = True
 
     db = get_history_db()
-    thread = threading.Thread(target=_run_sync_process, args=(script, db, "web", playlist_filter), daemon=True)
+    trigger = "web-preview" if dry_run else "web"
+    thread = threading.Thread(
+        target=_run_sync_process,
+        args=(script, db, trigger, playlist_filter),
+        kwargs={"dry_run": dry_run},
+        daemon=True,
+    )
     thread.start()
 
     return jsonify({"status": "started"})
+
+
+@sync_bp.route("/preview_result")
+def preview_result() -> ResponseReturnValue:
+    """Return the most recent dry-run sync preview."""
+    from ..services.data import load_dry_run_preview
+
+    return jsonify(load_dry_run_preview())
 
 
 @sync_bp.route("/stop_sync", methods=["POST"])

@@ -28,6 +28,7 @@ PLAYLIST_CACHE_FILE = CACHE_DIR / ".playlist_cache.json"
 TAG_CACHE_FILE = CACHE_DIR / ".tag_cache.json"
 TAG_OVERRIDES_FILE = CONFIG_DIR / "tag_overrides.json"
 CUSTOM_PLAYLISTS_FILE = CONFIG_DIR / "custom_playlists.json"
+DRY_RUN_PREVIEW_FILE = CACHE_DIR / ".dry_run_preview.json"
 
 
 def _track_key(artist: str, title: str) -> str:
@@ -125,6 +126,19 @@ def load_run_log() -> dict[str, Any]:
         }
     except Exception:
         return {"mappings": [], "limit": 100, "timestamp": None, "total": 0, "resolved": 0, "in_playlist": 0}
+
+
+def load_dry_run_preview() -> dict[str, Any]:
+    """Load the most recent dry-run sync preview, if any."""
+    if not DRY_RUN_PREVIEW_FILE.exists():
+        return {"available": False}
+    try:
+        with DRY_RUN_PREVIEW_FILE.open() as f:
+            data: dict[str, Any] = json.load(f)
+        data["available"] = True
+        return data
+    except Exception:
+        return {"available": False}
 
 
 def load_overrides() -> SearchOverrides:

@@ -105,6 +105,21 @@
   border-color: var(--text-muted);
 }
 
+.btn-sm.btn-icon {
+  padding: 0.375rem 0.5rem;
+}
+
+.btn-sm.btn-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.btn-icon.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.12);
+}
+
 .btn-icon-svg {
   width: 14px;
   height: 14px;
@@ -1137,6 +1152,7 @@
 .sync-pl-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.625rem;
   padding: 0.5rem 0.625rem;
   border: 1px solid var(--border);
@@ -1151,16 +1167,112 @@
 }
 
 .sync-pl-check {
-  width: 1.05rem;
-  height: 1.05rem;
-  cursor: pointer;
-  accent-color: var(--accent);
   flex-shrink: 0;
 }
 
 .sync-pl-name {
   font-size: 0.875rem;
   color: var(--text-primary);
+  flex: 1;
+}
+
+.modal-footer.sync-pl-footer {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.sync-pl-footer-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.toggle-switch,
+.settings-form .form-group-checkbox > label > input[type="checkbox"],
+.custompl-form .form-group-checkbox > label > input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  flex-shrink: 0;
+  width: 38px;
+  height: 22px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border-radius: 999px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.toggle-switch::before,
+.settings-form .form-group-checkbox > label > input[type="checkbox"]::before,
+.custompl-form .form-group-checkbox > label > input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition:
+    transform var(--transition),
+    background var(--transition);
+}
+
+.toggle-switch:checked,
+.settings-form .form-group-checkbox > label > input[type="checkbox"]:checked,
+.custompl-form .form-group-checkbox > label > input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.toggle-switch:checked::before,
+.settings-form .form-group-checkbox > label > input[type="checkbox"]:checked::before,
+.custompl-form .form-group-checkbox > label > input[type="checkbox"]:checked::before {
+  transform: translateX(16px);
+  background: #fff;
+}
+
+.toggle-switch:focus-visible,
+.settings-form .form-group-checkbox > label > input[type="checkbox"]:focus-visible,
+.custompl-form .form-group-checkbox > label > input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.option-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.option-toggle-inline {
+  flex: 0 1 auto;
+}
+
+.option-toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.option-toggle-text > strong {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.option-toggle-text > small {
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 .panel-description {

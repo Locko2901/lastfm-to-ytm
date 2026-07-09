@@ -1,7 +1,8 @@
 {# j2lint: disable=S7 #}
 <div class="tab-panel" id="panel-custompl">
   <div class="panel-description">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round">
       <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
       <line x1="7" y1="7" x2="7.01" y2="7"></line>
     </svg>
@@ -10,8 +11,8 @@
     </p>
   </div>
   <button class="add-item-btn" data-action="showCustomPlaylistModal">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-      stroke-linejoin="round">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+      stroke-linecap="round" stroke-linejoin="round">
       <line x1="12" y1="5" x2="12" y2="19"></line>
       <line x1="5" y1="12" x2="19" y2="12"></line>
     </svg>
@@ -19,9 +20,10 @@
   </button>
   {% if custom_playlists %}
   <div class="custompl-toolbar">
-    <button class="btn btn-secondary btn-sm" data-action="showSyncPlaylistsModal" title="{{ _('Choose which playlists to sync') }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
+    <button class="btn btn-secondary btn-sm" data-action="showSyncPlaylistsModal"
+      title="{{ _('Choose which playlists to sync') }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
         <polyline points="23 4 23 10 17 10"></polyline>
         <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
       </svg>
@@ -33,16 +35,16 @@
     <div class="management-card expandable-card" data-pl-index="{{ loop.index0 }}">
       <div class="management-info">
         <div class="expandable-header" data-action="togglePlaylistPreview" data-index="{{ loop.index0 }}">
-          <svg class="expand-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
+          <svg class="expand-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
           <h3>{{ pl.name }}</h3>
           {% if pl.track_count %}<span class="tab-badge">{{ pl.track_count }}</span>{% endif %}
-          {% if pl.playlist_id %}<a href="https://music.youtube.com/playlist?list={{ pl.playlist_id }}" target="_blank" rel="noopener"
-            class="playlist-link" title="{{ _('Open in YouTube Music') }}">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
+          {% if pl.playlist_id %}<a href="https://music.youtube.com/playlist?list={{ pl.playlist_id }}" target="_blank"
+            rel="noopener" class="playlist-link" title="{{ _('Open in YouTube Music') }}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
               <polyline points="15 3 21 3 21 9"></polyline>
               <line x1="10" y1="14" x2="21" y2="3"></line>
@@ -57,10 +59,14 @@
             {{ pl.match }}</span>
           {% endif %}
           <span class="badge">{{ _('Limit:') }} {{ _('None') if pl.limit == 0 else pl.limit }}</span>
-          {% if pl.privacy %}<span class="badge badge-muted">{{ _('Visibility:') }} {{ pl.privacy | capitalize }}</span>{% endif %}
-          {% if pl.backfill is defined and not pl.backfill %}<span class="badge badge-muted">{{ _('No Backfill') }}</span>{% endif %}
-          {% if pl.auto_sync is defined and not pl.auto_sync %}<span class="badge badge-muted">{{ _('No Auto-sync') }}</span>{% endif %}
-          <span class="badge badge-blacklist blacklist-count-badge" data-pl-index="{{ loop.index0 }}" {% if not pl.blacklist %} style="display:none"
+          {% if pl.privacy %}<span class="badge badge-muted">{{ _('Visibility:') }}
+            {{ pl.privacy | capitalize }}</span>{% endif %}
+          {% if pl.backfill is defined and not pl.backfill %}<span
+            class="badge badge-muted">{{ _('No Backfill') }}</span>{% endif %}
+          {% if pl.auto_sync is defined and not pl.auto_sync %}<span
+            class="badge badge-muted">{{ _('No Auto-sync') }}</span>{% endif %}
+          <span class="badge badge-blacklist blacklist-count-badge" data-pl-index="{{ loop.index0 }}"
+            {% if not pl.blacklist %} style="display:none"
             {% endif %}>{{ pl.blacklist | length if pl.blacklist else 0 }}
             {{ _('blacklisted') }}</span>
         </div>
@@ -81,10 +87,20 @@
           title="{{ _('Sync this playlist now') }}">
           {{ _('Sync') }}
         </button>
+        <button class="btn btn-icon btn-sm" data-action="previewCustomPlaylist" data-index="{{ loop.index0 }}"
+          title="{{ _('Preview changes (dry run)') }}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 3h6"></path>
+            <path d="M10 3v6.5L5.2 17.1A2 2 0 0 0 6.9 20h10.2a2 2 0 0 0 1.7-2.9L14 9.5V3"></path>
+            <path d="M7.5 14h9"></path>
+          </svg>
+        </button>
         <button class="btn btn-success btn-sm" data-action="editCustomPlaylist" data-index="{{ loop.index0 }}">
           {{ _('Edit') }}
         </button>
-        <button class="btn btn-danger btn-sm" data-action="deleteCustomPlaylist" data-index="{{ loop.index0 }}" data-name="{{ pl.name }}">
+        <button class="btn btn-danger btn-sm" data-action="deleteCustomPlaylist" data-index="{{ loop.index0 }}"
+          data-name="{{ pl.name }}">
           {{ _('Delete') }}
         </button>
       </div>
@@ -99,7 +115,8 @@
   {% else %}
   <div class="empty-state">
     <div class="empty-state-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+        stroke-linejoin="round">
         <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
         <line x1="7" y1="7" x2="7.01" y2="7"></line>
       </svg>

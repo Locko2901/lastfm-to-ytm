@@ -59,7 +59,7 @@ def record_near_misses_to_history(
     """Persist tracks that resolved to a video but ranked just past ``limit``.
 
     The playlist keeps only the top ``limit`` resolved tracks; the remainder
-    are "near-misses" — recently scrobbled songs that scored just below the
+    are "near-misses" - recently scrobbled songs that scored just below the
     cutoff. Surfacing them helps tune ``LIMIT``/``RECENCY_*`` settings. The
     ranked resolved order is recovered from ``run_log_mappings`` (miss entries
     are interleaved but skipped here). Returns the number of rows stored.

@@ -974,7 +974,7 @@ class HistoryDB:
         """Replace stored near-misses with this run's ranked-but-dropped tracks.
 
         Near-misses are tracks that resolved to a video but fell just past the
-        playlist ``cutoff`` (``LIMIT``) — the most useful data for tuning
+        playlist ``cutoff`` (``LIMIT``) - the most useful data for tuning
         ``LIMIT`` and recency knobs. Only the most recent run is kept, so this
         clears any previous rows first. ``rows`` items provide artist, title,
         and optional video_id/yt_title/score/plays; ``rank`` is assigned from
