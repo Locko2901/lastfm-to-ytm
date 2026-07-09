@@ -122,9 +122,55 @@ Weekly playlists use the same `PlaylistCache` template system. The change check 
 
 A convenience function that combines create-or-update with template checking:
 
-1. Look up existing playlist by name
+1. Resolve the existing playlist ID via `get_or_rename_playlist()` (name lookup, with role-based rename fallback)
 2. If exists and template changed &rarr; `sync_playlist()`
 3. If exists and template unchanged &rarr; skip
 4. If not found &rarr; `create_playlist_with_items()`
 
 Used by tag-based custom playlists to avoid duplicating the create/update logic.
+
+---
+
+## Rename Detection (`role` markers)
+
+A managed playlist is looked up **by name** on every run. When a user changes the
+playlist's name (e.g. edits `PLAYLIST_NAME`), the name lookup misses and a naive
+sync would create a **duplicate** playlist and orphan the old one. To avoid this,
+each cached entry carries a stable **`role`** marker that survives renames.
+
+### Cache support (`src/cache/playlist.py`)
+
+- `set_template(name, id, video_ids, *, role=None)` stores the `role` alongside the
+  ID and template. When `role` is omitted, any existing role on the entry is preserved.
+- `find_by_role(role)` returns `(name, id)` **only when exactly one** entry carries
+  that role and has an ID. It returns `None` on no match **or** an ambiguous match
+  (multiple entries share the role), so a rename can never target the wrong playlist.
+- `rename(old_name, new_name)` migrates the cache key in place, preserving the ID,
+  template (`video_ids`), and role, and refreshes `last_updated`.
+
+### Resolver (`get_or_rename_playlist()` in `src/ytm/operations.py`)
+
+1. Try the normal `get_existing_playlist_by_name()` lookup - return the ID on a hit.
+2. On a miss, if a `role` is supplied, call `cache.find_by_role(role)`.
+3. If a match is found under a **different** name, verify the old playlist still
+   exists on YTM via `get_playlist(prev_id, limit=0)`. If it 404s / returns
+   `Unable to find 'contents'`, the stale entry is dropped from the cache and the
+   caller creates a fresh playlist.
+4. Otherwise retitle it in place with `edit_playlist(prev_id, title=name)` and call
+   `cache.rename(prev_name, name)`, returning the existing ID - no duplicate created.
+
+### Roles per playlist type
+
+| Playlist | Role | Source |
+|---|---|---|
+| Main | `"main"` | `src/workflows/main_sync.py` |
+| Weekly | `"weekly:<ISO-date>"` (current week's start date) | `src/playlist/weekly.py` |
+| Custom / tag | `"custom:<sha1[:16]>"` hashed from the playlist **definition** (kind, tags, artists, match mode, discovery seeds) | `src/tags/sync.py::_custom_playlist_role()` |
+
+Custom playlists have no stable ID in `config/custom_playlists.json` (entries are
+keyed by name), so their role is derived from the definition's content. Two custom
+playlists with identical definitions produce the same role - `find_by_role()`'s
+ambiguity guard then declines to rename either, which is the safe outcome.
+
+Dry-run / preview paths deliberately keep using the read-only
+`get_existing_playlist_by_name()` so a preview never mutates playlist titles.

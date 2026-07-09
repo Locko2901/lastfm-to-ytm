@@ -22,6 +22,7 @@ This minimizes API calls and ensures consistent results across runs.
 - **File locking** - `fcntl.flock()` prevents concurrent cache corruption
 - **Negative caching** - stores `null` results to avoid repeated failed searches
 - **Template-based sync** - `PlaylistCache` stores desired state; skips sync if unchanged
+- **Role-based rename detection** - each cached playlist carries a stable `role` marker so renames are detected and applied in place instead of creating duplicates (see [Playlist Sync Internals](playlist-sync-internals.md))
 - **Rate limit handling** - sleep between searches, retry with exponential backoff
 
 ## RuntimeContext
@@ -134,10 +135,20 @@ Returns `(video_ids, misses, track_to_vid, run_log_mappings)` for downstream use
 
 **Scoring formula:**
 
-$$\text{score} = w_{\text{play}} \times \frac{\text{plays}}{\text{max_plays}} + (1 - w_{\text{play}}) \times 0.5^{\text{age_hours} / \text{half_life}}$$
+$$\text{score} = w_{\text{play}} \times \text{play\_score} + (1 - w_{\text{play}}) \times 0.5^{\text{age_hours} / \text{half_life}}$$
 
-- `play_weight` ($w_{\text{play}}$): default `0.7` (70% plays, 30% recency)
-- `half_life_hours`: default `24.0` - a track's recency score halves every 24 hours
+- `play_weight` ($w_{\text{play}}$): default `0.7` (70% plays, 30% recency, `RECENCY_PLAY_WEIGHT`)
+- `half_life_hours`: default `48.0` - a track's recency score halves every 48 hours (`RECENCY_HALF_LIFE_HOURS`)
 - Sorting priority: `(-score, -ts, -plays)` for stable ordering
+
+**Play-count normalization** (`_compute_play_scores()`, selected by `RECENCY_NORMALIZATION`): raw play counts become the `[0, 1]` `play_score` via one of three strategies:
+
+| Strategy | Formula | Effect |
+|---|---|---|
+| `linear` (default) | `plays / max_plays` | A single high-play outlier flattens everything below it toward zero |
+| `log` | `log1p(plays) / log1p(max_plays)` | Compresses outliers so mid-tier tracks stay competitive |
+| `rank` | tie-averaged percentile position | Ignores magnitude entirely - only the *order* of play counts matters |
+
+All three return scores in `[0, 1]`, so `RECENCY_PLAY_WEIGHT` keeps the same meaning regardless of the strategy chosen.
 
 **Debug output**: logs top 50 tracks with per-track breakdown (play count, normalized score, age, recency score, final composite).
