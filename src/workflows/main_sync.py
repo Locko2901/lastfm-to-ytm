@@ -34,7 +34,7 @@ from ..search import (
     reset_search_statistics,
     resolve_tracks_to_video_ids,
 )
-from ..ytm import create_playlist_with_items, get_existing_playlist_by_name
+from ..ytm import create_playlist_with_items, get_existing_playlist_by_name, get_or_rename_playlist
 from ._common import build_context, fetch_scrobbles, sync_local_history
 from .backfill import reorder_after_backfill, run_backfill
 
@@ -65,7 +65,7 @@ def _sync_or_create_playlist(
     start_time: float,
 ) -> _PlaylistSyncResult:
     """Update the existing main playlist or create it, returning the sync outcome."""
-    existing_id = get_existing_playlist_by_name(ctx.ytm, settings.playlist_name, cache=ctx.playlist_cache)
+    existing_id = get_or_rename_playlist(ctx.ytm, settings.playlist_name, cache=ctx.playlist_cache, role="main")
     template_changed = ctx.playlist_cache.template_changed(settings.playlist_name, valid_video_ids)
     substitutions: dict[str, str] = {}
 
@@ -87,7 +87,7 @@ def _sync_or_create_playlist(
             log.info("Syncing playlist...")
             try:
                 substitutions = sync_playlist(ctx.ytm, existing_id, valid_video_ids, max_retries=settings.api_max_retries)
-                ctx.playlist_cache.set_template(settings.playlist_name, existing_id, valid_video_ids)
+                ctx.playlist_cache.set_template(settings.playlist_name, existing_id, valid_video_ids, role="main")
             except InvalidVideoIDsError as e:
                 _evict_from_cache(ctx.search_cache, e.invalid_ids)
                 log.info("Re-resolving tracks after evicting %d invalid video IDs...", len(e.invalid_ids))
@@ -106,7 +106,7 @@ def _sync_or_create_playlist(
                     valid_video_ids = valid_video_ids[:target_count]
                 log.info("Retrying sync with %d tracks...", len(valid_video_ids))
                 substitutions = sync_playlist(ctx.ytm, existing_id, valid_video_ids, max_retries=settings.api_max_retries)
-                ctx.playlist_cache.set_template(settings.playlist_name, existing_id, valid_video_ids)
+                ctx.playlist_cache.set_template(settings.playlist_name, existing_id, valid_video_ids, role="main")
             except Exception as e:
                 summary = describe_sync_error(str(e))
                 log.exception("Sync failed: %s", summary)
@@ -137,6 +137,7 @@ def _sync_or_create_playlist(
                 settings.privacy_status,
                 valid_video_ids,
                 cache=ctx.playlist_cache,
+                role="main",
             )
             log.info("Created playlist with %d tracks", len(valid_video_ids))
         except Exception as e:
