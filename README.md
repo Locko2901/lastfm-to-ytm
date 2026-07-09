@@ -53,6 +53,7 @@ Full documentation lives at **[locko2901.github.io/lastfm-to-ytm](https://locko2
 Ideas on the table:
 
 - **ListenBrainz as an alternate scrobble source** - a source abstraction behind the fetch layer so the same match/sync engine can run on [ListenBrainz](https://listenbrainz.org/) history, not just Last.fm. On hold until it can be properly tested (I only use Last.fm) - contributions welcome.
+- **Spotify as an alternate playlist target** - a target abstraction behind the sync layer so the same resolved, recency-weighted track set can be pushed to Spotify playlists, not just YouTube Music. Turns the tool from Last.fm&rarr;YTM into a general playlist engine. Contributions welcome.
 
 ## Credits
 
