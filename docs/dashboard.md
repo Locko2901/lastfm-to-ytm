@@ -15,7 +15,7 @@ The web dashboard is always included with the Docker setup. It provides a full m
 
 ## Dashboard Features
 
-- **Playlist tab** - View every track in your synced playlist with its matched YouTube Music link, source (cache/search/override), and status badges. Filter by overrides, blacklisted, or pending retry. Use **Show Graph** to plot each track's recency/play score against its playlist position.
+- **Playlist tab** - View every track in your synced playlist with its matched YouTube Music link, source (cache/search/override), and status badges. Filter by overrides, blacklisted, or pending retry. Use **Show Graph** to plot each track's recency/play score against its playlist position. Use **Export** to download the playlist as M3U, CSV, or JSON (see [Exporting Playlists](#exporting-playlists)).
 - **Overrides tab** - Add, edit, or remove manual search overrides directly. Paste a YouTube Music URL or video ID and the dashboard extracts and validates it.
 - **Blacklist tab** - Manage blacklisted tracks from the UI. Blacklisted tracks are excluded entirely from playlist generation. **Blacklist Artist** excludes every track by an artist (the artist blacklist also applies to custom playlists; each playlist additionally supports its own per-artist blacklist in the editor).
 - **Not Found tab** - See all tracks where the search couldn't find a match. One-click to add an override or blacklist entry for any of them.
@@ -48,6 +48,23 @@ The web dashboard is always included with the Docker setup. It provides a full m
 
 ??? example "Screenshot: Setup wizard"
     ![Setup Wizard](screenshots/setup_wizard.png)
+
+## Exporting Playlists
+
+Download the tracks of any synced playlist as a portable file, straight from the dashboard. This is handy for backups, importing into another player, or sharing a snapshot of what the tool built.
+
+- **Main playlist** - the **Export** button in the Playlist tab toolbar (next to **Show Graph**) offers **M3U**, **CSV**, and **JSON**.
+- **Custom playlists** - each card in the Custom Playlists tab has its own **Export** button (download icon, next to **Edit**) with the same three formats.
+
+Exports are read from the [playlist cache](playlist-sync-internals.md) - they reflect the last synced state, so run a sync first if you want the freshest data. Track artist/title are resolved from the search cache and manual overrides.
+
+| Format | Extension | Contents |
+|--------|-----------|----------|
+| **M3U** | `.m3u8` | Extended M3U with `#EXTINF` lines and one `https://music.youtube.com/watch?v=…` URL per track. Opens in most media players. |
+| **CSV** | `.csv` | Header row `artist,title,video_id,yt_title,url` plus one row per track. Ideal for spreadsheets or scripting. |
+| **JSON** | `.json` | Structured document with `playlist`, `track_count`, and a `tracks` array (each with `artist`, `title`, `video_id`, `yt_title`, `url`). |
+
+Under the hood the dashboard hits `GET /api/playlist/export?name=<playlist>&format=<fmt>` (the main playlist name is filled in automatically) and `GET /api/custom-playlists/<index>/export?format=<fmt>` for custom playlists. A playlist with no cached tracks returns `404`; an unknown format returns `400`.
 
 ## Integrated Scheduler
 

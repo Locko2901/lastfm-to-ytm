@@ -18,7 +18,7 @@ from ..playlist import get_playlist_statistics, log_playlist_statistics
 from ..playlist import reset_query_counter as reset_playlist_counter
 from ..search import get_search_statistics, log_search_statistics, reset_search_statistics
 from ..tags.sync import sync_custom_playlists
-from ._common import build_context, fetch_scrobbles
+from ._common import build_context, fetch_scrobbles, scrobbles_from_local_history
 
 log = logging.getLogger(__name__)
 
@@ -51,10 +51,17 @@ def run_tags(settings: Settings, *, dry_run: bool = False) -> None:
     reset_search_statistics()
     reset_playlist_counter()
 
-    recents = fetch_scrobbles(settings)
-    if not recents:
-        log.warning("No recent scrobbles found. Exiting.")
-        return
+    if settings.use_local_lastfm_db:
+        recents = scrobbles_from_local_history(settings)
+        if not recents:
+            log.warning("Local Last.fm DB has no tracks after sync. Exiting.")
+            return
+        log.info("Using %d unique tracks from local Last.fm history for custom playlists", len(recents))
+    else:
+        recents = fetch_scrobbles(settings)
+        if not recents:
+            log.warning("No recent scrobbles found. Exiting.")
+            return
 
     log.info("Running custom playlist %s only...", "dry run" if dry_run else "sync")
 

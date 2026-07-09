@@ -254,6 +254,7 @@ explicitly only if you need a file in a non-default location.
     | `USE_LOCAL_LASTFM_DB` | `false` | Build the main playlist from your full local scrobble history (lifetime plays + recency) instead of recent tracks. **Changes playlist behaviour.** |
     | `LASTFM_LOCAL_DB_FILE` | `runtime/lastfm_history.db` | Path to the local Last.fm history database file |
     | `LASTFM_LOCAL_DB_MAX_SCROBBLES` | `0` | Safety cap on scrobbles ingested per crawl (`0` = unlimited). More than a safety valve: a non-zero cap **scopes the playlist to a slice of your history** - e.g. `10000` builds rankings from your 10k most recent lifetime scrobbles, so older favourites never enter the pool. |
+    | `DISCOVERY_REDISCOVER_DAYS` | `0` | Discovery playlists only: when a playlist excludes already-heard tracks, only treat tracks played within the last N days as "already heard" (`0` = exclude your entire history). Lets older favourites resurface. Works with recent scrobbles and `USE_LOCAL_LASTFM_DB`. See [Discovery Playlists](tag-playlists.md#the-rediscover-window). |
 
     See [Local Last.fm History](local-history.md) for how the full crawl and incremental updates work.
 

@@ -490,6 +490,127 @@ def test_load_custom_playlists_invalid_kind_defaults_to_tags(tmp_path):
     assert load_custom_playlists(str(path))[0].kind == "tags"
 
 
+def test_load_custom_playlists_parses_discovery_playlist(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps(
+            {
+                "playlists": [
+                    {
+                        "name": "Discover",
+                        "kind": "discovery",
+                        "discovery_seed": "tracks",
+                        "limit": 25,
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    cfg = load_custom_playlists(str(path))[0]
+    assert cfg.kind == "discovery"
+    assert cfg.discovery_seed == "tracks"
+    assert cfg.tags == ()
+    assert cfg.artists == ()
+    assert cfg.limit == 25
+
+
+def test_load_custom_playlists_discovery_needs_only_a_name(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps({"playlists": [{"name": "Discover", "kind": "discovery"}]}),
+        encoding="utf-8",
+    )
+    cfg = load_custom_playlists(str(path))[0]
+    assert cfg.kind == "discovery"
+    assert cfg.discovery_seed == "artists"
+
+
+def test_load_custom_playlists_invalid_discovery_seed_defaults_to_artists(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps({"playlists": [{"name": "Discover", "kind": "discovery", "discovery_seed": "bogus"}]}),
+        encoding="utf-8",
+    )
+    assert load_custom_playlists(str(path))[0].discovery_seed == "artists"
+
+
+def test_load_custom_playlists_defaults_discovery_seed_auto_true(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps({"playlists": [{"name": "Discover", "kind": "discovery"}]}),
+        encoding="utf-8",
+    )
+    cfg = load_custom_playlists(str(path))[0]
+    assert cfg.discovery_seed_auto is True
+    assert cfg.discovery_seed_artists == ()
+    assert cfg.discovery_seed_tracks == ()
+
+
+def test_load_custom_playlists_defaults_discovery_exclude_scrobbled_true(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps({"playlists": [{"name": "Discover", "kind": "discovery"}]}),
+        encoding="utf-8",
+    )
+    assert load_custom_playlists(str(path))[0].discovery_exclude_scrobbled is True
+
+
+def test_load_custom_playlists_parses_discovery_exclude_scrobbled_false(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps({"playlists": [{"name": "Discover", "kind": "discovery", "discovery_exclude_scrobbled": False}]}),
+        encoding="utf-8",
+    )
+    assert load_custom_playlists(str(path))[0].discovery_exclude_scrobbled is False
+
+
+def test_load_custom_playlists_parses_manual_discovery_seeds(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps(
+            {
+                "playlists": [
+                    {
+                        "name": "Discover Artists",
+                        "kind": "discovery",
+                        "discovery_seed": "artists",
+                        "discovery_seed_auto": False,
+                        "discovery_seed_artists": ["Radiohead", " ", "Aphex Twin"],
+                    },
+                    {
+                        "name": "Discover Tracks",
+                        "kind": "discovery",
+                        "discovery_seed": "tracks",
+                        "discovery_seed_auto": False,
+                        "discovery_seed_tracks": [
+                            {"artist": "Radiohead", "track": "Idioteque"},
+                            {"artist": " ", "track": "skip"},
+                            {"artist": "Aphex Twin", "track": ""},
+                        ],
+                    },
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    artists_cfg, tracks_cfg = load_custom_playlists(str(path))
+    assert artists_cfg.discovery_seed_auto is False
+    assert artists_cfg.discovery_seed_artists == ("Radiohead", "Aphex Twin")
+    assert tracks_cfg.discovery_seed_auto is False
+    assert tracks_cfg.discovery_seed_tracks == (("Radiohead", "Idioteque"),)
+
+
+def test_from_env_discovery_rediscover_days_parsed(clean_env):
+    clean_env.setenv("DISCOVERY_REDISCOVER_DAYS", "365")
+    assert Settings.from_env().discovery_rediscover_days == 365
+
+
+def test_from_env_discovery_rediscover_days_negative_floored(clean_env):
+    clean_env.setenv("DISCOVERY_REDISCOVER_DAYS", "-5")
+    assert Settings.from_env().discovery_rediscover_days == 0
+
+
 def test_resolve_runtime_dir_prefers_runtime_env(monkeypatch, tmp_path):
     monkeypatch.setenv("RUNTIME_DIR", str(tmp_path / "rt"))
     monkeypatch.setenv("CACHE_DIR", str(tmp_path / "legacy"))

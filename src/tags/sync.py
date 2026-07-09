@@ -14,6 +14,7 @@ from ..playlist import build_sync_preview, current_tracks_from_playlist, upsert_
 from ..playlist.sync import InvalidVideoIDsError, _evict_from_cache
 from ..search import resolve_tracks_to_video_ids
 from ..ytm import get_existing_playlist_by_name
+from .discovery import generate_discovery_candidates
 from .filter import filter_tracks_by_artists, filter_tracks_by_tags
 from .resolver import resolve_tags_for_tracks
 
@@ -98,13 +99,25 @@ def sync_custom_playlists(
         limit_label = "unlimited" if config.limit == 0 else str(config.limit)
         if config.kind == "artists":
             log.info("--- Custom playlist: '%s' (artists=%s, limit=%s) ---", config.name, list(config.artists), limit_label)
+        elif config.kind == "discovery":
+            seed_source = "auto" if config.discovery_seed_auto else "manual"
+            log.info(
+                "--- Custom playlist: '%s' (discovery, seed=%s/%s, limit=%s) ---",
+                config.name,
+                config.discovery_seed,
+                seed_source,
+                limit_label,
+            )
         else:
             log.info("--- Custom playlist: '%s' (tags=%s, match=%s, limit=%s) ---", config.name, list(config.tags), config.match, limit_label)
 
         wanted_tags = set(config.tags)
         wanted_artists = set(config.artists)
 
-        matching_tracks = _filter_for_config(config, recents, tag_map, wanted_tags, wanted_artists, settings)
+        if config.kind == "discovery":
+            matching_tracks: list[Scrobble | WeightedTrack] = list(generate_discovery_candidates(config, recents, settings))
+        else:
+            matching_tracks = _filter_for_config(config, recents, tag_map, wanted_tags, wanted_artists, settings)
         candidate_keys.update((t.artist.lower(), t.track.lower()) for t in matching_tracks)
 
         video_ids = _resolve_from_existing(matching_tracks, track_to_vid)
@@ -135,7 +148,7 @@ def sync_custom_playlists(
 
         all_recents = list(recents)
         current_pass = 0
-        max_backfill = settings.backfill_passes if config.backfill else 0
+        max_backfill = 0 if config.kind == "discovery" else (settings.backfill_passes if config.backfill else 0)
 
         effective_limit = config.limit if config.limit > 0 else float("inf")
 
@@ -219,7 +232,13 @@ def sync_custom_playlists(
             video_ids = video_ids[: config.limit]
 
         if not video_ids:
-            log.warning("No tracks matched tags for '%s', skipping", config.name)
+            if config.kind == "discovery":
+                log.warning(
+                    "No discovery candidates for '%s' - Last.fm found nothing similar to the seeds, skipping",
+                    config.name,
+                )
+            else:
+                log.warning("No tracks matched for '%s', skipping", config.name)
             continue
 
         log.info("Resolved %d tracks for '%s'", len(video_ids), config.name)
@@ -227,7 +246,7 @@ def sync_custom_playlists(
             log.warning("Only found %d/%d tracks for '%s'", len(video_ids), config.limit, config.name)
 
         vid_to_track: dict[str, tuple[str, str]] = {}
-        for t in all_recents:
+        for t in [*matching_tracks, *all_recents]:
             key = (t.artist.lower(), t.track.lower())
             mapped_vid = track_to_vid.get(key)
             if mapped_vid and mapped_vid not in vid_to_track:
@@ -262,6 +281,8 @@ def sync_custom_playlists(
 
         if config.kind == "artists":
             default_desc = f"Auto-generated artist playlist ({', '.join(config.artists)})"
+        elif config.kind == "discovery":
+            default_desc = f"Auto-generated discovery playlist (similar to your top {config.discovery_seed})"
         else:
             default_desc = f"Auto-generated tag playlist ({', '.join(config.tags)})"
         desc = config.description or default_desc

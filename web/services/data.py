@@ -252,6 +252,11 @@ def get_playlist_cache_summary() -> list[dict[str, Any]]:
     return load_playlist_cache().summary()
 
 
+def get_main_playlist_name() -> str:
+    """Return the configured main playlist name (falls back to the default)."""
+    return str(_get_playlist_context()["name"])
+
+
 def get_playlist_cache_tracks(playlist_name: str) -> list[dict[str, Any]]:
     """Resolve a playlist cache template's video IDs to artist/title via search cache."""
     pc = load_playlist_cache()
@@ -881,6 +886,11 @@ def load_custom_playlists_config() -> list[dict[str, Any]]:
             "backfill": c.backfill,
             "auto_sync": c.auto_sync,
             "privacy": c.privacy,
+            "discovery_seed": c.discovery_seed,
+            "discovery_seed_auto": c.discovery_seed_auto,
+            "discovery_seed_artists": list(c.discovery_seed_artists),
+            "discovery_seed_tracks": [{"artist": a, "track": t} for a, t in c.discovery_seed_tracks],
+            "discovery_exclude_scrobbled": c.discovery_exclude_scrobbled,
             "track_count": len(cache_data.get(c.name, {}).get("video_ids", [])),
             "playlist_id": cache_data.get(c.name, {}).get("id"),
         }
@@ -1129,6 +1139,46 @@ def is_local_lastfm_enabled() -> bool:
     """Check if the local Last.fm history DB is enabled in settings."""
     settings = _get_settings()
     return bool(settings and settings.use_local_lastfm_db)
+
+
+def get_discovery_seed_options(limit: int = 300) -> dict[str, Any]:
+    """Return candidate seed artists/tracks for the discovery manual seed picker.
+
+    Sourced from the local Last.fm history DB when enabled (ranked by play count),
+    otherwise from resolved search-cache entries (alphabetical). Output is capped
+    at ``limit`` entries per list.
+    """
+    db = get_local_scrobble_db()
+    if db is not None:
+        rows = db.get_scoring_rows(min_plays=1)  # (artist, track, album, plays, first, last), plays DESC
+        tracks = [{"artist": artist, "title": track} for artist, track, _album, _plays, _first, _last in rows[:limit]]
+        artist_plays: dict[str, int] = {}
+        artist_display: dict[str, str] = {}
+        for artist, _track, _album, plays, _first, _last in rows:
+            key = artist.lower()
+            artist_plays[key] = artist_plays.get(key, 0) + int(plays)
+            artist_display.setdefault(key, artist)
+        top_artists = sorted(artist_plays.items(), key=lambda kv: kv[1], reverse=True)[:limit]
+        artists = [artist_display[key] for key, _ in top_artists]
+        return {"artists": artists, "tracks": tracks, "source": "local_db"}
+
+    sc = load_search_cache()
+    tracks_out: list[dict[str, str]] = []
+    seen_tracks: set[tuple[str, str]] = set()
+    artist_display_cache: dict[str, str] = {}
+    for entry in sc.values():
+        artist = (entry.get("artist") or "").strip()
+        title = (entry.get("title") or "").strip()
+        if not artist or not title:
+            continue
+        artist_display_cache.setdefault(artist.lower(), artist)
+        track_key = (artist.lower(), title.lower())
+        if track_key not in seen_tracks:
+            seen_tracks.add(track_key)
+            tracks_out.append({"artist": artist, "title": title})
+    tracks_out.sort(key=lambda t: (t["artist"].lower(), t["title"].lower()))
+    artists = sorted(artist_display_cache.values(), key=lambda a: a.lower())
+    return {"artists": artists[:limit], "tracks": tracks_out[:limit], "source": "search_cache"}
 
 
 def history_record_action(

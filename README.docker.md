@@ -35,7 +35,8 @@ Images are published for `linux/amd64` and `linux/arm64`.
 - **Smart matching** that prefers official Songs over user uploads and rejects nightcore, sped-up, slowed, 8D, etc.
 - **Recency + play-count weighting** so the playlist reflects what you're *actually* listening to right now.
 - **Weekly snapshot playlists** so you build a long-term archive of how your taste evolves.
-- **Custom playlists** - tag-based (e.g. *"Breakcore Mix"*, *"Chill Electronic"*) auto-filled from your Last.fm tags, or artist-based collecting every found song by chosen artists.
+- **Custom playlists** - tag-based (e.g. *"Breakcore Mix"*, *"Chill Electronic"*) auto-filled from your Last.fm tags, artist-based collecting every found song by chosen artists, or **discovery** playlists that recommend songs you've never scrobbled based on your top artists/tracks.
+- **Export any playlist** to M3U, CSV, or JSON straight from the dashboard for backups or importing elsewhere.
 - **Built-in scheduler, webhooks, encrypted backup** - and more in the [full docs](https://locko2901.github.io/lastfm-to-ytm/).
 <!-- docker-sync:end -->
 

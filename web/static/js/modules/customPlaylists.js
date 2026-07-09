@@ -7,15 +7,218 @@ import { refreshPanel, refreshStats, showToast } from "./utils.js"
 let playlistsData = []
 const loadedPreviews = new Set()
 
+let seedOptionsCache = null
+let selectedSeedArtists = []
+let selectedSeedTracks = []
+
 export function setPlaylistsData(data) {
   playlistsData = data
 }
 
+function currentSeedMode() {
+  return document.getElementById("custompl-discovery-seed")?.value || "artists"
+}
+
+function isSeedAuto() {
+  return document.getElementById("custompl-discovery-auto")?.checked !== false
+}
+
+async function ensureSeedOptions() {
+  if (seedOptionsCache) return seedOptionsCache
+  try {
+    const response = await fetch("/api/discovery/seed-options")
+    if (!response.ok) throw new Error("failed")
+    seedOptionsCache = await response.json()
+  } catch (_error) {
+    seedOptionsCache = { artists: [], tracks: [], source: "" }
+  }
+  return seedOptionsCache
+}
+
+let seedSelectedIndex = -1
+
+function seedSearchValue() {
+  return document.getElementById("custompl-seed-search")?.value || ""
+}
+
+function renderSelectedSeeds() {
+  const pills = document.getElementById("custompl-seed-pills")
+  const input = document.getElementById("custompl-seed-search")
+  if (!pills || !input) return
+  for (const p of pills.querySelectorAll(".tag-input-pill")) p.remove()
+  const mode = currentSeedMode()
+  if (mode === "artists") {
+    selectedSeedArtists.forEach((name, idx) => {
+      pills.insertBefore(
+        makeSeedPill(name, () => {
+          selectedSeedArtists.splice(idx, 1)
+          renderSelectedSeeds()
+          renderSeedDropdown(seedSearchValue())
+        }),
+        input,
+      )
+    })
+  } else {
+    selectedSeedTracks.forEach((t, idx) => {
+      pills.insertBefore(
+        makeSeedPill(`${t.artist} - ${t.track}`, () => {
+          selectedSeedTracks.splice(idx, 1)
+          renderSelectedSeeds()
+          renderSeedDropdown(seedSearchValue())
+        }),
+        input,
+      )
+    })
+  }
+}
+
+function makeSeedPill(label, onRemove) {
+  const pill = document.createElement("span")
+  pill.className = "tag-input-pill"
+  pill.textContent = label
+  const btn = document.createElement("button")
+  btn.type = "button"
+  btn.className = "tag-input-pill-remove"
+  btn.setAttribute("aria-label", _("Remove"))
+  btn.innerHTML =
+    '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>'
+  btn.addEventListener("click", e => {
+    e.stopPropagation()
+    onRemove()
+  })
+  pill.appendChild(btn)
+  return pill
+}
+
+function seedCandidates(filter) {
+  const mode = currentSeedMode()
+  const needle = (filter || "").trim().toLowerCase()
+  const options = seedOptionsCache || { artists: [], tracks: [] }
+  if (mode === "artists") {
+    const selected = new Set(selectedSeedArtists.map(a => a.toLowerCase()))
+    return (options.artists || [])
+      .filter(a => !selected.has(a.toLowerCase()) && (!needle || a.toLowerCase().includes(needle)))
+      .slice(0, 60)
+      .map(a => ({ label: a, add: () => selectedSeedArtists.push(a) }))
+  }
+  const selected = new Set(selectedSeedTracks.map(t => `${t.artist.toLowerCase()}|${t.track.toLowerCase()}`))
+  return (options.tracks || [])
+    .filter(t => {
+      const key = `${t.artist.toLowerCase()}|${t.title.toLowerCase()}`
+      const hay = `${t.artist} ${t.title}`.toLowerCase()
+      return !selected.has(key) && (!needle || hay.includes(needle))
+    })
+    .slice(0, 60)
+    .map(t => ({ label: `${t.artist} - ${t.title}`, add: () => selectedSeedTracks.push({ artist: t.artist, track: t.title }) }))
+}
+
+function closeSeedDropdown() {
+  const dropdown = document.getElementById("custompl-seed-dropdown")
+  if (!dropdown) return
+  dropdown.classList.remove("open")
+  dropdown.innerHTML = ""
+  seedSelectedIndex = -1
+}
+
+function renderSeedDropdown(filter) {
+  const dropdown = document.getElementById("custompl-seed-dropdown")
+  if (!dropdown) return
+  seedSelectedIndex = -1
+  const items = seedCandidates(filter)
+  dropdown.innerHTML = ""
+  if (items.length === 0) {
+    const hasHistory = seedOptionsCache?.artists?.length || seedOptionsCache?.tracks?.length
+    if (!hasHistory) {
+      const empty = document.createElement("div")
+      empty.className = "tag-input-option"
+      empty.textContent = _("No listening history available yet. Enable the local Last.fm database or run a sync to populate options.")
+      dropdown.appendChild(empty)
+      dropdown.classList.add("open")
+      return
+    }
+    closeSeedDropdown()
+    return
+  }
+  for (const item of items) {
+    const opt = document.createElement("div")
+    opt.className = "tag-input-option"
+    opt.textContent = item.label
+    opt.addEventListener("mousedown", e => {
+      e.preventDefault()
+      item.add()
+      const input = document.getElementById("custompl-seed-search")
+      if (input) input.value = ""
+      renderSelectedSeeds()
+      renderSeedDropdown("")
+      input?.focus()
+    })
+    dropdown.appendChild(opt)
+  }
+  dropdown.classList.add("open")
+}
+
+function onSeedKeydown(e) {
+  const dropdown = document.getElementById("custompl-seed-dropdown")
+  const input = document.getElementById("custompl-seed-search")
+  if (!dropdown || !input) return
+  const options = dropdown.querySelectorAll(".tag-input-option")
+  if (e.key === "ArrowDown") {
+    e.preventDefault()
+    seedSelectedIndex = Math.min(seedSelectedIndex + 1, options.length - 1)
+    updateSeedSelection(options, seedSelectedIndex)
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault()
+    seedSelectedIndex = Math.max(seedSelectedIndex - 1, 0)
+    updateSeedSelection(options, seedSelectedIndex)
+  } else if (e.key === "Enter") {
+    e.preventDefault()
+    if (seedSelectedIndex >= 0 && options[seedSelectedIndex]) {
+      options[seedSelectedIndex].dispatchEvent(new MouseEvent("mousedown"))
+    }
+  } else if (e.key === "Backspace" && !input.value) {
+    const mode = currentSeedMode()
+    const list = mode === "artists" ? selectedSeedArtists : selectedSeedTracks
+    if (list.length > 0) {
+      list.pop()
+      renderSelectedSeeds()
+      renderSeedDropdown(seedSearchValue())
+    }
+  } else if (e.key === "Escape") {
+    closeSeedDropdown()
+  }
+}
+
+function updateSeedSelection(items, index) {
+  for (const [i, item] of [...items].entries()) item.classList.toggle("selected", i === index)
+}
+
+async function refreshSeedPicker() {
+  await ensureSeedOptions()
+  renderSelectedSeeds()
+}
+
+function applyDiscoverySeedVisibility() {
+  const isDiscovery = document.getElementById("custompl-kind")?.value === "discovery"
+  const autoGroup = document.getElementById("custompl-discovery-auto-group")
+  const manualGroup = document.getElementById("custompl-discovery-manual-group")
+  const excludeGroup = document.getElementById("custompl-discovery-exclude-group")
+  if (autoGroup) autoGroup.style.display = isDiscovery ? "" : "none"
+  if (excludeGroup) excludeGroup.style.display = isDiscovery ? "" : "none"
+  const showManual = isDiscovery && !isSeedAuto()
+  if (manualGroup) manualGroup.style.display = showManual ? "" : "none"
+  if (showManual) refreshSeedPicker()
+}
+
 function applyKindVisibility(kind) {
   const isArtists = kind === "artists"
-  document.getElementById("custompl-tags-group").style.display = isArtists ? "none" : ""
-  document.getElementById("custompl-match-group").style.display = isArtists ? "none" : ""
+  const isDiscovery = kind === "discovery"
+  const isTags = kind === "tags"
+  document.getElementById("custompl-tags-group").style.display = isTags ? "" : "none"
+  document.getElementById("custompl-match-group").style.display = isTags ? "" : "none"
   document.getElementById("custompl-artists-group").style.display = isArtists ? "" : "none"
+  document.getElementById("custompl-discovery-group").style.display = isDiscovery ? "" : "none"
+  document.getElementById("custompl-backfill-group").style.display = isDiscovery ? "none" : ""
+  applyDiscoverySeedVisibility()
 }
 
 export function onCustomPlaylistKindChange() {
@@ -43,6 +246,11 @@ export function showCustomPlaylistModal(editIndex = -1) {
     setTagInputValue("custompl-tags", (pl.tags || []).join(", "))
     setTagInputValue("custompl-artists", (pl.artists || []).join(", "))
     document.getElementById("custompl-match").value = pl.match || "any"
+    document.getElementById("custompl-discovery-seed").value = pl.discovery_seed || "artists"
+    document.getElementById("custompl-discovery-auto").checked = pl.discovery_seed_auto !== false
+    document.getElementById("custompl-discovery-exclude").checked = pl.discovery_exclude_scrobbled !== false
+    selectedSeedArtists = [...(pl.discovery_seed_artists || [])]
+    selectedSeedTracks = (pl.discovery_seed_tracks || []).map(t => ({ artist: t.artist, track: t.track }))
     const isNoLimit = pl.limit === 0
     noLimitCheckbox.checked = isNoLimit
     limitInput.value = isNoLimit ? 50 : pl.limit || 50
@@ -60,6 +268,11 @@ export function showCustomPlaylistModal(editIndex = -1) {
     setTagInputValue("custompl-tags", "")
     setTagInputValue("custompl-artists", "")
     document.getElementById("custompl-match").value = "any"
+    document.getElementById("custompl-discovery-seed").value = "artists"
+    document.getElementById("custompl-discovery-auto").checked = true
+    document.getElementById("custompl-discovery-exclude").checked = true
+    selectedSeedArtists = []
+    selectedSeedTracks = []
     noLimitCheckbox.checked = false
     limitInput.value = "50"
     limitInput.disabled = false
@@ -70,6 +283,9 @@ export function showCustomPlaylistModal(editIndex = -1) {
   }
   applyKindVisibility(document.getElementById("custompl-kind").value)
   applyLimitVisibility(document.getElementById("custompl-no-limit").checked)
+  const seedSearch = document.getElementById("custompl-seed-search")
+  if (seedSearch) seedSearch.value = ""
+  closeSeedDropdown()
   showModal("customPlaylistModal")
 }
 
@@ -86,6 +302,9 @@ export async function saveCustomPlaylist() {
   const tagsRaw = getTagInputValue("custompl-tags").trim()
   const artistsRaw = getTagInputValue("custompl-artists").trim()
   const match = document.getElementById("custompl-match").value
+  const discoverySeed = document.getElementById("custompl-discovery-seed").value
+  const discoverySeedAuto = document.getElementById("custompl-discovery-auto").checked
+  const discoveryExcludeScrobbled = document.getElementById("custompl-discovery-exclude").checked
   const noLimit = document.getElementById("custompl-no-limit").checked
   const limit = noLimit ? 0 : parseInt(document.getElementById("custompl-limit").value, 10) || 50
   const backfill = document.getElementById("custompl-backfill").checked
@@ -132,14 +351,23 @@ export async function saveCustomPlaylist() {
         .filter(Boolean)
     : []
 
+  const isTags = kind === "tags"
+  const isArtists = kind === "artists"
+  const isDiscovery = kind === "discovery"
+
   const playlist = {
     name,
     kind,
     description,
     privacy,
-    tags,
-    artists,
-    match,
+    tags: isTags ? tags : [],
+    artists: isArtists ? artists : [],
+    match: isTags ? match : "any",
+    discovery_seed: isDiscovery ? discoverySeed : "artists",
+    discovery_seed_auto: isDiscovery ? discoverySeedAuto : true,
+    discovery_seed_artists: isDiscovery ? [...selectedSeedArtists] : [],
+    discovery_seed_tracks: isDiscovery ? selectedSeedTracks.map(t => ({ artist: t.artist, track: t.track })) : [],
+    discovery_exclude_scrobbled: isDiscovery ? discoveryExcludeScrobbled : true,
     limit,
     backfill,
     auto_sync: autoSync,
@@ -413,6 +641,24 @@ export function initCustomPlaylists() {
     applyLimitVisibility(e.target.checked)
   })
   document.getElementById("custompl-kind")?.addEventListener("change", () => onCustomPlaylistKindChange())
+  document.getElementById("custompl-discovery-auto")?.addEventListener("change", () => applyDiscoverySeedVisibility())
+  document.getElementById("custompl-discovery-seed")?.addEventListener("change", () => {
+    renderSelectedSeeds()
+    renderSeedDropdown(seedSearchValue())
+  })
+  const seedSearch = document.getElementById("custompl-seed-search")
+  if (seedSearch) {
+    seedSearch.addEventListener("input", e => renderSeedDropdown(e.target.value))
+    seedSearch.addEventListener("focus", () => renderSeedDropdown(seedSearch.value))
+    seedSearch.addEventListener("keydown", onSeedKeydown)
+  }
+  document.getElementById("custompl-seed-pills")?.addEventListener("click", () => {
+    document.getElementById("custompl-seed-search")?.focus()
+  })
+  document.addEventListener("mousedown", e => {
+    const wrapper = document.getElementById("custompl-seed-dropdown")?.parentElement
+    if (wrapper && !wrapper.contains(e.target)) closeSeedDropdown()
+  })
 }
 
 export function clearPreviewCache() {

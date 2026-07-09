@@ -60,6 +60,8 @@ const actionHandlers = {
   goToFilter: el => window.goToFilter(el.dataset.tab, el.dataset.filter),
   switchTab: el => window.switchTab(el.dataset.tab),
   togglePlaylistGraph: () => window.togglePlaylistGraph(),
+  togglePlaylistExport: () => window.togglePlaylistExport(),
+  toggleCustomPlaylistExport: el => window.toggleCustomPlaylistExport(el.dataset.index),
 
   showOverrideModal: el => {
     const { artist, title, tab, videoId } = el.dataset

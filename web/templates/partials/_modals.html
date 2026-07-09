@@ -372,8 +372,9 @@
         <select id="custompl-kind">
           <option value="tags">{{ _('Genre tags') }}</option>
           <option value="artists">{{ _('Artists') }}</option>
+          <option value="discovery">{{ _('Discovery') }}</option>
         </select>
-        <span class="form-hint">{{ _('Build from Last.fm genre tags or from specific artists') }}</span>
+        <span class="form-hint">{{ _('Genre tags and Artists filter your history; Discovery finds new songs you have never scrobbled') }}</span>
       </div>
       <div class="form-group form-group-row">
         <label for="custompl-description">{{ _('Description') }}</label>
@@ -400,6 +401,42 @@
         <input type="text" id="custompl-artists" placeholder="{{ _('Artist Name') }}">
         <span class="form-hint">{{ _('All found tracks by these artists will be included') }}</span>
       </div>
+      <div class="form-group form-group-row" id="custompl-discovery-group" style="display:none">
+        <label for="custompl-discovery-seed">{{ _('Discover from') }}</label>
+        <select id="custompl-discovery-seed">
+          <option value="artists">{{ _('Your top artists') }}</option>
+          <option value="tracks">{{ _('Your top tracks') }}</option>
+        </select>
+        <span
+          class="form-hint">{{ _('Seeds recommendations from what you listen to most, then fills with similar songs you have not scrobbled') }}</span>
+      </div>
+      <div class="form-group form-group-checkbox" id="custompl-discovery-auto-group" style="display:none">
+        <label for="custompl-discovery-auto">
+          <input type="checkbox" id="custompl-discovery-auto" checked>
+          <span>{{ _('Auto-choose seeds') }}</span>
+        </label>
+        <span class="form-hint">{{ _('On: seed from your most-played artists/tracks automatically. Off: pick the seeds yourself below.') }}</span>
+      </div>
+      <div class="form-group" id="custompl-discovery-manual-group" style="display:none">
+        <label for="custompl-seed-search">{{ _('Choose seeds') }}</label>
+        <div class="tag-input-wrapper">
+          <div class="tag-input-pills" id="custompl-seed-pills">
+            <input type="text" class="tag-input-field" id="custompl-seed-search" placeholder="{{ _('Search your artists and tracks...') }}"
+              autocomplete="off">
+          </div>
+          <div class="tag-input-dropdown" id="custompl-seed-dropdown"></div>
+        </div>
+        <span class="form-hint"
+          id="custompl-seed-hint">{{ _('Pick one or more seeds from your listening history. Recommendations are built from tracks similar to these.') }}</span>
+      </div>
+      <div class="form-group form-group-checkbox" id="custompl-discovery-exclude-group" style="display:none">
+        <label for="custompl-discovery-exclude">
+          <input type="checkbox" id="custompl-discovery-exclude" checked>
+          <span>{{ _('Exclude tracks I have already scrobbled') }}</span>
+        </label>
+        <span
+          class="form-hint">{{ _('On (recommended): only recommend songs you have never played. Off: allow songs from your listening history back into the playlist.') }}</span>
+      </div>
       <div class="form-group form-group-row" id="custompl-match-group">
         <label for="custompl-match">{{ _('Match Mode') }}</label>
         <select id="custompl-match">
@@ -419,7 +456,7 @@
         <label for="custompl-limit">{{ _('Track Limit') }}</label>
         <input type="number" id="custompl-limit" min="1" max="5000" value="50">
       </div>
-      <div class="form-group form-group-checkbox">
+      <div class="form-group form-group-checkbox" id="custompl-backfill-group">
         <label for="custompl-backfill">
           <input type="checkbox" id="custompl-backfill" checked>
           <span>{{ _('Backfill') }}</span>

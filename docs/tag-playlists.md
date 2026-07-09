@@ -1,9 +1,10 @@
 # Custom Playlists
 
-Create automatic YouTube Music playlists that fill themselves with matching tracks from your scrobble history. Each custom playlist is one of two **types**:
+Create automatic YouTube Music playlists that fill themselves with matching tracks from your scrobble history. Each custom playlist is one of three **types**:
 
 - **Tag playlists** - include tracks by Last.fm tags/genres. For example, a "Breakcore Mix" playlist that only includes tracks tagged `breakcore` or `drill and bass`, or a "Chill Electronic" playlist that requires both `electronic` and `ambient`.
 - **Artist playlists** - include every found track by one or more specific artists. For example, a "Radiohead & Aphex Twin" playlist that gathers all of those artists' tracks from your history.
+- **Discovery playlists** - surface tracks you have **never** scrobbled, seeded from what you listen to most. For example, a "Discover Weekly" playlist that recommends new songs similar to your top artists or top tracks. See [Discovery Playlists](#discovery-playlists) below.
 
 ??? example "Screenshot: Custom Playlists editor"
     ![Custom Playlists](screenshots/custom_playlists.png)
@@ -13,7 +14,7 @@ Create automatic YouTube Music playlists that fill themselves with matching trac
 
 ## How Tags Are Resolved
 
-Tag playlists use a cache-first approach to find each track's Last.fm tags (artist playlists skip this step entirely, since they match on artist name alone):
+Tag playlists use a cache-first approach to find each track's Last.fm tags (artist and discovery playlists skip this step entirely, since they don't match on tags):
 
 1. **Tag overrides** - check `config/tag_overrides.json` (user manual fixes). If the override mode is `"replace"`, the override tags are used directly and steps 2-3 are skipped.
 2. **Tag cache** - check `runtime/.tag_cache.json` (90-day TTL, configurable via `TAG_CACHE_TTL_DAYS`)
@@ -33,9 +34,90 @@ If backfilling is enabled and a playlist has not reached its target track count 
 
 ---
 
+## Discovery Playlists
+
+Tag and artist playlists are *backward-looking*: they filter tracks you have already scrobbled. **Discovery playlists** do the opposite - they recommend songs you have **never** scrobbled, turning the tool from an archivist into a curator.
+
+### How it works
+
+1. **Seed** - a set of seed artists or tracks is collected (whichever you pick via `discovery_seed`). By default seeds are chosen automatically from your **most-played** artists/tracks, but you can also pick the seeds yourself (see [Choosing your own seeds](#choosing-your-own-seeds)).
+2. **Expand** - each seed is expanded through Last.fm's recommendation graph:
+    - `discovery_seed: "artists"` &rarr; finds similar artists (`artist.getSimilar`), then pulls each one's most popular songs (`artist.getTopTracks`).
+    - `discovery_seed: "tracks"` &rarr; finds songs similar to your top tracks directly (`track.getSimilar`).
+3. **Filter** - unless the playlist opts out via `discovery_exclude_scrobbled: false`, any candidate you have **already scrobbled** is dropped (that's not discovery). Anything on the playlist's `blacklist` / `blacklist_artists` is always dropped. Which scrobbles count as "already heard" depends on your history source and the [rediscover window](#the-rediscover-window) - see below.
+4. **Rank** - remaining candidates are ordered by aggregated similarity score, then trimmed to `limit`.
+5. **Match & sync** - the surviving tracks flow through the exact same YouTube Music matching and sync engine as every other playlist.
+
+### What happens to a song once you've listened to it?
+
+Discovery playlists are self-rotating. The moment you play one of the recommended songs, it becomes a scrobble in your Last.fm history. On the **next** sync:
+
+1. That song now appears in your listening history, so it lands in the "already scrobbled" exclusion set.
+2. Being excluded, it is dropped from the candidate pool - it will **not** be re-added to the playlist.
+3. Its slot is filled by a fresh, still-unheard recommendation.
+
+Over repeated syncs the playlist naturally churns *away* from songs you've adopted and *toward* things you haven't heard yet. Songs you never played simply stay (as long as they remain top recommendations), while songs you liked and played "graduate" out and can show up in your normal tag/artist playlists.
+
+> The exclusion set is only as complete as your history source. With just the recent-scrobbles window, a song you played long ago (outside that window) can resurface. Turn on the local Last.fm database for full-history exclusion, then optionally use the [rediscover window](#the-rediscover-window) to deliberately let old favourites come back.
+
+### Excluding tracks you've already heard
+
+By default every discovery playlist drops candidates you've already scrobbled, so you only ever see new-to-you songs. You can turn this off **per playlist** with `discovery_exclude_scrobbled: false` (or the **Exclude tracks I have already scrobbled** toggle in the editor):
+
+- **On (default)** - only songs you've never played are recommended; the playlist self-rotates as described above.
+- **Off** - songs from your listening history are allowed back into the pool. Useful for a "more like my favourites" playlist that can include tracks you already love, rather than strictly undiscovered ones.
+
+When the exclusion is on, the [rediscover window](#the-rediscover-window) fine-tunes *how far back* counts as "already heard".
+
+### Full listening history (local DB)
+
+Like the main playlist, **all** custom playlists - including discovery - use your full lifetime scrobble history when the local Last.fm database is enabled (`USE_LOCAL_LASTFM_DB=true`). This affects seeds and exclusions:
+
+- **Auto seeds** are ranked by *lifetime* play counts instead of just the recent fetch window, so they reflect your all-time favourites.
+- **Exclusions** cover your *entire* scrobble history, so discovery playlists won't recommend anything you've ever played (unless the [rediscover window](#the-rediscover-window) lets it back in).
+
+When the local DB is off, custom playlists fall back to the recently fetched scrobble window (the same source the main playlist uses in recent-tracks mode).
+
+### The rediscover window
+
+`DISCOVERY_REDISCOVER_DAYS` (a global setting in the dashboard under **Settings &rarr; Playlists &rarr; Custom Playlists**, default `0`) lets old favourites resurface in discovery playlists that exclude already-heard tracks:
+
+- `0` (default) &rarr; **exclude your entire history**. Anything you've ever scrobbled is treated as "already heard" and will not be recommended.
+- `N > 0` &rarr; only tracks played within the **last N days** are treated as "already heard". Songs you last played more than `N` days ago become eligible to be rediscovered.
+
+It applies whether you're using the recently-fetched scrobble window or the full local Last.fm database - though it's most powerful with the local DB, since full history plus real last-played timestamps let it reach much further back. Example: `DISCOVERY_REDISCOVER_DAYS=365` resurfaces anything you haven't played in the past year. (Has no effect on playlists with `discovery_exclude_scrobbled: false`, which already keep everything.)
+
+### Choosing your own seeds
+
+By default, `discovery_seed_auto` is `true` and seeds come from your most-played artists/tracks. Set it to `false` to hand-pick the seeds instead:
+
+- In the **web dashboard**, turn off **Auto-choose seeds** in the discovery playlist editor and search/select seeds from your listening history.
+- In **`config/custom_playlists.json`**, set `discovery_seed_auto: false` and provide `discovery_seed_artists` (for `discovery_seed: "artists"`) or `discovery_seed_tracks` (for `discovery_seed: "tracks"`).
+
+This lets you build focused playlists like *"Discover from Radiohead"*, *"Discover from my favourite metal tracks"*, etc. - each pinned to seeds you chose. If manual mode is on but no seeds are provided, the playlist falls back to automatic seeds.
+
+The seed picker's options come from your local Last.fm database when enabled (ranked by plays), otherwise from your resolved search cache.
+
+### Which seed should I use?
+
+| `discovery_seed` | Best for | Character |
+|------------------|----------|-----------|
+| `"artists"` (default) | Broad exploration | Pulls popular songs from artists adjacent to your taste - a wider net across new-to-you acts |
+| `"tracks"` | Deep, song-level similarity | Recommends individual songs close to specific favorites - tends to stay closer to your existing sound |
+
+### Notes & limitations
+
+- Discovery playlists need only a `name` - no `tags` or `artists` are required.
+- **Backfill does not apply.** Candidates are generated with built-in headroom up front, so the scrobble-based backfill loop is skipped (the `backfill` field is ignored).
+- Recommendation quality depends on Last.fm's data for your seeds; very obscure seeds may return few similar results.
+- The "already scrobbled" exclusion is based on your recently fetched scrobbles unless the local Last.fm database is enabled (then it covers your full history). Use `DISCOVERY_REDISCOVER_DAYS` to intentionally let older plays resurface, or `discovery_exclude_scrobbled: false` to disable the exclusion entirely for a playlist.
+
+
+---
+
 ## Configuration
 
-**Docker**: Use the web dashboard to create and manage custom playlists. Pick the **Playlist Type** (genre tags or artists) in the editor. Sync can be triggered manually from the UI, or automatically after each scheduled main sync via `AUTO_TAG_SYNC_ENABLED` and `AUTO_TAG_SYNC_FREQUENCY` (see [Configuration](configuration.md)).
+**Docker**: Use the web dashboard to create and manage custom playlists. Pick the **Playlist Type** (genre tags, artists, or discovery) in the editor. Sync can be triggered manually from the UI, or automatically after each scheduled main sync via `AUTO_TAG_SYNC_ENABLED` and `AUTO_TAG_SYNC_FREQUENCY` (see [Configuration](configuration.md)).
 
 **CLI**: Edit `config/custom_playlists.json` directly:
 
@@ -74,6 +156,22 @@ cp config/custom_playlists.json.example config/custom_playlists.json
       "artists": ["radiohead", "aphex twin"],
       "limit": 50,
       "backfill": true
+    },
+    {
+      "name": "Discover Weekly (auto)",
+      "kind": "discovery",
+      "discovery_seed": "artists",
+      "limit": 50,
+      "privacy": "PRIVATE"
+    },
+    {
+      "name": "Discover from Favourite Artists",
+      "kind": "discovery",
+      "discovery_seed": "artists",
+      "discovery_seed_auto": false,
+      "discovery_seed_artists": ["radiohead", "boards of canada"],
+      "limit": 50,
+      "privacy": "PRIVATE"
     }
   ]
 }
@@ -82,13 +180,18 @@ cp config/custom_playlists.json.example config/custom_playlists.json
 | Field | Required | Description |
 |-------|----------|-------------|
 | `name` | yes | Playlist name on YouTube Music |
-| `kind` | no | `"tags"` (default) or `"artists"` |
+| `kind` | no | `"tags"` (default), `"artists"`, or `"discovery"` |
 | `description` | no | Optional playlist description (empty = auto-generated) |
 | `tags` | tag playlists | Last.fm tags to match against (required when `kind` is `"tags"`) |
 | `artists` | artist playlists | Lowercase artist names to include (required when `kind` is `"artists"`) |
+| `discovery_seed` | no | Discovery playlists only: `"artists"` (default) or `"tracks"` - see [Discovery Playlists](#discovery-playlists) |
+| `discovery_seed_auto` | no | Discovery playlists only: `true` (default) auto-seeds from your most-played artists/tracks; `false` uses the seeds you provide below |
+| `discovery_seed_artists` | no | Discovery playlists only (when `discovery_seed_auto` is `false` and `discovery_seed` is `"artists"`): list of artist names to seed from |
+| `discovery_seed_tracks` | no | Discovery playlists only (when `discovery_seed_auto` is `false` and `discovery_seed` is `"tracks"`): list of `{ "artist": "...", "track": "..." }` objects to seed from |
+| `discovery_exclude_scrobbled` | no | Discovery playlists only: `true` (default) recommends only songs you've never scrobbled; `false` lets tracks from your listening history back into the playlist. See [Excluding tracks you've already heard](#excluding-tracks-youve-already-heard) |
 | `match` | no | `"any"` (track has at least one tag, default) or `"all"` (track has every tag). Tag playlists only. `"any"` casts a wide net &rarr; **bigger** playlist; `"all"` is strict AND logic &rarr; **smaller, tightly-filtered** playlist (e.g. `["ambient", "electronic"]` with `"all"` keeps only tracks tagged *both*) |
 | `limit` | no | Target number of tracks (default: `50`) |
-| `backfill` | no | Fetch more scrobbles if filtering doesn't reach the limit (default: `true`) |
+| `backfill` | no | Fetch more scrobbles if filtering doesn't reach the limit (default: `true`). Ignored by discovery playlists |
 | `privacy` | no | Per-playlist visibility: `"PUBLIC"`, `"UNLISTED"`, or `"PRIVATE"` (omit/empty to inherit the global `CUSTOM_PLAYLISTS_PRIVACY` setting) |
 | `blacklist` | no | Per-playlist exclusions as `"artist\|title"` (lowercase) |
 | `blacklist_artists` | no | Per-playlist artist exclusions (lowercase artist names) |
@@ -102,6 +205,7 @@ cp config/custom_playlists.json.example config/custom_playlists.json
 | `TAG_MIN_COUNT` | `10` | Minimum Last.fm tag count threshold |
 | `TAG_SLEEP_BETWEEN` | `0.25` | Seconds between tag API calls |
 | `CUSTOM_PLAYLISTS_PRIVACY` | *(main setting)* | Default privacy for custom playlists (`PUBLIC` / `UNLISTED` / `PRIVATE`). Overridable per playlist with the `privacy` field above |
+| `DISCOVERY_REDISCOVER_DAYS` | `0` | Discovery playlists (that exclude already-heard tracks): only exclude tracks played within the last N days (`0` = exclude your entire history). Works with both recent scrobbles and `USE_LOCAL_LASTFM_DB`. Set it in the dashboard under **Settings &rarr; Playlists &rarr; Custom Playlists**. See [The rediscover window](#the-rediscover-window) |
 | `BACKFILL_PASSES` | `3` | Maximum backfill iterations |
 
 ---
@@ -147,7 +251,7 @@ cp config/tag_overrides.json.example config/tag_overrides.json
 
 ## Running Custom Sync
 
-Custom playlists (both tag- and artist-based) are synced separately from the main playlist. Use the dedicated entry point:
+Custom playlists (tag-, artist-, and discovery-based) are synced separately from the main playlist. Use the dedicated entry point:
 
 ```bash
 python run_tags.py  # or: lastfm-ytm-tags
@@ -172,4 +276,3 @@ Both routes reuse the same engine as a full custom sync - they simply restrict
 it to the chosen playlist names - so backfill, blacklists, and limits all behave
 identically. Auto-sync exclusions are ignored for these manual runs: a playlist
 marked **No Auto-sync** is still rebuilt when you sync it explicitly.
-

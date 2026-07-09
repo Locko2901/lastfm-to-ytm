@@ -393,3 +393,135 @@ def fetch_track_tags(
         log.debug("Using artist-level tags for %s - %s (%d tags)", artist, track, len(tags))
 
     return tags
+
+
+def _coerce_match(value: Any) -> float:
+    """Coerce a Last.fm ``match`` field (str/float) into a float, defaulting to 0.0."""
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return 0.0
+
+
+def fetch_similar_tracks(
+    api_key: str,
+    artist: str,
+    track: str,
+    limit: int = 50,
+    max_retries: int = 3,
+) -> list[dict[str, Any]]:
+    """Fetch tracks similar to a seed track via Last.fm ``track.getSimilar``.
+
+    Returns a list of ``{"artist", "track", "match"}`` dicts sorted by descending
+    match score. Used to build discovery playlists from songs the user has *not*
+    scrobbled yet.
+    """
+    params: dict[str, Any] = {
+        "method": "track.getSimilar",
+        "artist": artist,
+        "track": track,
+        "api_key": api_key,
+        "format": "json",
+        "autocorrect": 1,
+        "limit": max(1, limit),
+    }
+
+    data = _make_api_request(params, page=1, max_retries=max_retries)
+    if data is None or "error" in data:
+        return []
+
+    raw = data.get("similartracks", {}).get("track", [])
+    if isinstance(raw, dict):
+        raw = [raw]
+    if not isinstance(raw, list):
+        return []
+
+    results: list[dict[str, Any]] = []
+    for item in raw:
+        name = (item.get("name") or "").strip()
+        a = item.get("artist")
+        sim_artist = (a.get("name") if isinstance(a, dict) else a) or ""
+        sim_artist = sim_artist.strip()
+        if sim_artist and name:
+            results.append({"artist": sim_artist, "track": name, "match": _coerce_match(item.get("match"))})
+
+    return results
+
+
+def fetch_similar_artists(
+    api_key: str,
+    artist: str,
+    limit: int = 30,
+    max_retries: int = 3,
+) -> list[dict[str, Any]]:
+    """Fetch artists similar to a seed artist via Last.fm ``artist.getSimilar``.
+
+    Returns a list of ``{"artist", "match"}`` dicts sorted by descending match score.
+    """
+    params: dict[str, Any] = {
+        "method": "artist.getSimilar",
+        "artist": artist,
+        "api_key": api_key,
+        "format": "json",
+        "autocorrect": 1,
+        "limit": max(1, limit),
+    }
+
+    data = _make_api_request(params, page=1, max_retries=max_retries)
+    if data is None or "error" in data:
+        return []
+
+    raw = data.get("similarartists", {}).get("artist", [])
+    if isinstance(raw, dict):
+        raw = [raw]
+    if not isinstance(raw, list):
+        return []
+
+    results: list[dict[str, Any]] = []
+    for item in raw:
+        name = (item.get("name") or "").strip()
+        if name:
+            results.append({"artist": name, "match": _coerce_match(item.get("match"))})
+
+    return results
+
+
+def fetch_artist_top_tracks(
+    api_key: str,
+    artist: str,
+    limit: int = 10,
+    max_retries: int = 3,
+) -> list[dict[str, Any]]:
+    """Fetch an artist's most popular tracks via Last.fm ``artist.getTopTracks``.
+
+    Returns a list of ``{"artist", "track"}`` dicts ordered by popularity.
+    """
+    params: dict[str, Any] = {
+        "method": "artist.getTopTracks",
+        "artist": artist,
+        "api_key": api_key,
+        "format": "json",
+        "autocorrect": 1,
+        "limit": max(1, limit),
+    }
+
+    data = _make_api_request(params, page=1, max_retries=max_retries)
+    if data is None or "error" in data:
+        return []
+
+    raw = data.get("toptracks", {}).get("track", [])
+    if isinstance(raw, dict):
+        raw = [raw]
+    if not isinstance(raw, list):
+        return []
+
+    results: list[dict[str, Any]] = []
+    for item in raw:
+        name = (item.get("name") or "").strip()
+        a = item.get("artist")
+        top_artist = (a.get("name") if isinstance(a, dict) else a) or ""
+        top_artist = top_artist.strip()
+        if top_artist and name:
+            results.append({"artist": top_artist, "track": name})
+
+    return results
