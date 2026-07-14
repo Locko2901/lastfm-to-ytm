@@ -332,6 +332,7 @@ def discover_ytm_playlists() -> dict[str, Any]:
     custom_names = {c["name"] for c in load_custom_playlists_config()}
     pc = load_playlist_cache()
     tracked_ids = {str(e["id"]) for e in pc._cache.values() if isinstance(e, dict) and e.get("id")}
+    tracked_names = {name for name, e in pc._cache.items() if isinstance(e, dict) and e.get("id")}
 
     try:
         from ytmusicapi import YTMusic
@@ -342,7 +343,23 @@ def discover_ytm_playlists() -> dict[str, Any]:
         logger.warning("Failed to discover YTM playlists", exc_info=True)
         return {"error": "Failed to reach YouTube Music", "candidates": []}
 
-    return {"candidates": discover_playlists(library, settings, custom_names, tracked_ids)}
+    for pl in library:
+        title = str(pl.get("title") or "")
+        pid = pl.get("playlistId")
+        if not title or not isinstance(pid, str) or not pid:
+            continue
+        entry = pc._cache.get(title)
+        if isinstance(entry, dict) and entry.get("id") and str(entry["id"]) != pid:
+            old_id = str(entry["id"])
+            pc.track_id(title, pid)
+            history_record_action(
+                "playlist_heal",
+                title=title,
+                video_id=pid,
+                detail=f"reconciled ID {old_id} → {pid}",
+            )
+
+    return {"candidates": discover_playlists(library, settings, custom_names, tracked_ids, tracked_names)}
 
 
 def list_tracked_playlists() -> dict[str, Any]:

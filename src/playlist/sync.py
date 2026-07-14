@@ -581,7 +581,7 @@ def upsert_playlist(
         return existing_id
 
     log.info("Creating playlist '%s'...", name)
-    pl_id = create_playlist_with_items(ytm, name, desc, privacy, video_ids, cache=playlist_cache, role=role)
+    pl_id = create_playlist_with_items(ytm, name, desc, privacy, video_ids, cache=playlist_cache, role=role, max_retries=max_retries)
     log.info(
         "Created playlist '%s' with %d tracks: https://music.youtube.com/playlist?list=%s",
         name,
