@@ -48,9 +48,7 @@ def get_existing_playlist_by_name(
             if matches:
                 found_id = matches[0]
                 if found_id and cache:
-                    cached_template = cache.get_template(name)
-                    if cached_template:
-                        cache.set_template(name, found_id, cached_template)
+                    cache.track_id(name, found_id)
                 return found_id
     except Exception as e:
         log.warning("Failed to get library playlists: %s", e)
@@ -127,6 +125,37 @@ def add_items_fallback(ytm: YTMusic, pl_id: str, video_ids: list[str], chunk_siz
                     log.debug("Failed to add video %s: %s", vid, e2)
 
 
+def _resolve_canonical_playlist_id(ytm: YTMusic, playlist_id: str, max_retries: int = 3) -> str:
+    """Resolve the canonical library playlist ID for a freshly-created playlist.
+
+    ``create_playlist`` returns YTM's compact playlist ID form; ``get_playlist``
+    (like ``get_library_playlists``) exposes the canonical ID. Fetch the playlist
+    once - with the project's standard exponential backoff, since the API is
+    flaky - and read back its canonical ``id``. Falls back to the create-time ID
+    on any failure so a transient hiccup never blocks the sync.
+    """
+    from ..playlist.sync import _retry_with_backoff
+
+    try:
+        playlist = _retry_with_backoff(
+            ytm.get_playlist,
+            playlist_id,
+            limit=0,
+            max_retries=max_retries,
+            operation="get_playlist",
+        )
+    except Exception as e:
+        log.warning("Could not resolve canonical ID for playlist %s: %s", playlist_id, e)
+        return playlist_id
+
+    canonical = playlist.get("id") if isinstance(playlist, dict) else None
+    if isinstance(canonical, str) and canonical:
+        if canonical != playlist_id:
+            log.info("Resolved canonical playlist ID: %s -> %s", playlist_id, canonical)
+        return canonical
+    return playlist_id
+
+
 def create_playlist_with_items(
     ytm: YTMusic,
     name: str,
@@ -136,8 +165,16 @@ def create_playlist_with_items(
     cache: PlaylistCache | None = None,
     *,
     role: str | None = None,
+    max_retries: int = 3,
 ) -> str:
-    """Create a playlist and cache its template (ID + video IDs)."""
+    """Create a playlist and cache its template (ID + video IDs).
+
+    ``create_playlist`` returns YouTube Music's compact playlist ID form, which
+    differs from the canonical ID exposed by ``get_library_playlists`` (there is
+    no offline conversion between the two). Immediately after creating, the
+    canonical ID is resolved via ``get_playlist`` so the cache stores the
+    authoritative ID and every later operation references the playlist by it.
+    """
     try:
         pl_id = cast("str", ytm.create_playlist(name, desc, privacy_status=privacy, video_ids=video_ids))
     except TypeError:
@@ -150,6 +187,8 @@ def create_playlist_with_items(
         add_items_fallback(ytm, pl_id, video_ids)
 
     log.info("Created playlist '%s' with ID: %s", name, pl_id)
+
+    pl_id = _resolve_canonical_playlist_id(ytm, pl_id, max_retries=max_retries)
 
     if cache:
         cache.set_template(name, pl_id, video_ids, role=role)

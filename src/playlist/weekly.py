@@ -245,6 +245,7 @@ def update_weekly_playlist(
                 weekly_desc,
                 weekly_privacy,
                 valid_video_ids,
+                max_retries=int(getattr(settings, "api_max_retries", 3)),
             )
             log.info("Weekly playlist created and populated")
         except Exception as e:

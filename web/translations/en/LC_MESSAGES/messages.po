@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-09 21:08+0200\n"
+"POT-Creation-Date: 2026-07-14 16:45+0200\n"
 "PO-Revision-Date: 2026-03-13 15:44+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -902,16 +902,20 @@ msgstr ""
 msgid "YouTube substitution"
 msgstr ""
 
-#: web/static/js/modules/history.js:1192
+#: web/static/js/modules/history.js:1140
+msgid "Playlist ID healed"
+msgstr ""
+
+#: web/static/js/modules/history.js:1193
 msgid "Previous"
 msgstr ""
 
-#: web/static/js/modules/history.js:1193 web/static/js/modules/setup.js:69
+#: web/static/js/modules/history.js:1194 web/static/js/modules/setup.js:69
 #: web/static/js/modules/setup.js:120 web/templates/partials/_modals.html:90
 msgid "Next"
 msgstr ""
 
-#: web/static/js/modules/history.js:1198
+#: web/static/js/modules/history.js:1199
 msgid "total"
 msgstr ""
 

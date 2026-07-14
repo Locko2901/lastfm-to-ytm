@@ -52,6 +52,20 @@ def test_discover_filters_and_marks_tracked():
     assert next(c for c in out if c["id"] == "PL1")["tracked"] is True
 
 
+def test_discover_marks_tracked_by_name_when_id_differs():
+    library = [
+        {"title": "Last.fm Recents week of 2026-06-22", "playlistId": "PL_library_long"},
+    ]
+    out = discover_playlists(
+        library,
+        _settings(),
+        set(),
+        tracked_ids={"PL_stale_short"},
+        tracked_names={"Last.fm Recents week of 2026-06-22"},
+    )
+    assert out[0]["tracked"] is True
+
+
 def test_track_id_writes_id_only(tmp_path):
     pc = PlaylistCache(str(tmp_path / ".pc.json"))
     pc.track_id("Recents", "PLX")

@@ -1137,6 +1137,7 @@ function actionLabel(type) {
     custom_playlist_sync: _("Custom playlist synced"),
     custom_playlist_error: _("Custom playlist failed"),
     substitution: _("YouTube substitution"),
+    playlist_heal: _("Playlist ID healed"),
   }
   return labels[type] || type.replace(/_/g, " ")
 }

@@ -138,6 +138,7 @@ def _sync_or_create_playlist(
                 valid_video_ids,
                 cache=ctx.playlist_cache,
                 role="main",
+                max_retries=settings.api_max_retries,
             )
             log.info("Created playlist with %d tracks", len(valid_video_ids))
         except Exception as e:
