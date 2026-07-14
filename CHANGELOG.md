@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.5.1](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.5.0...v2.5.1) (2026-07-14)
+
+
+### Bug Fixes
+
+* track freshly-created playlists by canonical ID ([70d7d24](https://github.com/Locko2901/lastfm-to-ytm/commit/70d7d24bc2c527a499cade7325a30b4e92908faa))
+
+
+### Build
+
+* **deps-dev:** bump @biomejs/biome in the npm-dev group ([#37](https://github.com/Locko2901/lastfm-to-ytm/issues/37)) ([705a05a](https://github.com/Locko2901/lastfm-to-ytm/commit/705a05a4f038afd5b5274fd25399e4413d61e568))
+* **deps-dev:** bump the python-dev group with 3 updates ([#38](https://github.com/Locko2901/lastfm-to-ytm/issues/38)) ([2ade4c6](https://github.com/Locko2901/lastfm-to-ytm/commit/2ade4c634941db26ffa4c1fa3d1e90370195cb18))
+
 ## [2.5.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.4.0...v2.5.0) (2026-07-09)
 
 
