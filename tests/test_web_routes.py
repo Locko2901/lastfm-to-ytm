@@ -559,6 +559,40 @@ def test_custom_playlists_post_saves_exclude_scrobbled(client, web_paths):
     assert saved[1]["discovery_exclude_scrobbled"] is False
 
 
+def test_custom_playlists_post_saves_filter(client, web_paths):
+    payload = {
+        "playlists": [
+            {"name": "Top 30", "kind": "filter", "filter_template": "top_tracks_30d", "limit": 40},
+            {
+                "name": "Summer",
+                "kind": "filter",
+                "filter_template": "custom",
+                "filters": {
+                    "min_plays": 3,
+                    "max_plays": -2,
+                    "months": [8, 6, 6, 13],
+                    "sort": "stale",
+                },
+            },
+            {"name": "BadTemplate", "kind": "filter", "filter_template": "bogus"},
+        ]
+    }
+    resp = client.post("/api/custom-playlists", json=payload)
+    assert resp.status_code == 200
+    assert resp.get_json()["count"] == 3
+
+    saved = json.loads(web_paths["CUSTOM_PLAYLISTS_FILE"].read_text())["playlists"]
+    assert saved[0]["kind"] == "filter"
+    assert saved[0]["filter_template"] == "top_tracks_30d"
+    # Custom filters are validated/normalised.
+    assert saved[1]["filters"]["min_plays"] == 3
+    assert saved[1]["filters"]["max_plays"] == 0  # negative coerced
+    assert saved[1]["filters"]["months"] == [6, 8]  # deduped, sorted, out-of-range dropped
+    assert saved[1]["filters"]["sort"] == "stale"
+    # Invalid template falls back to custom.
+    assert saved[2]["filter_template"] == "custom"
+
+
 def test_discovery_seed_options_endpoint(client):
     resp = client.get("/api/discovery/seed-options")
     assert resp.status_code == 200

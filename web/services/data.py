@@ -908,6 +908,18 @@ def load_custom_playlists_config() -> list[dict[str, Any]]:
             "discovery_seed_artists": list(c.discovery_seed_artists),
             "discovery_seed_tracks": [{"artist": a, "track": t} for a, t in c.discovery_seed_tracks],
             "discovery_exclude_scrobbled": c.discovery_exclude_scrobbled,
+            "filter_template": c.filter_template,
+            "filters": {
+                "min_plays": c.filters.min_plays,
+                "max_plays": c.filters.max_plays,
+                "played_within_days": c.filters.played_within_days,
+                "not_played_within_days": c.filters.not_played_within_days,
+                "first_played_within_days": c.filters.first_played_within_days,
+                "first_played_before_days": c.filters.first_played_before_days,
+                "months": list(c.filters.months),
+                "per_artist_limit": c.filters.per_artist_limit,
+                "sort": c.filters.sort,
+            },
             "track_count": len(cache_data.get(c.name, {}).get("video_ids", [])),
             "playlist_id": cache_data.get(c.name, {}).get("id"),
         }

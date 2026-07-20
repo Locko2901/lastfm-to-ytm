@@ -702,14 +702,14 @@ async function loadLocalLastfmStatus() {
     if (!r.ok) return
     const data = await r.json()
     if (!data.enabled) {
-      el.textContent = _("Not yet synced \u2014 run a sync to build the local history database.")
+      el.textContent = _("Not yet synced - run a sync to build the local history database.")
       return
     }
     const kb = data.db_size_bytes != null ? (data.db_size_bytes / 1024).toFixed(1) : "?"
     const tracks = data.total_tracks ?? 0
     const plays = data.total_plays ?? 0
     if (tracks === 0) {
-      el.textContent = _("Not yet synced \u2014 run a sync to build the local history database.")
+      el.textContent = _("Not yet synced - run a sync to build the local history database.")
     } else {
       el.textContent = `${tracks} ${_("unique tracks")} \u00b7 ${plays} ${_("plays")} \u00b7 ${kb} KB`
     }

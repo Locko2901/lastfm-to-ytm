@@ -373,8 +373,10 @@
           <option value="tags">{{ _('Genre tags') }}</option>
           <option value="artists">{{ _('Artists') }}</option>
           <option value="discovery">{{ _('Discovery') }}</option>
+          <option value="filter">{{ _('Template / Filter') }}</option>
         </select>
-        <span class="form-hint">{{ _('Genre tags and Artists filter your history; Discovery finds new songs you have never scrobbled') }}</span>
+        <span
+          class="form-hint">{{ _('Genre tags and Artists filter your history; Discovery finds new songs you have never scrobbled; Template builds smart playlists from listening patterns') }}</span>
       </div>
       <div class="form-group form-group-row">
         <label for="custompl-description">{{ _('Description') }}</label>
@@ -436,6 +438,74 @@
         </label>
         <span
           class="form-hint">{{ _('On (recommended): only recommend songs you have never played. Off: allow songs from your listening history back into the playlist.') }}</span>
+      </div>
+      <div class="form-group form-group-row" id="custompl-filter-group" style="display:none">
+        <label for="custompl-filter-template">{{ _('Template') }}</label>
+        <select id="custompl-filter-template">
+          <option value="top_tracks_7d">{{ _('Top tracks - last 7 days') }}</option>
+          <option value="top_tracks_30d">{{ _('Top tracks - last 30 days') }}</option>
+          <option value="top_tracks_90d">{{ _('Top tracks - last 90 days') }}</option>
+          <option value="forgotten_favorites">{{ _('Forgotten favorites') }}</option>
+          <option value="not_played_6mo">{{ _('Not played in 6 months') }}</option>
+          <option value="active_artists">{{ _('Recently active artists') }}</option>
+          <option value="rediscovered_artists">{{ _('Recently rediscovered artists') }}</option>
+          <option value="new_to_me">{{ _('New to me') }}</option>
+          <option value="seasonal">{{ _('Seasonal (this time of year)') }}</option>
+          <option value="custom">{{ _('Custom filters (advanced)') }}</option>
+        </select>
+        <span class="form-hint">{{ _('Time-based templates work best with the local Last.fm database enabled') }}</span>
+      </div>
+      <div id="custompl-filter-custom-group" style="display:none">
+        <div class="form-group form-group-row">
+          <label for="custompl-filter-sort">{{ _('Sort by') }}</label>
+          <select id="custompl-filter-sort">
+            <option value="plays">{{ _('Most played') }}</option>
+            <option value="recent">{{ _('Most recently played') }}</option>
+            <option value="stale">{{ _('Least recently played') }}</option>
+            <option value="first_seen">{{ _('Newest discoveries first') }}</option>
+            <option value="random">{{ _('Random') }}</option>
+          </select>
+        </div>
+        <div class="form-group form-group-row">
+          <label for="custompl-filter-min-plays">{{ _('Minimum plays') }}</label>
+          <input type="number" id="custompl-filter-min-plays" min="0" max="100000" value="0">
+          <span class="form-hint">{{ _('0 = no minimum') }}</span>
+        </div>
+        <div class="form-group form-group-row">
+          <label for="custompl-filter-max-plays">{{ _('Maximum plays') }}</label>
+          <input type="number" id="custompl-filter-max-plays" min="0" max="100000" value="0">
+          <span class="form-hint">{{ _('0 = no maximum') }}</span>
+        </div>
+        <div class="form-group form-group-row">
+          <label for="custompl-filter-played-within">{{ _('Played within (days)') }}</label>
+          <input type="number" id="custompl-filter-played-within" min="0" max="36500" value="0">
+          <span class="form-hint">{{ _('Only tracks last played within N days. 0 = ignore') }}</span>
+        </div>
+        <div class="form-group form-group-row">
+          <label for="custompl-filter-not-played-within">{{ _('Not played within (days)') }}</label>
+          <input type="number" id="custompl-filter-not-played-within" min="0" max="36500" value="0">
+          <span class="form-hint">{{ _('Only tracks NOT played for at least N days. 0 = ignore') }}</span>
+        </div>
+        <div class="form-group form-group-row">
+          <label for="custompl-filter-first-within">{{ _('First heard within (days)') }}</label>
+          <input type="number" id="custompl-filter-first-within" min="0" max="36500" value="0">
+          <span class="form-hint">{{ _('Only tracks first scrobbled within N days. 0 = ignore') }}</span>
+        </div>
+        <div class="form-group form-group-row">
+          <label for="custompl-filter-first-before">{{ _('First heard before (days)') }}</label>
+          <input type="number" id="custompl-filter-first-before" min="0" max="36500" value="0">
+          <span class="form-hint">{{ _('Only tracks first scrobbled more than N days ago. 0 = ignore') }}</span>
+        </div>
+        <div class="form-group form-group-row">
+          <label for="custompl-filter-per-artist">{{ _('Max per artist') }}</label>
+          <input type="number" id="custompl-filter-per-artist" min="0" max="1000" value="0">
+          <span class="form-hint">{{ _('Cap tracks per artist. 0 = no cap') }}</span>
+        </div>
+        <div class="form-group form-group-row">
+          <label for="custompl-filter-months">{{ _('Months') }}</label>
+          <input type="text" id="custompl-filter-months" placeholder="{{ _('e.g. 12, 1, 2') }}">
+          <span class="form-hint">{{ _('Comma-separated month numbers (1-12) a track was last played in. Empty = any') }}</span>
+        </div>
       </div>
       <div class="form-group form-group-row" id="custompl-match-group">
         <label for="custompl-match">{{ _('Match Mode') }}</label>

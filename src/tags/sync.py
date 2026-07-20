@@ -19,6 +19,7 @@ from ..ytm import get_existing_playlist_by_name
 from .discovery import generate_discovery_candidates
 from .filter import filter_tracks_by_artists, filter_tracks_by_tags
 from .resolver import resolve_tags_for_tracks
+from .templates import generate_template_candidates
 
 if TYPE_CHECKING:
     from ..config import CustomPlaylistConfig, Settings
@@ -47,6 +48,18 @@ def _custom_playlist_role(config: CustomPlaylistConfig) -> str:
         "discovery_seed_auto": config.discovery_seed_auto,
         "discovery_seed_artists": sorted(config.discovery_seed_artists),
         "discovery_seed_tracks": sorted(f"{a}\u0000{t}" for a, t in config.discovery_seed_tracks),
+        "filter_template": config.filter_template,
+        "filters": {
+            "min_plays": config.filters.min_plays,
+            "max_plays": config.filters.max_plays,
+            "played_within_days": config.filters.played_within_days,
+            "not_played_within_days": config.filters.not_played_within_days,
+            "first_played_within_days": config.filters.first_played_within_days,
+            "first_played_before_days": config.filters.first_played_before_days,
+            "months": sorted(config.filters.months),
+            "per_artist_limit": config.filters.per_artist_limit,
+            "sort": config.filters.sort,
+        },
     }
     digest = hashlib.sha1(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:16]
     return f"custom:{digest}"
@@ -133,6 +146,13 @@ def sync_custom_playlists(
                 seed_source,
                 limit_label,
             )
+        elif config.kind == "filter":
+            log.info(
+                "--- Custom playlist: '%s' (filter, template=%s, limit=%s) ---",
+                config.name,
+                config.filter_template,
+                limit_label,
+            )
         else:
             log.info("--- Custom playlist: '%s' (tags=%s, match=%s, limit=%s) ---", config.name, list(config.tags), config.match, limit_label)
 
@@ -141,6 +161,8 @@ def sync_custom_playlists(
 
         if config.kind == "discovery":
             matching_tracks: list[Scrobble | WeightedTrack] = list(generate_discovery_candidates(config, recents, settings))
+        elif config.kind == "filter":
+            matching_tracks = list(generate_template_candidates(config, recents, settings))
         else:
             matching_tracks = _filter_for_config(config, recents, tag_map, wanted_tags, wanted_artists, settings)
         candidate_keys.update((t.artist.lower(), t.track.lower()) for t in matching_tracks)
@@ -173,7 +195,7 @@ def sync_custom_playlists(
 
         all_recents = list(recents)
         current_pass = 0
-        max_backfill = 0 if config.kind == "discovery" else (settings.backfill_passes if config.backfill else 0)
+        max_backfill = 0 if config.kind in ("discovery", "filter") else (settings.backfill_passes if config.backfill else 0)
 
         effective_limit = config.limit if config.limit > 0 else float("inf")
 
@@ -262,6 +284,11 @@ def sync_custom_playlists(
                     "No discovery candidates for '%s' - Last.fm found nothing similar to the seeds, skipping",
                     config.name,
                 )
+            elif config.kind == "filter":
+                log.warning(
+                    "No tracks matched the filter for '%s' - try widening the criteria or enabling the local Last.fm DB, skipping",
+                    config.name,
+                )
             else:
                 log.warning("No tracks matched for '%s', skipping", config.name)
             continue
@@ -308,6 +335,9 @@ def sync_custom_playlists(
             default_desc = f"Auto-generated artist playlist ({', '.join(config.artists)})"
         elif config.kind == "discovery":
             default_desc = f"Auto-generated discovery playlist (similar to your top {config.discovery_seed})"
+        elif config.kind == "filter":
+            template_label = config.filter_template.replace("_", " ") if config.filter_template != "custom" else "custom filters"
+            default_desc = f"Auto-generated filter playlist ({template_label})"
         else:
             default_desc = f"Auto-generated tag playlist ({', '.join(config.tags)})"
         desc = config.description or default_desc

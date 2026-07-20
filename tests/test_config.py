@@ -601,6 +601,93 @@ def test_load_custom_playlists_parses_manual_discovery_seeds(tmp_path):
     assert tracks_cfg.discovery_seed_tracks == (("Radiohead", "Idioteque"),)
 
 
+def test_load_custom_playlists_parses_filter_playlist(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps(
+            {
+                "playlists": [
+                    {
+                        "name": "Top 30d",
+                        "kind": "filter",
+                        "filter_template": "top_tracks_30d",
+                        "limit": 40,
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    cfg = load_custom_playlists(str(path))[0]
+    assert cfg.kind == "filter"
+    assert cfg.filter_template == "top_tracks_30d"
+    assert cfg.tags == ()
+    assert cfg.artists == ()
+    assert cfg.limit == 40
+
+
+def test_load_custom_playlists_filter_needs_only_a_name(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps({"playlists": [{"name": "Smart", "kind": "filter"}]}),
+        encoding="utf-8",
+    )
+    cfg = load_custom_playlists(str(path))[0]
+    assert cfg.kind == "filter"
+    assert cfg.filter_template == "custom"
+
+
+def test_load_custom_playlists_invalid_filter_template_defaults_to_custom(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps({"playlists": [{"name": "Smart", "kind": "filter", "filter_template": "bogus"}]}),
+        encoding="utf-8",
+    )
+    assert load_custom_playlists(str(path))[0].filter_template == "custom"
+
+
+def test_load_custom_playlists_parses_custom_filters(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps(
+            {
+                "playlists": [
+                    {
+                        "name": "Summer",
+                        "kind": "filter",
+                        "filter_template": "custom",
+                        "filters": {
+                            "min_plays": 3,
+                            "max_plays": -1,
+                            "not_played_within_days": 90,
+                            "months": [8, 6, 6, 13, 0, 7],
+                            "per_artist_limit": 2,
+                            "sort": "stale",
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    cfg = load_custom_playlists(str(path))[0]
+    assert cfg.filters.min_plays == 3
+    assert cfg.filters.max_plays == 0  # negative coerced to 0
+    assert cfg.filters.not_played_within_days == 90
+    assert cfg.filters.months == (6, 7, 8)  # deduped, sorted, out-of-range dropped
+    assert cfg.filters.per_artist_limit == 2
+    assert cfg.filters.sort == "stale"
+
+
+def test_load_custom_playlists_invalid_filter_sort_defaults_to_plays(tmp_path):
+    path = tmp_path / "custom.json"
+    path.write_text(
+        json.dumps({"playlists": [{"name": "S", "kind": "filter", "filters": {"sort": "bogus"}}]}),
+        encoding="utf-8",
+    )
+    assert load_custom_playlists(str(path))[0].filters.sort == "plays"
+
+
 def test_from_env_discovery_rediscover_days_parsed(clean_env):
     clean_env.setenv("DISCOVERY_REDISCOVER_DAYS", "365")
     assert Settings.from_env().discovery_rediscover_days == 365
