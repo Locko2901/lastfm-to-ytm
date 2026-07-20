@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-20 11:42+0200\n"
+"POT-Creation-Date: 2026-07-20 13:43+0200\n"
 "PO-Revision-Date: 2026-03-13 15:44+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -30,8 +30,8 @@ msgstr ""
 msgid "At least one tag is required."
 msgstr ""
 
-#: web/routes/actions.py:251 web/routes/api.py:196 web/routes/api.py:267
-#: web/routes/api.py:1034
+#: web/routes/actions.py:251 web/routes/api.py:227 web/routes/api.py:298
+#: web/routes/api.py:1065
 msgid "No data provided"
 msgstr ""
 
@@ -40,140 +40,140 @@ msgstr ""
 msgid "Imported"
 msgstr ""
 
-#: web/routes/api.py:176
+#: web/routes/api.py:207
 msgid ".env already exists"
 msgstr ""
 
-#: web/routes/api.py:179 web/routes/api.py:351
+#: web/routes/api.py:210 web/routes/api.py:382
 msgid ".env.example not found"
 msgstr ""
 
-#: web/routes/api.py:188
+#: web/routes/api.py:219
 msgid "Failed to create configuration file"
 msgstr ""
 
-#: web/routes/api.py:202
+#: web/routes/api.py:233
 msgid "Username and API key are required"
 msgstr ""
 
-#: web/routes/api.py:214
+#: web/routes/api.py:245
 msgid "Failed to save credentials"
 msgstr ""
 
-#: web/routes/api.py:293 web/routes/api.py:1050
+#: web/routes/api.py:324 web/routes/api.py:1081
 #, python-format
 msgid "Invalid cron expression: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:302 web/routes/api.py:1058
+#: web/routes/api.py:333 web/routes/api.py:1089
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr ""
 
-#: web/routes/api.py:324 web/static/js/modules/settings.js:158
+#: web/routes/api.py:355 web/static/js/modules/settings.js:158
 #: web/static/js/modules/settings.js:195
 msgid "Failed to save settings"
 msgstr ""
 
-#: web/routes/api.py:354 web/static/js/modules/settings.js:325
+#: web/routes/api.py:385 web/static/js/modules/settings.js:325
 #: web/static/js/modules/settings.js:336
 msgid "Failed to import settings"
 msgstr ""
 
-#: web/routes/api.py:363 web/static/js/modules/settings.js:344
+#: web/routes/api.py:394 web/static/js/modules/settings.js:344
 #: web/static/js/modules/settings.js:349
 msgid "Could not download .env.example"
 msgstr ""
 
-#: web/routes/api.py:373
+#: web/routes/api.py:404
 msgid "No webhook URL provided"
 msgstr ""
 
-#: web/routes/api.py:388
+#: web/routes/api.py:419
 msgid "Webhook request failed. Check the URL and try again."
 msgstr ""
 
-#: web/routes/api.py:466
+#: web/routes/api.py:497
 msgid "Unknown panel"
 msgstr ""
 
-#: web/routes/api.py:523
+#: web/routes/api.py:554
 msgid "Invalid data: 'playlists' array required"
 msgstr ""
 
-#: web/routes/api.py:527
+#: web/routes/api.py:558
 msgid "'playlists' must be an array"
 msgstr ""
 
-#: web/routes/api.py:625
+#: web/routes/api.py:656
 msgid "Failed to save custom playlists"
 msgstr ""
 
-#: web/routes/api.py:768
+#: web/routes/api.py:799
 msgid "Artist and title are required"
 msgstr ""
 
-#: web/routes/api.py:856
+#: web/routes/api.py:887
 msgid "Last.fm credentials not configured"
 msgstr ""
 
-#: web/routes/api.py:924
+#: web/routes/api.py:955
 msgid "Failed to fetch from Last.fm"
 msgstr ""
 
-#: web/routes/api.py:927
+#: web/routes/api.py:958
 msgid "Internal error"
 msgstr ""
 
-#: web/routes/api.py:1060
+#: web/routes/api.py:1091
 msgid "Invalid start time format. Use HH:MM."
 msgstr ""
 
-#: web/routes/api.py:1085
+#: web/routes/api.py:1116
 msgid "Failed to configure scheduler. APScheduler may not be installed."
 msgstr ""
 
-#: web/routes/api.py:1088
+#: web/routes/api.py:1119
 #, python-format
 msgid "Invalid value: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:1091
+#: web/routes/api.py:1122
 msgid "Failed to configure scheduler"
 msgstr ""
 
-#: web/routes/api.py:1108
+#: web/routes/api.py:1139
 msgid "Failed to save theme overrides"
 msgstr ""
 
-#: web/routes/api.py:1117 web/routes/api.py:1146 web/routes/api.py:1169
+#: web/routes/api.py:1148 web/routes/api.py:1177 web/routes/api.py:1200
 msgid "Password is required"
 msgstr ""
 
-#: web/routes/api.py:1121
+#: web/routes/api.py:1152
 msgid "Password must be at least 4 characters"
 msgstr ""
 
-#: web/routes/api.py:1136 web/static/js/modules/modals.js:592
+#: web/routes/api.py:1167 web/static/js/modules/modals.js:592
 #: web/static/js/modules/modals.js:603 web/static/js/modules/teleporter.js:91
 #: web/static/js/modules/teleporter.js:104
 msgid "Export failed"
 msgstr ""
 
-#: web/routes/api.py:1148 web/routes/api.py:1171
+#: web/routes/api.py:1179 web/routes/api.py:1202
 msgid "No file provided"
 msgstr ""
 
-#: web/routes/api.py:1156 web/routes/api.py:1179
+#: web/routes/api.py:1187 web/routes/api.py:1210
 msgid "Could not read file - check your password and try again"
 msgstr ""
 
-#: web/routes/api.py:1159 web/static/js/modules/sync.js:105
+#: web/routes/api.py:1190 web/static/js/modules/sync.js:105
 #: web/static/js/modules/teleporter.js:193
 #: web/static/js/modules/teleporter.js:205
 msgid "Preview failed"
 msgstr ""
 
-#: web/routes/api.py:1182 web/static/js/modules/history.js:1074
+#: web/routes/api.py:1213 web/static/js/modules/history.js:1074
 #: web/static/js/modules/history.js:1083 web/static/js/modules/modals.js:671
 #: web/static/js/modules/modals.js:690 web/static/js/modules/settings.js:825
 #: web/static/js/modules/settings.js:834
@@ -182,51 +182,51 @@ msgstr ""
 msgid "Import failed"
 msgstr ""
 
-#: web/routes/api.py:1213 web/routes/api.py:1236 web/routes/api.py:1256
-#: web/routes/api.py:1270 web/routes/api.py:1294 web/routes/api.py:1397
-#: web/routes/api.py:1420 web/routes/api.py:1430 web/routes/api.py:1457
-#: web/routes/api.py:1477 web/routes/api.py:1505 web/routes/api.py:1519
+#: web/routes/api.py:1244 web/routes/api.py:1267 web/routes/api.py:1287
+#: web/routes/api.py:1301 web/routes/api.py:1325 web/routes/api.py:1428
+#: web/routes/api.py:1451 web/routes/api.py:1461 web/routes/api.py:1488
+#: web/routes/api.py:1508 web/routes/api.py:1536 web/routes/api.py:1550
 msgid "History database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1260
+#: web/routes/api.py:1291
 msgid "Sync record not found"
 msgstr ""
 
-#: web/routes/api.py:1338 web/routes/api.py:1349 web/routes/api.py:1369
+#: web/routes/api.py:1369 web/routes/api.py:1380 web/routes/api.py:1400
 msgid "Local Last.fm database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1373 web/routes/api.py:1481
+#: web/routes/api.py:1404 web/routes/api.py:1512
 msgid "No file uploaded"
 msgstr ""
 
-#: web/routes/api.py:1376 web/routes/api.py:1484
+#: web/routes/api.py:1407 web/routes/api.py:1515
 msgid "Invalid import mode"
 msgstr ""
 
-#: web/routes/api.py:1381 web/routes/api.py:1489
+#: web/routes/api.py:1412 web/routes/api.py:1520
 #, python-format
 msgid "Invalid JSON file: %(err)s"
 msgstr ""
 
-#: web/routes/api.py:1387 web/routes/api.py:1495
+#: web/routes/api.py:1418 web/routes/api.py:1526
 msgid "Invalid import file"
 msgstr ""
 
-#: web/routes/api.py:1596
+#: web/routes/api.py:1627
 msgid "Unsupported export format"
 msgstr ""
 
-#: web/routes/api.py:1612
+#: web/routes/api.py:1643
 msgid "name is required"
 msgstr ""
 
-#: web/routes/api.py:1615 web/routes/api.py:1629
+#: web/routes/api.py:1646 web/routes/api.py:1660
 msgid "Playlist has no cached tracks to export"
 msgstr ""
 
-#: web/routes/api.py:1625
+#: web/routes/api.py:1656
 msgid "Invalid playlist index"
 msgstr ""
 

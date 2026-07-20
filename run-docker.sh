@@ -374,7 +374,7 @@ fi
 echo -e "${YELLOW}→ Waiting for service to be ready...${NC}"
 READY=false
 for ((i=1; i<=HEALTH_TIMEOUT; i++)); do
-    if curl -s --max-time 2 "http://localhost:$PORT/" > /dev/null 2>&1; then
+    if curl -s --max-time 2 "http://localhost:$PORT/api/healthz" > /dev/null 2>&1; then
         READY=true
         break
     fi

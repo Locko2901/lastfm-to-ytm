@@ -34,6 +34,40 @@ def test_mappings_endpoint_empty(client):
     assert resp.get_json()["mappings"] == []
 
 
+def test_healthz_returns_ok(client):
+    resp = client.get("/api/healthz")
+    assert resp.status_code == 200
+    assert resp.get_json() == {"status": "ok"}
+
+
+def test_readyz_ready_when_prereqs_present(client, monkeypatch, tmp_path):
+    from web.routes import api
+
+    browser = tmp_path / "browser.json"
+    browser.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(api, "BROWSER_JSON_FILE", browser)
+    monkeypatch.setattr(api, "CACHE_DIR", tmp_path)
+
+    resp = client.get("/api/readyz")
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert body["ready"] is True
+    assert body["checks"] == {"browser_json": True, "cache_dir_writable": True}
+
+
+def test_readyz_unready_when_browser_json_missing(client, monkeypatch, tmp_path):
+    from web.routes import api
+
+    monkeypatch.setattr(api, "BROWSER_JSON_FILE", tmp_path / "missing.json")
+    monkeypatch.setattr(api, "CACHE_DIR", tmp_path)
+
+    resp = client.get("/api/readyz")
+    assert resp.status_code == 503
+    body = resp.get_json()
+    assert body["ready"] is False
+    assert body["checks"]["browser_json"] is False
+
+
 def test_preview_result_empty(client):
     resp = client.get("/preview_result")
     assert resp.status_code == 200
