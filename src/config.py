@@ -557,9 +557,77 @@ class Settings:
         )
 
 
+_VALID_FILTER_SORTS = ("plays", "recent", "stale", "first_seen", "random")
+
+_VALID_FILTER_TEMPLATES = (
+    "custom",
+    "top_tracks_7d",
+    "top_tracks_30d",
+    "top_tracks_90d",
+    "forgotten_favorites",
+    "not_played_6mo",
+    "active_artists",
+    "rediscovered_artists",
+    "new_to_me",
+    "seasonal",
+)
+
+
+@dataclass(frozen=True)
+class PlaylistFilterSpec:
+    """Composable, reusable filter primitives for template ("filter") playlists.
+
+    Every field is optional and independently combinable; a value of ``0`` (or an
+    empty tuple) means "ignore this dimension". Templates are just pre-filled
+    instances of this spec, so new playlist ideas rarely need new code — only a
+    new preset. All ``*_days`` windows are measured against "now" at sync time.
+    """
+
+    min_plays: int = 0
+    max_plays: int = 0
+    played_within_days: int = 0
+    not_played_within_days: int = 0
+    first_played_within_days: int = 0
+    first_played_before_days: int = 0
+    months: tuple[int, ...] = ()
+    per_artist_limit: int = 0
+    sort: str = "plays"
+
+
+def _parse_filter_spec(raw: object) -> PlaylistFilterSpec:
+    """Parse a raw ``filters`` mapping into a validated ``PlaylistFilterSpec``."""
+    if not isinstance(raw, dict):
+        return PlaylistFilterSpec()
+
+    def _int(key: str) -> int:
+        value = raw.get(key, 0)
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            return 0
+        return value
+
+    raw_months = raw.get("months", [])
+    months = tuple(sorted({m for m in raw_months if isinstance(m, int) and 1 <= m <= 12})) if isinstance(raw_months, list) else ()
+
+    sort = raw.get("sort", "plays")
+    if sort not in _VALID_FILTER_SORTS:
+        sort = "plays"
+
+    return PlaylistFilterSpec(
+        min_plays=_int("min_plays"),
+        max_plays=_int("max_plays"),
+        played_within_days=_int("played_within_days"),
+        not_played_within_days=_int("not_played_within_days"),
+        first_played_within_days=_int("first_played_within_days"),
+        first_played_before_days=_int("first_played_before_days"),
+        months=months,
+        per_artist_limit=_int("per_artist_limit"),
+        sort=sort,
+    )
+
+
 @dataclass(frozen=True)
 class CustomPlaylistConfig:
-    """Configuration for a single custom playlist (tag- or artist-based)."""
+    """Configuration for a single custom playlist (tag-, artist-, discovery- or filter-based)."""
 
     name: str
     tags: tuple[str, ...] = ()
@@ -578,6 +646,8 @@ class CustomPlaylistConfig:
     discovery_seed_artists: tuple[str, ...] = ()
     discovery_seed_tracks: tuple[tuple[str, str], ...] = ()
     discovery_exclude_scrobbled: bool = True
+    filter_template: str = "custom"
+    filters: PlaylistFilterSpec = PlaylistFilterSpec()
 
 
 def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
@@ -600,7 +670,7 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
     for entry in playlists:
         name = entry.get("name")
         kind = entry.get("kind", "tags")
-        if kind not in ("tags", "artists", "discovery"):
+        if kind not in ("tags", "artists", "discovery", "filter"):
             kind = "tags"
 
         raw_artists = entry.get("artists", [])
@@ -662,6 +732,12 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
         if not isinstance(discovery_exclude_scrobbled, bool):
             discovery_exclude_scrobbled = True
 
+        filter_template = entry.get("filter_template", "custom")
+        if filter_template not in _VALID_FILTER_TEMPLATES:
+            filter_template = "custom"
+
+        filters = _parse_filter_spec(entry.get("filters"))
+
         configs.append(
             CustomPlaylistConfig(
                 name=name,
@@ -681,6 +757,8 @@ def load_custom_playlists(path: str) -> list[CustomPlaylistConfig]:
                 discovery_seed_artists=discovery_seed_artists,
                 discovery_seed_tracks=discovery_seed_tracks,
                 discovery_exclude_scrobbled=discovery_exclude_scrobbled,
+                filter_template=filter_template,
+                filters=filters,
             )
         )
 

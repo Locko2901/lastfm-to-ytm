@@ -54,6 +54,8 @@
           <span class="badge badge-accent">{{ _('Artists') }}</span>
           {% elif pl.kind == 'discovery' %}
           <span class="badge badge-accent">{{ _('Discovery') }}</span>
+          {% elif pl.kind == 'filter' %}
+          <span class="badge badge-accent">{{ _('Template') }}</span>
           {% else %}
           <span class="badge badge-{{ 'success' if pl.match == 'all' else 'accent' }}">{{ _('Match:') }}
             {{ pl.match }}</span>
@@ -90,6 +92,8 @@
           <span class="tag-pill">{{ _('Seed:') }}
             {{ _('top tracks') if pl.discovery_seed == 'tracks' else _('top artists') }}</span>
           {% endif %}
+          {% elif pl.kind == 'filter' %}
+          <span class="tag-pill">{{ pl.filter_template | replace('_', ' ') }}</span>
           {% else %}
           {% for tag in pl.tags %}
           <span class="tag-pill">{{ tag }}</span>

@@ -1,10 +1,11 @@
 # Custom Playlists
 
-Create automatic YouTube Music playlists that fill themselves with matching tracks from your scrobble history. Each custom playlist is one of three **types**:
+Create automatic YouTube Music playlists that fill themselves with matching tracks from your scrobble history. Each custom playlist is one of four **types**:
 
 - **Tag playlists** - include tracks by Last.fm tags/genres. For example, a "Breakcore Mix" playlist that only includes tracks tagged `breakcore` or `drill and bass`, or a "Chill Electronic" playlist that requires both `electronic` and `ambient`.
 - **Artist playlists** - include every found track by one or more specific artists. For example, a "Radiohead & Aphex Twin" playlist that gathers all of those artists' tracks from your history.
 - **Discovery playlists** - surface tracks you have **never** scrobbled, seeded from what you listen to most. For example, a "Discover Weekly" playlist that recommends new songs similar to your top artists or top tracks. See [Discovery Playlists](#discovery-playlists) below.
+- **Template / filter playlists** - build from your own listening history using reusable, composable filters (top tracks in a window, forgotten favorites, seasonal, and more). See [Template / Filter Playlists](#template--filter-playlists) below.
 
 ??? example "Screenshot: Custom Playlists editor"
     ![Custom Playlists](screenshots/custom_playlists.png)
@@ -115,9 +116,78 @@ The seed picker's options come from your local Last.fm database when enabled (ra
 
 ---
 
+## Template / Filter Playlists
+
+Filter playlists (`"kind": "filter"`) build a playlist from your **own listening history** using a small set of composable, reusable filters - rather than a hard-coded rule per playlist type. You can pick a ready-made **preset** or drop to **custom** and combine the primitives yourself.
+
+### Presets
+
+Each preset expands into the same underlying filter engine, so you can start from one and tweak it:
+
+| Preset | What it selects |
+| --- | --- |
+| `top_tracks_7d` / `top_tracks_30d` / `top_tracks_90d` | Your most-played tracks in the last 7 / 30 / 90 days |
+| `forgotten_favorites` | Genuine favourites you've drifted away from, measured **relative to your own library**: tracks in the top ~25% by play count that you've gone quiet on for longer than most of your collection. This scales naturally - it might mean "played 4 times, silent a month" for a small library or "played 280 times, silent two years" for a huge one. Tiny floors (a track must be replayed at least twice and quiet for at least ~2 weeks) only rule out single-listens and brand-new libraries; they don't set the bar for a normal collection |
+| `not_played_6mo` | Tracks you haven't played in ~6 months (182 days), oldest first |
+| `active_artists` | One track per artist you've listened to in the last 30 days, most recent first |
+| `rediscovered_artists` | Long-known artists you've circled back to, measured **relative to your own library** (same dynamic approach as `forgotten_favorites`): tracks you first heard longer ago than most of your collection but have played again within your recent listening cohort. One track per artist, most recently revisited first. Scales from "first heard a year ago, back this month" to "first heard five years ago, back this quarter"; small floors keep it sane (can't rediscover a brand-new track; "recently" is at least ~a month) |
+| `new_to_me` | Tracks you first heard in the last 30 days, newest discoveries first |
+| `seasonal` | Tracks whose plays fall in the current season's months, by play count |
+
+### Custom filters
+
+Set `"filter_template": "custom"` and provide a `filters` object. All fields are optional and combine with AND:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `min_plays` | int | Keep tracks with at least this many lifetime plays |
+| `max_plays` | int | Keep tracks with at most this many plays (0 = no cap) |
+| `played_within_days` | int | Last played within the last N days |
+| `not_played_within_days` | int | *Not* played in the last N days (stale) |
+| `first_played_within_days` | int | First heard within the last N days (new to you) |
+| `first_played_before_days` | int | First heard more than N days ago (long-known) |
+| `months` | list[int] | Keep tracks whose last play falls in these months (1–12) |
+| `per_artist_limit` | int | Cap the number of tracks kept per artist (0 = unlimited) |
+| `sort` | string | Ordering: `plays`, `recent`, `stale`, `first_seen`, or `random` |
+
+### Data source & the local DB
+
+Time-based filters need play history. When the [local Last.fm database](local-history.md) is enabled (`USE_LOCAL_LASTFM_DB=true`), filters run over your **full history** with accurate play counts and first/last-played timestamps. When it's disabled, the engine degrades gracefully and works from the most recently fetched scrobbles only - so windows longer than your fetch depth (and lifetime play counts) will be approximate. Enable the local DB for the best results.
+
+### Notes & limitations
+
+- Filter playlists need only a `name` (like discovery playlists) - no `tags` or `artists`.
+- **Backfill does not apply**; the candidate pool is generated up front.
+- Release-date templates (decade/year and "newly released") are **not yet available** because release-date metadata isn't stored. Everything above is derived from *when you played* a track, not when it was released.
+
+!!! note "Overlap with the main playlist is expected"
+    `forgotten_favorites` (and other high-play filters) can share tracks with your **main playlist**. This is structural, not a bug: the main playlist ranks partly on lifetime play count (`RECENCY_PLAY_WEIGHT`), so with a large `LIMIT` and a play-weighted mix its long tail *is* your all-time favourites - regardless of how recently you played them. Those same heavily-played tracks are exactly what "forgotten favourites" targets, so genuine favourites you've drifted from can legitimately appear in both.
+
+    Filter playlists are scored independently and do **not** exclude tracks already in another playlist. If you want less overlap you can lower `LIMIT`, or lower `RECENCY_PLAY_WEIGHT` so the main playlist leans more on recent listening than lifetime plays, or narrow the filter (e.g. a `custom` spec with a longer `not_played_within_days`). Some overlap is inherent to the definition and can't be fully removed by tuning alone.
+
+Example:
+
+```json
+{
+  "playlists": [
+    { "name": "Top Tracks - Last 30 Days", "kind": "filter", "filter_template": "top_tracks_30d", "limit": 50 },
+    { "name": "Forgotten Favorites", "kind": "filter", "filter_template": "forgotten_favorites" },
+    {
+      "name": "Summer Rewind",
+      "kind": "filter",
+      "filter_template": "custom",
+      "filters": { "months": [6, 7, 8], "min_plays": 3, "sort": "plays" }
+    }
+  ]
+}
+```
+
+
+---
+
 ## Configuration
 
-**Docker**: Use the web dashboard to create and manage custom playlists. Pick the **Playlist Type** (genre tags, artists, or discovery) in the editor. Sync can be triggered manually from the UI, or automatically after each scheduled main sync via `AUTO_TAG_SYNC_ENABLED` and `AUTO_TAG_SYNC_FREQUENCY` (see [Configuration](configuration.md)).
+**Docker**: Use the web dashboard to create and manage custom playlists. Pick the **Playlist Type** (genre tags, artists, discovery, or template/filter) in the editor. Sync can be triggered manually from the UI, or automatically after each scheduled main sync via `AUTO_TAG_SYNC_ENABLED` and `AUTO_TAG_SYNC_FREQUENCY` (see [Configuration](configuration.md)).
 
 **CLI**: Edit `config/custom_playlists.json` directly:
 

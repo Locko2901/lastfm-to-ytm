@@ -59,6 +59,32 @@
       "discovery_exclude_scrobbled": false,
       "limit": 50,
       "privacy": "PRIVATE"
+    },
+    {
+      "name": "Top Tracks - Last 30 Days",
+      "kind": "filter",
+      "filter_template": "top_tracks_30d",
+      "limit": 50,
+      "privacy": "PRIVATE"
+    },
+    {
+      "name": "Forgotten Favorites",
+      "kind": "filter",
+      "filter_template": "forgotten_favorites",
+      "limit": 50,
+      "privacy": "PRIVATE"
+    },
+    {
+      "name": "Summer Rewind",
+      "kind": "filter",
+      "filter_template": "custom",
+      "filters": {
+        "months": [6, 7, 8],
+        "min_plays": 3,
+        "sort": "plays"
+      },
+      "limit": 60,
+      "privacy": "PRIVATE"
     }
   ]
 }

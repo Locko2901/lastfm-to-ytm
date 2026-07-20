@@ -1124,6 +1124,10 @@
   padding-bottom: 0;
 }
 
+.custompl-form #custompl-filter-custom-group .form-group:last-child {
+  padding-bottom: 0.875rem;
+}
+
 .custompl-form .form-group-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(150px, 220px);

@@ -213,16 +213,30 @@ function applyKindVisibility(kind) {
   const isArtists = kind === "artists"
   const isDiscovery = kind === "discovery"
   const isTags = kind === "tags"
+  const isFilter = kind === "filter"
   document.getElementById("custompl-tags-group").style.display = isTags ? "" : "none"
   document.getElementById("custompl-match-group").style.display = isTags ? "" : "none"
   document.getElementById("custompl-artists-group").style.display = isArtists ? "" : "none"
   document.getElementById("custompl-discovery-group").style.display = isDiscovery ? "" : "none"
-  document.getElementById("custompl-backfill-group").style.display = isDiscovery ? "none" : ""
+  document.getElementById("custompl-filter-group").style.display = isFilter ? "" : "none"
+  document.getElementById("custompl-backfill-group").style.display = isDiscovery || isFilter ? "none" : ""
   applyDiscoverySeedVisibility()
+  applyFilterTemplateVisibility()
+}
+
+function applyFilterTemplateVisibility() {
+  const isFilter = document.getElementById("custompl-kind")?.value === "filter"
+  const template = document.getElementById("custompl-filter-template")?.value || "custom"
+  const customGroup = document.getElementById("custompl-filter-custom-group")
+  if (customGroup) customGroup.style.display = isFilter && template === "custom" ? "" : "none"
 }
 
 export function onCustomPlaylistKindChange() {
   applyKindVisibility(document.getElementById("custompl-kind").value)
+}
+
+export function onCustomPlaylistFilterTemplateChange() {
+  applyFilterTemplateVisibility()
 }
 
 function applyLimitVisibility(noLimit) {
@@ -230,6 +244,47 @@ function applyLimitVisibility(noLimit) {
   const limitGroup = document.getElementById("custompl-limit-group")
   if (limitInput) limitInput.disabled = noLimit
   if (limitGroup) limitGroup.style.display = noLimit ? "none" : ""
+}
+
+const FILTER_INT_FIELDS = {
+  "custompl-filter-min-plays": "min_plays",
+  "custompl-filter-max-plays": "max_plays",
+  "custompl-filter-played-within": "played_within_days",
+  "custompl-filter-not-played-within": "not_played_within_days",
+  "custompl-filter-first-within": "first_played_within_days",
+  "custompl-filter-first-before": "first_played_before_days",
+  "custompl-filter-per-artist": "per_artist_limit",
+}
+
+function setFilterInputs(filters) {
+  const f = filters || {}
+  for (const [id, key] of Object.entries(FILTER_INT_FIELDS)) {
+    const el = document.getElementById(id)
+    if (el) el.value = Number.isInteger(f[key]) && f[key] >= 0 ? f[key] : 0
+  }
+  const sort = document.getElementById("custompl-filter-sort")
+  if (sort) sort.value = f.sort || "plays"
+  const months = document.getElementById("custompl-filter-months")
+  if (months) months.value = Array.isArray(f.months) ? f.months.join(", ") : ""
+}
+
+function readFilterInputs() {
+  const filters = {}
+  for (const [id, key] of Object.entries(FILTER_INT_FIELDS)) {
+    const raw = parseInt(document.getElementById(id)?.value, 10)
+    filters[key] = Number.isFinite(raw) && raw >= 0 ? raw : 0
+  }
+  filters.sort = document.getElementById("custompl-filter-sort")?.value || "plays"
+  const monthsRaw = document.getElementById("custompl-filter-months")?.value || ""
+  filters.months = [
+    ...new Set(
+      monthsRaw
+        .split(",")
+        .map(m => parseInt(m.trim(), 10))
+        .filter(m => Number.isInteger(m) && m >= 1 && m <= 12),
+    ),
+  ].sort((a, b) => a - b)
+  return filters
 }
 
 export function showCustomPlaylistModal(editIndex = -1) {
@@ -251,6 +306,8 @@ export function showCustomPlaylistModal(editIndex = -1) {
     document.getElementById("custompl-discovery-exclude").checked = pl.discovery_exclude_scrobbled !== false
     selectedSeedArtists = [...(pl.discovery_seed_artists || [])]
     selectedSeedTracks = (pl.discovery_seed_tracks || []).map(t => ({ artist: t.artist, track: t.track }))
+    document.getElementById("custompl-filter-template").value = pl.filter_template || "custom"
+    setFilterInputs(pl.filters)
     const isNoLimit = pl.limit === 0
     noLimitCheckbox.checked = isNoLimit
     limitInput.value = isNoLimit ? 50 : pl.limit || 50
@@ -354,6 +411,9 @@ export async function saveCustomPlaylist() {
   const isTags = kind === "tags"
   const isArtists = kind === "artists"
   const isDiscovery = kind === "discovery"
+  const isFilter = kind === "filter"
+
+  const filterTemplate = document.getElementById("custompl-filter-template").value || "custom"
 
   const playlist = {
     name,
@@ -368,6 +428,8 @@ export async function saveCustomPlaylist() {
     discovery_seed_artists: isDiscovery ? [...selectedSeedArtists] : [],
     discovery_seed_tracks: isDiscovery ? selectedSeedTracks.map(t => ({ artist: t.artist, track: t.track })) : [],
     discovery_exclude_scrobbled: isDiscovery ? discoveryExcludeScrobbled : true,
+    filter_template: isFilter ? filterTemplate : "custom",
+    filters: isFilter ? readFilterInputs() : {},
     limit,
     backfill,
     auto_sync: autoSync,
@@ -641,6 +703,7 @@ export function initCustomPlaylists() {
     applyLimitVisibility(e.target.checked)
   })
   document.getElementById("custompl-kind")?.addEventListener("change", () => onCustomPlaylistKindChange())
+  document.getElementById("custompl-filter-template")?.addEventListener("change", () => onCustomPlaylistFilterTemplateChange())
   document.getElementById("custompl-discovery-auto")?.addEventListener("change", () => applyDiscoverySeedVisibility())
   document.getElementById("custompl-discovery-seed")?.addEventListener("change", () => {
     renderSelectedSeeds()

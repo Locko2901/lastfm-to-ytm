@@ -472,6 +472,49 @@ def custom_playlists_get() -> ResponseReturnValue:
     return jsonify({"playlists": load_custom_playlists_config()})
 
 
+_VALID_FILTER_TEMPLATES = (
+    "custom",
+    "top_tracks_7d",
+    "top_tracks_30d",
+    "top_tracks_90d",
+    "forgotten_favorites",
+    "not_played_6mo",
+    "active_artists",
+    "rediscovered_artists",
+    "new_to_me",
+    "seasonal",
+)
+_VALID_FILTER_SORTS = ("plays", "recent", "stale", "first_seen", "random")
+_FILTER_INT_FIELDS = (
+    "min_plays",
+    "max_plays",
+    "played_within_days",
+    "not_played_within_days",
+    "first_played_within_days",
+    "first_played_before_days",
+    "per_artist_limit",
+)
+
+
+def _clean_filter_fields(entry: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """Validate and normalise the ``filter_template`` + ``filters`` for an entry."""
+    filter_template = entry.get("filter_template", "custom")
+    if filter_template not in _VALID_FILTER_TEMPLATES:
+        filter_template = "custom"
+
+    raw = entry.get("filters")
+    raw = raw if isinstance(raw, dict) else {}
+    filters: dict[str, Any] = {}
+    for key in _FILTER_INT_FIELDS:
+        value = raw.get(key, 0)
+        filters[key] = value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else 0
+    raw_months = raw.get("months", [])
+    filters["months"] = sorted({m for m in raw_months if isinstance(m, int) and 1 <= m <= 12}) if isinstance(raw_months, list) else []
+    sort = raw.get("sort", "plays")
+    filters["sort"] = sort if sort in _VALID_FILTER_SORTS else "plays"
+    return filter_template, filters
+
+
 @api_bp.route("/custom-playlists", methods=["POST"])
 def custom_playlists_save() -> ResponseReturnValue:
     """Save custom playlist configurations."""
@@ -489,7 +532,7 @@ def custom_playlists_save() -> ResponseReturnValue:
             continue
         name = entry.get("name", "").strip()
         kind = entry.get("kind", "tags")
-        if kind not in ("tags", "artists", "discovery"):
+        if kind not in ("tags", "artists", "discovery", "filter"):
             kind = "tags"
         tags = entry.get("tags", [])
         if not isinstance(tags, list) or not all(isinstance(t, str) for t in tags):
@@ -526,6 +569,7 @@ def custom_playlists_save() -> ResponseReturnValue:
         discovery_exclude_scrobbled = entry.get("discovery_exclude_scrobbled", True)
         if not isinstance(discovery_exclude_scrobbled, bool):
             discovery_exclude_scrobbled = True
+        filter_template, filters = _clean_filter_fields(entry)
         limit = entry.get("limit", 50)
         if not isinstance(limit, int) or limit < 0:
             limit = 50
@@ -568,6 +612,8 @@ def custom_playlists_save() -> ResponseReturnValue:
                 "discovery_seed_artists": discovery_seed_artists,
                 "discovery_seed_tracks": discovery_seed_tracks,
                 "discovery_exclude_scrobbled": discovery_exclude_scrobbled,
+                "filter_template": filter_template,
+                "filters": filters,
             }
         )
 
