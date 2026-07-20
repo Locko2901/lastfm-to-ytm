@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import socket
 import threading
 from typing import Any, cast
@@ -14,9 +15,12 @@ from flask.typing import ResponseReturnValue
 from flask_babel import gettext as _
 from requests.adapters import HTTPAdapter
 
+from src.config import CACHE_DIR
+
 from ..services import (
     ALL_SETTINGS,
     BOOL_SETTINGS,
+    BROWSER_JSON_FILE,
     ENV_EXAMPLE_FILE,
     ENV_FILE,
     PRIVACY_SETTINGS,
@@ -124,6 +128,33 @@ def ipv4_session() -> requests.Session:
             if _ipv4_session is None:
                 _ipv4_session = get_ipv4_session()
     return _ipv4_session
+
+
+@api_bp.route("/healthz")
+def healthz() -> ResponseReturnValue:
+    """Liveness probe: confirm the app is up and serving.
+
+    Intentionally cheap and side-effect free so it can be polled often by
+    Docker/orchestrators without touching external APIs or heavy state.
+    """
+    return jsonify({"status": "ok"}), 200
+
+
+@api_bp.route("/readyz")
+def readyz() -> ResponseReturnValue:
+    """Readiness probe: confirm the app can actually do its job.
+
+    Checks only local prerequisites (YTM auth present, cache dir writable).
+    External services (Last.fm / YouTube Music) are deliberately NOT probed:
+    they are rate-limited and flaky, and a transient outage should not mark
+    the container unhealthy. Returns 503 when any check fails.
+    """
+    checks = {
+        "browser_json": BROWSER_JSON_FILE.exists(),
+        "cache_dir_writable": CACHE_DIR.is_dir() and os.access(CACHE_DIR, os.W_OK),
+    }
+    ready = all(checks.values())
+    return jsonify({"ready": ready, "checks": checks}), (200 if ready else 503)
 
 
 @api_bp.route("/status")

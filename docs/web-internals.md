@@ -40,6 +40,26 @@ A `/manifest.json` route serves a PWA manifest from `web/static/`, making the da
 
 ---
 
+## Health & Readiness
+
+Two lightweight probes (`web/routes/api.py`) let Docker, uptime monitors, or orchestrators check the app without touching external APIs:
+
+- **`GET /api/healthz`** - *liveness*. Always returns `200 {"status": "ok"}` if the Flask app is serving. Cheap and side-effect free, safe to poll frequently. This is what the Docker `healthcheck` and `run-docker.sh` startup wait poll.
+- **`GET /api/readyz`** - *readiness*. Verifies local prerequisites and returns `200` when ready, `503` otherwise:
+
+  ```json
+  {
+    "ready": true,
+    "checks": {"browser_json": true, "cache_dir_writable": true}
+  }
+  ```
+
+  It checks only local state (YTM `browser.json` present, cache dir writable).
+
+Note that `/api/readyz` returns `503` until first-time setup completes (before `browser.json` exists).
+
+---
+
 ## Sync Process
 
 Sync runs are executed as subprocesses (`subprocess.Popen`) from `web/routes/sync.py`:
