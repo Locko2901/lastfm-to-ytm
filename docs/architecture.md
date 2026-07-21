@@ -11,10 +11,52 @@ The sync engine has three layers:
 All track resolution follows a three-tier priority:
 
 1. **Manual overrides** (`config/search_overrides.json`) - user-specified fixes, checked first
-2. **Search cache** (`cache/.search_cache.json`) - previously successful searches (30-day TTL)
+2. **Search cache** (`runtime/.search_cache.json`) - previously successful searches (30-day TTL)
 3. **YouTube Music API** - only queried if both above miss; result is cached
 
 This minimizes API calls and ensures consistent results across runs.
+
+## Storage Layers Side by Side
+
+The project keeps four distinct on-disk stores. They are easy to confuse because
+two are JSON caches and two are SQLite databases, and two of them track "tracks"
+in different senses. This table pins down what each one is for:
+
+| | **Search cache** | **Playlist cache** | **History DB** | **Local Last.fm DB** |
+|---|---|---|---|---|
+| **File** | `runtime/.search_cache.json` | `runtime/.playlist_cache.json` | `runtime/history.db` (+ `-wal`, `-shm`) | `runtime/lastfm_history.db` (+ `-wal`, `-shm`) |
+| **Format** | JSON (`JSONCache`) | JSON (`JSONCache`) | SQLite (WAL, thread-local) | SQLite (WAL, thread-local) |
+| **Implementation** | [`src/cache/search.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/cache/search.py) | [`src/cache/playlist.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/cache/playlist.py) | [`src/history/db.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/history/db.py) | [`src/lastfm/local_db.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/lastfm/local_db.py) |
+| **Enabled** | Always | Always | Opt-in (`HISTORY_DB_ENABLED`) | Opt-in (`USE_LOCAL_LASTFM_DB`) |
+| **Key / grain** | `artist\|title` (lowercased) | Playlist name | Rows in `tracks` / `syncs` / `actions` / `near_misses` | One row per unique `(artist, track)` in `scrobbles` |
+| **Stores** | `video_id`, `yt_title`, timestamp | Playlist `id`, desired `video_ids` template, `role`, `last_updated` | Resolutions, sync runs, user actions, near-misses | Lifetime `plays`, `first_played_uts`, `last_played_uts` |
+| **Expiry** | 30-day TTL (7 days for negative `NOT_FOUND` hits) | None (desired-state template) | `HISTORY_RETENTION_DAYS` / `HISTORY_MAX_SIZE_MB` (both `0` = keep) | None (incremental watermark in `meta`) |
+| **Purpose** | Skip the YTM search API on repeat lookups | Skip syncs when contents are unchanged; detect renames | Analytics & audit for the dashboard History tab | Serve as the full-library candidate pool ranked by lifetime plays + recency |
+| **Written during** | Track resolution (`resolve_tracks_to_video_ids()`) | Playlist sync (`set_template()`) | Every sync + dashboard actions | Last.fm crawl (first full, then incremental) |
+| **Feeds** | Track resolution (tier 2) | Sync gate (`template_changed()`) | Dashboard History tab | Main-playlist ranking, custom/filter playlist pools, and the dashboard's Top Tracks + library stats |
+| **Sensitivity** | Medium (viewing history) | Medium (playlist IDs) | High (full listening + action log) | High (full listening library) |
+
+Key distinctions:
+
+- **Search cache vs. History DB "tracks".** Both hold `artist|title -> video_id`,
+  but the search cache is a *lookup accelerator* with a TTL that expires and gets
+  cleaned; the History DB `tracks` table is a *cumulative audit record* (never
+  TTL-expired, only size/age-pruned) with hit/miss counters and match scores. The
+  search cache is required for normal operation; the History DB is a purely
+  observational opt-in.
+- **History DB vs. Local Last.fm DB.** The History DB records what the *sync
+  engine* did (lookups, runs, actions) - its `times_found` ("seen") counter
+  increments once per sync that encounters a track. The Local Last.fm DB records
+  what *you actually listened to* - its `plays` counter is your lifetime Last.fm
+  scrobble count. They deliberately disagree (see
+  [History Database &rarr; "Seen" vs "Played"](history.md#seen-vs-played)).
+- **Search cache vs. Playlist cache.** Both are `JSONCache` subclasses sharing
+  atomic writes and `fcntl` locking, but the search cache maps *tracks to videos*
+  while the playlist cache maps *playlists to their desired video-ID template* and
+  never expires.
+
+For the on-disk security and retention properties of each store, see the
+[Data & Security Model](security-model.md).
 
 ## Key Patterns
 
@@ -52,9 +94,9 @@ Both search and playlist operations track API usage for end-of-run logging:
 
 ## Failure & Run Logs
 
-**Failure log** (`cache/.last_failure.json`): Written by `_save_failure_log()` when a sync fails. Contains timestamp, error message, traceback, sync type, and an auto-generated **hint** (e.g., "Authentication expired" for 401 errors, "Rate limited" for 403). The web dashboard reads this to show failure banners with actionable advice.
+**Failure log** (`runtime/.last_failure.json`): Written by `_save_failure_log()` when a sync fails. Contains timestamp, error message, traceback, sync type, and an auto-generated **hint** (e.g., "Authentication expired" for 401 errors, "Rate limited" for 403). The web dashboard reads this to show failure banners with actionable advice.
 
-**Run log** (`cache/.last_run_log.json`): Written by `_save_run_log()` after every successful sync. Stores minimal per-track data (artist, title, source) - the web dashboard enriches this at display time by pulling video IDs and metadata from the search cache. Source values: `override`, `cache`, `search`, `blacklisted`, `not_found`.
+**Run log** (`runtime/.last_run_log.json`): Written by `_save_run_log()` after every successful sync. Stores minimal per-track data (artist, title, source) - the web dashboard enriches this at display time by pulling video IDs and metadata from the search cache. Source values: `override`, `cache`, `search`, `blacklisted`, `not_found`.
 
 ---
 
