@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.6.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.5.1...v2.6.0) (2026-07-21)
+
+
+### Features
+
+* add /api/healthz and /api/readyz probes ([29cd7ac](https://github.com/Locko2901/lastfm-to-ytm/commit/29cd7ac5ad3ae94b2ef35dc884f392e3b8947f80))
+* add template/filter custom playlists ([89c151b](https://github.com/Locko2901/lastfm-to-ytm/commit/89c151b7f4f8612f38537c80a9ec1120999daee3))
+
+
+### Documentation
+
+* add storage layers comparison to architecture ([b6c4d57](https://github.com/Locko2901/lastfm-to-ytm/commit/b6c4d578840a1c58330723547c77c1afeb132a75))
+
 ## [2.5.1](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.5.0...v2.5.1) (2026-07-14)
 
 
