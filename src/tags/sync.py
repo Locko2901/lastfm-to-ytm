@@ -484,7 +484,6 @@ def _save_tag_failure(
 ) -> None:
     """Save a failure log and fire webhook for a custom playlist error."""
     from ..config import CACHE_DIR
-    from ..webhook import send_webhook
 
     error_message = f"Custom playlist '{playlist_name}': {error}"
     tb_str = traceback.format_exc()
@@ -518,17 +517,10 @@ def _save_tag_failure(
     except Exception:
         pass
 
-    if settings.webhook_url:
-        webhook_events = getattr(settings, "webhook_events", "all")
-        if webhook_events != "success":
-            with contextlib.suppress(Exception):
-                send_webhook(
-                    settings.webhook_url,
-                    status="error",
-                    sync_type="tags",
-                    error=str(error),
-                    allow_private=getattr(settings, "webhook_allow_private", False),
-                )
+    with contextlib.suppress(Exception):
+        from ..observability import fire_webhook
+
+        fire_webhook(settings, status="error", sync_type="tags", error=str(error))
 
 
 def _record_custom_playlist_sync(

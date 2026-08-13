@@ -64,6 +64,8 @@ const NO_RESTART_SETTINGS = [
   "WEBHOOK_URL",
   "WEBHOOK_EVENTS",
   "WEBHOOK_ALLOW_PRIVATE",
+  "APPRISE_URLS",
+  "APPRISE_EVENTS",
 ]
 
 const UI_RELOAD_SETTINGS = ["USE_24_HOUR_CLOCK", "DATE_FORMAT"]
@@ -115,6 +117,7 @@ export async function loadSettings() {
 
     refreshHistoryBackfillVisibility()
     refreshLocalLastfmVisibility()
+    if (window._renderAppriseList) window._renderAppriseList()
 
     const form = document.getElementById("settingsForm")
     if (form) window._originalSettings = readFormSettings(form)

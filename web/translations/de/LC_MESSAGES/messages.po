@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-20 13:43+0200\n"
+"POT-Creation-Date: 2026-08-13 11:59+0200\n"
 "PO-Revision-Date: 2026-05-13 11:41+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -31,7 +31,7 @@ msgid "At least one tag is required."
 msgstr ""
 
 #: web/routes/actions.py:251 web/routes/api.py:227 web/routes/api.py:298
-#: web/routes/api.py:1065
+#: web/routes/api.py:1087
 msgid "No data provided"
 msgstr ""
 
@@ -60,27 +60,27 @@ msgstr ""
 msgid "Failed to save credentials"
 msgstr ""
 
-#: web/routes/api.py:324 web/routes/api.py:1081
+#: web/routes/api.py:324 web/routes/api.py:1103
 #, python-format
 msgid "Invalid cron expression: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:333 web/routes/api.py:1089
+#: web/routes/api.py:333 web/routes/api.py:1111
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr ""
 
-#: web/routes/api.py:355 web/static/js/modules/settings.js:158
-#: web/static/js/modules/settings.js:195
+#: web/routes/api.py:355 web/static/js/modules/settings.js:161
+#: web/static/js/modules/settings.js:198
 msgid "Failed to save settings"
 msgstr ""
 
-#: web/routes/api.py:385 web/static/js/modules/settings.js:325
-#: web/static/js/modules/settings.js:336
+#: web/routes/api.py:385 web/static/js/modules/settings.js:328
+#: web/static/js/modules/settings.js:339
 msgid "Failed to import settings"
 msgstr ""
 
-#: web/routes/api.py:394 web/static/js/modules/settings.js:344
-#: web/static/js/modules/settings.js:349
+#: web/routes/api.py:394 web/static/js/modules/settings.js:347
+#: web/static/js/modules/settings.js:352
 msgid "Could not download .env.example"
 msgstr ""
 
@@ -92,141 +92,149 @@ msgstr ""
 msgid "Webhook request failed. Check the URL and try again."
 msgstr ""
 
-#: web/routes/api.py:497
+#: web/routes/api.py:430
+msgid "No Apprise URL provided"
+msgstr ""
+
+#: web/routes/api.py:441
+msgid "Apprise test failed. Check the URL(s) and try again."
+msgstr ""
+
+#: web/routes/api.py:519
 msgid "Unknown panel"
 msgstr ""
 
-#: web/routes/api.py:554
+#: web/routes/api.py:576
 msgid "Invalid data: 'playlists' array required"
 msgstr ""
 
-#: web/routes/api.py:558
+#: web/routes/api.py:580
 msgid "'playlists' must be an array"
 msgstr ""
 
-#: web/routes/api.py:656
+#: web/routes/api.py:678
 msgid "Failed to save custom playlists"
 msgstr ""
 
-#: web/routes/api.py:799
+#: web/routes/api.py:821
 msgid "Artist and title are required"
 msgstr ""
 
-#: web/routes/api.py:887
+#: web/routes/api.py:909
 msgid "Last.fm credentials not configured"
 msgstr ""
 
-#: web/routes/api.py:955
+#: web/routes/api.py:977
 msgid "Failed to fetch from Last.fm"
 msgstr ""
 
-#: web/routes/api.py:958
+#: web/routes/api.py:980
 msgid "Internal error"
 msgstr ""
 
-#: web/routes/api.py:1091
+#: web/routes/api.py:1113
 msgid "Invalid start time format. Use HH:MM."
 msgstr ""
 
-#: web/routes/api.py:1116
+#: web/routes/api.py:1138
 msgid "Failed to configure scheduler. APScheduler may not be installed."
 msgstr ""
 
-#: web/routes/api.py:1119
+#: web/routes/api.py:1141
 #, python-format
 msgid "Invalid value: %(error)s"
 msgstr ""
 
-#: web/routes/api.py:1122
+#: web/routes/api.py:1144
 msgid "Failed to configure scheduler"
 msgstr ""
 
-#: web/routes/api.py:1139
+#: web/routes/api.py:1161
 msgid "Failed to save theme overrides"
 msgstr ""
 
-#: web/routes/api.py:1148 web/routes/api.py:1177 web/routes/api.py:1200
+#: web/routes/api.py:1170 web/routes/api.py:1199 web/routes/api.py:1222
 msgid "Password is required"
 msgstr ""
 
-#: web/routes/api.py:1152
+#: web/routes/api.py:1174
 msgid "Password must be at least 4 characters"
 msgstr ""
 
-#: web/routes/api.py:1167 web/static/js/modules/modals.js:592
+#: web/routes/api.py:1189 web/static/js/modules/modals.js:592
 #: web/static/js/modules/modals.js:603 web/static/js/modules/teleporter.js:91
 #: web/static/js/modules/teleporter.js:104
 msgid "Export failed"
 msgstr ""
 
-#: web/routes/api.py:1179 web/routes/api.py:1202
+#: web/routes/api.py:1201 web/routes/api.py:1224
 msgid "No file provided"
 msgstr ""
 
-#: web/routes/api.py:1187 web/routes/api.py:1210
+#: web/routes/api.py:1209 web/routes/api.py:1232
 msgid "Could not read file - check your password and try again"
 msgstr ""
 
-#: web/routes/api.py:1190 web/static/js/modules/sync.js:105
+#: web/routes/api.py:1212 web/static/js/modules/sync.js:105
 #: web/static/js/modules/teleporter.js:193
 #: web/static/js/modules/teleporter.js:205
 msgid "Preview failed"
 msgstr ""
 
-#: web/routes/api.py:1213 web/static/js/modules/history.js:1074
+#: web/routes/api.py:1235 web/static/js/modules/history.js:1074
 #: web/static/js/modules/history.js:1083 web/static/js/modules/modals.js:671
-#: web/static/js/modules/modals.js:690 web/static/js/modules/settings.js:825
-#: web/static/js/modules/settings.js:834
+#: web/static/js/modules/modals.js:690 web/static/js/modules/settings.js:828
+#: web/static/js/modules/settings.js:837
 #: web/static/js/modules/teleporter.js:233
 #: web/static/js/modules/teleporter.js:242
 msgid "Import failed"
 msgstr ""
 
-#: web/routes/api.py:1244 web/routes/api.py:1267 web/routes/api.py:1287
-#: web/routes/api.py:1301 web/routes/api.py:1325 web/routes/api.py:1428
-#: web/routes/api.py:1451 web/routes/api.py:1461 web/routes/api.py:1488
-#: web/routes/api.py:1508 web/routes/api.py:1536 web/routes/api.py:1550
+#: web/routes/api.py:1266 web/routes/api.py:1289 web/routes/api.py:1309
+#: web/routes/api.py:1323 web/routes/api.py:1347 web/routes/api.py:1450
+#: web/routes/api.py:1473 web/routes/api.py:1483 web/routes/api.py:1510
+#: web/routes/api.py:1530 web/routes/api.py:1558 web/routes/api.py:1572
 msgid "History database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1291
+#: web/routes/api.py:1313
 msgid "Sync record not found"
 msgstr ""
 
-#: web/routes/api.py:1369 web/routes/api.py:1380 web/routes/api.py:1400
+#: web/routes/api.py:1391 web/routes/api.py:1402 web/routes/api.py:1422
 msgid "Local Last.fm database is not enabled"
 msgstr ""
 
-#: web/routes/api.py:1404 web/routes/api.py:1512
+#: web/routes/api.py:1426 web/routes/api.py:1534
 msgid "No file uploaded"
 msgstr ""
 
-#: web/routes/api.py:1407 web/routes/api.py:1515
+#: web/routes/api.py:1429 web/routes/api.py:1537
 msgid "Invalid import mode"
 msgstr ""
 
-#: web/routes/api.py:1412 web/routes/api.py:1520
+#: web/routes/api.py:1434 web/routes/api.py:1542
 #, python-format
 msgid "Invalid JSON file: %(err)s"
 msgstr ""
 
-#: web/routes/api.py:1418 web/routes/api.py:1526
+#: web/routes/api.py:1440 web/routes/api.py:1548
 msgid "Invalid import file"
 msgstr ""
 
-#: web/routes/api.py:1627
+#: web/routes/api.py:1649
 msgid "Unsupported export format"
 msgstr ""
 
-#: web/routes/api.py:1643
+#: web/routes/api.py:1665
 msgid "name is required"
 msgstr ""
 
-#: web/routes/api.py:1646 web/routes/api.py:1660
+#: web/routes/api.py:1668 web/routes/api.py:1682
 msgid "Playlist has no cached tracks to export"
 msgstr ""
 
-#: web/routes/api.py:1656
+#: web/routes/api.py:1678
 msgid "Invalid playlist index"
 msgstr ""
 
@@ -299,6 +307,52 @@ msgstr ""
 
 #: web/routes/sync.py:234
 msgid "No sync running"
+msgstr ""
+
+#: web/static/js/modules/apprise.js:49
+msgid "No notification targets yet. Add one above."
+msgstr ""
+
+#: web/static/js/modules/apprise.js:58
+msgid "Edit Apprise URL"
+msgstr ""
+
+#: web/static/js/modules/apprise.js:62
+msgid "Disable"
+msgstr ""
+
+#: web/static/js/modules/apprise.js:62
+msgid "Enable"
+msgstr ""
+
+#: web/static/js/modules/apprise.js:64
+msgid "(disabled)"
+msgstr ""
+
+#: web/static/js/modules/apprise.js:70
+msgid "Send test notification"
+msgstr ""
+
+#: web/static/js/modules/apprise.js:72 web/static/js/modules/playlists.js:36
+#: web/templates/partials/_modals.html:584
+#: web/templates/partials/_panel_custompl.html:139
+msgid "Delete"
+msgstr ""
+
+#: web/static/js/modules/apprise.js:100 web/static/js/modules/apprise.js:122
+msgid "Enter an Apprise URL first"
+msgstr ""
+
+#: web/static/js/modules/apprise.js:104 web/static/js/modules/apprise.js:160
+msgid "That URL is already in the list"
+msgstr ""
+
+#: web/static/js/modules/apprise.js:189
+msgid "Test notification sent successfully!"
+msgstr ""
+
+#: web/static/js/modules/apprise.js:191 web/static/js/modules/apprise.js:194
+msgid "Apprise test failed"
 msgstr ""
 
 #: web/static/js/modules/auth.js:26
@@ -383,7 +437,7 @@ msgid "No cached playlists."
 msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:275
-#: web/static/js/modules/history.js:1076 web/static/js/modules/settings.js:827
+#: web/static/js/modules/history.js:1076 web/static/js/modules/settings.js:830
 msgid "tracks"
 msgstr ""
 
@@ -647,12 +701,12 @@ msgstr ""
 msgid "Invalid theme file"
 msgstr ""
 
-#: web/static/js/modules/history.js:216 web/static/js/modules/settings.js:852
+#: web/static/js/modules/history.js:216 web/static/js/modules/settings.js:855
 msgid "lookups"
 msgstr ""
 
 #: web/static/js/modules/history.js:216 web/static/js/modules/history.js:1076
-#: web/static/js/modules/settings.js:852
+#: web/static/js/modules/settings.js:855
 msgid "syncs"
 msgstr ""
 
@@ -797,11 +851,11 @@ msgid "rows pruned"
 msgstr ""
 
 #: web/static/js/modules/history.js:1028 web/static/js/modules/modals.js:635
-#: web/static/js/modules/settings.js:782
+#: web/static/js/modules/settings.js:785
 msgid "Please select a JSON file"
 msgstr ""
 
-#: web/static/js/modules/history.js:1044 web/static/js/modules/settings.js:795
+#: web/static/js/modules/history.js:1044 web/static/js/modules/settings.js:798
 #: web/templates/partials/_panel_history.html:56
 msgid "Tracks"
 msgstr ""
@@ -819,11 +873,11 @@ msgid "Actions"
 msgstr ""
 
 #: web/static/js/modules/history.js:1050 web/static/js/modules/modals.js:654
-#: web/static/js/modules/settings.js:801
+#: web/static/js/modules/settings.js:804
 msgid "Invalid JSON file"
 msgstr ""
 
-#: web/static/js/modules/history.js:1076 web/static/js/modules/settings.js:827
+#: web/static/js/modules/history.js:1076 web/static/js/modules/settings.js:830
 msgid "Imported:"
 msgstr ""
 
@@ -1165,12 +1219,6 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: web/static/js/modules/playlists.js:36
-#: web/templates/partials/_modals.html:584
-#: web/templates/partials/_panel_custompl.html:139
-msgid "Delete"
-msgstr ""
-
 #: web/static/js/modules/playlists.js:61
 msgid "No playlists found"
 msgstr ""
@@ -1219,126 +1267,126 @@ msgstr ""
 msgid "Pruned %(n)s playlists"
 msgstr ""
 
-#: web/static/js/modules/settings.js:88 web/static/js/modules/settings.js:124
+#: web/static/js/modules/settings.js:90 web/static/js/modules/settings.js:127
 msgid "Failed to load settings"
 msgstr ""
 
-#: web/static/js/modules/settings.js:182
+#: web/static/js/modules/settings.js:185
 msgid "Settings saved successfully!"
 msgstr ""
 
-#: web/static/js/modules/settings.js:221
+#: web/static/js/modules/settings.js:224
 msgid "Settings saved. Restart the server to apply changes."
 msgstr ""
 
-#: web/static/js/modules/settings.js:222 web/static/js/modules/settings.js:392
+#: web/static/js/modules/settings.js:225 web/static/js/modules/settings.js:395
 msgid "Restart Now"
 msgstr ""
 
-#: web/static/js/modules/settings.js:245
+#: web/static/js/modules/settings.js:248
 msgid "Display settings changed. Reload the page to update."
 msgstr ""
 
-#: web/static/js/modules/settings.js:246
+#: web/static/js/modules/settings.js:249
 msgid "Reload"
 msgstr ""
 
-#: web/static/js/modules/settings.js:287
+#: web/static/js/modules/settings.js:290
 #, python-format
 msgid ""
 "Your configuration is missing %(count)s new setting(s) from a recent "
 "update."
 msgstr ""
 
-#: web/static/js/modules/settings.js:288
+#: web/static/js/modules/settings.js:291
 msgid "Import defaults"
 msgstr ""
 
-#: web/static/js/modules/settings.js:297
+#: web/static/js/modules/settings.js:300
 msgid "view on GitHub"
 msgstr ""
 
-#: web/static/js/modules/settings.js:308
+#: web/static/js/modules/settings.js:311
 msgid ""
 "The .env.example template is missing. Re-download it for your version to "
 "enable default imports."
 msgstr ""
 
-#: web/static/js/modules/settings.js:309
+#: web/static/js/modules/settings.js:312
 msgid "Download template"
 msgstr ""
 
-#: web/static/js/modules/settings.js:329
+#: web/static/js/modules/settings.js:332
 #, python-format
 msgid "Imported %(count)s setting(s). Backup saved as %(backup)s."
 msgstr ""
 
-#: web/static/js/modules/settings.js:331
+#: web/static/js/modules/settings.js:334
 #, python-format
 msgid "Imported %(count)s setting(s)."
 msgstr ""
 
-#: web/static/js/modules/settings.js:346
+#: web/static/js/modules/settings.js:349
 msgid "Downloaded the latest .env.example template."
 msgstr ""
 
-#: web/static/js/modules/settings.js:357
+#: web/static/js/modules/settings.js:360
 msgid "Enter a webhook URL first"
 msgstr ""
 
-#: web/static/js/modules/settings.js:368
+#: web/static/js/modules/settings.js:371
 msgid "Test webhook sent successfully!"
 msgstr ""
 
-#: web/static/js/modules/settings.js:370 web/static/js/modules/settings.js:373
+#: web/static/js/modules/settings.js:373 web/static/js/modules/settings.js:376
 msgid "Webhook test failed"
 msgstr ""
 
-#: web/static/js/modules/settings.js:381
+#: web/static/js/modules/settings.js:384
 msgid "Restarting..."
 msgstr ""
 
-#: web/static/js/modules/settings.js:386
+#: web/static/js/modules/settings.js:389
 msgid "Server restarting..."
 msgstr ""
 
-#: web/static/js/modules/settings.js:389
+#: web/static/js/modules/settings.js:392
 msgid "Failed to restart server"
 msgstr ""
 
-#: web/static/js/modules/settings.js:415
+#: web/static/js/modules/settings.js:418
 msgid "Server may have restarted. Please refresh manually."
 msgstr ""
 
-#: web/static/js/modules/settings.js:705 web/static/js/modules/settings.js:712
+#: web/static/js/modules/settings.js:708 web/static/js/modules/settings.js:715
 msgid "Not yet synced - run a sync to build the local history database."
 msgstr ""
 
-#: web/static/js/modules/settings.js:714
+#: web/static/js/modules/settings.js:717
 msgid "unique tracks"
 msgstr ""
 
-#: web/static/js/modules/settings.js:714 web/static/js/modules/sync.js:301
+#: web/static/js/modules/settings.js:717 web/static/js/modules/sync.js:301
 msgid "plays"
 msgstr ""
 
-#: web/static/js/modules/settings.js:729 web/static/js/modules/settings.js:734
+#: web/static/js/modules/settings.js:732 web/static/js/modules/settings.js:737
 msgid "Failed to clear Last.fm history"
 msgstr ""
 
-#: web/static/js/modules/settings.js:731
+#: web/static/js/modules/settings.js:734
 msgid "Last.fm history cleared"
 msgstr ""
 
-#: web/static/js/modules/settings.js:877
+#: web/static/js/modules/settings.js:880
 msgid "APScheduler not installed"
 msgstr ""
 
-#: web/static/js/modules/settings.js:890
+#: web/static/js/modules/settings.js:893
 msgid "Automation Active"
 msgstr ""
 
-#: web/static/js/modules/settings.js:890
+#: web/static/js/modules/settings.js:893
 msgid "Automation Disabled"
 msgstr ""
 
@@ -1678,7 +1726,7 @@ msgstr ""
 #: web/templates/partials/_modals.html:1164
 #: web/templates/partials/_modals.html:1246
 #: web/templates/partials/_modals.html:1324
-#: web/templates/partials/_panel_settings.html:921
+#: web/templates/partials/_panel_settings.html:971
 msgid "Close"
 msgstr ""
 
@@ -2532,9 +2580,9 @@ msgid "Connect"
 msgstr ""
 
 #: web/templates/partials/_modals.html:732
-#: web/templates/partials/_panel_settings.html:795
-#: web/templates/partials/_panel_settings.html:812
-#: web/templates/partials/_panel_settings.html:829
+#: web/templates/partials/_panel_settings.html:845
+#: web/templates/partials/_panel_settings.html:862
+#: web/templates/partials/_panel_settings.html:879
 msgid "Export / Import"
 msgstr ""
 
@@ -2590,7 +2638,7 @@ msgstr ""
 
 #: web/templates/partials/_modals.html:793
 #: web/templates/partials/_modals.html:807
-#: web/templates/partials/_panel_settings.html:730
+#: web/templates/partials/_panel_settings.html:780
 msgid "Clear History Database"
 msgstr ""
 
@@ -2601,8 +2649,8 @@ msgid ""
 msgstr ""
 
 #: web/templates/partials/_modals.html:821
-#: web/templates/partials/_panel_settings.html:677
-#: web/templates/partials/_panel_settings.html:801
+#: web/templates/partials/_panel_settings.html:727
+#: web/templates/partials/_panel_settings.html:851
 msgid "History Database"
 msgstr ""
 
@@ -2636,7 +2684,7 @@ msgstr ""
 
 #: web/templates/partials/_modals.html:883
 #: web/templates/partials/_modals.html:899
-#: web/templates/partials/_panel_settings.html:668
+#: web/templates/partials/_panel_settings.html:718
 msgid "Clear Last.fm History"
 msgstr ""
 
@@ -2648,8 +2696,8 @@ msgid ""
 msgstr ""
 
 #: web/templates/partials/_modals.html:914
-#: web/templates/partials/_panel_settings.html:646
-#: web/templates/partials/_panel_settings.html:818
+#: web/templates/partials/_panel_settings.html:696
+#: web/templates/partials/_panel_settings.html:868
 msgid "Local Last.fm History"
 msgstr ""
 
@@ -2667,7 +2715,7 @@ msgid ""
 msgstr ""
 
 #: web/templates/partials/_modals.html:983
-#: web/templates/partials/_panel_settings.html:835
+#: web/templates/partials/_panel_settings.html:885
 msgid "Teleporter"
 msgstr ""
 
@@ -2869,7 +2917,7 @@ msgid "Reset to parent"
 msgstr ""
 
 #: web/templates/partials/_modals.html:1359
-#: web/templates/partials/_panel_settings.html:930
+#: web/templates/partials/_panel_settings.html:980
 msgid "Save"
 msgstr ""
 
@@ -3736,232 +3784,271 @@ msgid "Next run:"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:591
-msgid "Webhooks"
+msgid "Notifications (Apprise)"
 msgstr ""
 
 #: web/templates/partials/_panel_settings.html:595
+msgid "Apprise URLs"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:599
+#: web/templates/partials/_panel_settings.html:600
+msgid "Send a test to this URL"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:607
+#: web/templates/partials/_panel_settings.html:608
+msgid "Add URL"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:618
+msgid ""
+"Add one or more Apprise service URLs. Supports Discord, ntfy, Slack, "
+"Telegram, Gotify, and 100+ services. Double-click a saved URL to edit it."
+" See the Apprise docs (appriseit.com) for URL formats."
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:621
+#: web/templates/partials/_panel_settings.html:651
+msgid "Send notifications for"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:623
+#: web/templates/partials/_panel_settings.html:654
+msgid "Errors only"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:624
+#: web/templates/partials/_panel_settings.html:655
+msgid "All syncs"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:626
+msgid "Choose when to send notifications"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:638
+msgid "Webhook (Legacy)"
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:641
+msgid ""
+"Deprecated: the generic webhook is superseded by Apprise above. It still "
+"works for existing setups but will be removed in a future release. Leave "
+"the URL blank to disable it."
+msgstr ""
+
+#: web/templates/partials/_panel_settings.html:645
 msgid "Webhook URL"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:598
+#: web/templates/partials/_panel_settings.html:648
 msgid ""
 "Receives a JSON POST with sync results. Works with ntfy, Discord, Slack, "
 "or any HTTP endpoint."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:601
-msgid "Send notifications for"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:604
-msgid "Errors only"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:605
-msgid "All syncs"
-msgstr ""
-
-#: web/templates/partials/_panel_settings.html:613
+#: web/templates/partials/_panel_settings.html:663
 msgid "Test"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:616
+#: web/templates/partials/_panel_settings.html:666
 msgid "Choose when to send webhook notifications"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:621
+#: web/templates/partials/_panel_settings.html:671
 msgid "Allow private/LAN webhook URLs"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:624
+#: web/templates/partials/_panel_settings.html:674
 msgid ""
 "Enable only if your webhook points to a local address (e.g. a self-hosted"
 " ntfy or Gotify on your network). Off by default to prevent server-side "
 "request forgery."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:639
+#: web/templates/partials/_panel_settings.html:689
 msgid "Local Databases"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:642
+#: web/templates/partials/_panel_settings.html:692
 msgid ""
 "Optional local SQLite databases stored under cache/. They power richer "
 "playlist ranking and analytics and never leave your instance. Back them "
 "up from Data Management below."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:651
+#: web/templates/partials/_panel_settings.html:701
 msgid "Use local Last.fm database"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:654
+#: web/templates/partials/_panel_settings.html:704
 msgid ""
 "Crawl your full Last.fm scrobble history into a local database and rank "
 "playlists by lifetime plays + recency. The first sync downloads your "
 "entire history (may take a while); later syncs only fetch new scrobbles."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:658
+#: web/templates/partials/_panel_settings.html:708
 msgid ""
 "Heads up: enabling this changes how the main playlist is built (lifetime "
 "plays instead of recent tracks), so the resulting playlist may look "
 "noticeably different."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:671
+#: web/templates/partials/_panel_settings.html:721
 msgid ""
 "Clearing resets the sync watermark, so the next sync re-crawls your full "
 "Last.fm history. Backup and restore from Data Management below."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:682
+#: web/templates/partials/_panel_settings.html:732
 msgid "Enable history database"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:684
+#: web/templates/partials/_panel_settings.html:734
 msgid ""
 "Store track lookups, sync runs, and actions in a local SQLite database "
 "for analytics"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:690
+#: web/templates/partials/_panel_settings.html:740
 msgid "Max DB Size (MB)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:692
+#: web/templates/partials/_panel_settings.html:742
 msgid "Auto-prune oldest records when exceeded. 0 = unlimited."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:695
+#: web/templates/partials/_panel_settings.html:745
 msgid "Retention (days)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:697
+#: web/templates/partials/_panel_settings.html:747
 msgid ""
 "Auto-delete syncs &amp; actions older than N days after each sync. 0 = "
 "keep forever."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:703
+#: web/templates/partials/_panel_settings.html:753
 msgid ""
 "Import existing data from your search cache and overrides into the "
 "history database."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:713
+#: web/templates/partials/_panel_settings.html:763
 msgid "Backfill from Cache"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:721
+#: web/templates/partials/_panel_settings.html:771
 msgid "Vacuum &amp; Prune"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:734
+#: web/templates/partials/_panel_settings.html:784
 msgid "Backup and restore the history database from Data Management below."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:748
+#: web/templates/partials/_panel_settings.html:798
 msgid "Caching"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:752
+#: web/templates/partials/_panel_settings.html:802
 msgid "Search Cache TTL (days)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:754
+#: web/templates/partials/_panel_settings.html:804
 msgid "Days before cached searches expire (0 = never)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:757
+#: web/templates/partials/_panel_settings.html:807
 msgid "Not-Found Cache TTL (days)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:759
+#: web/templates/partials/_panel_settings.html:809
 msgid "Days before \"not found\" results are retried"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:762
+#: web/templates/partials/_panel_settings.html:812
 msgid "Tag Cache TTL (days)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:764
+#: web/templates/partials/_panel_settings.html:814
 msgid "Days before cached tags expire (0 = never)"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:777
+#: web/templates/partials/_panel_settings.html:827
 msgid "Data Management"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:780
+#: web/templates/partials/_panel_settings.html:830
 msgid ""
 "Back up, restore, or migrate your data. Each option covers a different "
 "scope."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:785
+#: web/templates/partials/_panel_settings.html:835
 msgid "Overrides &amp; Blacklist"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:786
+#: web/templates/partials/_panel_settings.html:836
 msgid "Manual fixes, tag overrides, and the blacklist (JSON, plaintext)."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:803
+#: web/templates/partials/_panel_settings.html:853
 msgid ""
 "Full track / sync / action log as a JSON dump (plaintext). Import "
 "supports merge or replace."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:820
+#: web/templates/partials/_panel_settings.html:870
 msgid ""
 "Full scrobble history (artist, track, play counts) as a JSON dump "
 "(plaintext). Import supports merge or replace."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:837
+#: web/templates/partials/_panel_settings.html:887
 msgid ""
 "Encrypted bundle (AES-256-GCM) of everything above plus caches - for "
 "moving between instances."
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:846
+#: web/templates/partials/_panel_settings.html:896
 msgid "Open Teleporter"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:859
+#: web/templates/partials/_panel_settings.html:909
 msgid "Reliability & Retries"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:863
+#: web/templates/partials/_panel_settings.html:913
 msgid "YTM API Max Retries"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:867
+#: web/templates/partials/_panel_settings.html:917
 msgid "Last.fm Max Retries"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:871
+#: web/templates/partials/_panel_settings.html:921
 msgid "Max Consecutive Empty Pages"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:873
+#: web/templates/partials/_panel_settings.html:923
 msgid "Stop after N pages with no new tracks"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:878
+#: web/templates/partials/_panel_settings.html:928
 msgid "Force IPv4 for Last.fm"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:880
+#: web/templates/partials/_panel_settings.html:930
 msgid "Helps with flaky Last.fm IPv6 connections"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:895
+#: web/templates/partials/_panel_settings.html:945
 msgid "Logging"
 msgstr ""
 
-#: web/templates/partials/_panel_settings.html:899
+#: web/templates/partials/_panel_settings.html:949
 msgid "Log Level"
 msgstr ""
 
@@ -6147,7 +6234,7 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Webhooks"
-#~ msgstr "Webhooks"
+#~ msgstr ""
 
 #~ msgid "Webhook URL"
 #~ msgstr "Webhook-URL"
@@ -6950,5 +7037,13 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Top tracks — last 90 days"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "One or more Apprise service URLs, "
+#~ "separated by spaces or commas. Supports"
+#~ " Discord, ntfy, Slack, Telegram, Gotify,"
+#~ " and 100+ services. See the Apprise"
+#~ " wiki for URL formats."
 #~ msgstr ""
 

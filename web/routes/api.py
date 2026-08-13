@@ -419,6 +419,28 @@ def webhook_test() -> ResponseReturnValue:
     return jsonify({"error": _("Webhook request failed. Check the URL and try again.")}), 502
 
 
+@api_bp.route("/apprise/test", methods=["POST"])
+def apprise_test() -> ResponseReturnValue:
+    """Send a test Apprise notification to verify the configured URL(s)."""
+    data = request.get_json() or {}
+    from src.notify import parse_apprise_urls, send_apprise
+
+    urls = parse_apprise_urls((data.get("urls") or "").strip())
+    if not urls:
+        return jsonify({"error": _("No Apprise URL provided")}), 400
+
+    ok = send_apprise(
+        urls,
+        status="test",
+        sync_type="test",
+        tracks_resolved=42,
+        tracks_missed=3,
+    )
+    if ok:
+        return jsonify({"status": "ok"})
+    return jsonify({"error": _("Apprise test failed. Check the URL(s) and try again.")}), 502
+
+
 @api_bp.route("/stats")
 def stats() -> ResponseReturnValue:
     """Get all stats for updating the UI dynamically."""

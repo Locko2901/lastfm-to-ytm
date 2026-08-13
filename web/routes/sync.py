@@ -83,7 +83,7 @@ def _run_sync_process(
 
         # Remove settings that may have changed since server start so the
         # subprocess re-reads them from .env via load_dotenv().
-        for key in ("WEBHOOK_URL", "WEBHOOK_EVENTS"):
+        for key in ("WEBHOOK_URL", "WEBHOOK_EVENTS", "APPRISE_URLS", "APPRISE_EVENTS"):
             env.pop(key, None)
         process = subprocess.Popen(
             [sys.executable, script],

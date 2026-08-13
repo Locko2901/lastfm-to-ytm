@@ -20,7 +20,8 @@ Prefer [uv](https://docs.astral.sh/uv/)? Use `uv pip install -e ".[dev,web]"` (a
 │   ├── config.py       # Settings from environment variables
 │   ├── context.py      # RuntimeContext (shared dependencies)
 │   ├── main.py         # Facade for the workflow entry points
-│   ├── webhook.py      # Webhook notifications for sync events
+│   ├── notify.py       # Apprise-based sync notifications with multi-target support
+│   ├── webhook.py      # Legacy generic webhook notifications for sync events
 │   ├── cache/          # Cache layer (search, playlist, tags)
 │   ├── history/        # Optional SQLite history database for metrics and analytics
 │   ├── lastfm/         # Last.fm API client and scrobble fetching
