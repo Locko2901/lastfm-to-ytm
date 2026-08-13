@@ -64,6 +64,7 @@ select = [
 ]
 ignore = [
   "PLR0913", # too many arguments
+  "PLR0917", # too many positional arguments
   "PLR2004", # magic value comparison
   "RET504",  # unnecessary assignment before return
   "D100",    # missing docstring in public module
