@@ -1,4 +1,11 @@
-"""Webhook notifications for sync events."""
+"""Legacy generic webhook notifications for sync events.
+
+.. deprecated::
+    This hand-rolled single-URL webhook sender is superseded by Apprise
+    (``src/notify.py``, ``APPRISE_URLS``), which supports many services and
+    multiple targets. It is kept for backwards compatibility with existing
+    ``WEBHOOK_URL`` configurations and will be removed in a future release.
+"""
 
 from __future__ import annotations
 

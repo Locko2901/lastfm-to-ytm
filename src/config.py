@@ -10,6 +10,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from .notify import parse_apprise_urls
+
 PROJECT_ROOT = Path(__file__).parent.parent
 
 load_dotenv(PROJECT_ROOT / ".env")
@@ -385,9 +387,11 @@ class Settings:
     lastfm_local_db_file: str = str(RUNTIME_DIR / "lastfm_history.db")
     lastfm_local_db_max_scrobbles: int = 0
     discovery_rediscover_days: int = 0
-    webhook_url: str = ""
-    webhook_events: str = "error"
-    webhook_allow_private: bool = False
+    webhook_url: str = ""  # DEPRECATED: legacy generic webhook, use apprise_urls instead
+    webhook_events: str = "error"  # DEPRECATED: paired with webhook_url
+    webhook_allow_private: bool = False  # DEPRECATED: paired with webhook_url
+    apprise_urls: list[str] = field(default_factory=list)
+    apprise_events: str = "error"
 
     @property
     def privacy_status(self) -> str:
@@ -493,6 +497,10 @@ class Settings:
         if webhook_events not in {"all", "error"}:
             webhook_events = "error"
         webhook_allow_private = _str_to_bool(os.getenv("WEBHOOK_ALLOW_PRIVATE"), False)
+        apprise_urls = parse_apprise_urls(_strip_inline_comment(os.getenv("APPRISE_URLS")) or "")
+        apprise_events = (_strip_inline_comment(os.getenv("APPRISE_EVENTS")) or "error").strip().lower()
+        if apprise_events not in {"all", "error"}:
+            apprise_events = "error"
 
         return Settings(
             lastfm_user=lastfm_user,
@@ -554,6 +562,8 @@ class Settings:
             webhook_url=webhook_url,
             webhook_events=webhook_events,
             webhook_allow_private=webhook_allow_private,
+            apprise_urls=apprise_urls,
+            apprise_events=apprise_events,
         )
 
 

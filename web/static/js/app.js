@@ -1,3 +1,4 @@
+import { appriseAdd, appriseDeleteEntry, appriseTestEntry, appriseTestNew, appriseToggleEntry, initApprise } from "./modules/apprise.js"
 import { closeAuthModal, connectAuth, initAuth } from "./modules/auth.js"
 import {
   _onTogglePlaylist as cacheAdminTogglePlaylist,
@@ -239,6 +240,11 @@ window.importMissingSettings = importMissingSettings
 window.downloadEnvExample = downloadEnvExample
 window.restartServer = restartServer
 window.testWebhook = testWebhook
+window.appriseAdd = appriseAdd
+window.appriseTestNew = appriseTestNew
+window.appriseTestEntry = appriseTestEntry
+window.appriseToggleEntry = appriseToggleEntry
+window.appriseDeleteEntry = appriseDeleteEntry
 
 window.showCustomThemeModal = showCustomThemeModal
 window.cancelCustomThemeModal = cancelCustomThemeModal
@@ -347,6 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initCustomPlaylists()
   initHistory()
   initCacheAdmin()
+  initApprise()
 
   initTagInput("tag-override-tags")
   initTagInput("add-tag-override-tags")

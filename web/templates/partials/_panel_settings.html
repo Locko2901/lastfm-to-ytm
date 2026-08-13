@@ -581,6 +581,53 @@
             </div>
 
             <div class="settings-page" data-settings-page="notifications">
+              <div class="settings-section" data-settings-section="apprise">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                  </svg>
+                  {{ _('Notifications (Apprise)') }}
+                </h3>
+                <div class="settings-grid">
+                  <div class="form-group apprise-group" style="grid-column: 1 / -1;">
+                    <label for="appriseNewUrl">{{ _('Apprise URLs') }}</label>
+                    <input type="hidden" id="APPRISE_URLS" name="APPRISE_URLS">
+                    <div class="apprise-add-row">
+                      <input type="text" id="appriseNewUrl" class="apprise-new-input" placeholder="discord://webhook_id/webhook_token">
+                      <button type="button" class="btn btn-sm btn-icon" data-action="appriseTestNew" data-tooltip="{{ _('Send a test to this URL') }}"
+                        aria-label="{{ _('Send a test to this URL') }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          aria-hidden="true">
+                          <line x1="22" y1="2" x2="11" y2="13"></line>
+                          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-icon apprise-btn-add" data-action="appriseAdd" data-tooltip="{{ _('Add URL') }}"
+                        aria-label="{{ _('Add URL') }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          aria-hidden="true">
+                          <line x1="12" y1="5" x2="12" y2="19"></line>
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      </button>
+                    </div>
+                    <div id="appriseList" class="apprise-list"></div>
+                    <span
+                      class="form-hint">{{ _('Add one or more Apprise service URLs. Supports Discord, ntfy, Slack, Telegram, Gotify, and 100+ services. Double-click a saved URL to edit it. See the Apprise docs (appriseit.com) for URL formats.') }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="APPRISE_EVENTS">{{ _('Send notifications for') }}</label>
+                    <select id="APPRISE_EVENTS" name="APPRISE_EVENTS">
+                      <option value="error">{{ _('Errors only') }}</option>
+                      <option value="all">{{ _('All syncs') }}</option>
+                    </select>
+                    <span class="form-hint">{{ _('Choose when to send notifications') }}</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="settings-section" data-settings-section="webhooks">
                 <h3 class="settings-section-title">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -588,8 +635,11 @@
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                   </svg>
-                  {{ _('Webhooks') }}
+                  {{ _('Webhook (Legacy)') }}
                 </h3>
+                <p class="settings-help" style="color: var(--warning, #b58900);">
+                  {{ _('Deprecated: the generic webhook is superseded by Apprise above. It still works for existing setups but will be removed in a future release. Leave the URL blank to disable it.') }}
+                </p>
                 <div class="settings-grid">
                   <div class="form-group" style="grid-column: 1 / -1;">
                     <label for="WEBHOOK_URL">{{ _('Webhook URL') }}</label>

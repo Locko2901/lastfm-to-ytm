@@ -27,6 +27,11 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEVOPS_DIR="$SCRIPT_DIR/devops"
 COMPOSE_FILE="$DEVOPS_DIR/docker-compose.yml"
+OVERRIDE_FILE="$DEVOPS_DIR/docker-compose.override.yml"
+COMPOSE_ARGS=(-f "$COMPOSE_FILE")
+if [[ -f "$OVERRIDE_FILE" ]]; then
+    COMPOSE_ARGS+=(-f "$OVERRIDE_FILE")
+fi
 IMAGE_NAME="lastfm-to-ytm-web"
 CONTAINER_NAME="lastfm-to-ytm"
 PORT="${YTMT_PORT:-2002}"
@@ -188,17 +193,17 @@ fi
 case $ACTION in
     stop)
         echo -e "${CYAN}Stopping container...${NC}"
-        docker compose -f "$COMPOSE_FILE" down
+        docker compose "${COMPOSE_ARGS[@]}" down
         echo -e "${GREEN}✓ Container stopped${NC}"
         exit 0
         ;;
     logs)
-        exec docker compose -f "$COMPOSE_FILE" logs -f
+        exec docker compose "${COMPOSE_ARGS[@]}" logs -f
         ;;
     status)
         if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
             echo -e "${GREEN}● Container is running${NC}"
-            docker compose -f "$COMPOSE_FILE" ps
+            docker compose "${COMPOSE_ARGS[@]}" ps
         else
             echo -e "${YELLOW}○ Container is not running${NC}"
         fi
@@ -310,9 +315,9 @@ if [[ "$PULL" == true ]]; then
     echo -e "${YELLOW}→ Pulling prebuilt image: ${IMAGE_NAME}${NC}"
     if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
         echo -e "${YELLOW}→ Stopping old container...${NC}"
-        docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null || true
+        docker compose "${COMPOSE_ARGS[@]}" down --remove-orphans 2>/dev/null || true
     fi
-    docker compose -f "$COMPOSE_FILE" pull || {
+    docker compose "${COMPOSE_ARGS[@]}" pull || {
         echo -e "${RED}✗ Image pull failed${NC}"
         exit 1
     }
@@ -324,25 +329,25 @@ else
         if [[ "$REBUILD" == true ]]; then
             if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
                 echo -e "${YELLOW}→ Stopping and removing old container...${NC}"
-                docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null || true
+                docker compose "${COMPOSE_ARGS[@]}" down --remove-orphans 2>/dev/null || true
             fi
         fi
 
         if [[ "$NO_CACHE" == true ]]; then
             echo -e "${YELLOW}→ Rebuilding image (--no-cache, full rebuild)...${NC}"
-            docker compose -f "$COMPOSE_FILE" build --no-cache --pull || {
+            docker compose "${COMPOSE_ARGS[@]}" build --no-cache --pull || {
                 echo -e "${RED}✗ Image build failed${NC}"
                 exit 1
             }
         elif [[ "$REBUILD" == true ]]; then
             echo -e "${YELLOW}→ Rebuilding image (--rebuild flag)...${NC}"
-            docker compose -f "$COMPOSE_FILE" build --pull || {
+            docker compose "${COMPOSE_ARGS[@]}" build --pull || {
                 echo -e "${RED}✗ Image build failed${NC}"
                 exit 1
             }
         else
             echo -e "${YELLOW}→ Building image for the first time...${NC}"
-            docker compose -f "$COMPOSE_FILE" build || {
+            docker compose "${COMPOSE_ARGS[@]}" build || {
                 echo -e "${RED}✗ Image build failed${NC}"
                 exit 1
             }
@@ -360,12 +365,12 @@ echo -e "${BLUE}[5/5]${NC} Starting container..."
 
 if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
     echo -e "${YELLOW}→ Container already running, restarting...${NC}"
-    docker compose -f "$COMPOSE_FILE" restart || {
+    docker compose "${COMPOSE_ARGS[@]}" restart || {
         echo -e "${RED}✗ Failed to restart container${NC}"
         exit 1
     }
 else
-    docker compose -f "$COMPOSE_FILE" up -d || {
+    docker compose "${COMPOSE_ARGS[@]}" up -d || {
         echo -e "${RED}✗ Failed to start container${NC}"
         exit 1
     }

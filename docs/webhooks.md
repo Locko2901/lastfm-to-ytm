@@ -1,14 +1,80 @@
 # Webhooks
 
-Get notified when a sync completes or fails. The webhook sends a POST request with sync results to any URL you configure.
+Get notified when a sync completes or fails.
 
-**Discord** is the only tested provider, but any endpoint that accepts JSON POST requests should work (Slack, ntfy, custom servers, etc.).
+The recommended way to receive notifications is **[Apprise](#notifications-apprise)**,
+which delivers to 100+ services (Discord, ntfy, Slack, Telegram, Gotify, …) and
+supports **multiple targets** at once. The original single-URL
+**[generic webhook](#legacy-generic-webhook)** still works but is **deprecated**.
 
 ---
 
+## Notifications (Apprise)
+
+Configure one or more [Apprise service URLs](https://appriseit.com/services/)
+and each sync result is delivered to all of them.
+
+**Docker**: Open **Settings &rarr; Notifications (Apprise)**, paste your URL(s),
+choose when to send, and use the **Test** button to verify.
+
+**CLI**: Add to your `.env`:
+
+```bash
+# Space- or comma-separated. Multiple targets supported.
+APPRISE_URLS=discord://webhook_id/webhook_token ntfy://host/topic
+APPRISE_EVENTS=all    # "all" = every sync, "error" = failures only
+```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `APPRISE_URLS` | *(empty)* | One or more Apprise URLs, separated by spaces or commas. Leave empty to disable. |
+| `APPRISE_EVENTS` | `error` | When to send: `all` (every sync) or `error` (failures only) |
+
+Apprise URLs are operator-configured and intentionally support self-hosted LAN
+services (ntfy, Gotify, …), so no public-address SSRF check is applied to them.
+
+### Managing targets in the dashboard
+
+Under **Settings &rarr; Notifications (Apprise)** each saved URL appears as a row
+with icon actions:
+
+- **Test** (paper plane) - send a test notification to that one target.
+- **Enable / Disable** - toggle a target without deleting it. Disabled
+  targets are greyed out, tagged `(disabled)`, and skipped when syncing (stored
+  with a leading `!` in `APPRISE_URLS`).
+- **Delete** (trash) - remove the target.
+
+**Double-click a saved URL** to edit it inline; press <kbd>Enter</kbd> to save or
+<kbd>Esc</kbd> to cancel. Use the input row's **Test** button to try a URL
+*before* adding it with **+**.
+
+### Example: self-hosted ntfy with an access token
+
+```bash
+# ntfy:// = HTTP, ntfys:// = HTTPS. Token goes in the userinfo position.
+APPRISE_URLS=ntfy://tk_youraccesstoken@10.10.10.10:8082/your-topic
+```
+
+This replaces the older pattern of POSTing a generic JSON webhook to ntfy with a
+base64 `?auth=` query string - Apprise sends a native ntfy notification and
+handles token auth for you.
+
+---
+
+## Legacy generic webhook
+
+!!! warning "Deprecated"
+    The generic single-URL webhook below is superseded by Apprise and will be
+    removed in a future release. It still works for existing setups; leave
+    `WEBHOOK_URL` empty to disable it.
+
+The webhook sends a POST request with sync results to any URL you configure.
+Any endpoint that accepts JSON POST requests works (Slack, ntfy, custom servers),
+and **Discord** is auto-detected and formatted as a rich embed.
+
 ## Configuration
 
-**Docker**: Open **Settings** and scroll to the **Webhooks** section. Enter your webhook URL, choose when to send notifications, and use the **Test** button to verify.
+**Docker**: Open **Settings** and scroll to the **Webhook (Legacy)** section. Enter your webhook URL, choose when to send notifications, and use the **Test** button to verify.
 
 **CLI**: Add to your `.env`:
 

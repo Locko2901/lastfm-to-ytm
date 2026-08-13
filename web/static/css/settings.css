@@ -510,3 +510,119 @@
 .settings-form .form-group.setting-hidden {
   display: none;
 }
+
+.settings-form .form-group.apprise-group {
+  display: block;
+  min-width: 0;
+}
+
+.apprise-add-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.apprise-new-input {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.apprise-add-row .apprise-new-input,
+.apprise-add-row .btn-icon {
+  height: 2.5rem;
+}
+
+.apprise-add-row .btn-icon {
+  width: 2.5rem;
+  flex: 0 0 auto;
+  padding: 0;
+}
+
+.apprise-add-row .btn-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.apprise-btn-add {
+  color: var(--accent);
+  border-color: rgba(var(--accent-rgb), 0.4);
+}
+
+.apprise-btn-add:hover {
+  color: var(--accent-text);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.apprise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  min-width: 0;
+}
+
+.apprise-empty {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  padding: 0.5rem 0;
+}
+
+.apprise-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.apprise-url {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.4rem 0.65rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  cursor: default;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.apprise-row-disabled .apprise-url {
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
+.apprise-url-flag {
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.apprise-row-editing {
+  width: 100%;
+}
+
+.apprise-edit-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 2.5rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+}
+
+.apprise-row-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.apprise-btn-danger:hover {
+  color: var(--danger);
+  border-color: rgba(var(--danger-rgb), 0.5);
+  background: rgba(var(--danger-rgb), 0.1);
+}

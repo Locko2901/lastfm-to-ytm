@@ -28,6 +28,9 @@ browser.json
 COMMIT_SHA
 .channel
 
+# Local Docker Compose override
+devops/docker-compose.override.yml
+
 # Runtime state directory (SQLite history DBs, search/tag/playlist caches, run logs)
 /runtime/
 # Legacy cache directory (pre-runtime rename; kept for backwards compatibility)

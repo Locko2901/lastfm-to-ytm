@@ -8,6 +8,7 @@ version = "2.6.0"
 description = "Sync Last.fm listening history to YouTube Music playlists"
 requires-python = ">=3.11"
 dependencies = [
+  "apprise==1.12.0",
   "python-dotenv==1.2.2",
   "requests==2.34.2",
   "text-unidecode==1.3",
@@ -83,6 +84,7 @@ ignore = [
 "tests/screenshots/*.py" = ["T20", "D", "E501"] # dev-only CLI: prints + literal fixture rows
 "tests/test_*.py" = ["D", "PLR2004"]            # tests: no docstrings, allow literal assertions
 "tests/test_webhook.py" = ["D", "PLR2004", "ARG001"] # + stub signatures must match socket.getaddrinfo / requests.post
+"tests/test_notify.py" = ["D", "PLR2004", "ARG002"] # + fake Apprise stub methods keep the real signature
 "tests/test_discovery.py" = ["D", "PLR2004", "ARG001"] # + stub signatures must match the Last.fm fetch helpers
 "tests/conftest.py" = ["ARG001"] # web fixtures depend on each other for monkeypatch side effects
 "tests/frontend/*.py" = ["D", "PLR2004", "SLF001"] # frontend tests: no docstrings, literal assertions, reuse fixture-server helpers
@@ -123,5 +125,5 @@ strict = true
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
-module = ["ytmusicapi.*", "flask_babel.*", "apscheduler.*", "text_unidecode.*", "unidecode.*"]
+module = ["ytmusicapi.*", "flask_babel.*", "apscheduler.*", "text_unidecode.*", "unidecode.*", "apprise.*"]
 ignore_missing_imports = true
