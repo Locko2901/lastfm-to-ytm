@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.7.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.6.0...v2.7.0) (2026-08-13)
+
+
+### Features
+
+* add Apprise notifications with multi-target dashboard management ([23431a1](https://github.com/Locko2901/lastfm-to-ytm/commit/23431a1828ba41aa4b06c3a5ae3387c34c0b8d07))
+
+
+### Build
+
+* **deps-dev:** bump @biomejs/biome ([#40](https://github.com/Locko2901/lastfm-to-ytm/issues/40)) ([604bbf7](https://github.com/Locko2901/lastfm-to-ytm/commit/604bbf72e40b63cfb2acfc9d85ca2fa25a09ef92))
+* **deps-dev:** bump the python-dev group across 1 directory with 6 updates ([#45](https://github.com/Locko2901/lastfm-to-ytm/issues/45)) ([f2fa6ac](https://github.com/Locko2901/lastfm-to-ytm/commit/f2fa6acc6ff3ade0032bce867af28d901529cb4e))
+
+
+### CI/CD
+
+* **deps:** bump the github-actions group across 1 directory with 2 updates ([#41](https://github.com/Locko2901/lastfm-to-ytm/issues/41)) ([dddc486](https://github.com/Locko2901/lastfm-to-ytm/commit/dddc48665a0f073dca779c687f70f34227151336))
+
 ## [2.6.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.5.1...v2.6.0) (2026-07-21)
 
 
