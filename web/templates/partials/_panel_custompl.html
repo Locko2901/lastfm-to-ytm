@@ -133,6 +133,8 @@
             <a role="menuitem" href="{{ url_for('api.custom_playlist_export', index=loop.index0, format='m3u') }}" download>M3U</a>
             <a role="menuitem" href="{{ url_for('api.custom_playlist_export', index=loop.index0, format='csv') }}" download>CSV</a>
             <a role="menuitem" href="{{ url_for('api.custom_playlist_export', index=loop.index0, format='json') }}" download>JSON</a>
+            <button type="button" role="menuitem" class="export-option-btn" data-action="showCustomExportModal" data-index="{{ loop.index0 }}"
+              data-name="{{ pl.name }}">{{ _('Custom…') }}</button>
           </div>
         </div>
         <button class="btn btn-danger btn-sm" data-action="deleteCustomPlaylist" data-index="{{ loop.index0 }}" data-name="{{ pl.name }}">

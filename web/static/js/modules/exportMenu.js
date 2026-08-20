@@ -32,7 +32,7 @@ export function toggleCustomPlaylistExport(index) {
 
 document.addEventListener("click", event => {
   const target = event.target
-  if (target.closest(".export-options a")) {
+  if (target.closest(".export-options a, .export-options button")) {
     closeAll(null)
     return
   }

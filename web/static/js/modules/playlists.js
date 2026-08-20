@@ -1,3 +1,4 @@
+import { confirmDialog } from "./confirm.js"
 import { _ } from "./i18n.js"
 import { escapeHtml, showToast } from "./utils.js"
 
@@ -20,8 +21,7 @@ async function fetchJson(url, opts = {}) {
 }
 
 function confirmAction(message) {
-  // biome-ignore lint/suspicious/noAlert: user confirmation for destructive action
-  return window.confirm(message)
+  return confirmDialog({ message })
 }
 
 function trackedCardHtml(p) {
@@ -143,7 +143,7 @@ export async function trackSelectedPlaylists() {
 }
 
 export async function deleteYtmPlaylist(id, name) {
-  if (!confirmAction(_("Delete '%(name)s' from YouTube Music? This cannot be undone.", { name }))) return
+  if (!(await confirmAction(_("Delete '%(name)s' from YouTube Music? This cannot be undone.", { name })))) return
   try {
     await fetchJson("/api/playlists/delete", {
       method: "DELETE",
@@ -160,7 +160,7 @@ export async function deleteYtmPlaylist(id, name) {
 }
 
 export async function pruneWeeklies() {
-  if (!confirmAction(_("Delete old weekly playlists from YouTube Music?"))) return
+  if (!(await confirmAction(_("Delete old weekly playlists from YouTube Music?")))) return
   try {
     const data = await fetchJson("/api/playlists/prune-weeklies", { method: "POST" })
     showToast(_("Pruned %(n)s playlists", { n: data.deleted.length }))

@@ -1327,3 +1327,7 @@
 .preview-badge-new {
   color: var(--success, #2ea043);
 }
+
+.app-confirm-modal {
+  max-width: 30rem;
+}

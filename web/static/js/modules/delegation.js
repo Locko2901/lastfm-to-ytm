@@ -67,6 +67,15 @@ const actionHandlers = {
   togglePlaylistGraph: () => window.togglePlaylistGraph(),
   togglePlaylistExport: () => window.togglePlaylistExport(),
   toggleCustomPlaylistExport: el => window.toggleCustomPlaylistExport(el.dataset.index),
+  showCustomExportModal: el => window.showCustomExportModal(el),
+  downloadCustomExport: () => window.downloadCustomExport(),
+  saveCustomExportFormat: () => window.saveCustomExportFormat(),
+  deleteCustomExportFormat: () => window.deleteCustomExportFormat(),
+  deleteExportFormatByName: el => window.deleteExportFormatByName(el.dataset.name),
+  editExportFormat: el => window.editExportFormat(el.dataset.name),
+  restoreDefaultExportFormats: () => window.restoreDefaultExportFormats(),
+  appConfirmAccept: () => window.appConfirmAccept(),
+  appConfirmCancel: () => window.appConfirmCancel(),
 
   showOverrideModal: el => {
     const { artist, title, tab, videoId } = el.dataset

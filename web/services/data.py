@@ -28,6 +28,7 @@ PLAYLIST_CACHE_FILE = CACHE_DIR / ".playlist_cache.json"
 TAG_CACHE_FILE = CACHE_DIR / ".tag_cache.json"
 TAG_OVERRIDES_FILE = CONFIG_DIR / "tag_overrides.json"
 CUSTOM_PLAYLISTS_FILE = CONFIG_DIR / "custom_playlists.json"
+EXPORT_FORMATS_FILE = CONFIG_DIR / "export_formats.json"
 DRY_RUN_PREVIEW_FILE = CACHE_DIR / ".dry_run_preview.json"
 
 
@@ -936,6 +937,55 @@ def save_custom_playlists_config(playlists: list[dict[str, Any]]) -> None:
     with temp_file.open("w") as f:
         json.dump({"playlists": playlists}, f, indent=2)
     temp_file.replace(path)
+
+
+def _write_export_formats(formats: list[dict[str, Any]], seed_version: int) -> None:
+    """Atomically write the export-formats file with its seed version."""
+    EXPORT_FORMATS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    temp_file = EXPORT_FORMATS_FILE.with_suffix(".tmp")
+    with temp_file.open("w") as f:
+        json.dump({"_seed_version": seed_version, "formats": formats}, f, indent=2)
+    temp_file.replace(EXPORT_FORMATS_FILE)
+
+
+def load_export_formats_config() -> list[dict[str, str]]:
+    """Load saved custom export formats, adding any newly-shipped built-ins once."""
+    from .export import DEFAULT_EXPORT_FORMATS, EXPORT_FORMATS_SEED_VERSION, sanitize_export_formats
+
+    if not EXPORT_FORMATS_FILE.exists():
+        return [dict(f) for f in DEFAULT_EXPORT_FORMATS]
+    try:
+        with EXPORT_FORMATS_FILE.open() as f:
+            raw = json.load(f)
+    except Exception:
+        return [dict(f) for f in DEFAULT_EXPORT_FORMATS]
+
+    formats = sanitize_export_formats(raw.get("formats") if isinstance(raw, dict) else raw)
+    seed_version = raw.get("_seed_version", 0) if isinstance(raw, dict) else 0
+    if seed_version < EXPORT_FORMATS_SEED_VERSION:
+        have = {f["name"].lower() for f in formats}
+        formats.extend(dict(d) for d in DEFAULT_EXPORT_FORMATS if d["name"].lower() not in have)
+        _write_export_formats(formats, EXPORT_FORMATS_SEED_VERSION)
+    return formats
+
+
+def save_export_formats_config(formats: list[dict[str, Any]]) -> list[dict[str, str]]:
+    """Persist saved export formats atomically; returns the sanitised list."""
+    from .export import EXPORT_FORMATS_SEED_VERSION, sanitize_export_formats
+
+    clean = sanitize_export_formats(formats)
+    _write_export_formats(clean, EXPORT_FORMATS_SEED_VERSION)
+    return clean
+
+
+def restore_default_export_formats() -> list[dict[str, str]]:
+    """Re-add any missing built-in starter formats, keeping the user's own; returns the merged list."""
+    from .export import DEFAULT_EXPORT_FORMATS
+
+    current = load_export_formats_config()
+    have = {f["name"].lower() for f in current}
+    current.extend(dict(d) for d in DEFAULT_EXPORT_FORMATS if d["name"].lower() not in have)
+    return save_export_formats_config(current)
 
 
 def delete_custom_playlist_data(index: int, delete_from_ytm: bool = False) -> dict[str, Any]:

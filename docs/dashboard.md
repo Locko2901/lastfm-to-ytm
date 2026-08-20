@@ -15,7 +15,7 @@ The web dashboard is always included with the Docker setup. It provides a full m
 
 ## Dashboard Features
 
-- **Playlist tab** - View every track in your synced playlist with its matched YouTube Music link, source (cache/search/override), and status badges. Filter by overrides, blacklisted, or pending retry. Use **Show Graph** to plot each track's recency/play score against its playlist position. Use **Export** to download the playlist as M3U, CSV, or JSON (see [Exporting Playlists](#exporting-playlists)).
+- **Playlist tab** - View every track in your synced playlist with its matched YouTube Music link, source (cache/search/override), and status badges. Filter by overrides, blacklisted, or pending retry. Use **Show Graph** to plot each track's recency/play score against its playlist position. Use **Export** to download the playlist as M3U, CSV, JSON, or your own custom format (see [Exporting Playlists](#exporting-playlists)).
 - **Overrides tab** - Add, edit, or remove manual search overrides directly. Paste a YouTube Music URL or video ID and the dashboard extracts and validates it.
 - **Blacklist tab** - Manage blacklisted tracks from the UI. Blacklisted tracks are excluded entirely from playlist generation. **Blacklist Artist** excludes every track by an artist (the artist blacklist also applies to custom playlists; each playlist additionally supports its own per-artist blacklist in the editor).
 - **Not Found tab** - See all tracks where the search couldn't find a match. One-click to add an override or blacklist entry for any of them.
@@ -53,8 +53,8 @@ The web dashboard is always included with the Docker setup. It provides a full m
 
 Download the tracks of any synced playlist as a portable file, straight from the dashboard. This is handy for backups, importing into another player, or sharing a snapshot of what the tool built.
 
-- **Main playlist** - the **Export** button in the Playlist tab toolbar (next to **Show Graph**) offers **M3U**, **CSV**, and **JSON**.
-- **Custom playlists** - each card in the Custom Playlists tab has its own **Export** button (download icon, next to **Edit**) with the same three formats.
+- **Main playlist** - the **Export** button in the Playlist tab toolbar (next to **Show Graph**) offers **M3U**, **CSV**, **JSON**, and **Custom…**.
+- **Custom playlists** - each card in the Custom Playlists tab has its own **Export** button (download icon, next to **Edit**) with the same options.
 
 Exports are read from the [playlist cache](playlist-sync-internals.md) - they reflect the last synced state, so run a sync first if you want the freshest data. Track artist/title are resolved from the search cache and manual overrides.
 
@@ -62,9 +62,58 @@ Exports are read from the [playlist cache](playlist-sync-internals.md) - they re
 |--------|-----------|----------|
 | **M3U** | `.m3u8` | Extended M3U with `#EXTINF` lines and one `https://music.youtube.com/watch?v=…` URL per track. Opens in most media players. |
 | **CSV** | `.csv` | Header row `artist,title,video_id,yt_title,url` plus one row per track. Ideal for spreadsheets or scripting. |
-| **JSON** | `.json` | Structured document with `playlist`, `track_count`, and a `tracks` array (each with `artist`, `title`, `video_id`, `yt_title`, `url`). |
+| **JSON** | `.json` | Structured document with `playlist`, `track_count`, and a `tracks` array (each with `artist`, `title`, `video_id`, `yt_title`, `url`, `source`, `tags`). |
+| **Custom** | your choice | One line per track, rendered from a `{placeholder}` template you define. See below. |
 
 Under the hood the dashboard hits `GET /api/playlist/export?name=<playlist>&format=<fmt>` (the main playlist name is filled in automatically) and `GET /api/custom-playlists/<index>/export?format=<fmt>` for custom playlists. A playlist with no cached tracks returns `404`; an unknown format returns `400`.
+
+### Custom formats (build your own)
+
+Choosing **Custom…** opens a builder where each track becomes one line rendered from a template such as `{artist} - {title}` or `- [{artist} - {title}]({url})`. Click a placeholder chip to insert it, watch the live preview update, pick a file extension, then **Download**.
+
+Available placeholders:
+
+| Placeholder | Value |
+|-------------|-------|
+| `{index}` | 1-based position in the playlist |
+| `{artist}` | Artist name |
+| `{title}` | Track title |
+| `{yt_title}` | YouTube Music title (falls back to the track title) |
+| `{video_id}` | YouTube Music video ID |
+| `{url}` | `https://music.youtube.com/watch?v=…` |
+| `{source}` | Where the match came from (`cache`, `override`, …) |
+| `{tags}` | Comma-separated tags (custom/tag playlists only) |
+| `{playlist}` | Playlist name |
+| `{count}` | Total number of tracks |
+
+Unknown tokens and literal braces are left untouched, so a template like `{{ not a placeholder }}` renders verbatim. The **file extension** is a dropdown of common types (`txt`, `md`, `csv`, `tsv`, `json`, `m3u`, `m3u8`, `xml`, `nfo`, `html`) with a **Custom…** option for anything else - custom values must be 1-8 letters or digits and are validated inline. If the rendered output doesn't match the extension (e.g. a `.json` file that isn't valid JSON), the download is blocked with an inline error - both in the builder and on the API.
+
+#### Wrapping output (JSON arrays, CSV headers, …)
+
+By default the template runs once per track and the lines are joined with newlines. Expand **Wrap output** to add three optional pieces that turn line-per-track text into a structured document:
+
+- **Header** - text placed once at the very top (e.g. `[`).
+- **Separator** - inserted *between* tracks instead of a newline (e.g. `,`). Leave blank for the default newline.
+- **Footer** - text placed once at the very bottom (e.g. `]`).
+
+For example, header `[`, template `{"artist": "{artist}", "title": "{title}"}`, separator `,`, footer `]`, extension `json` produces a valid JSON **array**. The seeded **JSON array** format does exactly this. Downloads use `GET …/export?format=custom&template=<template>&ext=<ext>&header=<header>&sep=<separator>&footer=<footer>`.
+
+Seeded starter formats: **Artist - Title** (`.txt`), **Markdown links** (`.md`), **Numbered list** (`.txt`), **JSON lines** (NDJSON, `.jsonl`), and **JSON array** (`.json`).
+
+### Saving & reusing formats
+
+Give a template a **name** and click **Save format** to reuse it across *every* playlist. Saved formats appear in the builder's **Saved format** dropdown and under **Settings &rarr; Playlists &rarr; Export Formats**, where each row shows the name, template, and extension.
+
+Managing saved formats:
+
+- **Edit** - click a row (or its pencil) to open the builder pre-loaded with that format. Saving under the same name updates it in place.
+- **Rename** - change the name and save; the old entry is replaced (no duplicate). If the new name matches a *different* existing format, you're asked before overwriting it.
+- **Delete** - the ✕ on a row (or the builder's **Delete**) asks for confirmation. Deletions stick, including for built-in starter formats.
+- **Restore defaults** - re-adds any missing built-in formats (Artist - Title, Markdown links, Numbered list, JSON lines, JSON array) while keeping your own. Built-ins are labelled with a **Built-in** badge.
+
+Newly-shipped built-in formats are added to existing installs automatically once (tracked by a seed version), so upgrades surface new starters without wiping your customisations.
+
+Saved formats live in `config/export_formats.json` (seeded from `config/export_formats.json.example` on first use) and are managed entirely from the UI - no need to edit the file by hand. Because they're a config file, they travel with your other config in both the plain-JSON [Data Export](#data-export-import) (`all` or `export_formats` scope) and the encrypted [Teleporter](teleporter.md) backup automatically; there's no separate toggle in the Teleporter cache picker.
 
 ## Integrated Scheduler
 
@@ -123,7 +172,7 @@ The theme override file is included in the [Teleporter](teleporter.md) cache pic
 
 | Group | Format | Covers |
 |-------|--------|--------|
-| **Overrides &amp; Blacklist** | Plain JSON | Manual fixes, tag overrides, blacklist |
+| **Overrides &amp; Blacklist** | Plain JSON | Manual fixes, tag overrides, blacklist, saved export formats |
 | **History Database** | Plain JSON dump | All of `tracks`, `syncs`, `actions` (only shown when `HISTORY_DB_ENABLED=true`) |
 | **Teleporter** | Encrypted bundle (AES-256-GCM) | Everything above plus caches - for migrating between instances |
 
@@ -137,16 +186,18 @@ Export overrides, blacklist, and/or tag overrides as plain JSON. Useful for quic
 
 | Type | Includes |
 |------|----------|
-| `all` | Overrides + blacklist + tag overrides |
+| `all` | Overrides + blacklist + tag overrides + export formats |
 | `overrides` | Search overrides only |
 | `blacklist` | Blacklisted tracks only |
 | `tag_overrides` | Tag overrides only |
+| `export_formats` | Saved custom export formats only |
 
 **Import** accepts the same JSON format. Entries are validated and merged into the existing config:
 
 - Override entries must have `artist`, `title`, and a valid 11-character YouTube `video_id`.
 - Blacklist entries must have `artist` and `title`.
 - Tag override entries must have `artist`, `title`, and a non-empty `tags` list.
+- Export format entries are merged by name; existing formats are kept and only new names are added.
 
 Duplicate keys are overwritten (last write wins). Existing entries not present in the import file are left untouched.
 

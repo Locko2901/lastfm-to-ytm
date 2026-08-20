@@ -10,7 +10,15 @@ from flask import Blueprint, jsonify, redirect, request, url_for
 from flask.typing import ResponseReturnValue
 from flask_babel import gettext as _
 
-from ..services import history_record_action, load_overrides, load_search_cache, load_tag_cache, load_tag_overrides
+from ..services import (
+    history_record_action,
+    load_export_formats_config,
+    load_overrides,
+    load_search_cache,
+    load_tag_cache,
+    load_tag_overrides,
+    save_export_formats_config,
+)
 
 actions_bp = Blueprint("actions", __name__)
 
@@ -234,6 +242,8 @@ def export_data() -> ResponseReturnValue:
     if export_type in ("all", "tag_overrides"):
         tag_ov = load_tag_overrides()
         result["tag_overrides"] = dict(tag_ov.items())
+    if export_type in ("all", "export_formats"):
+        result["export_formats"] = load_export_formats_config()
 
     result["_export_meta"] = {
         "type": export_type,
@@ -294,11 +304,21 @@ def import_data() -> ResponseReturnValue:
                     tag_ov.set(artist, title, clean_tags, mode=mode, reason=reason)
                     imported_tag_overrides += 1
 
+    imported_export_formats = 0
+    if "export_formats" in data and isinstance(data["export_formats"], list):
+        existing = load_export_formats_config()
+        have = {f["name"].lower() for f in existing}
+        added = [f for f in data["export_formats"] if isinstance(f, dict) and str(f.get("name", "")).strip().lower() not in have]
+        if added:
+            saved = save_export_formats_config(existing + added)
+            imported_export_formats = max(0, len(saved) - len(existing))
+
     return jsonify(
         {
             "status": "ok",
             "imported_overrides": imported_overrides,
             "imported_blacklist": imported_blacklist,
             "imported_tag_overrides": imported_tag_overrides,
+            "imported_export_formats": imported_export_formats,
         }
     )

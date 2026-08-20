@@ -56,6 +56,7 @@
         <a role="menuitem" href="{{ url_for('api.playlist_export', format='m3u') }}" download>M3U</a>
         <a role="menuitem" href="{{ url_for('api.playlist_export', format='csv') }}" download>CSV</a>
         <a role="menuitem" href="{{ url_for('api.playlist_export', format='json') }}" download>JSON</a>
+        <button type="button" role="menuitem" class="export-option-btn" data-action="showCustomExportModal">{{ _('Custom…') }}</button>
       </div>
     </div>
 

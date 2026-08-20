@@ -44,6 +44,7 @@ _CONFIG_FILES: list[tuple[str, Path]] = [
     ("search_overrides", CONFIG_DIR / "search_overrides.json"),
     ("tag_overrides", CONFIG_DIR / "tag_overrides.json"),
     ("custom_playlists", CONFIG_DIR / "custom_playlists.json"),
+    ("export_formats", CONFIG_DIR / "export_formats.json"),
 ]
 
 _CACHE_FILES: dict[str, Path] = {
@@ -299,6 +300,7 @@ def preview_config(data: bytes, password: str) -> dict[str, Any]:
         "search_overrides": "search_overrides.json",
         "tag_overrides": "tag_overrides.json",
         "custom_playlists": "custom_playlists.json",
+        "export_formats": "export_formats.json",
         "search_cache": "search_cache.json",
         "tag_cache": "tag_cache.json",
         "playlist_cache": "playlist_cache.json",

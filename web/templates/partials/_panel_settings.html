@@ -373,6 +373,34 @@
                   </div>
                 </div>
               </div>
+
+              <div class="settings-section" data-settings-section="export_formats">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  {{ _('Export Formats') }}
+                </h3>
+                <div class="export-formats-manager">
+                  <div class="export-formats-manager-head">
+                    <span class="form-hint">
+                      {{ _('Reusable playlist export templates. Build and manage them, then apply any saved format from a playlist\'s Export menu.') }}
+                    </span>
+                    <div class="export-formats-toolbar">
+                      <button type="button" class="btn btn-secondary btn-sm" data-action="showCustomExportModal" data-manage="1">
+                        {{ _('New format') }}
+                      </button>
+                      <button type="button" class="btn btn-secondary btn-sm" data-action="restoreDefaultExportFormats">
+                        {{ _('Restore defaults') }}
+                      </button>
+                    </div>
+                  </div>
+                  <div id="exportFormatsList" class="export-formats-list"></div>
+                </div>
+              </div>
             </div>
 
             <div class="settings-page" data-settings-page="ranking">

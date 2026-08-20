@@ -1,0 +1,33 @@
+{
+  "_seed_version": 2,
+  "formats": [
+    {
+      "name": "Artist - Title",
+      "template": "{artist} - {title}",
+      "extension": "txt"
+    },
+    {
+      "name": "Markdown links",
+      "template": "- [{artist} - {title}]({url})",
+      "extension": "md"
+    },
+    {
+      "name": "Numbered list",
+      "template": "{index}. {artist} - {title}",
+      "extension": "txt"
+    },
+    {
+      "name": "JSON lines",
+      "template": "{\"artist\": \"{artist}\", \"title\": \"{title}\"}",
+      "extension": "jsonl"
+    },
+    {
+      "name": "JSON array",
+      "template": "  {\"artist\": \"{artist}\", \"title\": \"{title}\"}",
+      "header": "[\n",
+      "separator": ",\n",
+      "footer": "\n]",
+      "extension": "json"
+    }
+  ]
+}

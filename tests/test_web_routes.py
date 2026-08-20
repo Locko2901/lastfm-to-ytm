@@ -9,6 +9,7 @@ full list of what is and isn't covered here, and why.
 from __future__ import annotations
 
 import json
+from urllib.parse import urlencode
 
 import pytest
 
@@ -830,7 +831,137 @@ def test_custom_playlist_export(client, web_paths):
     assert "attachment" in resp.headers["Content-Disposition"]
 
 
+def test_playlist_export_custom_template(client, web_paths):
+    _seed_playlist_cache(web_paths, "Recents", ["vidAAAAAAAA1"])
+    sc = SearchCache(str(web_paths["SEARCH_CACHE_FILE"]))
+    sc.set("Artist", "Song", "vidAAAAAAAA1", yt_title="Song (Official)")
+
+    resp = client.get("/api/playlist/export?name=Recents&format=custom&template=%7Bindex%7D.%20%7Bartist%7D%20-%20%7Btitle%7D")
+    assert resp.status_code == 200
+    assert resp.headers["Content-Disposition"].endswith('.txt"')
+    assert resp.get_data(as_text=True).strip() == "1. Artist - Song"
+
+
+def test_playlist_export_custom_extension(client, web_paths):
+    _seed_playlist_cache(web_paths, "Recents", ["vidAAAAAAAA1"])
+    sc = SearchCache(str(web_paths["SEARCH_CACHE_FILE"]))
+    sc.set("Artist", "Song", "vidAAAAAAAA1")
+
+    resp = client.get("/api/playlist/export?name=Recents&format=custom&template=%7Btitle%7D&ext=md")
+    assert resp.status_code == 200
+    assert resp.headers["Content-Disposition"].endswith('.md"')
+
+
+def test_playlist_export_custom_json_extension_rejects_mangled(client, web_paths):
+    _seed_playlist_cache(web_paths, "Recents", ["vidAAAAAAAA1", "vidBBBBBBBB2"])
+    sc = SearchCache(str(web_paths["SEARCH_CACHE_FILE"]))
+    sc.set("Artist", "Song", "vidAAAAAAAA1")
+    sc.set("Other", "Tune", "vidBBBBBBBB2")
+
+    resp = client.get("/api/playlist/export?name=Recents&format=custom&template=%7Bartist%7D&ext=json")
+    assert resp.status_code == 400
+    assert "json" in resp.get_json()["error"].lower()
+
+
+def test_playlist_export_custom_json_extension_allows_valid_json(client, web_paths):
+    _seed_playlist_cache(web_paths, "Recents", ["vidAAAAAAAA1"])
+    sc = SearchCache(str(web_paths["SEARCH_CACHE_FILE"]))
+    sc.set("Artist", "Song", "vidAAAAAAAA1")
+
+    resp = client.get("/api/playlist/export?name=Recents&format=custom&template=%7B%22a%22%3A%22%7Bartist%7D%22%7D&ext=json")
+    assert resp.status_code == 200
+    assert resp.headers["Content-Disposition"].endswith('.json"')
+
+
+def test_playlist_export_custom_json_array_via_wrapper(client, web_paths):
+    _seed_playlist_cache(web_paths, "Recents", ["vidAAAAAAAA1", "vidBBBBBBBB2"])
+    sc = SearchCache(str(web_paths["SEARCH_CACHE_FILE"]))
+    sc.set("Artist", "Song", "vidAAAAAAAA1")
+    sc.set("Other", "Tune", "vidBBBBBBBB2")
+
+    params = urlencode(
+        {
+            "name": "Recents",
+            "format": "custom",
+            "template": '{"artist": "{artist}"}',
+            "ext": "json",
+            "header": "[",
+            "sep": ",",
+            "footer": "]",
+        }
+    )
+    resp = client.get(f"/api/playlist/export?{params}")
+    assert resp.status_code == 200
+    assert resp.headers["Content-Disposition"].endswith('.json"')
+    payload = json.loads(resp.get_data(as_text=True))
+    assert payload == [{"artist": "Artist"}, {"artist": "Other"}]
+
+
+def test_export_fields_lists_placeholders(client):
+    resp = client.get("/api/export/fields")
+    assert resp.status_code == 200
+    data = json.loads(resp.get_data(as_text=True))
+    names = {f["name"] for f in data["fields"]}
+    assert {"artist", "title", "url", "video_id", "index", "count", "source", "tags"} <= names
+    assert data["default_template"] == "{artist} - {title}"
+
+
+def test_export_formats_get_returns_defaults(client):
+    resp = client.get("/api/export-formats")
+    assert resp.status_code == 200
+    data = json.loads(resp.get_data(as_text=True))
+    assert isinstance(data["formats"], list)
+    assert len(data["formats"]) >= 1
+
+
+def test_export_formats_put_saves_and_sanitizes(client):
+    body = {"formats": [{"name": "  My Fmt  ", "template": "{artist}", "extension": ".M3U8!"}, {"name": "", "template": "x"}]}
+    resp = client.put("/api/export-formats", json=body)
+    assert resp.status_code == 200
+    saved = json.loads(resp.get_data(as_text=True))["formats"]
+    assert len(saved) == 1
+    assert saved[0] == {"name": "My Fmt", "template": "{artist}", "extension": "m3u8"}
+
+    got = json.loads(client.get("/api/export-formats").get_data(as_text=True))["formats"]
+    assert [{k: v for k, v in f.items() if k != "builtin"} for f in got] == saved
+    assert got[0]["builtin"] is False
+
+
+def test_export_formats_get_flags_builtins(client):
+    got = json.loads(client.get("/api/export-formats").get_data(as_text=True))["formats"]
+    by_name = {f["name"]: f for f in got}
+    assert by_name["JSON array"]["builtin"] is True
+
+
+def test_export_formats_restore_defaults_readds_missing(client):
+    client.put("/api/export-formats", json={"formats": [{"name": "Mine", "template": "{artist}", "extension": "txt"}]})
+    resp = client.post("/api/export-formats/restore-defaults")
+    assert resp.status_code == 200
+    names = {f["name"] for f in json.loads(resp.get_data(as_text=True))["formats"]}
+    assert "Mine" in names
+    assert {"JSON lines", "JSON array"} <= names
+
+
+def test_export_formats_put_rejects_non_list(client):
+    resp = client.put("/api/export-formats", json={"formats": "nope"})
+    assert resp.status_code == 400
+
+
 def test_custom_playlist_export_invalid_index_returns_404(client, web_paths):
     web_paths["CUSTOM_PLAYLISTS_FILE"].write_text(json.dumps({"playlists": []}))
     resp = client.get("/api/custom-playlists/9/export?format=json")
     assert resp.status_code == 404
+
+
+def test_export_import_includes_export_formats(client):
+    client.put("/api/export-formats", json={"formats": [{"name": "RoundTrip", "template": "{url}", "extension": "m3u8"}]})
+
+    exported = client.get("/export?type=all").get_json()
+    assert any(f["name"] == "RoundTrip" for f in exported["export_formats"])
+
+    exported["export_formats"].append({"name": "Imported", "template": "{title}", "extension": "txt"})
+    body = client.post("/import", json=exported).get_json()
+    assert body["imported_export_formats"] == 1
+
+    names = {f["name"] for f in client.get("/api/export-formats").get_json()["formats"]}
+    assert {"RoundTrip", "Imported"} <= names
