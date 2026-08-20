@@ -20,6 +20,10 @@
   cursor: not-allowed;
 }
 
+.btn[hidden] {
+  display: none;
+}
+
 .btn-primary {
   background: var(--accent);
   color: var(--accent-text);

@@ -21,6 +21,9 @@ from ..services import (
     ALL_SETTINGS,
     BOOL_SETTINGS,
     BROWSER_JSON_FILE,
+    CUSTOM_EXPORT_FIELDS,
+    DEFAULT_CUSTOM_TEMPLATE,
+    DEFAULT_EXPORT_FORMATS,
     ENV_EXAMPLE_FILE,
     ENV_FILE,
     PRIVACY_SETTINGS,
@@ -32,6 +35,7 @@ from ..services import (
     clear_search_cache_all,
     clear_search_cache_notfound,
     clear_tag_cache_all,
+    custom_output_error,
     delete_custom_playlist_data,
     delete_ytm_playlist,
     discover_ytm_playlists,
@@ -64,6 +68,7 @@ from ..services import (
     is_local_lastfm_enabled,
     list_tracked_playlists,
     load_custom_playlists_config,
+    load_export_formats_config,
     load_failure_log,
     load_overrides,
     load_run_log,
@@ -76,7 +81,9 @@ from ..services import (
     render_export,
     reset_history_db,
     reset_local_scrobble_db,
+    restore_default_export_formats,
     save_custom_playlists_config,
+    save_export_formats_config,
     sync_lock,
     sync_state,
     track_playlists_in_cache,
@@ -1642,12 +1649,26 @@ def _safe_filename(name: str) -> str:
     return slug or "playlist"
 
 
-def _export_playlist_response(name: str, tracks: list[dict[str, Any]], fmt: str) -> ResponseReturnValue:
+def _export_playlist_response(
+    name: str,
+    tracks: list[dict[str, Any]],
+    fmt: str,
+    template: str | None = None,
+    extension: str | None = None,
+    header: str = "",
+    footer: str = "",
+    separator: str | None = None,
+) -> ResponseReturnValue:
     """Build a file-download Response for a playlist's tracks in the given format."""
-    rendered = render_export(name, tracks, fmt)
+    sep = "\n" if separator is None else separator
+    rendered = render_export(name, tracks, fmt, template, extension, header, footer, sep)
     if rendered is None:
         return jsonify({"error": _("Unsupported export format")}), 400
     body, mimetype, ext = rendered
+    if fmt == "custom" and custom_output_error(body, ext):
+        return jsonify(
+            {"error": _("The template output is not valid .%(ext)s. Choose a plain-text extension like txt, or use the built-in export.", ext=ext)}
+        ), 400
     filename = f"{_safe_filename(name)}.{ext}"
     return Response(
         body,
@@ -1656,9 +1677,20 @@ def _export_playlist_response(name: str, tracks: list[dict[str, Any]], fmt: str)
     )
 
 
+def _custom_export_args() -> dict[str, Any]:
+    """Collect the custom-format query args shared by both export routes."""
+    return {
+        "template": request.args.get("template"),
+        "extension": request.args.get("ext"),
+        "header": request.args.get("header", ""),
+        "footer": request.args.get("footer", ""),
+        "separator": request.args.get("sep"),
+    }
+
+
 @api_bp.route("/playlist/export")
 def playlist_export() -> ResponseReturnValue:
-    """Download a cached playlist's tracks as M3U, CSV, or JSON."""
+    """Download a cached playlist's tracks as M3U, CSV, JSON, or a custom template."""
     name = request.args.get("name", "").strip() or get_main_playlist_name()
     fmt = request.args.get("format", "json").strip().lower()
     if not name:
@@ -1666,12 +1698,12 @@ def playlist_export() -> ResponseReturnValue:
     tracks = get_playlist_cache_tracks(name)
     if not tracks:
         return jsonify({"error": _("Playlist has no cached tracks to export")}), 404
-    return _export_playlist_response(name, tracks, fmt)
+    return _export_playlist_response(name, tracks, fmt, **_custom_export_args())
 
 
 @api_bp.route("/custom-playlists/<int:index>/export")
 def custom_playlist_export(index: int) -> ResponseReturnValue:
-    """Download a custom playlist's tracks as M3U, CSV, or JSON."""
+    """Download a custom playlist's tracks as M3U, CSV, JSON, or a custom template."""
     fmt = request.args.get("format", "json").strip().lower()
     playlists = load_custom_playlists_config()
     if index < 0 or index >= len(playlists):
@@ -1680,7 +1712,50 @@ def custom_playlist_export(index: int) -> ResponseReturnValue:
     tracks = get_custom_playlist_tracks(index)
     if not tracks:
         return jsonify({"error": _("Playlist has no cached tracks to export")}), 404
-    return _export_playlist_response(name, tracks, fmt)
+    return _export_playlist_response(name, tracks, fmt, **_custom_export_args())
+
+
+@api_bp.route("/export/fields")
+def export_fields() -> ResponseReturnValue:
+    """Return the placeholders available for the custom export template."""
+    return jsonify(
+        {
+            "fields": [{"name": name, "description": _(desc)} for name, desc in CUSTOM_EXPORT_FIELDS.items()],
+            "default_template": DEFAULT_CUSTOM_TEMPLATE,
+        }
+    )
+
+
+@api_bp.route("/export-formats", methods=["GET"])
+def export_formats_list() -> ResponseReturnValue:
+    """Return the user's saved custom export formats, flagged as built-in or user-made."""
+    builtin = {f["name"].lower() for f in DEFAULT_EXPORT_FORMATS}
+    formats = [{**f, "builtin": f["name"].lower() in builtin} for f in load_export_formats_config()]
+    return jsonify({"formats": formats})
+
+
+@api_bp.route("/export-formats", methods=["PUT"])
+def export_formats_save() -> ResponseReturnValue:
+    """Replace the saved custom export formats with the provided list."""
+    payload = request.get_json(silent=True) or {}
+    formats = payload.get("formats")
+    if not isinstance(formats, list):
+        return jsonify({"error": _("formats must be a list")}), 400
+    saved = save_export_formats_config(formats)
+    from ..services import history_record_action
+
+    history_record_action("export_formats_save", "", "", detail=f"count={len(saved)}")
+    return jsonify({"formats": saved})
+
+
+@api_bp.route("/export-formats/restore-defaults", methods=["POST"])
+def export_formats_restore_defaults() -> ResponseReturnValue:
+    """Re-add any missing built-in starter formats, keeping the user's own."""
+    saved = restore_default_export_formats()
+    from ..services import history_record_action
+
+    history_record_action("export_formats_restore_defaults", "", "", detail=f"count={len(saved)}")
+    return jsonify({"formats": saved})
 
 
 @api_bp.route("/cache/search/all", methods=["DELETE"])

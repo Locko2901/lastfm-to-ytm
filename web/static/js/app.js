@@ -14,6 +14,19 @@ import {
   reloadCacheAdmin,
   showCacheAdminModal,
 } from "./modules/cacheAdmin.js"
+import { appConfirmAccept, appConfirmCancel, initConfirm } from "./modules/confirm.js"
+import {
+  deleteCustomExportFormat,
+  deleteExportFormatByName,
+  downloadCustomExport,
+  editExportFormat,
+  initExportFormats,
+  loadExportFormats,
+  renderExportFormatsSettings,
+  restoreDefaultExportFormats,
+  saveCustomExportFormat,
+  showCustomExportModal,
+} from "./modules/customExport.js"
 import {
   blacklistArtistFromPlaylist,
   blacklistFromPlaylist,
@@ -171,6 +184,17 @@ window.filterTags = filterTags
 window.togglePlaylistGraph = togglePlaylistGraph
 window.togglePlaylistExport = togglePlaylistExport
 window.toggleCustomPlaylistExport = toggleCustomPlaylistExport
+window.showCustomExportModal = showCustomExportModal
+window.downloadCustomExport = downloadCustomExport
+window.saveCustomExportFormat = saveCustomExportFormat
+window.deleteCustomExportFormat = deleteCustomExportFormat
+window.deleteExportFormatByName = deleteExportFormatByName
+window.editExportFormat = editExportFormat
+window.restoreDefaultExportFormats = restoreDefaultExportFormats
+window.renderExportFormatsSettings = renderExportFormatsSettings
+window.loadExportFormats = loadExportFormats
+window.appConfirmAccept = appConfirmAccept
+window.appConfirmCancel = appConfirmCancel
 
 window.showModal = showModal
 window.closeModal = closeModal
@@ -354,6 +378,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initHistory()
   initCacheAdmin()
   initApprise()
+  initExportFormats()
+  initConfirm()
 
   initTagInput("tag-override-tags")
   initTagInput("add-tag-override-tags")

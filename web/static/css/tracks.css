@@ -289,3 +289,231 @@
 .export-options a:hover {
   background: var(--bg-secondary);
 }
+
+.export-option-btn {
+  padding: 0.4rem 0.6rem;
+  border: none;
+  border-radius: calc(var(--radius) - 2px);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.export-option-btn:hover {
+  background: var(--bg-secondary);
+}
+
+.custom-export-template {
+  width: 100%;
+  font-family: var(--font-mono, monospace);
+  resize: vertical;
+}
+
+.custom-export-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.custom-export-chip {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.custom-export-chip:hover {
+  background: var(--accent);
+  color: var(--bg-card);
+  border-color: var(--accent);
+}
+
+.custom-export-preview {
+  max-height: 12rem;
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  overflow: auto;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.custom-export-ext {
+  max-width: 8rem;
+  font-family: var(--font-mono, monospace);
+}
+
+.custom-export-ext-select {
+  max-width: 12rem;
+}
+
+.custom-export-advanced summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+}
+
+.custom-export-wrap {
+  width: 100%;
+  font-family: var(--font-mono, monospace);
+  resize: vertical;
+  white-space: pre;
+}
+
+.custom-export-ext-group .form-error {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--danger, #e5534b);
+  font-size: 0.8rem;
+}
+
+.custom-export-ext.input-error {
+  border-color: var(--danger, #e5534b);
+}
+
+.custom-export-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.custom-export-footer-spacer {
+  flex: 1 1 auto;
+}
+
+.export-formats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.6rem 0;
+}
+
+.export-formats-empty {
+  padding: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.export-formats-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.7rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.export-formats-row:hover,
+.export-formats-row:focus-visible {
+  border-color: var(--accent);
+  background: var(--bg-card);
+  outline: none;
+}
+
+.export-formats-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.export-formats-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.export-formats-name {
+  font-weight: 600;
+}
+
+.export-formats-badge {
+  padding: 0.05rem 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 999px;
+}
+
+.export-formats-template {
+  display: block;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.export-formats-ext {
+  margin-left: auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.export-formats-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+}
+
+.export-formats-del:hover {
+  color: var(--danger, #e5534b);
+  border-color: var(--danger, #e5534b);
+}
+
+.export-formats-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.export-formats-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.export-formats-manager-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.export-formats-manager-head .form-hint {
+  flex: 1 1 16rem;
+  margin: 0;
+}

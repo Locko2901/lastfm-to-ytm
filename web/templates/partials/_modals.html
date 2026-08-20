@@ -787,6 +787,140 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="customExportModal">
+  <div class="modal custom-export-modal">
+    <div class="modal-header">
+      <h2>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" style="margin-right: 8px; vertical-align: middle;">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        {{ _('Custom Export') }}
+      </h2>
+      <button class="modal-close" data-action="closeModal" data-modal="customExportModal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="form-hint" id="customExportTarget"></p>
+
+      <div class="form-group">
+        <label for="customExportFormatSelect">{{ _('Saved format') }}</label>
+        <select id="customExportFormatSelect" class="custom-export-select">
+          <option value="__new__">{{ _('New format…') }}</option>
+        </select>
+        <span class="form-hint">{{ _('Pick a saved format to reuse it, or build a new one below.') }}</span>
+      </div>
+
+      <div class="form-group">
+        <label for="customExportName">{{ _('Format name') }}</label>
+        <input type="text" id="customExportName" class="custom-export-name" placeholder="{{ _('e.g. Markdown links') }}" maxlength="80">
+      </div>
+
+      <div class="form-group">
+        <label for="customExportTemplate">{{ _('Line template') }}</label>
+        <textarea id="customExportTemplate" class="custom-export-template" rows="2" placeholder="{artist} - {title}">{artist} - {title}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>{{ _('Placeholders (click to insert)') }}</label>
+        <div class="custom-export-chips" id="customExportChips">
+          <span class="text-muted">{{ _('Loading...') }}</span>
+        </div>
+      </div>
+
+      <details class="custom-export-advanced">
+        <summary>{{ _('Wrap output (for JSON arrays, CSV headers, …)') }}</summary>
+        <p class="form-hint">
+          {{ _('The header goes at the top, the footer at the bottom, and the separator is inserted between tracks.') }}
+        </p>
+        <div class="form-group">
+          <label for="customExportHeader">{{ _('Header') }}</label>
+          <textarea id="customExportHeader" class="custom-export-wrap" rows="2" spellcheck="false" placeholder="["></textarea>
+        </div>
+        <div class="form-group">
+          <label for="customExportSeparator">{{ _('Separator (between tracks)') }}</label>
+          <textarea id="customExportSeparator" class="custom-export-wrap" rows="1" spellcheck="false" placeholder=","></textarea>
+        </div>
+        <div class="form-group">
+          <label for="customExportFooter">{{ _('Footer') }}</label>
+          <textarea id="customExportFooter" class="custom-export-wrap" rows="2" spellcheck="false" placeholder="]"></textarea>
+        </div>
+      </details>
+
+      <div class="form-group custom-export-ext-group">
+        <label for="customExportExtSelect">{{ _('File extension') }}</label>
+        <select id="customExportExtSelect" class="custom-export-ext-select">
+          <option value="txt">.txt</option>
+          <option value="md">.md</option>
+          <option value="csv">.csv</option>
+          <option value="tsv">.tsv</option>
+          <option value="json">.json</option>
+          <option value="m3u">.m3u</option>
+          <option value="m3u8">.m3u8</option>
+          <option value="xml">.xml</option>
+          <option value="nfo">.nfo</option>
+          <option value="html">.html</option>
+          <option value="__custom__">{{ _('Custom…') }}</option>
+        </select>
+        <input type="text" id="customExportExtCustom" class="custom-export-ext" maxlength="8" spellcheck="false" placeholder="{{ _('e.g. opml') }}"
+          hidden>
+        <span class="form-error" id="customExportExtError" role="alert" hidden></span>
+      </div>
+
+      <div class="form-group">
+        <label>{{ _('Preview') }}</label>
+        <pre class="custom-export-preview" id="customExportPreview"></pre>
+        <span class="form-error" id="customExportOutputError" role="alert" hidden></span>
+      </div>
+    </div>
+    <div class="modal-footer custom-export-footer">
+      <button type="button" class="btn btn-danger btn-sm" id="customExportDeleteBtn" data-action="deleteCustomExportFormat"
+        hidden>{{ _('Delete') }}</button>
+      <span class="custom-export-footer-spacer"></span>
+      <button type="button" class="btn btn-secondary" data-action="closeModal" data-modal="customExportModal">{{ _('Cancel') }}</button>
+      <button type="button" class="btn btn-secondary" id="customExportSaveBtn" data-action="saveCustomExportFormat">{{ _('Save format') }}</button>
+      <button type="button" class="btn btn-primary" id="customExportDownloadBtn" data-action="downloadCustomExport">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" style="margin-right: 6px;">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        {{ _('Download') }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="appConfirmModal">
+  <div class="modal app-confirm-modal">
+    <div class="modal-header">
+      <h2 id="appConfirmTitle">{{ _('Please confirm') }}</h2>
+      <button class="modal-close" data-action="appConfirmCancel">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p id="appConfirmMessage"></p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-action="appConfirmCancel">{{ _('Cancel') }}</button>
+      <button type="button" class="btn btn-danger" id="appConfirmAcceptBtn" data-action="appConfirmAccept">{{ _('Confirm') }}</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="clearHistoryModal">
   <div class="modal">
     <div class="modal-header">

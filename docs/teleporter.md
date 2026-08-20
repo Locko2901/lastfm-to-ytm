@@ -27,6 +27,7 @@ The Teleporter lets you export and import your entire configuration as a single 
 - `config/search_overrides.json` - manual search overrides and blacklist
 - `config/tag_overrides.json` - tag overrides
 - `config/custom_playlists.json` - custom playlist definitions (tags & artists)
+- `config/export_formats.json` - your saved [custom export formats](dashboard.md#saving-reusing-formats)
 
 **Optionally exported:**
 

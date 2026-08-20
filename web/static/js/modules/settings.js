@@ -118,6 +118,7 @@ export async function loadSettings() {
     refreshHistoryBackfillVisibility()
     refreshLocalLastfmVisibility()
     if (window._renderAppriseList) window._renderAppriseList()
+    if (window._renderExportFormatsSettings) window._renderExportFormatsSettings()
 
     const form = document.getElementById("settingsForm")
     if (form) window._originalSettings = readFormSettings(form)

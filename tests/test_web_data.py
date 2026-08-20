@@ -375,6 +375,169 @@ def test_render_export_unknown_format_returns_none():
     assert render_export("My List", _export_tracks(), "xml") is None
 
 
+def test_render_export_custom_default_template():
+    from web.services.export import render_export
+
+    body, mimetype, ext = render_export("My List", _export_tracks(), "custom")
+    assert mimetype == "text/plain; charset=utf-8"
+    assert ext == "txt"
+    lines = body.strip().splitlines()
+    assert lines == ["Boards of Canada - Roygbiv", "Aphex Twin - Xtal"]
+
+
+def test_render_export_custom_all_placeholders():
+    from web.services.export import render_export
+
+    template = "{index}/{count}: {artist} — {title} [{yt_title}] {video_id} {url} @{playlist}"
+    body, _mimetype, _ext = render_export("My List", _export_tracks(), "custom", template)
+    lines = body.strip().splitlines()
+    assert lines[0] == ("1/2: Boards of Canada — Roygbiv [Roygbiv (Official)] vidROYGBIV01 https://music.youtube.com/watch?v=vidROYGBIV01 @My List")
+    assert "[Xtal]" in lines[1]
+
+
+def test_render_export_custom_leaves_unknown_and_literal_braces():
+    from web.services.export import render_export
+
+    body, _mimetype, _ext = render_export("My List", _export_tracks(), "custom", "{artist} {bogus} {{literal}}")
+    first = body.splitlines()[0]
+    assert first == "Boards of Canada {bogus} {{literal}}"
+
+
+def test_render_export_custom_blank_template_uses_default():
+    from web.services.export import render_export
+
+    body, _mimetype, _ext = render_export("My List", _export_tracks(), "custom", "")
+    assert body.splitlines()[0] == "Boards of Canada - Roygbiv"
+
+
+def test_render_export_custom_extension_override():
+    from web.services.export import render_export
+
+    _body, _mimetype, ext = render_export("My List", _export_tracks(), "custom", "{title}", "  .MD! ")
+    assert ext == "md"
+
+
+def test_custom_output_error_flags_invalid_json():
+    from web.services.export import custom_output_error
+
+    assert custom_output_error("not json\nlines", "json") == "json"
+    assert custom_output_error('{"ok": true}', "json") is None
+    assert custom_output_error("anything at all", "txt") is None
+    assert custom_output_error("a - b", "md") is None
+
+
+def test_render_export_custom_json_array_is_valid():
+    import json
+
+    from web.services.export import custom_output_error, render_export
+
+    body, _mimetype, ext = render_export(
+        "My List",
+        _export_tracks(),
+        "custom",
+        '  {"artist": "{artist}", "title": "{title}"}',
+        "json",
+        header="[\n",
+        footer="\n]",
+        separator=",\n",
+    )
+    assert ext == "json"
+    assert custom_output_error(body, ext) is None
+    parsed = json.loads(body)
+    assert parsed == [
+        {"artist": "Boards of Canada", "title": "Roygbiv"},
+        {"artist": "Aphex Twin", "title": "Xtal"},
+    ]
+
+
+def test_sanitize_export_format_keeps_wrapper_when_non_default():
+    from web.services.export import sanitize_export_format
+
+    fmt = sanitize_export_format({"name": "Arr", "template": "{artist}", "extension": "json", "header": "[", "footer": "]", "separator": ","})
+    assert fmt == {"name": "Arr", "template": "{artist}", "extension": "json", "header": "[", "footer": "]", "separator": ","}
+
+
+def test_sanitize_export_format_drops_default_wrapper():
+    from web.services.export import sanitize_export_format
+
+    fmt = sanitize_export_format({"name": "Plain", "template": "{artist}", "extension": "txt", "separator": "\n"})
+    assert fmt == {"name": "Plain", "template": "{artist}", "extension": "txt"}
+
+
+def test_default_export_formats_includes_json_array():
+    from web.services.export import DEFAULT_EXPORT_FORMATS
+
+    assert any(f["name"] == "JSON array" and f["extension"] == "json" for f in DEFAULT_EXPORT_FORMATS)
+
+
+def test_sanitize_export_formats_dedupes_and_drops_invalid():
+    from web.services.export import sanitize_export_formats
+
+    result = sanitize_export_formats(
+        [
+            {"name": "A", "template": "{artist}", "extension": "txt"},
+            {"name": "a", "template": "{title}", "extension": "md"},
+            {"name": "", "template": "x"},
+            "not-a-dict",
+        ]
+    )
+    assert [f["name"] for f in result] == ["A"]
+    assert result[0]["extension"] == "txt"
+
+
+def test_load_export_formats_config_seeds_defaults(flask_app):
+    from web.services import data
+
+    with flask_app.app_context():
+        formats = data.load_export_formats_config()
+    assert len(formats) >= 1
+    assert all({"name", "template", "extension"} <= set(f) for f in formats)
+
+
+def test_save_and_reload_export_formats_config(flask_app):
+    from web.services import data
+
+    with flask_app.app_context():
+        saved = data.save_export_formats_config([{"name": "Custom", "template": "{url}", "extension": "m3u8"}])
+        assert saved == [{"name": "Custom", "template": "{url}", "extension": "m3u8"}]
+        assert data.load_export_formats_config() == saved
+
+
+def test_load_export_formats_config_migrates_legacy_file(flask_app, web_paths):
+    import json
+
+    from web.services import data
+    from web.services.export import EXPORT_FORMATS_SEED_VERSION
+
+    web_paths["EXPORT_FORMATS_FILE"].write_text(
+        json.dumps({"formats": [{"name": "Artist - Title", "template": "{artist} - {title}", "extension": "txt"}]})
+    )
+
+    with flask_app.app_context():
+        loaded = data.load_export_formats_config()
+
+    names = {f["name"] for f in loaded}
+    assert {"JSON lines", "JSON array"} <= names
+    on_disk = json.loads(web_paths["EXPORT_FORMATS_FILE"].read_text())
+    assert on_disk["_seed_version"] == EXPORT_FORMATS_SEED_VERSION
+
+
+def test_load_export_formats_config_respects_current_seed_version(flask_app, web_paths):
+    import json
+
+    from web.services import data
+    from web.services.export import EXPORT_FORMATS_SEED_VERSION
+
+    web_paths["EXPORT_FORMATS_FILE"].write_text(
+        json.dumps({"_seed_version": EXPORT_FORMATS_SEED_VERSION, "formats": [{"name": "Only", "template": "{artist}", "extension": "txt"}]})
+    )
+
+    with flask_app.app_context():
+        loaded = data.load_export_formats_config()
+
+    assert [f["name"] for f in loaded] == ["Only"]
+
+
 def test_get_discovery_seed_options_from_search_cache(flask_app, web_paths, monkeypatch):
     monkeypatch.setattr(data, "get_local_scrobble_db", lambda: None)
     sc = _search_cache(web_paths)

@@ -1,3 +1,4 @@
+import { confirmDialog } from "./confirm.js"
 import { _ } from "./i18n.js"
 import { showModal } from "./modals.js"
 import { escapeHtml, formatDateTime, getDateTimePrefs, getDateTimePrefsSync, refreshPanel, refreshStats, showToast } from "./utils.js"
@@ -329,8 +330,7 @@ async function togglePlaylistExpand(name) {
 }
 
 function confirmAction(message) {
-  // biome-ignore lint/suspicious/noAlert: Using window.confirm for user confirmation
-  return window.confirm(message)
+  return confirmDialog({ message })
 }
 
 async function deleteJson(url, body) {
@@ -362,7 +362,7 @@ export function cacheAdminSwitchTab(tabId) {
 }
 
 export async function cacheClearSearchAll() {
-  if (!confirmAction(_("Delete ALL search cache entries? Tracks will be re-searched on the next sync."))) return
+  if (!(await confirmAction(_("Delete ALL search cache entries? Tracks will be re-searched on the next sync.")))) return
   try {
     const r = await deleteJson("/api/cache/search/all")
     showToast(_("Cleared %(n)s search cache entries", { n: r.deleted }), "success")
@@ -373,7 +373,7 @@ export async function cacheClearSearchAll() {
 }
 
 export async function cacheClearSearchNotfound() {
-  if (!confirmAction(_("Delete all not-found search cache entries?"))) return
+  if (!(await confirmAction(_("Delete all not-found search cache entries?")))) return
   try {
     const r = await deleteJson("/api/cache/search/notfound")
     showToast(_("Cleared %(n)s not-found entries", { n: r.deleted }), "success")
@@ -386,7 +386,7 @@ export async function cacheClearSearchNotfound() {
 export async function cacheBulkDeleteSearch() {
   const keys = [...state.search.selected]
   if (keys.length === 0) return
-  if (!confirmAction(_("Delete %(n)s selected search cache entries?", { n: keys.length }))) return
+  if (!(await confirmAction(_("Delete %(n)s selected search cache entries?", { n: keys.length })))) return
   try {
     const r = await deleteJson("/api/cache/search/bulk", { keys })
     showToast(_("Deleted %(n)s entries", { n: r.deleted }), "success")
@@ -397,7 +397,7 @@ export async function cacheBulkDeleteSearch() {
 }
 
 export async function cacheClearTagsAll() {
-  if (!confirmAction(_("Delete ALL tag cache entries? Tags will be re-fetched on the next sync."))) return
+  if (!(await confirmAction(_("Delete ALL tag cache entries? Tags will be re-fetched on the next sync.")))) return
   try {
     const r = await deleteJson("/api/cache/tags/all")
     showToast(_("Cleared %(n)s tag cache entries", { n: r.deleted }), "success")
@@ -410,7 +410,7 @@ export async function cacheClearTagsAll() {
 export async function cacheBulkDeleteTags() {
   const keys = [...state.tags.selected]
   if (keys.length === 0) return
-  if (!confirmAction(_("Delete %(n)s selected tag cache entries?", { n: keys.length }))) return
+  if (!(await confirmAction(_("Delete %(n)s selected tag cache entries?", { n: keys.length })))) return
   try {
     const r = await deleteJson("/api/cache/tags/bulk", { keys })
     showToast(_("Deleted %(n)s entries", { n: r.deleted }), "success")
@@ -422,9 +422,9 @@ export async function cacheBulkDeleteTags() {
 
 export async function cacheClearPlaylistAll() {
   if (
-    !confirmAction(
+    !(await confirmAction(
       _("Clear the ENTIRE playlist cache? Your YouTube Music playlists will NOT be deleted, but the next sync will need to re-discover their IDs."),
-    )
+    ))
   )
     return
   try {
@@ -438,7 +438,7 @@ export async function cacheClearPlaylistAll() {
 
 export async function cacheRemovePlaylistEntry(name) {
   if (!name) return
-  if (!confirmAction(_("Remove playlist '%(n)s' from the cache? The actual YTM playlist is left intact.", { n: name }))) return
+  if (!(await confirmAction(_("Remove playlist '%(n)s' from the cache? The actual YTM playlist is left intact.", { n: name })))) return
   try {
     await deleteJson("/api/cache/playlist/entry", { name })
     showToast(_("Removed '%(n)s' from playlist cache", { n: name }), "success")
