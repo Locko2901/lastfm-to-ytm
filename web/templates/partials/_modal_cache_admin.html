@@ -64,7 +64,7 @@
             <input type="search" class="cache-admin-search" id="cacheAdminSearchFilter" placeholder="{{ _('Filter by artist or title...') }}">
             <div class="cache-admin-list-toolbar">
               <label class="cache-admin-checkbox-label">
-                <input type="checkbox" id="cacheAdminSearchSelectAll"> {{ _('Select all visible') }}
+                <input type="checkbox" class="toggle-switch" id="cacheAdminSearchSelectAll"> {{ _('Select all visible') }}
               </label>
               <button type="button" class="btn btn-danger btn-sm" data-action="cacheBulkDeleteSearch" disabled id="cacheAdminSearchBulkBtn">
                 {{ _('Delete selected') }}
@@ -100,7 +100,7 @@
             <input type="search" class="cache-admin-search" id="cacheAdminTagsFilter" placeholder="{{ _('Filter by artist, title, or tag...') }}">
             <div class="cache-admin-list-toolbar">
               <label class="cache-admin-checkbox-label">
-                <input type="checkbox" id="cacheAdminTagsSelectAll"> {{ _('Select all visible') }}
+                <input type="checkbox" class="toggle-switch" id="cacheAdminTagsSelectAll"> {{ _('Select all visible') }}
               </label>
               <button type="button" class="btn btn-danger btn-sm" data-action="cacheBulkDeleteTags" disabled id="cacheAdminTagsBulkBtn">
                 {{ _('Delete selected') }}
