@@ -163,7 +163,7 @@ function renderSearchList() {
           ? `<span class="badge badge-notfound">${_("Not Found")}</span>`
           : `<span class="badge badge-cached">${_("Cached")}</span>`
       return `<label class="cache-admin-row">
-        <input type="checkbox" data-cache-key="${escapeHtml(it.key)}"${checked}>
+        <input type="checkbox" class="toggle-switch" data-cache-key="${escapeHtml(it.key)}"${checked}>
         <span class="cache-admin-row-main">
           <span class="cache-admin-row-artist">${escapeHtml(it.artist)}</span>
           <span class="cache-admin-row-title">${escapeHtml(it.title)}</span>
@@ -222,7 +222,7 @@ function renderTagsList() {
             }</span>`
           : `<span class="cache-admin-row-meta">${_("No tags")}</span>`
       return `<label class="cache-admin-row cache-admin-row--tags">
-        <input type="checkbox" data-cache-key="${escapeHtml(it.key)}"${checked}>
+        <input type="checkbox" class="toggle-switch" data-cache-key="${escapeHtml(it.key)}"${checked}>
         <span class="cache-admin-row-main">
           <span class="cache-admin-row-artist">${escapeHtml(it.artist)}</span>
           <span class="cache-admin-row-title">${escapeHtml(it.title)}</span>

@@ -181,16 +181,6 @@
   user-select: none;
 }
 
-.cache-admin-checkbox-label input,
-.cache-admin-row input[type="checkbox"] {
-  width: 1rem;
-  height: 1rem;
-  margin: 0;
-  flex-shrink: 0;
-  accent-color: var(--accent);
-  cursor: pointer;
-}
-
 .cache-admin-list {
   max-height: 380px;
   overflow-y: auto;
