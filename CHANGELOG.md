@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.8.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.7.0...v2.8.0) (2026-09-30)
+
+
+### Features
+
+* update checkbox inputs to use toggle-switch class for better styling ([f19fcd6](https://github.com/Locko2901/lastfm-to-ytm/commit/f19fcd6df1fc8ce964f7567306b77b51f593bfa9))
+* user-defined playlist export formats with saved templates ([c7739af](https://github.com/Locko2901/lastfm-to-ytm/commit/c7739af8dcfa7b94338aeac1a70b47f80f891c0e))
+
+
+### Bug Fixes
+
+* **docker:** create lastfm home and bake .env.example into the image ([00a1966](https://github.com/Locko2901/lastfm-to-ytm/commit/00a196630ffeb7c87b821a90a33f48bae6f70e52))
+
+
+### Documentation
+
+* update CONTRIBUTING.md ([27b10c2](https://github.com/Locko2901/lastfm-to-ytm/commit/27b10c2bfac5d39878593df45a0fe9e292c18af0))
+
 ## [2.7.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.6.0...v2.7.0) (2026-08-13)
 
 
