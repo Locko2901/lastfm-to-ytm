@@ -44,7 +44,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends gosu passwd cur
     && rm -rf /var/lib/apt/lists/* \
     && gosu nobody true
 
-RUN groupadd -r lastfm && useradd -r -g lastfm lastfm
+RUN groupadd -r lastfm && useradd -r -m -d /home/lastfm -g lastfm lastfm
 
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
@@ -54,6 +54,7 @@ COPY web/ ./web/
 COPY run.py .
 COPY run_tags.py .
 COPY pyproject.toml .
+COPY .env.example ./.env.example
 COPY devops/gunicorn.conf.py ./gunicorn.conf.py
 
 COPY --from=builder /build/web/static/dist/ ./web/static/dist/
