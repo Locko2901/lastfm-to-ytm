@@ -32,7 +32,6 @@ devops/docker-compose.yml
 
 # Config files that are mounted at runtime
 .env
-.env.example
 browser.json
 config/search_overrides.json
 config/custom_playlists.json
