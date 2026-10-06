@@ -11,7 +11,10 @@ from src.config import (
     _str_to_float,
     _str_to_int,
     _strip_inline_comment,
+    invalid_scrobbler_interval,
     load_custom_playlists,
+    parse_scrobbler_idle_minutes,
+    parse_scrobbler_poll_minutes,
 )
 
 
@@ -124,7 +127,7 @@ def clean_env(monkeypatch):
     in the developer's actual .env and clobber the values set here.
     """
     monkeypatch.setattr(config_mod, "load_dotenv", lambda *_a, **_k: None)
-    prefixes = ("LASTFM_", "PLAYLIST_", "WEEKLY_", "RECENCY_", "TAG_", "HISTORY_", "WEBHOOK_", "CACHE_", "AUTO_", "CUSTOM_PLAYLISTS")
+    prefixes = ("LASTFM_", "PLAYLIST_", "WEEKLY_", "RECENCY_", "TAG_", "HISTORY_", "WEBHOOK_", "CACHE_", "AUTO_", "CUSTOM_PLAYLISTS", "SCROBBLER_")
     extras = {
         "MAKE_PUBLIC",
         "LIMIT",
@@ -360,6 +363,52 @@ def test_from_env_apprise_urls_parsed_and_deduped(clean_env):
 def test_from_env_invalid_apprise_events_falls_back(clean_env):
     clean_env.setenv("APPRISE_EVENTS", "sometimes")
     assert Settings.from_env().apprise_events == "error"
+
+
+@pytest.mark.usefixtures("clean_env")
+def test_from_env_scrobbler_is_off_and_dry_by_default():
+    settings = Settings.from_env()
+    assert settings.scrobbler_enabled is False
+    assert settings.scrobbler_dry_run is True
+    assert settings.scrobbler_poll_minutes == 2
+    assert settings.scrobbler_idle_minutes == 10
+    assert settings.scrobbler_defer_to_realtime is True
+    assert settings.scrobbler_db_file.endswith("scrobbler.db")
+    assert settings.lastfm_api_secret == ""
+    assert settings.lastfm_session_key == ""
+
+
+def test_from_env_scrobbler_settings(clean_env):
+    clean_env.setenv("SCROBBLER_ENABLED", "true")
+    clean_env.setenv("SCROBBLER_DRY_RUN", "false")
+    clean_env.setenv("SCROBBLER_POLL_MINUTES", "10  # every ten minutes")
+    clean_env.setenv("SCROBBLER_IDLE_MINUTES", "15")
+    clean_env.setenv("SCROBBLER_DEFER_TO_REALTIME", "false")
+    clean_env.setenv("LASTFM_API_SECRET", "shh")
+    clean_env.setenv("LASTFM_SESSION_KEY", "sk")
+    clean_env.setenv("LASTFM_SESSION_USER", "alice")
+    settings = Settings.from_env()
+    assert settings.scrobbler_enabled is True
+    assert settings.scrobbler_dry_run is False
+    assert settings.scrobbler_poll_minutes == 10
+    assert settings.scrobbler_idle_minutes == 15
+    assert settings.scrobbler_defer_to_realtime is False
+    assert (settings.lastfm_api_secret, settings.lastfm_session_key, settings.lastfm_session_user) == ("shh", "sk", "alice")
+    assert "shh" not in repr(settings)
+    assert "sk'" not in repr(settings)
+
+
+@pytest.mark.parametrize(("raw", "expected"), [("0", 1), ("1", 1), ("-3", 1), ("61", 60), ("abc", 2), (None, 2), ("15", 15)])
+def test_scrobbler_poll_minutes_are_clamped(raw, expected):
+    assert parse_scrobbler_poll_minutes(raw) == expected
+
+
+@pytest.mark.parametrize(
+    ("raw", "fastest", "expected"),
+    [(None, 2, 10), ("5", 2, 5), ("15", 2, 15), ("1", 2, 2), ("61", 2, 60), ("abc", 2, 10), ("5", 15, 15), (None, 20, 20)],
+)
+def test_scrobbler_idle_minutes_run_from_the_fastest_interval_to_an_hour(raw, fastest, expected):
+    assert parse_scrobbler_idle_minutes(raw, fastest) == expected
 
 
 @pytest.mark.usefixtures("clean_env")
@@ -880,3 +929,32 @@ def test_warn_env_incomplete_noop_without_env(monkeypatch, tmp_path, caplog):
     with caplog.at_level("WARNING"):
         config_mod.warn_env_incomplete()
     assert not caplog.records
+
+
+@pytest.mark.parametrize(
+    ("fastest", "idle", "problem"),
+    [
+        ("2", "10", None),
+        ("2", "2", None),
+        ("", "", None),
+        ("5", "", None),
+        ("20", "", None),
+        ("60", "60", None),
+        ("0", "10", ("fastest", 0)),
+        ("61", "", ("fastest", 61)),
+        ("1.5", "10", ("fastest", 0)),
+        ("abc", "", ("fastest", 0)),
+        ("5", "3", ("idle", 5)),
+        ("2", "61", ("idle", 2)),
+        ("2", "7.5", ("idle", 2)),
+    ],
+)
+def test_poll_intervals_are_checked_as_typed(fastest, idle, problem):
+    assert invalid_scrobbler_interval(fastest, idle) == problem
+
+
+def test_a_relative_auth_path_is_taken_from_the_project_root(clean_env):
+    clean_env.setenv("YTM_AUTH_PATH", "browser.json")
+    assert Settings.from_env().ytm_auth_path == str(config_mod.PROJECT_ROOT / "browser.json")
+    clean_env.setenv("YTM_AUTH_PATH", "/data/auth/browser.json")
+    assert Settings.from_env().ytm_auth_path == "/data/auth/browser.json"

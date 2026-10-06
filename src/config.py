@@ -268,6 +268,54 @@ def _parse_session_hours(val: str | None, default: tuple[int, int] = (9, 23)) ->
     return start, end
 
 
+SCROBBLER_POLL_MINUTES_DEFAULT = 2
+SCROBBLER_POLL_MINUTES_MIN = 1
+SCROBBLER_POLL_MINUTES_MAX = 60
+SCROBBLER_IDLE_MINUTES_DEFAULT = 10
+SCROBBLER_FASTEST = "fastest"
+SCROBBLER_IDLE = "idle"
+
+
+def parse_scrobbler_poll_minutes(val: str | None) -> int:
+    """Parse ``SCROBBLER_POLL_MINUTES``, clamped to 1..60 (default 2)."""
+    minutes = _str_to_int(val, SCROBBLER_POLL_MINUTES_DEFAULT)
+    return max(SCROBBLER_POLL_MINUTES_MIN, min(SCROBBLER_POLL_MINUTES_MAX, minutes))
+
+
+def parse_scrobbler_idle_minutes(val: str | None, fastest: int) -> int:
+    """Parse ``SCROBBLER_IDLE_MINUTES``, clamped to ``fastest``..60 (default 10)."""
+    minutes = _str_to_int(val, SCROBBLER_IDLE_MINUTES_DEFAULT)
+    return max(fastest, min(SCROBBLER_POLL_MINUTES_MAX, minutes))
+
+
+def invalid_scrobbler_interval(fastest: str | None, idle: str | None) -> tuple[str, int] | None:
+    """Check the two poll intervals as typed: whole minutes, the fastest from MIN to MAX, the idle one from the fastest to MAX.
+
+    Returns the invalid one (``SCROBBLER_FASTEST`` or ``SCROBBLER_IDLE``) with
+    the fastest interval in minutes, or None. An empty value is its default.
+    """
+
+    def minutes(raw: str | None, default: int) -> int | None:
+        text = (raw or "").strip()
+        if not text:
+            return default
+        return int(text) if text.isdigit() else None
+
+    fastest_minutes = minutes(fastest, SCROBBLER_POLL_MINUTES_DEFAULT)
+    if fastest_minutes is None or not SCROBBLER_POLL_MINUTES_MIN <= fastest_minutes <= SCROBBLER_POLL_MINUTES_MAX:
+        return SCROBBLER_FASTEST, fastest_minutes or 0
+    idle_minutes = minutes(idle, max(fastest_minutes, SCROBBLER_IDLE_MINUTES_DEFAULT))
+    if idle_minutes is None or not fastest_minutes <= idle_minutes <= SCROBBLER_POLL_MINUTES_MAX:
+        return SCROBBLER_IDLE, fastest_minutes
+    return None
+
+
+def _project_path(value: str) -> str:
+    """A path from ``.env``, relative ones taken from the project root so that the CLI and the dashboard find the same file."""
+    path = Path(value)
+    return str(path if path.is_absolute() else PROJECT_ROOT / path)
+
+
 _VALID_PRIVACY = {"PUBLIC", "UNLISTED", "PRIVATE"}
 _BOOLEAN_PRIVACY_TOKENS = {"1", "true", "t", "yes", "y", "on", "0", "false", "f", "no", "n", "off"}
 
@@ -392,6 +440,15 @@ class Settings:
     webhook_allow_private: bool = False  # DEPRECATED: paired with webhook_url
     apprise_urls: list[str] = field(default_factory=list)
     apprise_events: str = "error"
+    lastfm_api_secret: str = field(default="", repr=False)
+    lastfm_session_key: str = field(default="", repr=False)
+    lastfm_session_user: str = ""
+    scrobbler_enabled: bool = False
+    scrobbler_dry_run: bool = True
+    scrobbler_poll_minutes: int = SCROBBLER_POLL_MINUTES_DEFAULT
+    scrobbler_idle_minutes: int = SCROBBLER_IDLE_MINUTES_DEFAULT
+    scrobbler_defer_to_realtime: bool = True
+    scrobbler_db_file: str = str(RUNTIME_DIR / "scrobbler.db")
 
     @property
     def privacy_status(self) -> str:
@@ -412,7 +469,7 @@ class Settings:
         if not lastfm_user or not lastfm_api_key:
             raise RuntimeError("LASTFM_USER and LASTFM_API_KEY must be set in environment or .env")
 
-        ytm_auth_path = os.getenv("YTM_AUTH_PATH", str(PROJECT_ROOT / "browser.json"))
+        ytm_auth_path = _project_path(os.getenv("YTM_AUTH_PATH", str(PROJECT_ROOT / "browser.json")))
         playlist_name = os.getenv("PLAYLIST_NAME", "Last.fm Recents (auto)")
         playlist_description = (_strip_inline_comment(os.getenv("PLAYLIST_DESCRIPTION")) or "").strip()
         privacy = _resolve_main_privacy()
@@ -501,6 +558,15 @@ class Settings:
         apprise_events = (_strip_inline_comment(os.getenv("APPRISE_EVENTS")) or "error").strip().lower()
         if apprise_events not in {"all", "error"}:
             apprise_events = "error"
+        lastfm_api_secret = (_strip_inline_comment(os.getenv("LASTFM_API_SECRET")) or "").strip()
+        lastfm_session_key = (_strip_inline_comment(os.getenv("LASTFM_SESSION_KEY")) or "").strip()
+        lastfm_session_user = (_strip_inline_comment(os.getenv("LASTFM_SESSION_USER")) or "").strip()
+        scrobbler_enabled = _str_to_bool(os.getenv("SCROBBLER_ENABLED"), False)
+        scrobbler_dry_run = _str_to_bool(os.getenv("SCROBBLER_DRY_RUN"), True)
+        scrobbler_poll_minutes = parse_scrobbler_poll_minutes(os.getenv("SCROBBLER_POLL_MINUTES"))
+        scrobbler_idle_minutes = parse_scrobbler_idle_minutes(os.getenv("SCROBBLER_IDLE_MINUTES"), scrobbler_poll_minutes)
+        scrobbler_defer_to_realtime = _str_to_bool(os.getenv("SCROBBLER_DEFER_TO_REALTIME"), True)
+        scrobbler_db_file = _runtime_file("SCROBBLER_DB_FILE", "scrobbler.db")
 
         return Settings(
             lastfm_user=lastfm_user,
@@ -564,6 +630,15 @@ class Settings:
             webhook_allow_private=webhook_allow_private,
             apprise_urls=apprise_urls,
             apprise_events=apprise_events,
+            lastfm_api_secret=lastfm_api_secret,
+            lastfm_session_key=lastfm_session_key,
+            lastfm_session_user=lastfm_session_user,
+            scrobbler_enabled=scrobbler_enabled,
+            scrobbler_dry_run=scrobbler_dry_run,
+            scrobbler_poll_minutes=scrobbler_poll_minutes,
+            scrobbler_idle_minutes=scrobbler_idle_minutes,
+            scrobbler_defer_to_realtime=scrobbler_defer_to_realtime,
+            scrobbler_db_file=scrobbler_db_file,
         )
 
 

@@ -12,6 +12,7 @@ RE_ARTIST_SPLIT = re.compile(
     flags=re.IGNORECASE,
 )
 RE_DASH = re.compile(r"\s*[-–—]\s*")
+RE_TOPIC_SUFFIX = re.compile(RE_DASH.pattern + r"topic\b", flags=re.IGNORECASE)
 
 BRACKET_PAIRS = [
     ("(", ")"),
@@ -118,6 +119,6 @@ def match_key(s: str) -> str:
 def clean_uploader_name(author: str) -> str:
     """Clean uploader name by removing common noise words."""
     s = normalize_base(author or "")
-    s = re.sub(r"[-–—]\s*topic\b", " ", s)
+    s = RE_TOPIC_SUFFIX.sub(" ", s)
     toks = [t for t in tokens(s) if t not in UPLOADER_NOISE]
     return " ".join(toks)
