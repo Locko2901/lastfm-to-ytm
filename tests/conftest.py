@@ -14,7 +14,11 @@ import pytest
 
 @pytest.fixture
 def no_network(monkeypatch):
-    """Fail the test on any HTTP request or socket connection."""
+    """Fail the test on any HTTP request or internet socket connection.
+
+    Local Unix sockets stay usable: multiprocessing's forkserver, the default
+    start method on Linux since Python 3.14, talks to its server over one.
+    """
     import socket
 
     import requests
@@ -22,8 +26,17 @@ def no_network(monkeypatch):
     def _blocked(*_args, **_kwargs):
         raise AssertionError("network access attempted in a test")
 
+    def _internet_blocked(connect):
+        def guarded(sock, *args, **kwargs):
+            if sock.family in (socket.AF_INET, socket.AF_INET6):
+                _blocked()
+            return connect(sock, *args, **kwargs)
+
+        return guarded
+
     monkeypatch.setattr(requests.Session, "request", _blocked)
-    monkeypatch.setattr(socket.socket, "connect", _blocked)
+    monkeypatch.setattr(socket.socket, "connect", _internet_blocked(socket.socket.connect))
+    monkeypatch.setattr(socket.socket, "connect_ex", _internet_blocked(socket.socket.connect_ex))
     monkeypatch.setattr(socket, "create_connection", _blocked)
 
 
