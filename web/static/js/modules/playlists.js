@@ -1,6 +1,6 @@
 import { confirmDialog } from "./confirm.js"
 import { _ } from "./i18n.js"
-import { escapeHtml, showToast } from "./utils.js"
+import { escapeHtml, fetchJson, showToast } from "./utils.js"
 
 const CATEGORY_LABELS = {
   main: "Main",
@@ -10,15 +10,6 @@ const CATEGORY_LABELS = {
 }
 
 const state = { candidates: [], selected: new Set(), discovered: false, scanning: false }
-
-async function fetchJson(url, opts = {}) {
-  const r = await fetch(url, opts)
-  if (!r.ok) {
-    const data = await r.json().catch(() => ({}))
-    throw new Error(data.error || `HTTP ${r.status}`)
-  }
-  return r.json()
-}
 
 function confirmAction(message) {
   return confirmDialog({ message })

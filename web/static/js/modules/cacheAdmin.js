@@ -1,7 +1,7 @@
 import { confirmDialog } from "./confirm.js"
 import { _ } from "./i18n.js"
 import { showModal } from "./modals.js"
-import { escapeHtml, formatDateTime, getDateTimePrefs, getDateTimePrefsSync, refreshPanel, refreshStats, showToast } from "./utils.js"
+import { escapeHtml, fetchJson, formatDateTime, getDateTimePrefs, getDateTimePrefsSync, refreshPanel, refreshStats, showToast } from "./utils.js"
 
 const PANELS = ["search", "tags", "playlists"]
 
@@ -23,15 +23,6 @@ function setActiveTab(tabId) {
 
 function fmtCount(n) {
   return new Intl.NumberFormat().format(n)
-}
-
-async function fetchJson(url, opts = {}) {
-  const r = await fetch(url, opts)
-  if (!r.ok) {
-    const data = await r.json().catch(() => ({}))
-    throw new Error(data.error || `HTTP ${r.status}`)
-  }
-  return r.json()
 }
 
 function harvestSearchCacheItemsFromDom() {

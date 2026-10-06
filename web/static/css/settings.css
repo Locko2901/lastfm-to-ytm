@@ -214,13 +214,13 @@
   gap: 0.5rem;
 }
 
-.ytm-auth-row {
+.auth-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.ytm-auth-row .btn {
+.auth-row .btn {
   min-width: 100px;
   justify-content: center;
 }

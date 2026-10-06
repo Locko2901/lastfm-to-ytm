@@ -82,8 +82,6 @@
   align-items: center;
   margin: 0 0 0.875rem;
   padding: 0.625rem 0.875rem;
-  background: rgba(var(--warning-rgb), 0.08);
-  border: 1px solid rgba(var(--warning-rgb), 0.22);
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   font-size: 0.8125rem;

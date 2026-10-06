@@ -732,6 +732,46 @@ export function insertBanner(id, className, innerHTML) {
   return banner
 }
 
+export async function fetchJson(url, opts = {}, { withStatus = false } = {}) {
+  const r = await fetch(url, opts)
+  if (!r.ok) {
+    const data = await r.json().catch(() => ({}))
+    throw new Error(data.error || `HTTP ${r.status}`)
+  }
+  const data = await r.json()
+  return withStatus ? { status: r.status, data } : data
+}
+
+export function setText(id, val) {
+  const el = document.getElementById(id)
+  if (el) el.textContent = val ?? "\u2013"
+}
+
+export function setPagination(containerId, total, currentPage, pageSize, onPageChange) {
+  const container = document.getElementById(containerId)
+  if (!container) return
+
+  const totalPages = Math.ceil(total / pageSize)
+  if (totalPages <= 1) {
+    container.innerHTML = ""
+    return
+  }
+
+  const prev = currentPage > 0 ? `<button class="btn btn-sm btn-secondary" data-page="${currentPage - 1}">${_("Previous")}</button>` : ""
+  const next = currentPage < totalPages - 1 ? `<button class="btn btn-sm btn-secondary" data-page="${currentPage + 1}">${_("Next")}</button>` : ""
+
+  container.innerHTML = `
+    <div class="pagination-controls">
+      ${prev}
+      <span class="text-muted">${currentPage + 1} / ${totalPages} (${total} ${_("total")})</span>
+      ${next}
+    </div>`
+
+  for (const btn of container.querySelectorAll("[data-page]")) {
+    btn.addEventListener("click", () => onPageChange(Number.parseInt(btn.dataset.page, 10)))
+  }
+}
+
 export function escapeHtml(text) {
   const div = document.createElement("div")
   div.textContent = text

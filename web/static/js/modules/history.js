@@ -1,6 +1,6 @@
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
-import { formatDateTime, getDateTimePrefs, getDateTimePrefsSync, refreshPanel, showToast } from "./utils.js"
+import { formatDateTime, getDateTimePrefs, getDateTimePrefsSync, refreshPanel, setPagination, setText, showToast } from "./utils.js"
 
 let currentSubtab = "tracks"
 let trackPage = 0
@@ -237,7 +237,7 @@ async function loadHistoryTracks() {
 
     if (!data.tracks.length) {
       list.innerHTML = `<div class="empty-state"><p class="text-muted">${_("No tracks found")}</p></div>`
-      setPagination("historyTrackPagination", 0, 0, () => {})
+      setPagination("historyTrackPagination", 0, 0, PAGE_SIZE, () => {})
       return
     }
 
@@ -266,7 +266,7 @@ async function loadHistoryTracks() {
       )
       .join("")
 
-    setPagination("historyTrackPagination", data.total, trackPage, p => {
+    setPagination("historyTrackPagination", data.total, trackPage, PAGE_SIZE, p => {
       trackPage = p
       loadHistoryTracks()
     })
@@ -291,7 +291,7 @@ async function loadHistorySyncs() {
 
     if (!data.syncs.length) {
       list.innerHTML = `<div class="empty-state"><p class="text-muted">${_("No syncs recorded yet")}</p></div>`
-      setPagination("historySyncPagination", 0, 0, () => {})
+      setPagination("historySyncPagination", 0, 0, PAGE_SIZE, () => {})
       return
     }
 
@@ -322,7 +322,7 @@ async function loadHistorySyncs() {
       })
       .join("")
 
-    setPagination("historySyncPagination", data.total, syncPage, p => {
+    setPagination("historySyncPagination", data.total, syncPage, PAGE_SIZE, p => {
       syncPage = p
       loadHistorySyncs()
     })
@@ -346,7 +346,7 @@ async function loadHistoryActions() {
 
     if (!data.actions.length) {
       list.innerHTML = `<div class="empty-state"><p class="text-muted">${_("No actions recorded yet")}</p></div>`
-      setPagination("historyActionPagination", 0, 0, () => {})
+      setPagination("historyActionPagination", 0, 0, PAGE_SIZE, () => {})
       return
     }
 
@@ -375,7 +375,7 @@ async function loadHistoryActions() {
       })
       .join("")
 
-    setPagination("historyActionPagination", data.total, actionPage, p => {
+    setPagination("historyActionPagination", data.total, actionPage, PAGE_SIZE, p => {
       actionPage = p
       loadHistoryActions()
     })
@@ -442,7 +442,7 @@ async function loadHistoryNearMisses() {
 
     if (!data.near_misses.length) {
       list.innerHTML = `<div class="empty-state"><p class="text-muted">${_("No near-misses from the last sync - every resolved track fit within your LIMIT.")}</p></div>`
-      setPagination("historyNearMissPagination", 0, 0, () => {})
+      setPagination("historyNearMissPagination", 0, 0, PAGE_SIZE, () => {})
       return
     }
 
@@ -471,7 +471,7 @@ async function loadHistoryNearMisses() {
       })
       .join("")
 
-    setPagination("historyNearMissPagination", data.total, nearMissPage, p => {
+    setPagination("historyNearMissPagination", data.total, nearMissPage, PAGE_SIZE, p => {
       nearMissPage = p
       loadHistoryNearMisses()
     })
@@ -1084,25 +1084,6 @@ async function submitHistoryImport(mode) {
   }
 }
 
-export function setHistoryTabVisibility(enabled) {
-  const historyTab = document.getElementById("historyTab")
-  if (historyTab) {
-    historyTab.hidden = !enabled
-  }
-
-  if (!enabled) {
-    const activeTab = document.querySelector(".tab.active")
-    if (activeTab?.dataset.tab === "history" && window.switchTab) {
-      window.switchTab("playlist")
-    }
-  }
-}
-
-function setText(id, val) {
-  const el = document.getElementById(id)
-  if (el) el.textContent = val ?? "–"
-}
-
 function esc(str) {
   if (!str) return ""
   const d = document.createElement("div")
@@ -1178,29 +1159,4 @@ function formatTrendTipDate(iso) {
     return date.toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" })
   }
   return iso
-}
-
-function setPagination(containerId, total, currentPage, onPageChange) {
-  const container = document.getElementById(containerId)
-  if (!container) return
-
-  const totalPages = Math.ceil(total / PAGE_SIZE)
-  if (totalPages <= 1) {
-    container.innerHTML = ""
-    return
-  }
-
-  const prev = currentPage > 0 ? `<button class="btn btn-sm btn-secondary" data-page="${currentPage - 1}">${_("Previous")}</button>` : ""
-  const next = currentPage < totalPages - 1 ? `<button class="btn btn-sm btn-secondary" data-page="${currentPage + 1}">${_("Next")}</button>` : ""
-
-  container.innerHTML = `
-    <div class="pagination-controls">
-      ${prev}
-      <span class="text-muted">${currentPage + 1} / ${totalPages} (${total} ${_("total")})</span>
-      ${next}
-    </div>`
-
-  for (const btn of container.querySelectorAll("[data-page]")) {
-    btn.addEventListener("click", () => onPageChange(Number.parseInt(btn.dataset.page, 10)))
-  }
 }
