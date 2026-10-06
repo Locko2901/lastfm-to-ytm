@@ -67,7 +67,8 @@ These two are the only settings you *have* to configure. Everything else has sen
 |----------|---------|-------------|
 | `LASTFM_USER` | | Your Last.fm username |
 | `LASTFM_API_KEY` | | Last.fm API key |
-| `YTM_AUTH_PATH` | `browser.json` | Path to ytmusicapi auth file |
+| `LASTFM_API_SECRET` | | Shared secret of the same API account, entered next to the API key in **Settings &rarr; General &rarr; Credentials** and in step 1 of the setup wizard. Last.fm shows it only when the API account is created; without it, create a new API account at [last.fm/api/account/create](https://www.last.fm/api/account/create) and use its key and secret together. Only the optional [history scrobbler](scrobbler.md) needs it |
+| `YTM_AUTH_PATH` | `browser.json` | Path to ytmusicapi auth file. A relative path is taken from the project directory, for the CLI and the dashboard alike |
 
 !!! info "Anonymous search"
     Anonymous search is supported (`USE_ANON_SEARCH=true`, the default) for finding tracks, but you still need valid YouTube Music auth to create or update playlists.
@@ -148,6 +149,24 @@ These settings only apply when running the web dashboard.
 | `NOW_PLAYING_ENABLED` | `true` | Show "Now Playing" from Last.fm in the header |
 | `NOW_PLAYING_INTERVAL` | `15` | Seconds between Now Playing polls (`5`-`120`) |
 | `DISPLAY_TIPS` | `true` | Show the helper info banners at the top of each dashboard tab |
+
+### History Scrobbler
+
+Optional and off by default: scrobbles plays from the YouTube Music history (for
+example from the phone app) that no real-time scrobbler sent. Runs on the
+built-in scheduler, so it needs the web dashboard. See
+[History Scrobbler](scrobbler.md) for how it works and how to try the dry run.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SCROBBLER_ENABLED` | `false` | Poll the YouTube Music history and scrobble new plays |
+| `SCROBBLER_DRY_RUN` | `true` | Record every decision on the Scrobbler tab without sending anything to Last.fm |
+| `SCROBBLER_POLL_MINUTES` | `2` | Fastest interval between polls, in minutes (`1`-`60`), used while the history changes; less often after failed reads ([adaptive polling](scrobbler.md#adaptive-polling)). A shorter interval bounds listening times more tightly, so more decisions are certain; see [what the interval changes](scrobbler.md#what-the-poll-interval-changes) |
+| `SCROBBLER_IDLE_MINUTES` | `10` | Interval after 30 minutes without a change, in whole minutes from `SCROBBLER_POLL_MINUTES` to `60` (`5`, `10` and `15` are compared in [choosing the intervals](scrobbler.md#choosing-the-intervals)) |
+| `SCROBBLER_DEFER_TO_REALTIME` | `true` | Leave the plays from while a real-time scrobbler was active (now playing at a poll, or scrobbling around the play) to it, skips included. Turn off if that scrobbler also scrobbles players other than YouTube Music; see [leaving plays to a real-time scrobbler](scrobbler.md#leaving-plays-to-a-real-time-scrobbler) |
+| `SCROBBLER_DB_FILE` | `runtime/scrobbler.db` | Snapshot, decisions and the ledger of the scrobbler's own scrobbles |
+| `LASTFM_SESSION_KEY` | *(empty)* | Written by **Connect Last.fm** in the dashboard. Grants write access to your Last.fm account |
+| `LASTFM_SESSION_USER` | *(empty)* | The Last.fm account that approved the session, written together with the key |
 
 ### Webhooks
 

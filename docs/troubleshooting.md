@@ -7,6 +7,7 @@ Start here. Match your symptom to find the right section.
 | Symptom | Go to |
 |---|---|
 | Sync fails with 401/403 from YouTube Music | [YouTube Music auth errors](#youtube-music-auth-errors) |
+| "YouTube Music session expired" banner, or the scrobbler reports a signed-out history | [YouTube Music session signed out](#youtube-music-session-signed-out) |
 | Sync fails with Last.fm error / bad API key | [Last.fm errors](#lastfm-errors-401403invalid-key) |
 | Playlist exists but isn't updating | [Playlist not updating](#playlist-not-updating) |
 | Wrong track / live / remix selected | [Missing or wrong matches](#missing-or-wrong-matches) |
@@ -29,7 +30,29 @@ If none of these match, check the sync console (or `./run-docker.sh --logs`) for
 - Auth cookies expire periodically - re-authenticate if you see 401/403 errors from YouTube Music
 - If using Docker, use the built-in auth flow in the web dashboard under **Settings**
 
-### Last.fm errors (401/403/invalid key)
+### YouTube Music session signed out
+
+`browser.json` can look valid while the session behind its cookies has been
+signed out or rotated. YouTube Music then answers with a signed-out page
+("Sign in to view your history") instead of an error. The
+[history scrobbler](scrobbler.md) notices it on its next poll, and the
+dashboard shows the auth banner **YouTube Music session expired: reconnect.**
+
+- Click **Set Up Auth** in the banner (or **Regenerate** under **Settings
+  &rarr; General &rarr; YouTube Music Auth**) and paste fresh request headers.
+- Copy those headers from a **private (incognito) browser window**: sign in
+  there, open music.youtube.com, copy the headers of a `/browse` request, then
+  close the window without signing out. Headers copied from your everyday
+  window belong to a session that normal browsing keeps rotating, which signs
+  the copy in `browser.json` out again.
+- **Connect** first tries the headers with one YouTube Music request and saves
+  them only when it works; then the banner goes away. If the check fails
+  (signed out, or YouTube Music unreachable), the dialog says why,
+  `browser.json` stays as it was and the banner stays; the pasted headers stay
+  in the dialog, so clicking **Connect** again retries.
+- The scrobbler picks up again by itself; after failed reads it polls less
+  often (up to every 30 minutes), or use **Poll now** on the Scrobbler tab.
+
 
 - Confirm `LASTFM_API_KEY` and `LASTFM_USER` are set correctly
 - Verify your key at <https://www.last.fm/api/accounts>

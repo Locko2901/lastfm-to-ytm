@@ -18,11 +18,13 @@ exposing the app outside a trusted network.
 |---|---|---|---|
 | YouTube Music auth headers | [`browser.json`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/browser.json) | None | No |
 | Last.fm API key + username | `.env` | None | No |
+| Last.fm API secret + session key (opt-in scrobbler) | `.env` | None | No |
 | Flask session secret | `.env` (`FLASK_SECRET_KEY`) | None | No |
 | Webhook URL | `.env` (`WEBHOOK_URL`) | None | No |
 | Search / playlist / tag caches | `runtime/*.json` | None | No |
 | History database (opt-in) | `runtime/history.db` (SQLite, WAL) | None | No |
 | Local Last.fm history (opt-in) | `runtime/lastfm_history.db` (SQLite, WAL) | None | No |
+| History scrobbler state (opt-in) | `runtime/scrobbler.db` (SQLite, WAL) | None | No |
 | User overrides & custom playlists | `config/*.json` | None | No (`.example` only) |
 | Encrypted backup bundles | User-chosen `.bin` file | **AES-256-GCM + Argon2id** | No |
 
@@ -61,10 +63,30 @@ Stored as environment variables in `.env`:
   [`src/config.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/config.py) so it is **excluded from log output and
   tracebacks**.
 
-There is no Last.fm session key - the app only reads public scrobbles, so
-write-scope auth is never requested. The setup wizard can write these values via
-the unauthenticated `/api/setup/lastfm` endpoint
+The setup wizard can write these values via the unauthenticated
+`/api/setup/lastfm` endpoint
 ([`web/routes/api.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/web/routes/api.py)).
+
+Everything above only reads public scrobbles. The optional
+[history scrobbler](scrobbler.md) also writes, and only then are two more
+secrets stored, in the same `.env`:
+
+- `LASTFM_API_SECRET` - the shared secret of the API account, used to sign
+  write calls. It sits next to the API key in the credentials (Settings and
+  step 1 of the setup wizard, which may also send it to `/api/setup/lastfm`).
+  Like the API key it is `repr=False` and is returned by
+  `GET /api/settings` so the Settings form can show it (masked).
+- `LASTFM_SESSION_KEY` (plus `LASTFM_SESSION_USER`) - obtained once through
+  Last.fm's token flow (`auth.getToken`, approval on last.fm,
+  `auth.getSession`) by the unauthenticated `/api/scrobbler/auth/*` endpoints
+  ([`web/routes/scrobbler.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/web/routes/scrobbler.py)).
+  It grants **write access** to your Last.fm account and does not expire until
+  revoked. It is `repr=False`, written to `.env` with `0600` like every
+  dashboard write, and is **never** returned to the browser (not part of
+  `/api/settings`, the status endpoint only says whether one is set).
+  **Disconnect** removes it from `.env`; revoke it on Last.fm under
+  *Settings &rarr; Applications* to invalidate it everywhere. Because it lives in
+  `.env`, it travels inside [Teleporter](teleporter.md) bundles.
 
 ## 3. Runtime directory
 
@@ -90,6 +112,7 @@ moved to `runtime/` automatically. Every cache file is plain JSON written throug
 | `.notifications.json` | Web notification queue | None |
 | `history.db` (+ `-shm`, `-wal`) | Opt-in audit DB (see below) | High |
 | `lastfm_history.db` (+ `-shm`, `-wal`) | Opt-in full scrobble library (see below) | High |
+| `scrobbler.db` (+ `-shm`, `-wal`) | Opt-in history scrobbler: last history snapshot, poll log and now playing sightings (30 days), detected plays and decisions (90 days) | High |
 
 None of these are encrypted. None contain Last.fm or Google credentials.
 
@@ -275,6 +298,7 @@ The canonical list lives in `.env.example` and is documented on the
 [Configuration](configuration.md) page. The only **sensitive** keys are:
 
 - `LASTFM_API_KEY`
+- `LASTFM_API_SECRET` and `LASTFM_SESSION_KEY` (only with the history scrobbler)
 - `FLASK_SECRET_KEY` (auto-generated)
 - `WEBHOOK_URL` (if it embeds a token)
 

@@ -119,6 +119,16 @@ Each webhook payload includes:
 - **Playlist link** (on success)
 - **Error details** (on failure, truncated to 500 characters)
 
+## History scrobbler failures
+
+The optional [history scrobbler](scrobbler.md) reports its failures (history
+unreadable, YouTube Music authentication expired, Last.fm unreachable, session
+rejected, refused scrobbles) through
+the same Apprise targets and legacy webhook, as an `error` with sync type
+`scrobbler`. **Resolved** is the number of plays scrobbled in that poll and
+**Missed** the number that failed. A failure is sent once each time its kind
+changes, not on every poll, and also appears in the dashboard notifications.
+
 ## Discord Format
 
 Discord webhooks are auto-detected by URL (matching `discord.com/api/webhooks/` or `discordapp.com/api/webhooks/`) and formatted as rich embeds with color-coded status:
