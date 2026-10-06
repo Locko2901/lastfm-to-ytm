@@ -3,6 +3,8 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, cast
 
+from .retry import retry_with_backoff
+
 if TYPE_CHECKING:
     from ytmusicapi import YTMusic
 
@@ -134,10 +136,8 @@ def _resolve_canonical_playlist_id(ytm: YTMusic, playlist_id: str, max_retries: 
     flaky - and read back its canonical ``id``. Falls back to the create-time ID
     on any failure so a transient hiccup never blocks the sync.
     """
-    from ..playlist.sync import _retry_with_backoff
-
     try:
-        playlist = _retry_with_backoff(
+        playlist = retry_with_backoff(
             ytm.get_playlist,
             playlist_id,
             limit=0,

@@ -9,6 +9,8 @@ from flask import Blueprint, jsonify, request
 from flask.typing import ResponseReturnValue
 from flask_babel import gettext as _
 
+from src.ytm import is_signed_out
+
 from ..services import BROWSER_JSON_FILE
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
@@ -68,8 +70,7 @@ def submit() -> ResponseReturnValue:
             return jsonify({"success": True, "verified": True, "lastLiked": song_info})
         return jsonify({"success": True, "verified": True, "lastLiked": None})
     except Exception as e:
-        error_str = str(e)
-        if "Sign in" in error_str or "singleColumnBrowseResultsRenderer" in error_str:
+        if is_signed_out(e):
             return jsonify(
                 {
                     "success": False,
@@ -144,8 +145,7 @@ def test() -> ResponseReturnValue:
             return jsonify({"valid": True, "lastLiked": song_info})
         return jsonify({"valid": True, "lastLiked": None})
     except Exception as e:
-        error_str = str(e)
-        if "Sign in" in error_str or "singleColumnBrowseResultsRenderer" in error_str:
+        if is_signed_out(e):
             return jsonify({"valid": False, "error": _("Auth expired - please regenerate"), "expired": True})
         logger.exception("Auth test failed")
         return jsonify({"valid": False, "error": _("Auth test failed")})
