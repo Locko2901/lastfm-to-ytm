@@ -4,12 +4,11 @@ from __future__ import annotations
 
 import logging
 import sqlite3
-import threading
-from collections.abc import Iterator
-from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
+
+from ..db import SQLiteStore
 
 log = logging.getLogger(__name__)
 
@@ -95,35 +94,12 @@ CREATE INDEX IF NOT EXISTS idx_near_misses_rank ON near_misses(rank);
 """
 
 
-class HistoryDB:
+class HistoryDB(SQLiteStore):
     """Thread-safe SQLite history database."""
 
     def __init__(self, db_path: str | Path):
-        self._db_path = Path(db_path)
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._local = threading.local()
+        super().__init__(db_path, foreign_keys=True)
         self._init_schema()
-
-    def _get_conn(self) -> sqlite3.Connection:
-        conn = getattr(self._local, "conn", None)
-        if conn is None:
-            conn = sqlite3.connect(str(self._db_path), timeout=10)
-            conn.row_factory = sqlite3.Row
-            conn.execute("PRAGMA journal_mode=WAL")
-            conn.execute("PRAGMA foreign_keys=ON")
-            self._local.conn = conn
-        return conn
-
-    @contextmanager
-    def _cursor(self) -> Iterator[sqlite3.Cursor]:
-        conn = self._get_conn()
-        cur = conn.cursor()
-        try:
-            yield cur
-            conn.commit()
-        except Exception:
-            conn.rollback()
-            raise
 
     def _init_schema(self) -> None:
         conn = self._get_conn()
@@ -212,13 +188,6 @@ class HistoryDB:
             UPDATE schema_version SET version = 4;
         """)
         log.info("Migrated history DB schema v3 → v4 (added near_misses)")
-
-    def close(self) -> None:
-        """Close the thread-local database connection."""
-        conn = getattr(self._local, "conn", None)
-        if conn is not None:
-            conn.close()
-            self._local.conn = None
 
     def record_track(
         self,
