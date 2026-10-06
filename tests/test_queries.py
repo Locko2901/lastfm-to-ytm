@@ -1,3 +1,5 @@
+import pytest
+
 from src.search.normalization import tokens
 from src.search.queries import build_queries, candidate_artists, clean_title_for_match, split_artist_aliases
 
@@ -72,3 +74,37 @@ def test_clean_title_for_match_falls_back_when_empty():
 def test_split_artist_aliases_dedupes():
     aliases = split_artist_aliases("Daft Punk & Daft Punk")
     assert len(aliases) == len(set(aliases))
+
+
+@pytest.mark.parametrize(
+    "artist",
+    ["Max Richter", "Rex Orange County", "Alex Turner", "Lil Nas X", "xxxtentacion", "C+C Music Factory", "Vsevolod Zaderatsky"],
+)
+def test_split_artist_aliases_keeps_single_names_whole(artist):
+    assert split_artist_aliases(artist) == [artist.lower()]
+
+
+@pytest.mark.parametrize(
+    ("credit", "parts"),
+    [
+        ("DJ Snake x Lil Jon", ["dj snake", "lil jon"]),
+        ("Calvin Harris X Dua Lipa", ["calvin harris", "dua lipa"]),
+        ("Rosalía × The Weeknd", ["rosalía", "the weeknd"]),
+        ("Artist A + Artist B", ["artist a", "artist b"]),
+        ("Artist A vs Artist B", ["artist a", "artist b"]),
+        ("Artist A vs. Artist B", ["artist a", "artist b"]),
+    ],
+)
+def test_split_artist_aliases_splits_between_artists(credit, parts):
+    assert split_artist_aliases(credit) == [*parts, credit.lower()]
+
+
+@pytest.mark.parametrize(
+    ("band", "parts", "full"),
+    [
+        ("Mumford & Sons", ["mumford", "sons"], "mumford and sons"),
+        ("Florence + the Machine", ["florence", "the machine"], "florence + the machine"),
+    ],
+)
+def test_split_artist_aliases_keeps_a_band_name_as_an_alias(band, parts, full):
+    assert split_artist_aliases(band) == [*parts, full]
