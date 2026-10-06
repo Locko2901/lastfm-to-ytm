@@ -13,6 +13,21 @@ import pytest
 
 
 @pytest.fixture
+def no_network(monkeypatch):
+    """Fail the test on any HTTP request or socket connection."""
+    import socket
+
+    import requests
+
+    def _blocked(*_args, **_kwargs):
+        raise AssertionError("network access attempted in a test")
+
+    monkeypatch.setattr(requests.Session, "request", _blocked)
+    monkeypatch.setattr(socket.socket, "connect", _blocked)
+    monkeypatch.setattr(socket, "create_connection", _blocked)
+
+
+@pytest.fixture
 def web_paths(monkeypatch, tmp_path):
     """Redirect every file the web data/notification layer touches into ``tmp_path``.
 

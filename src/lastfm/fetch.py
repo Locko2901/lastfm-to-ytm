@@ -84,7 +84,25 @@ def _make_api_request(
     return None
 
 
-def _parse_tracks(tracks: list[dict[str, Any]]) -> list[Scrobble]:
+def field_text(value: Any) -> str:
+    """Return the ``#text`` of a Last.fm field, or the field itself when it is a string."""
+    if isinstance(value, dict):
+        return str(value.get("#text") or "")
+    if isinstance(value, str):
+        return value
+    return ""
+
+
+def as_list(value: Any) -> list[Any]:
+    """Last.fm returns a dict instead of a one-element list; normalise both to a list."""
+    if isinstance(value, list):
+        return value
+    if isinstance(value, dict):
+        return [value]
+    return []
+
+
+def parse_tracks(tracks: list[dict[str, Any]]) -> list[Scrobble]:
     """Parse API tracks into Scrobbles."""
     scrobbles: list[Scrobble] = []
 
@@ -96,25 +114,9 @@ def _parse_tracks(tracks: list[dict[str, Any]]) -> list[Scrobble]:
         if not uts:
             continue
 
-        artist = ""
-        a = t.get("artist")
-        if isinstance(a, dict):
-            artist = a.get("#text") or ""
-        elif isinstance(a, str):
-            artist = a or ""
-
-        track = t.get("name") or ""
-
-        album = ""
-        alb = t.get("album")
-        if isinstance(alb, dict):
-            album = alb.get("#text") or ""
-        elif isinstance(alb, str):
-            album = alb
-
-        artist = artist.strip()
-        track = track.strip()
-        album = album.strip()
+        artist = field_text(t.get("artist")).strip()
+        track = (t.get("name") or "").strip()
+        album = field_text(t.get("album")).strip()
 
         if artist and track:
             scrobbles.append(Scrobble(artist=artist, track=track, album=album, ts=int(uts)))
@@ -158,14 +160,12 @@ def fetch_recent(
             break
 
         recenttracks = data.get("recenttracks", {})
-        tracks = recenttracks.get("track", [])
-        if isinstance(tracks, dict):
-            tracks = [tracks]
+        tracks = as_list(recenttracks.get("track"))
 
         if not tracks:
             break
 
-        all_scrobbles.extend(_parse_tracks(tracks))
+        all_scrobbles.extend(parse_tracks(tracks))
 
         attr = recenttracks.get("@attr", {})
         total_pages = int(attr.get("totalPages", "0") or "0")
@@ -223,9 +223,7 @@ def iter_all_scrobbles(
             break
 
         recenttracks = data.get("recenttracks", {})
-        tracks = recenttracks.get("track", [])
-        if isinstance(tracks, dict):
-            tracks = [tracks]
+        tracks = as_list(recenttracks.get("track"))
 
         if not tracks:
             log.info(
@@ -239,7 +237,7 @@ def iter_all_scrobbles(
             attr = recenttracks.get("@attr", {})
             total_pages = int(attr.get("totalPages", "0") or "0")
 
-        page_scrobbles = _parse_tracks(tracks)
+        page_scrobbles = parse_tracks(tracks)
         if page_scrobbles:
             if max_scrobbles > 0 and yielded + len(page_scrobbles) > max_scrobbles:
                 page_scrobbles = page_scrobbles[: max_scrobbles - yielded]
@@ -296,14 +294,12 @@ def fetch_recent_with_diversity(
             break
 
         recenttracks = data.get("recenttracks", {})
-        tracks = recenttracks.get("track", [])
-        if isinstance(tracks, dict):
-            tracks = [tracks]
+        tracks = as_list(recenttracks.get("track"))
 
         if not tracks:
             break
 
-        page_scrobbles = _parse_tracks(tracks)
+        page_scrobbles = parse_tracks(tracks)
         all_scrobbles.extend(page_scrobbles)
         unique_count = count_unique(all_scrobbles)
 
@@ -330,13 +326,8 @@ def fetch_recent_with_diversity(
 
 def _parse_tags(raw_tags: Any, min_count: int, source: str = "track") -> list[dict[str, Any]]:
     """Parse raw Last.fm tag response into filtered tag list."""
-    if isinstance(raw_tags, dict):
-        raw_tags = [raw_tags]
-    if not isinstance(raw_tags, list):
-        return []
-
     tags: list[dict[str, Any]] = []
-    for tag in raw_tags:
+    for tag in as_list(raw_tags):
         name = tag.get("name", "").strip()
         try:
             count = int(tag.get("count", 0))
@@ -430,11 +421,7 @@ def fetch_similar_tracks(
     if data is None or "error" in data:
         return []
 
-    raw = data.get("similartracks", {}).get("track", [])
-    if isinstance(raw, dict):
-        raw = [raw]
-    if not isinstance(raw, list):
-        return []
+    raw = as_list(data.get("similartracks", {}).get("track"))
 
     results: list[dict[str, Any]] = []
     for item in raw:
@@ -471,11 +458,7 @@ def fetch_similar_artists(
     if data is None or "error" in data:
         return []
 
-    raw = data.get("similarartists", {}).get("artist", [])
-    if isinstance(raw, dict):
-        raw = [raw]
-    if not isinstance(raw, list):
-        return []
+    raw = as_list(data.get("similarartists", {}).get("artist"))
 
     results: list[dict[str, Any]] = []
     for item in raw:
@@ -509,11 +492,7 @@ def fetch_artist_top_tracks(
     if data is None or "error" in data:
         return []
 
-    raw = data.get("toptracks", {}).get("track", [])
-    if isinstance(raw, dict):
-        raw = [raw]
-    if not isinstance(raw, list):
-        return []
+    raw = as_list(data.get("toptracks", {}).get("track"))
 
     results: list[dict[str, Any]] = []
     for item in raw:
