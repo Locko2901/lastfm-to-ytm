@@ -19,6 +19,20 @@ export function switchTab(tabId) {
   filterByTab(tabId)
 }
 
+export function setTabVisibility(tabId, enabled) {
+  const tab = document.querySelector(`.tab[data-tab="${tabId}"]`)
+  if (tab) {
+    tab.hidden = !enabled
+  }
+
+  if (!enabled) {
+    const activeTab = document.querySelector(".tab.active")
+    if (activeTab?.dataset.tab === tabId && window.switchTab) {
+      window.switchTab("playlist")
+    }
+  }
+}
+
 export function initTabs() {
   for (const tab of document.querySelectorAll(".tab")) {
     tab.addEventListener("click", () => switchTab(tab.dataset.tab))

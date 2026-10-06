@@ -1,7 +1,8 @@
 import { applyCustomTheme, loadCustomTheme, onParentThemeChanged, setCustomEnabled } from "./customTheme.js"
-import { refreshHistoryPanelState, setHistoryTabVisibility } from "./history.js"
+import { refreshHistoryPanelState } from "./history.js"
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
+import { setTabVisibility } from "./tabs.js"
 import {
   escapeHtml,
   formatDateTime,
@@ -170,7 +171,7 @@ export async function saveSettings(event) {
     }
 
     if (changedSettings.includes("HISTORY_DB_ENABLED")) {
-      setHistoryTabVisibility(settings.HISTORY_DB_ENABLED)
+      setTabVisibility("history", settings.HISTORY_DB_ENABLED)
       await refreshHistoryPanelState()
     }
 
@@ -213,7 +214,7 @@ export function closeSettingsModal() {
 function showRestartBanner() {
   insertBanner(
     "restartBanner",
-    "auth-required-banner",
+    "auth-required-banner warning-box",
     `
     <div class="auth-banner-content">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -237,7 +238,7 @@ export function dismissRestartBanner() {
 function showReloadBanner() {
   insertBanner(
     "reloadBanner",
-    "auth-required-banner",
+    "auth-required-banner warning-box",
     `
     <div class="auth-banner-content">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -281,7 +282,7 @@ export async function checkEnvCompleteness() {
 function showMissingSettingsBanner(count) {
   insertBanner(
     "envUpdateBanner",
-    "auth-required-banner",
+    "auth-required-banner warning-box",
     `
     <div class="auth-banner-content">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -302,7 +303,7 @@ function showExampleMissingBanner(download) {
     : ""
   insertBanner(
     "envUpdateBanner",
-    "auth-required-banner",
+    "auth-required-banner warning-box",
     `
     <div class="auth-banner-content">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -129,11 +129,14 @@
   height: 14px;
 }
 
-.auth-required-banner {
+.warning-box {
   background: rgba(var(--warning-rgb), 0.08);
   border: 1px solid rgba(var(--warning-rgb), 0.2);
   border-radius: var(--radius);
   padding: 0.75rem 1rem;
+}
+
+.auth-required-banner {
   margin-bottom: 1rem;
   animation: slideDown 0.2s ease-out;
 }
@@ -326,33 +329,6 @@
 .failure-time,
 .failure-error {
   font-size: 0.9rem;
-  color: var(--text-primary);
-}
-
-.failure-hint-box {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  background: rgba(var(--warning-rgb), 0.08);
-  border: 1px solid rgba(var(--warning-rgb), 0.2);
-  border-radius: var(--radius);
-  padding: 0.75rem 1rem;
-  overflow: visible;
-}
-
-.failure-hint-box svg {
-  color: var(--warning);
-  flex-shrink: 0;
-  min-width: 16px;
-  min-height: 16px;
-  width: 16px;
-  height: 16px;
-  display: block;
-  overflow: visible;
-}
-
-.failure-hint-box span {
-  font-size: 0.875rem;
   color: var(--text-primary);
 }
 
