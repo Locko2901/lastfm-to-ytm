@@ -8,7 +8,7 @@ except ImportError:
 
 RE_FEAT_CLAUSE = re.compile(r"\b(?:feat(?:\.|uring)?|ft\.?|with)\b.*$", flags=re.IGNORECASE)
 RE_ARTIST_SPLIT = re.compile(
-    r"\s*(?:,|&|x|×|\/|;|\band\b|\bwith\b|\bfeat(?:\.|uring)?\b|\bft\.?\b)\s*",
+    r"\s+(?:x|\+)\s+|\s*(?:,|&|×|\/|;|\band\b|\bwith\b|\bvs\b\.?|\bfeat(?:\.|uring)?\b|\bft\.?\b)\s*",
     flags=re.IGNORECASE,
 )
 RE_DASH = re.compile(r"\s*[-–—]\s*")
