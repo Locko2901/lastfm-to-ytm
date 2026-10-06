@@ -25,7 +25,7 @@ from ..observability import (
 )
 from ..playlist import build_sync_preview, current_tracks_from_playlist, get_playlist_statistics, log_playlist_statistics, sync_playlist
 from ..playlist import reset_query_counter as reset_playlist_counter
-from ..playlist.sync import InvalidVideoIDsError, _evict_from_cache, _retry_with_backoff
+from ..playlist.sync import InvalidVideoIDsError, _evict_from_cache
 from ..playlist.weekly import compute_weekly_name, update_weekly_playlist
 from ..recency import WeightedTrack, collapse_recency_weighted, dedupe_keep_latest, weight_history_tracks
 from ..search import (
@@ -34,7 +34,7 @@ from ..search import (
     reset_search_statistics,
     resolve_tracks_to_video_ids,
 )
-from ..ytm import create_playlist_with_items, get_existing_playlist_by_name, get_or_rename_playlist
+from ..ytm import create_playlist_with_items, get_existing_playlist_by_name, get_or_rename_playlist, retry_with_backoff
 from ._common import build_context, fetch_scrobbles, sync_local_history
 from .backfill import reorder_after_backfill, run_backfill
 
@@ -72,7 +72,7 @@ def _sync_or_create_playlist(
     if existing_id:
         log.info("Updating playlist '%s'...", settings.playlist_name)
         try:
-            _retry_with_backoff(
+            retry_with_backoff(
                 ctx.ytm.edit_playlist,
                 existing_id,
                 title=settings.playlist_name,
@@ -162,7 +162,7 @@ def _fetch_current_tracks(ctx: RuntimeContext, settings: Settings, playlist_id: 
     if not playlist_id:
         return []
     try:
-        playlist = _retry_with_backoff(
+        playlist = retry_with_backoff(
             ctx.ytm.get_playlist,
             playlist_id,
             limit=None,

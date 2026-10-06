@@ -7,6 +7,8 @@ from .operations import (
     get_existing_playlist_by_name,
     get_or_rename_playlist,
 )
+from .retry import retry_with_backoff
+from .session import is_signed_out
 
 __all__ = [
     "add_items_fallback",
@@ -14,4 +16,6 @@ __all__ = [
     "create_playlist_with_items",
     "get_existing_playlist_by_name",
     "get_or_rename_playlist",
+    "is_signed_out",
+    "retry_with_backoff",
 ]

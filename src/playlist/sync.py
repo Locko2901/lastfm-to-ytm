@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import logging
 import time
-from collections.abc import Callable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from ytmusicapi import YTMusic
 from ytmusicapi.exceptions import YTMusicServerError
 
-from ..observability.http_status import extract_http_status, is_rate_limited, is_retryable
+from ..observability.http_status import extract_http_status, is_rate_limited
 from ..ytm import create_playlist_with_items, get_or_rename_playlist
+from ..ytm.retry import retry_with_backoff as _retry_with_backoff
 from .metrics import _query_counter
 
 if TYPE_CHECKING:
@@ -25,43 +25,6 @@ class InvalidVideoIDsError(Exception):
     def __init__(self, invalid_ids: list[str]):
         self.invalid_ids = invalid_ids
         super().__init__(f"{len(invalid_ids)} invalid video ID(s) detected: {invalid_ids}")
-
-
-def _retry_with_backoff(
-    func: Callable[..., Any], *args: Any, max_retries: int = 3, initial_delay: float = 1.0, operation: str = "operation", **kwargs: Any
-) -> Any:
-    """Retry with exponential backoff on rate limit errors."""
-    delay = initial_delay
-    last_exception: Exception | None = None
-
-    for attempt in range(max_retries):
-        try:
-            return func(*args, **kwargs)
-        except (RuntimeError, ValueError, OSError, YTMusicServerError) as e:
-            last_exception = e
-            error_msg = str(e)
-            status = extract_http_status(error_msg)
-
-            # Terminal client errors (bad request / conflict) will never succeed.
-            if status in (400, 409):
-                raise
-
-            if is_retryable(error_msg) and attempt < max_retries - 1:
-                log.warning(
-                    "%s: %s (retry %d/%d in %.1fs)",
-                    operation,
-                    f"HTTP {status}" if status else "transient error",
-                    attempt + 1,
-                    max_retries - 1,
-                    delay,
-                )
-                time.sleep(delay)
-                delay *= 2
-            else:
-                raise
-
-    assert last_exception is not None
-    raise last_exception
 
 
 def _get_playlist_video_ids(ytm: YTMusic, playlist_id: str, max_retries: int = 3) -> list[str]:
