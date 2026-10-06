@@ -391,6 +391,16 @@
   color: white;
 }
 
+.badge-success {
+  background: var(--success-dim);
+  color: var(--success-text);
+}
+
+.badge-danger {
+  background: var(--danger);
+  color: var(--danger-text);
+}
+
 .badge-warning {
   background: var(--warning);
   color: white;

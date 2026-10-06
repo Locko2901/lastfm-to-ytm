@@ -26,16 +26,18 @@ logger = logging.getLogger(__name__)
 _RUNTIME_DIR = Path(os.environ.get("RUNTIME_DIR") or os.environ.get("CACHE_DIR") or str(Path(__file__).parent.parent.parent / "runtime"))
 _TAG_SYNC_COUNTER_FILE = _RUNTIME_DIR / ".tag_sync_counter.json"
 
+SCHEDULER_SWITCH_DEFAULTS = {"AUTO_SYNC_ENABLED": False, "AUTO_TAG_SYNC_ENABLED": False}
+
 _scheduler: BackgroundScheduler | None = None
 _scheduler_lock = threading.Lock()
 
 scheduler_state: dict[str, Any] = {
-    "enabled": False,
+    "enabled": SCHEDULER_SWITCH_DEFAULTS["AUTO_SYNC_ENABLED"],
     "schedule_type": "interval",  # "interval" or "cron"
     "interval_hours": 6,
     "start_time": "",  # HH:MM format for interval start (e.g., "00:00" for midnight)
     "cron_expression": "0 */6 * * *",  # Default: every 6 hours
-    "tag_sync_enabled": False,
+    "tag_sync_enabled": SCHEDULER_SWITCH_DEFAULTS["AUTO_TAG_SYNC_ENABLED"],
     "next_run": None,
     "last_run": None,
     "last_run_success": None,
@@ -279,13 +281,17 @@ def _parse_scheduler_settings() -> dict[str, Any]:
     except (ValueError, TypeError):
         tag_sync_frequency = 1
 
+    def switch(key: str) -> bool:
+        raw = settings.get(key)
+        return SCHEDULER_SWITCH_DEFAULTS[key] if raw is None else raw.lower() in ("true", "1", "yes", "on")
+
     return {
-        "enabled": settings.get("AUTO_SYNC_ENABLED", "").lower() in ("true", "1", "yes", "on"),
+        "enabled": switch("AUTO_SYNC_ENABLED"),
         "schedule_type": settings.get("AUTO_SYNC_TYPE", "interval").lower(),
         "interval_hours": interval_hours,
         "start_time": settings.get("AUTO_SYNC_START_TIME", ""),
         "cron_expression": settings.get("AUTO_SYNC_CRON", "0 */6 * * *"),
-        "tag_sync_enabled": settings.get("AUTO_TAG_SYNC_ENABLED", "").lower() in ("true", "1", "yes", "on"),
+        "tag_sync_enabled": switch("AUTO_TAG_SYNC_ENABLED"),
         "tag_sync_frequency": tag_sync_frequency,
     }
 

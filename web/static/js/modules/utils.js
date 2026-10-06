@@ -4,6 +4,12 @@ import { registerPoller, unregisterPoller } from "./visibility.js"
 
 let _cachedSettings = null
 
+const SWITCH_DEFAULTS = window.__switchDefaults__ || {}
+
+export function switchDefault(key) {
+  return Boolean(SWITCH_DEFAULTS[key])
+}
+
 async function getCachedSettings() {
   if (_cachedSettings !== null) return _cachedSettings
   try {
@@ -21,7 +27,7 @@ export function invalidateSettingsCache() {
 
 export async function getUse24HourClock() {
   const settings = await getCachedSettings()
-  return settings ? Boolean(settings.USE_24_HOUR_CLOCK) : true
+  return settings ? Boolean(settings.USE_24_HOUR_CLOCK) : switchDefault("USE_24_HOUR_CLOCK")
 }
 
 export async function getDateFormat() {
@@ -41,12 +47,12 @@ export async function getDateTimePrefs() {
 export function getDateTimePrefsSync() {
   const dateFormat = _cachedSettings?.DATE_FORMAT === "DMY" || _cachedSettings?.DATE_FORMAT === "MDY" ? _cachedSettings.DATE_FORMAT : "auto"
   return {
-    use24Hour: _cachedSettings ? Boolean(_cachedSettings.USE_24_HOUR_CLOCK) : true,
+    use24Hour: _cachedSettings ? Boolean(_cachedSettings.USE_24_HOUR_CLOCK) : switchDefault("USE_24_HOUR_CLOCK"),
     dateFormat,
   }
 }
 
-export function formatClockTime(date, use24Hour = true) {
+export function formatClockTime(date, use24Hour = switchDefault("USE_24_HOUR_CLOCK")) {
   return date.toLocaleTimeString(undefined, {
     hour: "2-digit",
     minute: "2-digit",
@@ -239,13 +245,13 @@ async function getNowPlayingSettings() {
   if (_nowPlayingSettings !== null) return _nowPlayingSettings
   const settings = await getCachedSettings()
   if (settings) {
-    const enabled = settings.NOW_PLAYING_ENABLED === undefined ? true : Boolean(settings.NOW_PLAYING_ENABLED)
+    const enabled = Boolean(settings.NOW_PLAYING_ENABLED ?? switchDefault("NOW_PLAYING_ENABLED"))
     _nowPlayingSettings = {
       enabled: enabled,
       interval: parseInt(settings.NOW_PLAYING_INTERVAL, 10) || 15,
     }
   } else {
-    _nowPlayingSettings = { enabled: true, interval: 15 }
+    _nowPlayingSettings = { enabled: switchDefault("NOW_PLAYING_ENABLED"), interval: 15 }
   }
   return _nowPlayingSettings
 }

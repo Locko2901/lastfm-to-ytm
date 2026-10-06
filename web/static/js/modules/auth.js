@@ -45,7 +45,7 @@ export async function connectAuth() {
     const data = await response.json()
 
     if (data.success) {
-      showResult("success", data.verified ? buildSuccessMessage(data.lastLiked) : _("Auth saved (could not verify live)"))
+      showResult("success", buildSuccessMessage(data.lastLiked))
       showToast(_("YouTube Music connected!"), "success")
       removeAuthBanner()
       setTimeout(() => closeAuthModal(), 1500)

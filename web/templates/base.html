@@ -30,6 +30,7 @@
   <script nonce="{{ csp_nonce }}">
     window.__i18n__ = {{ js_translations | tojson }};
     window.__themeOverrides__ = {{ initial_theme_overrides | tojson }};
+    window.__switchDefaults__ = {{ switch_defaults | tojson }};
     (() => {
       let theme = localStorage.getItem("ytm-theme")
       if (theme !== "dark" && theme !== "light") theme = "dark"

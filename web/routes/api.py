@@ -73,6 +73,7 @@ from ..services import (
     load_overrides,
     load_run_log,
     load_search_cache,
+    missing_setting_value,
     parse_env_file,
     prune_old_weeklies_ytm,
     reconcile_env_file,
@@ -274,11 +275,11 @@ def cache_stats() -> ResponseReturnValue:
 
 @api_bp.route("/settings")
 def settings_get() -> ResponseReturnValue:
-    """Get current settings from .env file."""
+    """Get current settings from .env file; a missing switch reads as its ``Settings`` default."""
     settings = parse_env_file()
     result: dict[str, Any] = {}
     for key in ALL_SETTINGS:
-        value = settings.get(key, "")
+        value = settings.get(key, missing_setting_value(key))
         if key in BOOL_SETTINGS:
             result[key] = value.lower() in ("true", "1", "yes", "on", "t", "y")
         elif key in PRIVACY_SETTINGS:

@@ -50,6 +50,29 @@ def test_teleporter_modal_opens(page):
     assert page.locator("#teleporterModal.active").is_visible()
 
 
+def test_browser_switches_fall_back_to_the_defaults_sent_with_the_page(page):
+    from web.services.dashboard import DASHBOARD_SWITCH_DEFAULTS
+
+    assert page.evaluate("window.__switchDefaults__") == DASHBOARD_SWITCH_DEFAULTS
+    page.add_init_script(
+        """Object.defineProperty(window, '__switchDefaults__', {
+          configurable: true,
+          get() { return this._sentSwitchDefaults },
+          set(value) { this._sentSwitchDefaults = { ...value, USE_24_HOUR_CLOCK: !value.USE_24_HOUR_CLOCK } },
+        })"""
+    )
+    page.route("**/api/settings", lambda route: route.abort())
+    page.reload()
+    result = page.evaluate(
+        """async () => {
+          const utils = await import('/static/js/modules/utils.js')
+          utils.invalidateSettingsCache()
+          return [await utils.getUse24HourClock(), utils.getDateTimePrefsSync().use24Hour]
+        }"""
+    )
+    assert result == [not DASHBOARD_SWITCH_DEFAULTS["USE_24_HOUR_CLOCK"]] * 2
+
+
 def test_sync_drawer_opens(page):
     page.evaluate("window.openSyncDrawer()")
     output = page.locator("#syncOutput")
@@ -133,3 +156,17 @@ def test_shared_set_text_shows_a_placeholder_for_missing_values(page):
         }"""
     )
     assert texts == ["\u2013", "0"]
+
+
+@pytest.mark.parametrize("variant", ["success", "danger"])
+def test_history_badges_have_a_colour(page, variant):
+    background = page.evaluate(
+        """(variant) => {
+          const badge = document.createElement('span')
+          badge.className = `badge badge-${variant}`
+          document.body.appendChild(badge)
+          return getComputedStyle(badge).backgroundColor
+        }""",
+        variant,
+    )
+    assert background not in ("rgba(0, 0, 0, 0)", "transparent")

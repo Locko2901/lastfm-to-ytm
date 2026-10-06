@@ -32,14 +32,17 @@ from .state import sync_state
 
 DOCS_URL = "https://locko2901.github.io/lastfm-to-ytm/"
 
-_TRUTHY_DEFAULT = "true"
 _FALSY_VALUES = frozenset({"false", "0", "no", "off", "f", "n"})
+
+DASHBOARD_SWITCH_DEFAULTS = {"DISPLAY_TIPS": True, "NOW_PLAYING_ENABLED": True, "USE_24_HOUR_CLOCK": True}
 
 
 def _display_tips_enabled() -> bool:
-    """Read the ``DISPLAY_TIPS`` env flag, defaulting to enabled."""
-    raw = parse_env_file().get("DISPLAY_TIPS", _TRUTHY_DEFAULT).strip().lower()
-    return raw not in _FALSY_VALUES
+    """Read the ``DISPLAY_TIPS`` env flag, or its default when it is missing."""
+    raw = parse_env_file().get("DISPLAY_TIPS")
+    if raw is None:
+        return DASHBOARD_SWITCH_DEFAULTS["DISPLAY_TIPS"]
+    return raw.strip().lower() not in _FALSY_VALUES
 
 
 @dataclass(frozen=True, slots=True)

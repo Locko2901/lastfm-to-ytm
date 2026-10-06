@@ -9,6 +9,7 @@ full list of what is and isn't covered here, and why.
 from __future__ import annotations
 
 import json
+import re
 from urllib.parse import urlencode
 
 import pytest
@@ -965,3 +966,43 @@ def test_export_import_includes_export_formats(client):
 
     names = {f["name"] for f in client.get("/api/export-formats").get_json()["formats"]}
     assert {"RoundTrip", "Imported"} <= names
+
+
+def test_a_switch_missing_from_env_reads_as_its_settings_default(client, web_paths):
+    web_paths["ENV_FILE"].write_text("LASTFM_USER=me\nUSE_ANON_SEARCH=false\n", encoding="utf-8")
+    body = client.get("/api/settings").get_json()
+    assert body["DEDUPLICATE"] is True
+    assert body["WEEKLY_ENABLED"] is True
+    assert body["LASTFM_FORCE_IPV4"] is True
+    assert body["USE_ANON_SEARCH"] is False
+    assert body["HISTORY_DB_ENABLED"] is False
+    assert body["PLAYLIST_NAME"] == ""
+
+
+def test_every_switch_missing_from_env_reads_as_its_runtime_default(client, web_paths, monkeypatch):
+    from src import config
+    from web.services import dashboard, scheduler
+    from web.services.env import BOOL_SETTINGS
+
+    web_paths["ENV_FILE"].write_text("LASTFM_USER=me\nLASTFM_API_KEY=key\n", encoding="utf-8")
+    for key in BOOL_SETTINGS:
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("LASTFM_USER", "me")
+    monkeypatch.setenv("LASTFM_API_KEY", "key")
+    monkeypatch.setattr(config, "load_dotenv", lambda *_args, **_kwargs: False)
+    settings = config.Settings.from_env()
+    scheduled = scheduler._parse_scheduler_settings()
+    page = client.get("/").get_data(as_text=True)
+    browser = json.loads(re.search(r"window\.__switchDefaults__ = (\{.*?\});", page).group(1))
+
+    runtime = {key: getattr(settings, key.lower()) for key in BOOL_SETTINGS if hasattr(settings, key.lower())}
+    runtime |= {
+        "DISPLAY_TIPS": dashboard._display_tips_enabled(),
+        "NOW_PLAYING_ENABLED": browser["NOW_PLAYING_ENABLED"],
+        "USE_24_HOUR_CLOCK": browser["USE_24_HOUR_CLOCK"],
+        "AUTO_SYNC_ENABLED": scheduled["enabled"],
+        "AUTO_TAG_SYNC_ENABLED": scheduled["tag_sync_enabled"],
+    }
+    assert set(runtime) == BOOL_SETTINGS
+    body = client.get("/api/settings").get_json()
+    assert {key: body[key] for key in BOOL_SETTINGS} == runtime
