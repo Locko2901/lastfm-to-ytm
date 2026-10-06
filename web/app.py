@@ -102,12 +102,13 @@ app.jinja_env.globals["use_minified"] = (_dist / "app.min.js").exists() and (_di
 
 @app.context_processor
 def inject_globals() -> dict[str, Any]:
-    """Make CSP nonce, locales, and JS translations accessible in all templates."""
+    """Make CSP nonce, locales, JS translations and the browser's switch defaults accessible in all templates."""
     locale_choices = [(code, Locale(code).get_display_name(code) or code) for code in SUPPORTED_LOCALES]
     catalog = get_translations()
     js_translations = {}
     if hasattr(catalog, "_catalog"):
         js_translations = {k: v for k, v in catalog._catalog.items() if k and v and isinstance(k, str)}
+    from .services.dashboard import DASHBOARD_SWITCH_DEFAULTS
     from .services.theme import load_theme_overrides
 
     return {
@@ -115,6 +116,7 @@ def inject_globals() -> dict[str, Any]:
         "available_locales": locale_choices,
         "js_translations": js_translations,
         "initial_theme_overrides": load_theme_overrides(),
+        "switch_defaults": DASHBOARD_SWITCH_DEFAULTS,
     }
 
 

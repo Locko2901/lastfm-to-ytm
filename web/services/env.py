@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import contextlib
+import dataclasses
 import datetime
+import functools
 import shutil
 from pathlib import Path
 
-from src.config import PROJECT_ROOT, RUNTIME_DIR
+from src.config import PROJECT_ROOT, RUNTIME_DIR, Settings
 
 ENV_FILE = PROJECT_ROOT / ".env"
 ENV_EXAMPLE_FILE = PROJECT_ROOT / ".env.example"
@@ -31,6 +33,31 @@ BOOL_SETTINGS = {
     "DISPLAY_TIPS",
     "WEBHOOK_ALLOW_PRIVATE",
 }
+
+
+@functools.cache
+def _switch_defaults() -> dict[str, bool]:
+    """Every switch's default, taken from where the app reads it.
+
+    A switch with a ``Settings`` field has that field's default. The dashboard
+    reads ``DISPLAY_TIPS`` and hands ``NOW_PLAYING_ENABLED`` and
+    ``USE_24_HOUR_CLOCK`` to the browser with the page; the scheduler reads
+    ``AUTO_SYNC_ENABLED`` and ``AUTO_TAG_SYNC_ENABLED``.
+    """
+    from .dashboard import DASHBOARD_SWITCH_DEFAULTS
+    from .scheduler import SCHEDULER_SWITCH_DEFAULTS
+
+    fields = {field.name.upper(): field.default for field in dataclasses.fields(Settings) if isinstance(field.default, bool)}
+    return {**fields, **DASHBOARD_SWITCH_DEFAULTS, **SCHEDULER_SWITCH_DEFAULTS}
+
+
+def missing_setting_value(key: str) -> str:
+    """The value a key missing from ``.env`` stands for: the switch's default, else empty."""
+    default = _switch_defaults().get(key)
+    if default is None:
+        return ""
+    return "true" if default else "false"
+
 
 PRIVACY_SETTINGS = {
     "MAKE_PUBLIC",

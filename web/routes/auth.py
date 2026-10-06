@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import json
 import logging
+from typing import Any
 
 from flask import Blueprint, jsonify, request
 from flask.typing import ResponseReturnValue
 from flask_babel import gettext as _
 
+from src.observability.http_status import describe_sync_error
 from src.ytm import is_signed_out
 
 from ..services import BROWSER_JSON_FILE
@@ -20,10 +22,11 @@ logger = logging.getLogger(__name__)
 
 @auth_bp.route("/submit", methods=["POST"])
 def submit() -> ResponseReturnValue:
-    """Parse raw browser headers and write browser.json directly.
+    """Check pasted browser headers with YouTube Music and save them as browser.json only when they work.
 
-    Accepts { "headers_raw": "..." } with pasted request headers or cURL.
-    Returns success/failure with optional verification via YTMusic API.
+    Accepts { "headers_raw": "..." } with pasted request headers or cURL. A
+    failed check answers the reason and leaves browser.json and the auth
+    banner as they were, so pasting fresh headers is the whole retry.
     """
     data = request.get_json()
     if not data or not data.get("headers_raw", "").strip():
@@ -34,7 +37,7 @@ def submit() -> ResponseReturnValue:
     try:
         from ytmusicapi.setup import setup_browser  # type: ignore[attr-defined]
 
-        setup_browser(filepath=str(BROWSER_JSON_FILE), headers_raw=headers_raw)
+        auth_json = setup_browser(headers_raw=headers_raw)
     except Exception as e:
         error_msg = str(e)
         if "missing" in error_msg.lower():
@@ -47,9 +50,41 @@ def submit() -> ResponseReturnValue:
         logger.exception("Failed to parse auth headers")
         return jsonify({"success": False, "error": _("Failed to parse headers: %(error_msg)s", error_msg=error_msg)}), 400
 
-    _has_content, valid, error = _validate_browser_json()
-    if not valid:
-        return jsonify({"success": False, "error": error or "Auth file validation failed"}), 400
+    problem = _auth_problem(json.loads(auth_json))
+    if problem:
+        return jsonify({"success": False, "error": problem}), 400
+
+    try:
+        from ytmusicapi import YTMusic
+
+        liked = YTMusic(auth_json).get_liked_songs(limit=1)
+    except Exception as e:
+        if is_signed_out(e):
+            return jsonify(
+                {
+                    "success": False,
+                    "error": _(
+                        "YouTube Music answered these headers as signed out. Copy fresh headers from a "
+                        "private browser window; browser.json was left unchanged."
+                    ),
+                }
+            ), 400
+        logger.warning("Auth live check failed, browser.json left unchanged: %s", e)
+        return jsonify(
+            {
+                "success": False,
+                "error": _(
+                    "Could not check the headers with YouTube Music (%(error)s); browser.json was left unchanged. Try again.",
+                    error=describe_sync_error(str(e)),
+                ),
+            }
+        ), 502
+
+    try:
+        setup_browser(filepath=str(BROWSER_JSON_FILE), headers_raw=headers_raw)
+    except OSError as e:
+        logger.error(f"Failed to save browser.json: {e}")
+        return jsonify({"success": False, "error": _("Failed to save credentials")}), 500
 
     try:
         from ..services import events as _events
@@ -58,27 +93,22 @@ def submit() -> ResponseReturnValue:
     except Exception:
         logger.exception("Failed to publish auth_status event")
 
-    try:
-        from ytmusicapi import YTMusic
+    tracks = liked.get("tracks", [])
+    if tracks:
+        track = tracks[0]
+        song_info = f"{track.get('title', 'Unknown')} by {track.get('artists', [{}])[0].get('name', 'Unknown')}"
+        return jsonify({"success": True, "verified": True, "lastLiked": song_info})
+    return jsonify({"success": True, "verified": True, "lastLiked": None})
 
-        yt = YTMusic(str(BROWSER_JSON_FILE))
-        liked = yt.get_liked_songs(limit=1)
-        tracks = liked.get("tracks", [])
-        if tracks:
-            track = tracks[0]
-            song_info = f"{track.get('title', 'Unknown')} by {track.get('artists', [{}])[0].get('name', 'Unknown')}"
-            return jsonify({"success": True, "verified": True, "lastLiked": song_info})
-        return jsonify({"success": True, "verified": True, "lastLiked": None})
-    except Exception as e:
-        if is_signed_out(e):
-            return jsonify(
-                {
-                    "success": False,
-                    "error": _("Headers were saved but auth appears expired. Try copying fresh headers."),
-                }
-            ), 400
-        logger.warning("Auth live-test failed (file still saved): %s", e)
-        return jsonify({"success": True, "verified": False})
+
+def _auth_problem(data: dict[str, Any]) -> str | None:
+    """Why parsed browser auth headers cannot work (no cookie, no session cookie), or None."""
+    if "cookie" not in data:
+        return str(_("Missing cookie in auth file"))
+    cookie = data.get("cookie", "")
+    if "SAPISID" not in cookie and "SID" not in cookie:
+        return str(_("Auth cookie appears invalid"))
+    return None
 
 
 def _validate_browser_json() -> tuple[bool, bool, str | None]:
@@ -94,12 +124,8 @@ def _validate_browser_json() -> tuple[bool, bool, str | None]:
     try:
         with BROWSER_JSON_FILE.open() as f:
             data = json.load(f)
-        if "cookie" not in data:
-            return True, False, _("Missing cookie in auth file")
-        cookie = data.get("cookie", "")
-        if "SAPISID" not in cookie and "SID" not in cookie:
-            return True, False, _("Auth cookie appears invalid")
-        return True, True, None
+        problem = _auth_problem(data)
+        return True, problem is None, problem
     except json.JSONDecodeError:
         return True, False, _("Invalid JSON in auth file")
     except OSError:
