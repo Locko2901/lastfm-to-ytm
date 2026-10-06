@@ -10,13 +10,12 @@ from lifetime plays + recency instead of a single recent-tracks fetch.
 from __future__ import annotations
 
 import logging
-import sqlite3
-import threading
-from collections.abc import Iterator, Sequence
-from contextlib import contextmanager
+from collections.abc import Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+
+from ..db import SQLiteStore
 
 if TYPE_CHECKING:
     from .scrobble import Scrobble
@@ -55,34 +54,12 @@ _META_LAST_FULL_SYNC = "last_full_sync_at"
 _META_LAST_SYNC = "last_sync_at"
 
 
-class LocalScrobbleDB:
+class LocalScrobbleDB(SQLiteStore):
     """Thread-safe SQLite store of aggregated Last.fm scrobble history."""
 
     def __init__(self, db_path: str | Path):
-        self._db_path = Path(db_path)
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._local = threading.local()
+        super().__init__(db_path)
         self._init_schema()
-
-    def _get_conn(self) -> sqlite3.Connection:
-        conn = getattr(self._local, "conn", None)
-        if conn is None:
-            conn = sqlite3.connect(str(self._db_path), timeout=10)
-            conn.row_factory = sqlite3.Row
-            conn.execute("PRAGMA journal_mode=WAL")
-            self._local.conn = conn
-        return conn
-
-    @contextmanager
-    def _cursor(self) -> Iterator[sqlite3.Cursor]:
-        conn = self._get_conn()
-        cur = conn.cursor()
-        try:
-            yield cur
-            conn.commit()
-        except Exception:
-            conn.rollback()
-            raise
 
     def _init_schema(self) -> None:
         conn = self._get_conn()
@@ -93,28 +70,6 @@ class LocalScrobbleDB:
             cur.execute("INSERT INTO schema_version (version) VALUES (?)", (_SCHEMA_VERSION,))
         conn.commit()
         log.debug("Local Last.fm DB initialised at %s (schema v%d)", self._db_path, _SCHEMA_VERSION)
-
-    def close(self) -> None:
-        """Close the thread-local database connection."""
-        conn = getattr(self._local, "conn", None)
-        if conn is not None:
-            conn.close()
-            self._local.conn = None
-
-    def get_meta(self, key: str) -> str | None:
-        """Return a meta value, or None if unset."""
-        with self._cursor() as cur:
-            cur.execute("SELECT value FROM meta WHERE key = ?", (key,))
-            row = cur.fetchone()
-            return row["value"] if row else None
-
-    def set_meta(self, key: str, value: str) -> None:
-        """Upsert a meta key/value."""
-        with self._cursor() as cur:
-            cur.execute(
-                "INSERT INTO meta (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
-                (key, value),
-            )
 
     def get_last_scrobble_uts(self) -> int | None:
         """Return the highest scrobble timestamp ingested so far, or None."""
