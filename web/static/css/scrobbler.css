@@ -1,0 +1,64 @@
+#panel-scrobbler .filter-chips {
+  margin-left: 0;
+}
+
+.scrobbler-banner {
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.scrobbler-banner p {
+  margin: 0;
+}
+
+.scrobbler-banner p + p {
+  margin-top: 0.35rem;
+}
+
+.scrobbler-play {
+  --scrobbler-play-columns: minmax(0, 1.3fr) minmax(0, 0.8fr) minmax(0, 1.6fr);
+  grid-template-columns: var(--scrobbler-play-columns);
+  cursor: default;
+}
+
+.scrobbler-play-when,
+.scrobbler-play-decision {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  font-size: 0.8rem;
+}
+
+.scrobbler-reason {
+  color: var(--text-secondary);
+}
+
+.scrobbler-note {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.scrobbler-play-skipped {
+  opacity: 0.75;
+}
+
+.scrobbler-play-failed {
+  border-left: 2px solid var(--danger);
+}
+
+.scrobbler-play-pending,
+.scrobbler-play-sending {
+  border-left: 2px solid var(--warning);
+}
+
+.scrobbler-auth .auth-instructions {
+  margin-top: 0.5rem;
+}
+
+.scrobbler-stats .stat-note {
+  margin-top: 0.15rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}

@@ -43,6 +43,21 @@ def _parse_artist_title_from_key(key: str) -> tuple[str, str]:
     return parts[0], parts[1] if len(parts) > 1 else ""
 
 
+def load_settings(*, fresh: bool = False) -> Settings | None:
+    """The settings from ``.env``, or None when it is missing or unparseable.
+
+    Inside a request they are read once and cached on Flask ``g``; outside one
+    (the scheduler), or with ``fresh`` right after ``.env`` changed, they are
+    read again.
+    """
+    if has_request_context() and not fresh:
+        return _get_settings()
+    try:
+        return Settings.from_env()
+    except Exception:
+        return None
+
+
 def _get_settings() -> Settings | None:
     """Return Settings cached on the current request (Flask `g`).
 
@@ -1153,13 +1168,7 @@ def get_history_db() -> HistoryDB | None:
     if _history_db is not None:
         return _history_db
 
-    if has_request_context():
-        settings = _get_settings()
-    else:
-        try:
-            settings = Settings.from_env()
-        except Exception:
-            return None
+    settings = load_settings()
 
     if not settings or not settings.history_db_enabled:
         return None
@@ -1182,6 +1191,12 @@ def is_history_enabled() -> bool:
     return bool(settings and settings.history_db_enabled)
 
 
+def is_scrobbler_enabled() -> bool:
+    """Check if the history scrobbler is enabled in settings."""
+    settings = _get_settings()
+    return bool(settings and settings.scrobbler_enabled)
+
+
 def get_local_scrobble_db() -> LocalScrobbleDB | None:
     """Return the shared LocalScrobbleDB instance, or None if disabled.
 
@@ -1191,13 +1206,7 @@ def get_local_scrobble_db() -> LocalScrobbleDB | None:
     if _local_scrobble_db is not None:
         return _local_scrobble_db
 
-    if has_request_context():
-        settings = _get_settings()
-    else:
-        try:
-            settings = Settings.from_env()
-        except Exception:
-            return None
+    settings = load_settings()
 
     if not settings or not settings.use_local_lastfm_db:
         return None

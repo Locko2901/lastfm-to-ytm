@@ -15,7 +15,9 @@ from flask.typing import ResponseReturnValue
 from ..services import events as bus
 from ..services import notifications as notif_store
 from ..services import sync_lock, sync_state
+from ..services.data import load_settings
 from ..services.scheduler import get_scheduler_status
+from ..services.scrobbler import youtube_session_expired
 
 events_bp = Blueprint("events", __name__, url_prefix="/api/events")
 
@@ -43,11 +45,17 @@ def _snapshot() -> dict[str, Any]:
     except Exception:
         logger.exception("Failed to read notifications for snapshot")
         notifications_snap = {"notifications": [], "last_seen_at": None}
-    return {
+    snapshot = {
         "sync_state": sync_snap,
         "scheduler": scheduler_snap,
         "notifications": notifications_snap,
     }
+    try:
+        if youtube_session_expired(load_settings()):
+            snapshot["auth_status"] = {"valid": False, "expired": True}
+    except Exception:
+        logger.exception("Failed to read the YouTube Music session state for snapshot")
+    return snapshot
 
 
 @events_bp.route("")

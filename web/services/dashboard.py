@@ -9,6 +9,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from src.config import (
+    SCROBBLER_IDLE_MINUTES_DEFAULT,
+    SCROBBLER_POLL_MINUTES_DEFAULT,
+    SCROBBLER_POLL_MINUTES_MAX,
+    SCROBBLER_POLL_MINUTES_MIN,
+)
+
 from .data import (
     get_artist_blacklist_data,
     get_cache_stats,
@@ -25,6 +32,7 @@ from .data import (
     get_track_tag_overrides_map,
     get_track_tags_map,
     is_history_enabled,
+    is_scrobbler_enabled,
     load_custom_playlists_config,
 )
 from .env import parse_env_file
@@ -35,6 +43,12 @@ DOCS_URL = "https://locko2901.github.io/lastfm-to-ytm/"
 _FALSY_VALUES = frozenset({"false", "0", "no", "off", "f", "n"})
 
 DASHBOARD_SWITCH_DEFAULTS = {"DISPLAY_TIPS": True, "NOW_PLAYING_ENABLED": True, "USE_24_HOUR_CLOCK": True}
+SCROBBLER_INTERVALS = {
+    "min": SCROBBLER_POLL_MINUTES_MIN,
+    "max": SCROBBLER_POLL_MINUTES_MAX,
+    "fastest": SCROBBLER_POLL_MINUTES_DEFAULT,
+    "idle": SCROBBLER_IDLE_MINUTES_DEFAULT,
+}
 
 
 def _display_tips_enabled() -> bool:
@@ -73,6 +87,7 @@ class DashboardContext:
     tag_overrides_map: Any
     history_enabled: bool
     display_tips: bool
+    scrobbler_enabled: bool = False
     docs_url: str = DOCS_URL
 
     @classmethod
@@ -107,6 +122,7 @@ class DashboardContext:
             tag_overrides_map=get_track_tag_overrides_map(),
             history_enabled=is_history_enabled(),
             display_tips=_display_tips_enabled(),
+            scrobbler_enabled=is_scrobbler_enabled(),
         )
 
     def to_template_context(self) -> dict[str, Any]:
@@ -136,5 +152,7 @@ class DashboardContext:
             "tag_overrides_map": self.tag_overrides_map,
             "history_enabled": self.history_enabled,
             "display_tips": self.display_tips,
+            "scrobbler_enabled": self.scrobbler_enabled,
+            "scrobbler_intervals": SCROBBLER_INTERVALS,
             "docs_url": self.docs_url,
         }

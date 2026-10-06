@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import logging
 import os
-import socket
 import threading
 from typing import Any, cast
 
@@ -13,9 +12,14 @@ import requests
 from flask import Blueprint, Response, jsonify, render_template, request
 from flask.typing import ResponseReturnValue
 from flask_babel import gettext as _
-from requests.adapters import HTTPAdapter
 
-from src.config import CACHE_DIR
+from src.config import (
+    CACHE_DIR,
+    SCROBBLER_FASTEST,
+    SCROBBLER_POLL_MINUTES_MAX,
+    SCROBBLER_POLL_MINUTES_MIN,
+    invalid_scrobbler_interval,
+)
 
 from ..services import (
     ALL_SETTINGS,
@@ -27,6 +31,7 @@ from ..services import (
     ENV_EXAMPLE_FILE,
     ENV_FILE,
     PRIVACY_SETTINGS,
+    SCROBBLER_SETTINGS,
     bulk_delete_search_cache,
     bulk_delete_tag_cache,
     check_env_completeness,
@@ -90,7 +95,9 @@ from ..services import (
     track_playlists_in_cache,
     update_env_file,
 )
+from ..services.http import ipv4_session
 from ..services.scheduler import (
+    configure_scrobbler_job,
     get_scheduler_status,
     start_scheduler,
 )
@@ -100,42 +107,6 @@ from ..services.theme import load_theme_overrides, save_theme_overrides
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 logger = logging.getLogger(__name__)
-
-
-class IPv4Adapter(HTTPAdapter):
-    """HTTP adapter that forces IPv4 connections."""
-
-    def init_poolmanager(self, *args: Any, **kwargs: Any) -> None:
-        """Initialize pool with IPv4-only options."""
-        kwargs["socket_options"] = [(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)]
-        import urllib3.util.connection
-
-        _orig_allowed = urllib3.util.connection.allowed_gai_family
-        urllib3.util.connection.allowed_gai_family = lambda: socket.AF_INET
-        super().init_poolmanager(*args, **kwargs)
-        urllib3.util.connection.allowed_gai_family = _orig_allowed
-
-
-def get_ipv4_session() -> requests.Session:
-    """Create IPv4-only session."""
-    session = requests.Session()
-    session.mount("http://", IPv4Adapter())
-    session.mount("https://", IPv4Adapter())
-    return session
-
-
-_ipv4_session: requests.Session | None = None
-_ipv4_session_lock = threading.Lock()
-
-
-def ipv4_session() -> requests.Session:
-    """Get shared IPv4-only session."""
-    global _ipv4_session
-    if _ipv4_session is None:
-        with _ipv4_session_lock:
-            if _ipv4_session is None:
-                _ipv4_session = get_ipv4_session()
-    return _ipv4_session
 
 
 @api_bp.route("/healthz")
@@ -236,17 +207,16 @@ def setup_lastfm() -> ResponseReturnValue:
 
     username = data.get("username", "").strip()
     api_key = data.get("api_key", "").strip()
+    api_secret = str(data.get("api_secret") or "").strip()
 
     if not username or not api_key:
         return jsonify({"error": _("Username and API key are required")}), 400
 
+    updates = {"LASTFM_USER": username, "LASTFM_API_KEY": api_key}
+    if api_secret:
+        updates["LASTFM_API_SECRET"] = api_secret
     try:
-        update_env_file(
-            {
-                "LASTFM_USER": username,
-                "LASTFM_API_KEY": api_key,
-            }
-        )
+        update_env_file(updates)
         return jsonify({"status": "saved"})
     except OSError as e:
         logger.error(f"Failed to save Last.fm credentials: {e}")
@@ -271,6 +241,31 @@ def overrides() -> ResponseReturnValue:
 def cache_stats() -> ResponseReturnValue:
     """JSON API for cache statistics."""
     return jsonify(get_cache_stats())
+
+
+def _scrobbler_interval_error(updates: dict[str, str]) -> str | None:
+    """Why the poll intervals, as submitted or saved, are invalid (see ``invalid_scrobbler_interval``)."""
+    current = parse_env_file()
+    fastest, idle = (str(updates.get(key, current.get(key, ""))) for key in ("SCROBBLER_POLL_MINUTES", "SCROBBLER_IDLE_MINUTES"))
+    problem = invalid_scrobbler_interval(fastest, idle)
+    if problem is None:
+        return None
+    which, fastest_minutes = problem
+    if which == SCROBBLER_FASTEST:
+        return str(
+            _(
+                "The fastest poll interval must be a whole number of minutes from %(min)s to %(max)s",
+                min=SCROBBLER_POLL_MINUTES_MIN,
+                max=SCROBBLER_POLL_MINUTES_MAX,
+            )
+        )
+    return str(
+        _(
+            "The idle poll interval must be a whole number of minutes from the fastest interval (%(fastest)s) to %(max)s",
+            fastest=fastest_minutes,
+            max=SCROBBLER_POLL_MINUTES_MAX,
+        )
+    )
 
 
 @api_bp.route("/settings")
@@ -342,6 +337,11 @@ def settings_update() -> ResponseReturnValue:
             except (ValueError, AttributeError):
                 pass  # Non-strict: empty or partial values are allowed in general settings
 
+        if {"SCROBBLER_POLL_MINUTES", "SCROBBLER_IDLE_MINUTES"} & updates.keys():
+            interval_error = _scrobbler_interval_error(updates)
+            if interval_error:
+                return jsonify({"error": interval_error}), 400
+
         update_env_file(updates)
 
         if "HISTORY_DB_ENABLED" in updates or "HISTORY_DB_FILE" in updates:
@@ -349,6 +349,12 @@ def settings_update() -> ResponseReturnValue:
 
         if "USE_LOCAL_LASTFM_DB" in updates or "LASTFM_LOCAL_DB_FILE" in updates:
             reset_local_scrobble_db()
+
+        if SCROBBLER_SETTINGS & updates.keys():
+            try:
+                configure_scrobbler_job()
+            except Exception:
+                logger.exception("Failed to reconfigure the history scrobbler")
 
         try:
             from ..services import events as _events

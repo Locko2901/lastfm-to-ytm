@@ -101,6 +101,15 @@ import { initNotifications } from "./modules/notifications.js"
 import { togglePlaylistGraph } from "./modules/playlistGraph.js"
 import { deleteYtmPlaylist, discoverPlaylists, loadTrackedPlaylists, pruneWeeklies, trackSelectedPlaylists } from "./modules/playlists.js"
 import {
+  initScrobbler,
+  loadScrobblerData,
+  refreshScrobblerAuthStatus,
+  scrobblerConnect,
+  scrobblerDisconnect,
+  scrobblerPollNow,
+  scrobblerReset,
+} from "./modules/scrobbler.js"
+import {
   clearLocalLastfm,
   closeSettingsModal,
   confirmClearLocalLastfm,
@@ -117,6 +126,7 @@ import {
   restartServer,
   saveSettings,
   showLocalLastfmDataModal,
+  showSettingsField,
   showSettingsModal,
   testWebhook,
 } from "./modules/settings.js"
@@ -244,6 +254,7 @@ window.closeAuthModal = () => {
 window.loadSettings = loadSettings
 window.saveSettings = saveSettings
 window.showSettingsModal = showSettingsModal
+window.showSettingsField = showSettingsField
 window.closeSettingsModal = closeSettingsModal
 
 window.showSetupWizard = showSetupWizard
@@ -337,6 +348,12 @@ window.loadTrackedPlaylists = loadTrackedPlaylists
 window.trackSelectedPlaylists = trackSelectedPlaylists
 window.deleteYtmPlaylist = deleteYtmPlaylist
 window.pruneWeeklies = pruneWeeklies
+window.loadScrobblerData = loadScrobblerData
+window.refreshScrobblerAuthStatus = refreshScrobblerAuthStatus
+window.scrobblerConnect = scrobblerConnect
+window.scrobblerDisconnect = scrobblerDisconnect
+window.scrobblerPollNow = scrobblerPollNow
+window.scrobblerReset = scrobblerReset
 initDelegation()
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -376,6 +393,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadPlaylistsData()
   initCustomPlaylists()
   initHistory()
+  initScrobbler()
   initCacheAdmin()
   initApprise()
   initExportFormats()

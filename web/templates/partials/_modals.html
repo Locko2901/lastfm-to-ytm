@@ -41,6 +41,16 @@
           </span>
           <span class="step-label">{{ _('YouTube Music') }}</span>
         </div>
+        <div class="setup-step" data-step="3">
+          <span class="step-number">
+            <span class="step-num">3</span>
+            <svg class="step-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </span>
+          <span class="step-label">{{ _('Scrobbling (optional)') }}</span>
+        </div>
       </div>
 
       <div class="setup-content" id="setup-step-1">
@@ -64,6 +74,13 @@
             Don't have one? <a href="https://www.last.fm/api/account/create" target="_blank">{{ _('Create an API key') }}</a> {{ _('(it\'s free)') }}
           </span>
         </div>
+        <div class="form-group">
+          <label for="setup-lastfm-secret">{{ _('Last.fm API Secret (optional)') }}</label>
+          <input type="text" id="setup-lastfm-secret" placeholder="{{ _('Shared secret of your API account') }}" autocomplete="off">
+          <span
+            class="form-hint">{{ _('Only needed for the history scrobbler. Last.fm shows an API account\'s shared secret only when the account is created; without it, create a new API account and use its key and secret together:') }}
+            <a href="https://www.last.fm/api/account/create" target="_blank" rel="noopener noreferrer">last.fm/api/account/create</a></span>
+        </div>
       </div>
 
       <div class="setup-content" id="setup-step-2" style="display: none;">
@@ -83,6 +100,28 @@
             {{ _('Connect YouTube Music') }}
           </button>
         </div>
+      </div>
+
+      <div class="setup-content scrobbler-auth" id="setup-step-3" style="display: none;">
+        <div class="setup-intro">
+          <p>
+            {{ _('Optional: scrobble what you play in the YouTube Music apps, for example on your phone. You can skip this and do it later in Settings, Automation.') }}
+          </p>
+        </div>
+        <p class="form-hint">{{ _('Connecting uses the API secret from step 1.') }}</p>
+        <div class="setup-auth-actions auth-row">
+          <button type="button" class="btn btn-secondary" data-action="scrobblerConnect" data-secret-input="setup-lastfm-secret">
+            {{ _('Connect Last.fm') }}
+          </button>
+          <span class="auth-status" data-scrobbler-auth-status>
+            <span class="auth-status-dot"></span>
+            <span class="auth-status-text">{{ _('Checking...') }}</span>
+          </span>
+        </div>
+        <div class="auth-instructions" data-scrobbler-auth-steps hidden></div>
+        <p class="form-hint">
+          {{ _('Connecting turns nothing on: enable the history scrobbler in Settings, Automation. It starts in dry run, which shows every decision before anything is sent.') }}
+        </p>
       </div>
     </div>
     <div class="modal-footer">
@@ -915,7 +954,7 @@
       <p id="appConfirmMessage"></p>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-action="appConfirmCancel">{{ _('Cancel') }}</button>
+      <button type="button" class="btn btn-secondary" id="appConfirmCancelBtn" data-action="appConfirmCancel">{{ _('Cancel') }}</button>
       <button type="button" class="btn btn-danger" id="appConfirmAcceptBtn" data-action="appConfirmAccept">{{ _('Confirm') }}</button>
     </div>
   </div>
