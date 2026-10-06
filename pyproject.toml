@@ -81,6 +81,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "run.py" = ["T20"]                 # allow print in entrypoint
 "scripts/*.py" = ["T20"]           # dev-only CLI helpers: allow print
+"scripts/scrobbler_simulation.py" = ["T20", "E402"]
 "src/lastfm/fetch.py" = ["ARG001"] # signature must match socket.getaddrinfo
 "tests/screenshots/*.py" = ["T20", "D", "E501"] # dev-only CLI: prints + literal fixture rows
 "tests/test_*.py" = ["D", "PLR2004"]            # tests: no docstrings, allow literal assertions
