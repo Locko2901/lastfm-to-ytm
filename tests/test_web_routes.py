@@ -1006,3 +1006,19 @@ def test_every_switch_missing_from_env_reads_as_its_runtime_default(client, web_
     assert set(runtime) == BOOL_SETTINGS
     body = client.get("/api/settings").get_json()
     assert {key: body[key] for key in BOOL_SETTINGS} == runtime
+
+
+def test_scrobbler_interval_inputs_take_their_limits_from_the_context(client, web_paths, monkeypatch):
+    from web.services import dashboard
+
+    web_paths["ENV_FILE"].write_text("LASTFM_USER=me\nLASTFM_API_KEY=key\n", encoding="utf-8")
+    monkeypatch.setattr(dashboard, "SCROBBLER_INTERVALS", {"min": 3, "max": 45, "fastest": 4, "idle": 12})
+    page = client.get("/").get_data(as_text=True)
+    limits = {}
+    for name in ("SCROBBLER_POLL_MINUTES", "SCROBBLER_IDLE_MINUTES"):
+        tag = re.search(rf'<input type="number" id="{name}"[^>]*>', page).group(0)
+        attributes = dict(re.findall(r'(\w+)="([^"]*)"', tag))
+        limits[name] = [attributes["min"], attributes["max"], attributes["placeholder"]]
+    assert limits == {"SCROBBLER_POLL_MINUTES": ["3", "45", "4"], "SCROBBLER_IDLE_MINUTES": ["3", "45", "12"]}
+    assert "while it changes (3-45)" in page
+    assert "up to 45)" in page

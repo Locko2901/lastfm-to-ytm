@@ -122,6 +122,13 @@
                         target="_blank">last.fm/api</a></span>
                   </div>
                   <div class="form-group">
+                    <label for="LASTFM_API_SECRET">{{ _('Last.fm API Secret') }}</label>
+                    <input type="text" id="LASTFM_API_SECRET" name="LASTFM_API_SECRET" placeholder="••••••••" autocomplete="off" data-secret="true">
+                    <span
+                      class="form-hint">{{ _('Only needed for the history scrobbler (Automation). Last.fm shows an API account\'s shared secret only when the account is created; without it, create a new API account and use its key and secret together:') }}
+                      <a href="https://www.last.fm/api/account/create" target="_blank" rel="noopener noreferrer">last.fm/api/account/create</a></span>
+                  </div>
+                  <div class="form-group">
                     <label>{{ _('YouTube Music Auth') }}</label>
                     <div class="auth-row">
                       <button type="button" class="btn btn-secondary" data-action="showModal" data-modal="authModal">
@@ -604,6 +611,92 @@
                     <polyline points="12 6 12 12 16 14"></polyline>
                   </svg>
                   <span>{{ _('Next run:') }} <strong id="nextRunTime">–</strong></span>
+                </div>
+              </div>
+
+              <div class="settings-section" data-settings-section="scrobbler">
+                <h3 class="settings-section-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"></path>
+                    <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"></path>
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"></path>
+                    <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"></path>
+                  </svg>
+                  {{ _('History Scrobbler') }}
+                </h3>
+                <p class="settings-help">
+                  {{ _('Scrobbles what you play in the YouTube Music apps (for example on a phone, where no scrobbler runs) by reading your YouTube Music history every few minutes. Plays a real-time scrobbler already sent are skipped. Decisions show on the Scrobbler tab.') }}
+                </p>
+                <div class="settings-grid">
+                  <div class="form-group form-group-checkbox">
+                    <label>
+                      <input type="checkbox" id="SCROBBLER_ENABLED" name="SCROBBLER_ENABLED">
+                      <span>{{ _('Enable history scrobbler') }}</span>
+                    </label>
+                    <span class="form-hint">{{ _('Poll the YouTube Music history on the built-in scheduler') }}</span>
+                  </div>
+                  <div class="form-group form-group-checkbox" data-show-if="SCROBBLER_ENABLED">
+                    <label>
+                      <input type="checkbox" id="SCROBBLER_DRY_RUN" name="SCROBBLER_DRY_RUN">
+                      <span>{{ _('Dry run') }}</span>
+                    </label>
+                    <span
+                      class="form-hint">{{ _('Record every decision without sending anything to Last.fm. Turn off to scrobble for real.') }}</span>
+                  </div>
+                  <div class="form-group form-group-checkbox" data-show-if="SCROBBLER_ENABLED">
+                    <label>
+                      <input type="checkbox" id="SCROBBLER_DEFER_TO_REALTIME" name="SCROBBLER_DEFER_TO_REALTIME">
+                      <span>{{ _('Leave plays to a real-time scrobbler') }}</span>
+                    </label>
+                    <span
+                      class="form-hint">{{ _('YouTube Music plays on one device at a time: a play from while another scrobbler was active (now playing, or scrobbling around it) happened on its device, so it is left to that scrobbler, skips included. Turn off if that scrobbler also scrobbles other players.') }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="SCROBBLER_ENABLED">
+                    <label for="SCROBBLER_POLL_MINUTES">{{ _('Fastest poll interval (minutes)') }}</label>
+                    <input type="number" id="SCROBBLER_POLL_MINUTES" name="SCROBBLER_POLL_MINUTES" min="{{ scrobbler_intervals.min }}"
+                      max="{{ scrobbler_intervals.max }}" step="1" placeholder="{{ scrobbler_intervals.fastest }}">
+                    <span
+                      class="form-hint">{{ _('How often to read the history while it changes (%(min)s-%(max)s). A shorter interval bounds listening times more tightly, so more decisions are certain. The documentation has the numbers.', min=scrobbler_intervals.min, max=scrobbler_intervals.max) }}</span>
+                  </div>
+                  <div class="form-group" data-show-if="SCROBBLER_ENABLED">
+                    <label for="SCROBBLER_IDLE_MINUTES">{{ _('Idle poll interval (minutes)') }}</label>
+                    <input type="number" id="SCROBBLER_IDLE_MINUTES" name="SCROBBLER_IDLE_MINUTES" min="{{ scrobbler_intervals.min }}"
+                      max="{{ scrobbler_intervals.max }}" step="1" placeholder="{{ scrobbler_intervals.idle }}">
+                    <span
+                      class="form-hint">{{ _('How often to read the history after 30 minutes without a change (from the fastest interval up to %(max)s). A shorter one finds the first play after a quiet spell more precisely, at more requests a day; failed reads slow polling down further.', max=scrobbler_intervals.max) }}</span>
+                  </div>
+                  <div class="form-group">
+                    <label>{{ _('Last.fm API Secret') }}</label>
+                    <button type="button" class="btn btn-secondary" data-action="showSettingsField" data-settings-page="general"
+                      data-field="LASTFM_API_SECRET">{{ _('Set it under General, Credentials') }}</button>
+                    <span
+                      class="form-hint">{{ _('Connecting to Last.fm needs the shared secret of your API account. Last.fm shows it only when the account is created; without it, create a new API account and enter its key and secret together under General, Credentials:') }}
+                      <a href="https://www.last.fm/api/account/create" target="_blank" rel="noopener noreferrer">last.fm/api/account/create</a></span>
+                  </div>
+                  <div class="form-group scrobbler-auth" style="grid-column: 1 / -1;">
+                    <label>{{ _('Last.fm write access') }}</label>
+                    <div class="auth-row">
+                      <button type="button" class="btn btn-secondary" data-action="scrobblerConnect" data-secret-input="LASTFM_API_SECRET">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </svg>
+                        {{ _('Connect Last.fm') }}
+                      </button>
+                      <button type="button" class="btn btn-secondary" data-action="scrobblerDisconnect" data-scrobbler-disconnect
+                        hidden>{{ _('Disconnect') }}</button>
+                      <span class="auth-status" data-scrobbler-auth-status>
+                        <span class="auth-status-dot"></span>
+                        <span class="auth-status-text">{{ _('Checking...') }}</span>
+                      </span>
+                    </div>
+                    <div class="auth-instructions" data-scrobbler-auth-steps hidden></div>
+                    <span
+                      class="form-hint">{{ _('Scrobbling needs your approval on Last.fm once. The session key is stored in .env like your other credentials and is never shown here.') }}</span>
+                  </div>
                 </div>
               </div>
             </div>

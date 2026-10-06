@@ -2,6 +2,7 @@ import { applyCustomTheme, loadCustomTheme, onParentThemeChanged, setCustomEnabl
 import { refreshHistoryPanelState } from "./history.js"
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
+import { offerDryRunPlays, refreshScrobblerAuthStatus } from "./scrobbler.js"
 import { setTabVisibility } from "./tabs.js"
 import {
   escapeHtml,
@@ -67,6 +68,12 @@ const NO_RESTART_SETTINGS = [
   "WEBHOOK_ALLOW_PRIVATE",
   "APPRISE_URLS",
   "APPRISE_EVENTS",
+  "LASTFM_API_SECRET",
+  "SCROBBLER_ENABLED",
+  "SCROBBLER_DRY_RUN",
+  "SCROBBLER_POLL_MINUTES",
+  "SCROBBLER_IDLE_MINUTES",
+  "SCROBBLER_DEFER_TO_REALTIME",
 ]
 
 const UI_RELOAD_SETTINGS = ["USE_24_HOUR_CLOCK", "DATE_FORMAT"]
@@ -120,6 +127,7 @@ export async function loadSettings() {
     refreshLocalLastfmVisibility()
     if (window._renderAppriseList) window._renderAppriseList()
     if (window._renderExportFormatsSettings) window._renderExportFormatsSettings()
+    refreshScrobblerAuthStatus()
 
     const form = document.getElementById("settingsForm")
     if (form) window._originalSettings = readFormSettings(form)
@@ -180,6 +188,10 @@ export async function saveSettings(event) {
       refreshLocalLastfmVisibility()
     }
 
+    if (changedSettings.includes("SCROBBLER_ENABLED")) {
+      setTabVisibility("scrobbler", settings.SCROBBLER_ENABLED)
+    }
+
     if (changedSettings.includes("DISPLAY_TIPS")) {
       document.body.classList.toggle("tips-hidden", !settings.DISPLAY_TIPS)
     }
@@ -196,8 +208,21 @@ export async function saveSettings(event) {
     if (requiresReload) {
       showReloadBanner()
     }
+
+    if (changedSettings.includes("SCROBBLER_DRY_RUN") && settings.SCROBBLER_ENABLED && !settings.SCROBBLER_DRY_RUN) {
+      await offerDryRunPlays()
+    }
   } catch (error) {
     showToast(error.message || _("Failed to save settings"), "error")
+  }
+}
+
+export function showSettingsField(page, fieldId) {
+  document.querySelector(`.settings-nav-item[data-settings-nav="${page}"]`)?.click()
+  const field = document.getElementById(fieldId)
+  if (field) {
+    field.scrollIntoView({ block: "center" })
+    field.focus()
   }
 }
 

@@ -2,10 +2,13 @@ import { checkAuthStatus } from "./auth.js"
 import { onEvent } from "./events.js"
 import { _ } from "./i18n.js"
 import { closeModal, showModal } from "./modals.js"
+import { refreshScrobblerAuthStatus } from "./scrobbler.js"
 import { escapeHtml, formatDateTime, formatRelativeTime, getDateTimePrefs, insertBanner, removeBanner, showToast } from "./utils.js"
 
 let currentSetupStep = 1
-const totalSetupSteps = 2
+const totalSetupSteps = 3
+const YTM_AUTH_STEP = 2
+const SCROBBLER_STEP = 3
 let authEventUnsub = null
 
 export function showSetupWizard() {
@@ -54,9 +57,9 @@ function updateSetupUI() {
 
   backBtn.style.display = currentSetupStep > 1 ? "" : "none"
 
-  if (currentSetupStep === totalSetupSteps) {
+  if (currentSetupStep === YTM_AUTH_STEP) {
     checkAuthStatus().then(hasAuth => {
-      nextBtn.textContent = hasAuth ? _("Finish Setup") : _("Skip for Now")
+      nextBtn.textContent = hasAuth ? _("Next") : _("Skip for Now")
       nextBtn.classList.toggle("btn-success", hasAuth)
       nextBtn.classList.toggle("btn-secondary", !hasAuth)
 
@@ -65,17 +68,25 @@ function updateSetupUI() {
         authBtn.textContent = hasAuth ? _("Reconnect YouTube Music") : _("Connect YouTube Music")
       }
     })
+  } else if (currentSetupStep === totalSetupSteps) {
+    nextBtn.textContent = _("Finish Setup")
+    nextBtn.classList.add("btn-success")
+    nextBtn.classList.remove("btn-secondary")
   } else {
     nextBtn.textContent = _("Next")
     nextBtn.classList.add("btn-success")
     nextBtn.classList.remove("btn-secondary")
   }
 
-  if (currentSetupStep === 2) {
+  if (currentSetupStep === YTM_AUTH_STEP) {
     updateAuthStatusDisplay()
     startAuthPolling()
   } else {
     stopAuthPolling()
+  }
+
+  if (currentSetupStep === SCROBBLER_STEP) {
+    refreshScrobblerAuthStatus()
   }
 }
 
@@ -85,6 +96,7 @@ export async function setupNextStep() {
   if (currentSetupStep === 1) {
     const username = document.getElementById("setup-lastfm-user").value.trim()
     const apiKey = document.getElementById("setup-lastfm-key").value.trim()
+    const apiSecret = document.getElementById("setup-lastfm-secret")?.value.trim() || ""
 
     if (!username || !apiKey) {
       showToast(_("Please enter both username and API key"), "error")
@@ -104,7 +116,7 @@ export async function setupNextStep() {
       const response = await fetch("/api/setup/lastfm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, api_key: apiKey }),
+        body: JSON.stringify({ username, api_key: apiKey, api_secret: apiSecret }),
       })
       if (!response.ok) {
         const data = await response.json()
@@ -119,8 +131,11 @@ export async function setupNextStep() {
       nextBtn.disabled = false
       nextBtn.textContent = _("Next")
     }
-  } else if (currentSetupStep === 2) {
+  } else if (currentSetupStep === YTM_AUTH_STEP) {
     stopAuthPolling()
+    currentSetupStep++
+    updateSetupUI()
+  } else if (currentSetupStep === SCROBBLER_STEP) {
     const hasAuth = await checkAuthStatus()
     closeModal("setupModal")
 
@@ -185,16 +200,22 @@ async function updateAuthStatusDisplay() {
 }
 
 export function onAuthModalClose() {
-  if (currentSetupStep === 2) {
+  if (currentSetupStep === YTM_AUTH_STEP) {
     updateAuthStatusDisplay()
     updateSetupUI()
   }
 }
 
-export function showAuthRequiredBanner() {
-  if (sessionStorage.getItem("authBannerDismissed")) return
+const AUTH_BANNER_DISMISSED = { missing: "authBannerDismissed", expired: "authExpiredBannerDismissed" }
 
-  insertBanner(
+export function showAuthRequiredBanner({ expired = false } = {}) {
+  const variant = expired ? "expired" : "missing"
+  if (sessionStorage.getItem(AUTH_BANNER_DISMISSED[variant])) return
+  if (document.getElementById("authRequiredBanner")?.dataset.variant === variant) return
+  removeBanner("authRequiredBanner")
+
+  const message = expired ? _("YouTube Music session expired: reconnect.") : _("YouTube Music authentication is missing.")
+  const banner = insertBanner(
     "authRequiredBanner",
     "auth-required-banner warning-box",
     `
@@ -204,17 +225,28 @@ export function showAuthRequiredBanner() {
         <line x1="12" y1="8" x2="12" y2="12"></line>
         <line x1="12" y1="16" x2="12.01" y2="16"></line>
       </svg>
-      <span>${_("YouTube Music authentication is missing.")}</span>
+      <span>${message}</span>
       <button class="btn btn-sm btn-primary" data-action="showModal" data-modal="authModal">${_("Set Up Auth")}</button>
       <button class="auth-banner-close" data-action="dismissAuthBanner" title="Dismiss"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     </div>
   `,
   )
+  if (banner) banner.dataset.variant = variant
 }
 
 export function dismissAuthBanner() {
-  if (removeBanner("authRequiredBanner")) {
-    sessionStorage.setItem("authBannerDismissed", "true")
+  const banner = removeBanner("authRequiredBanner")
+  if (banner) {
+    sessionStorage.setItem(AUTH_BANNER_DISMISSED[banner.dataset.variant || "missing"], "true")
+  }
+}
+
+function followAuthStatus(data) {
+  if (data?.valid === false && data.expired) {
+    showAuthRequiredBanner({ expired: true })
+  } else if (data?.valid) {
+    sessionStorage.removeItem(AUTH_BANNER_DISMISSED.expired)
+    removeBanner("authRequiredBanner")
   }
 }
 
@@ -237,6 +269,7 @@ export function initSetup() {
   } else if (needsAuth) {
     showAuthRequiredBanner()
   }
+  onEvent("auth_status", followAuthStatus)
 
   checkFailureLog()
 }

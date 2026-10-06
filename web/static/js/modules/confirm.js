@@ -9,12 +9,13 @@ function settle(result) {
   if (resolve) resolve(result)
 }
 
-export function confirmDialog({ title, message, confirmLabel, danger = true } = {}) {
+export function confirmDialog({ title, message, confirmLabel, cancelLabel, danger = true, focusCancel = false } = {}) {
   settle(false)
 
   const titleEl = document.getElementById("appConfirmTitle")
   const msgEl = document.getElementById("appConfirmMessage")
   const acceptBtn = document.getElementById("appConfirmAcceptBtn")
+  const cancelBtn = document.getElementById("appConfirmCancelBtn")
   if (titleEl) titleEl.textContent = title || _("Please confirm")
   if (msgEl) msgEl.textContent = message || ""
   if (acceptBtn) {
@@ -22,9 +23,11 @@ export function confirmDialog({ title, message, confirmLabel, danger = true } = 
     acceptBtn.classList.toggle("btn-danger", danger)
     acceptBtn.classList.toggle("btn-primary", !danger)
   }
+  if (cancelBtn) cancelBtn.textContent = cancelLabel || _("Cancel")
 
   showModal("appConfirmModal")
-  acceptBtn?.focus()
+  if (focusCancel) cancelBtn?.focus()
+  else acceptBtn?.focus()
   return new Promise(resolve => {
     _resolver = resolve
   })

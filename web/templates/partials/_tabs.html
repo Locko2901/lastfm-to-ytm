@@ -10,4 +10,5 @@
   <button class="tab" data-tab="custompl">{{ _('Custom Playlists') }} <span class="tab-badge">{{ custom_playlists | length }}</span></button>
   <button class="tab" data-tab="playlists">{{ _('Playlists') }} <span class="tab-badge" id="playlistsTabBadge"></span></button>
   <button class="tab" id="historyTab" data-tab="history" {% if not history_enabled %} hidden {% endif %}>{{ _('History') }}</button>
+  <button class="tab" id="scrobblerTab" data-tab="scrobbler" {% if not scrobbler_enabled %} hidden {% endif %}>{{ _('Scrobbler') }}</button>
 </div>

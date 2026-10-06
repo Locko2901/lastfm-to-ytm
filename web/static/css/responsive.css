@@ -57,6 +57,14 @@
     display: none;
   }
 
+  .scrobbler-play {
+    grid-template-columns: var(--scrobbler-play-columns);
+  }
+
+  .scrobbler-play .track-ytm {
+    display: flex;
+  }
+
   .container {
     padding: 1rem;
   }
@@ -537,7 +545,7 @@
   }
 
   .setup-steps {
-    gap: 1rem;
+    --setup-step-gap: 1rem;
   }
 
   .setup-step .step-label {

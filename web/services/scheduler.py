@@ -8,7 +8,7 @@ import logging
 import os
 import threading
 from collections.abc import Callable
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +22,9 @@ except ImportError:
     HAS_APSCHEDULER = False
 
 logger = logging.getLogger(__name__)
+
+SCROBBLER_JOB_ID = "history_scrobbler"
+SCROBBLER_FIRST_POLL_DELAY_SECONDS = 30
 
 _RUNTIME_DIR = Path(os.environ.get("RUNTIME_DIR") or os.environ.get("CACHE_DIR") or str(Path(__file__).parent.parent.parent / "runtime"))
 _TAG_SYNC_COUNTER_FILE = _RUNTIME_DIR / ".tag_sync_counter.json"
@@ -138,16 +141,17 @@ def _get_sync_function() -> Callable[..., None] | None:
         return None
 
 
+def _job_next_run(job_id: str) -> str | None:
+    """ISO time of a job's next run in this process, or None when the scheduler or the job is missing."""
+    if _scheduler is None or not _scheduler.running:
+        return None
+    job = _scheduler.get_job(job_id)
+    next_run = job.next_run_time if job else None
+    return next_run.isoformat() if next_run else None
+
+
 def _update_next_run() -> None:
-    if _scheduler is not None and _scheduler.running:
-        job = _scheduler.get_job("auto_sync")
-        if job:
-            next_run = job.next_run_time
-            scheduler_state["next_run"] = next_run.isoformat() if next_run else None
-        else:
-            scheduler_state["next_run"] = None
-    else:
-        scheduler_state["next_run"] = None
+    scheduler_state["next_run"] = _job_next_run("auto_sync")
 
 
 def start_scheduler(
@@ -325,8 +329,60 @@ def get_scheduler_status() -> dict[str, Any]:
     }
 
 
+def configure_scrobbler_job() -> bool:
+    """Add, reschedule or remove the history scrobbler's polling job to match the settings.
+
+    The job is independent of the automated sync: it runs whenever
+    ``SCROBBLER_ENABLED`` is on and ticks every ``SCROBBLER_POLL_MINUTES``
+    minutes, the fastest interval; each tick polls only when adaptive pacing
+    says a poll is due.
+    """
+    if not HAS_APSCHEDULER:
+        return False
+    scheduler = get_scheduler()
+    if scheduler is None:
+        return False
+    from src.config import SCROBBLER_POLL_MINUTES_DEFAULT
+
+    from .data import load_settings
+
+    settings = load_settings(fresh=True)
+    enabled = bool(settings and settings.scrobbler_enabled)
+    minutes = settings.scrobbler_poll_minutes if settings else SCROBBLER_POLL_MINUTES_DEFAULT
+    with contextlib.suppress(Exception):
+        scheduler.remove_job(SCROBBLER_JOB_ID)
+    if not enabled:
+        logger.info("History scrobbler disabled")
+        return True
+
+    from .scrobbler import run_scheduled_poll
+
+    scheduler.add_job(
+        run_scheduled_poll,
+        trigger=IntervalTrigger(minutes=minutes),
+        id=SCROBBLER_JOB_ID,
+        name="History scrobbler",
+        replace_existing=True,
+        next_run_time=datetime.now(UTC) + timedelta(seconds=SCROBBLER_FIRST_POLL_DELAY_SECONDS),
+    )
+    if not scheduler.running:
+        scheduler.start()
+    logger.info("History scrobbler polling at most every %d minute(s)", minutes)
+    return True
+
+
+def scrobbler_next_poll() -> str | None:
+    """ISO time of the next scheduled scrobbler poll, if the job exists in this process."""
+    return _job_next_run(SCROBBLER_JOB_ID)
+
+
 def init_scheduler_from_env() -> None:
     """Initialize scheduler from environment variables on app startup."""
+    try:
+        configure_scrobbler_job()
+    except Exception as e:
+        logger.warning(f"Could not configure the history scrobbler: {e}")
+
     cfg = _parse_scheduler_settings()
 
     if cfg["enabled"]:

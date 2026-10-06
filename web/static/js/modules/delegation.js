@@ -58,6 +58,11 @@ const actionHandlers = {
   reloadPage: () => window.location.reload(),
   dismissDataUpdateBanner: () => window.dismissDataUpdateBanner(),
   switchHistoryView: el => window.switchHistoryView(el.dataset.historyViewTab || "tracks", el.dataset.historyViewFilter || "all"),
+  showSettingsField: el => window.showSettingsField(el.dataset.settingsPage, el.dataset.field),
+  scrobblerConnect: el => window.scrobblerConnect(el),
+  scrobblerDisconnect: () => window.scrobblerDisconnect(),
+  scrobblerPollNow: () => window.scrobblerPollNow(),
+  scrobblerReset: () => window.scrobblerReset(),
 
   closeModal: el => window.closeModal(el.dataset.modal),
   showModal: el => window.showModal(el.dataset.modal),
