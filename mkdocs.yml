@@ -62,6 +62,7 @@ nav:
       - Web Dashboard: dashboard.md
       - Custom Playlists: tag-playlists.md
       - Search Overrides: overrides.md
+      - History Scrobbler: scrobbler.md
   - How It Works: how-it-works.md
   - Troubleshooting: troubleshooting.md
   - Advanced:

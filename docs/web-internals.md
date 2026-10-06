@@ -9,8 +9,8 @@ The dashboard is a Flask app with these initialization steps:
 3. **Locale selection** - priority: `ytm-locale` cookie &rarr; `Accept-Language` header &rarr; `"en"` default
 4. **CSP nonce** - generated per-request via `@app.before_request` using `secrets.token_urlsafe(16)`
 5. **Minified asset detection** - checks for `web/static/dist/app.min.js` + `bundle.min.css` at startup
-6. **JS translations** - `inject_globals()` context processor exports the Babel catalog to templates as `js_translations` dict
-7. **Blueprints** - registers `api_bp`, `auth_bp`, `sync_bp`, `actions_bp`
+6. **JS translations** - `inject_globals()` context processor exports the Babel catalog to templates as `js_translations` dict, and the defaults of the switches the browser reads (`DASHBOARD_SWITCH_DEFAULTS`) as `switch_defaults`, which `base.html` puts on `window.__switchDefaults__`
+7. **Blueprints** - registers `api_bp`, `auth_bp`, `sync_bp`, `actions_bp`, `notifications_bp`, `events_bp`, `scrobbler_bp`
 
 ---
 
@@ -100,9 +100,9 @@ A global `sync_state` dict tracks the current run:
 
 **Auth** (`web/routes/auth.py`):
 
-- `POST /api/auth/submit` - parses raw browser request headers into `browser.json` format
+- `POST /api/auth/submit` - parses raw browser request headers into `browser.json` format, tries them with one live YTM API call, and only when that works writes `browser.json` and publishes `auth_status` `{"valid": true}`; a signed-out answer (`is_signed_out`) or an unreachable YouTube Music returns the reason and leaves `browser.json` as it was
 - `GET /api/auth/status` - validates `browser.json` exists and contains required cookies (`SAPISID` or `SID`)
-- Live verification: attempts a YTM API call to confirm credentials work
+- `GET /api/auth/test` - the same live call against the saved `browser.json`; a signed-out session answers `expired: true`
 
 ---
 
@@ -119,6 +119,43 @@ APScheduler runs automated syncs in the background:
 | `tag_sync_enabled` | `false` | Run tag playlists alongside main sync |
 
 **Job configuration**: `coalesce=True` (collapse missed runs into one), `max_instances=1` (no parallel syncs), `misfire_grace_time=3600` (accept up to 1 hour late).
+
+### History scrobbler job
+
+When `SCROBBLER_ENABLED` is on, `configure_scrobbler_job()` adds a second job,
+`history_scrobbler`, that runs `web.services.scrobbler.run_scheduled_poll` every
+`SCROBBLER_POLL_MINUTES` (first run 30 s after start-up). Each run is a tick:
+`poll_if_due()` reads the pacing state from the store (last poll, last change of
+the history, failed reads in a row) and only polls when
+`src.scrobbler.pacing.poll_due()` says so for the fastest and idle intervals (see
+[adaptive polling](scrobbler.md#adaptive-polling)); **Poll now** bypasses it.
+`/api/scrobbler/status` reports the pace and the first tick at which a poll is
+due as `next_poll`. It is independent of
+`auto_sync`: it starts the scheduler on its own and is rescheduled live whenever
+the settings save changes a `SCROBBLER_*` key. Polls run in-process (no
+subprocess, they take a few seconds) behind a lock shared with
+`POST /api/scrobbler/poll`, so a manual poll and a scheduled one never overlap.
+The endpoints live in `web/routes/scrobbler.py` under `/api/scrobbler/`:
+`status`, `plays`, `polls`, `poll`, `reset`, `dry-run-plays` (count, and the answer
+to the offer made when the dry run is turned off), and `auth/start`, `auth/finish`,
+`auth/disconnect` for the Last.fm connection. See
+[History Scrobbler](scrobbler.md).
+
+The scrobbler routes, this job and the history and local scrobble databases get
+their `Settings` from `web.services.data.load_settings()`: read once per request
+and cached on Flask `g`, read from `.env` again outside a request (the
+scheduler) or with `fresh=True` right after a write (`auth/start` saves the API
+secret first). The two jobs report their next run through the same
+`_job_next_run()`.
+
+A poll that finds the YouTube Music session expired (HTTP 401, or the signed-out
+page that `src.ytm.is_signed_out` recognises, the same check `/api/auth/submit`
+and `/api/auth/test` use) publishes `auth_status` with `{"valid": false,
+"expired": true}`; `setup.js` then shows the auth banner in its expired variant.
+The `/api/events` snapshot repeats that event for pages opened later, as long as
+the last poll said so and `browser.json` is older than that poll. A valid
+`auth_status` (a successful `/api/auth/submit`, or a poll that reads the history
+again) removes the banner.
 
 ### Tag Sync Frequency Counter
 
@@ -151,4 +188,4 @@ CSS variable overrides edited from **Settings &rarr; Display &rarr; Customize co
 IPv4-only mode uses two separate mechanisms:
 
 - **Sync engine** (`src/lastfm/fetch.py`): monkey-patches `socket.getaddrinfo` globally to force `AF_INET`
-- **Web dashboard** (`web/routes/api.py`): uses a thread-safe `IPv4Adapter` (custom `HTTPAdapter` subclass) mounted on a shared `requests.Session` for the now-playing endpoint
+- **Web dashboard** (`web/services/http.py`): `ipv4_session()` returns a shared `requests.Session` with a thread-safe `IPv4Adapter` (custom `HTTPAdapter` subclass) mounted, used by the now-playing and image-proxy endpoints and by the history scrobbler's Last.fm client

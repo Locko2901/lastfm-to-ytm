@@ -55,6 +55,15 @@ Key distinctions:
   while the playlist cache maps *playlists to their desired video-ID template* and
   never expires.
 
+The optional [history scrobbler](scrobbler.md) keeps a fifth, separate store,
+`runtime/scrobbler.db` ([`src/scrobbler/store.py`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/src/scrobbler/store.py)):
+the last snapshot of the YouTube Music history, a poll log, whether a real-time
+scrobbler showed the song on top as now playing at each poll, and every
+detected play with its decision, which doubles as the ledger of the scrobbler's
+own scrobbles. Like the history and local Last.fm databases it builds on the
+shared SQLite base in `src/db.py` (a connection per thread, WAL, commit or
+rollback per block).
+
 For the on-disk security and retention properties of each store, see the
 [Data & Security Model](security-model.md).
 

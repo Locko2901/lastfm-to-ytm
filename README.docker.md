@@ -37,6 +37,7 @@ Images are published for `linux/amd64` and `linux/arm64`.
 - **Weekly snapshot playlists** so you build a long-term archive of how your taste evolves.
 - **Custom playlists** - tag-based (e.g. *"Breakcore Mix"*, *"Chill Electronic"*) auto-filled from your Last.fm tags, artist-based collecting every found song by chosen artists, **discovery** playlists that recommend songs you've never scrobbled based on your top artists/tracks, or **template/filter** playlists (top tracks in a window, forgotten favorites, seasonal, and more) built from composable history filters.
 - **Export any playlist** to M3U, CSV, or JSON straight from the dashboard for backups or importing elsewhere.
+- **Optional history scrobbler** that scrobbles what you play in the YouTube Music apps (e.g. on your phone) by reading your YouTube Music history, skipping anything a real-time scrobbler already sent. Off by default, with a dry run to check its decisions first.
 - **Built-in scheduler, webhooks, encrypted backup** - and more in the [full docs](https://locko2901.github.io/lastfm-to-ytm/).
 <!-- docker-sync:end -->
 

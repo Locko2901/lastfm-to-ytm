@@ -19,6 +19,7 @@ Prefer [uv](https://docs.astral.sh/uv/)? Use `uv pip install -e ".[dev,web]"` (a
 ├── src/                # Core sync engine
 │   ├── config.py       # Settings from environment variables
 │   ├── context.py      # RuntimeContext (shared dependencies)
+│   ├── db.py           # Shared SQLite plumbing for the project's stores: one connection per thread, WAL, ``Row`` access, commit or rollback per block
 │   ├── main.py         # Facade for the workflow entry points
 │   ├── notify.py       # Apprise-based sync notifications with multi-target support
 │   ├── webhook.py      # Legacy generic webhook notifications for sync events
@@ -28,6 +29,7 @@ Prefer [uv](https://docs.astral.sh/uv/)? Use `uv pip install -e ".[dev,web]"` (a
 │   ├── observability/  # Observability helpers: failure logs, run logs, history DB recording, webhooks
 │   ├── playlist/       # Playlist sync, diffing, weekly snapshots
 │   ├── recency/        # Recency weighting algorithm
+│   ├── scrobbler/      # Optional Last.fm scrobbler fed by the YouTube Music listening history
 │   ├── search/         # YouTube Music search, scoring, and matching
 │   ├── tags/           # Tag resolution, filtering, and tag playlist sync
 │   ├── workflows/      # Workflow entry points

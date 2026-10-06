@@ -25,6 +25,7 @@ On top of that you get **weekly snapshot playlists** that archive your listening
 - **Recency + play-count weighting** so the playlist reflects what you're *actually* listening to right now.
 - **Weekly snapshot playlists** so you build a long-term archive of how your taste evolves.
 - **Custom playlists** - tag-based (e.g. "Breakcore Mix", "Chill Electronic") auto-filled from your Last.fm tags, or artist-based collecting every found song by chosen artists.
+- **Optional [history scrobbler](scrobbler.md)** that scrobbles what you play in the YouTube Music apps (e.g. on your phone), skipping anything a real-time scrobbler already sent. Off by default, with a dry run.
 - **Built-in scheduler, webhooks, encrypted backup** - see the sidebar for everything else.
 
 !!! info "Prefer not to use Docker?"

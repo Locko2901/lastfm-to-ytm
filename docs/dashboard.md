@@ -42,6 +42,7 @@ The web dashboard is always included with the Docker setup. It provides a full m
 ??? example "Screenshot: Sync console"
     ![Sync Console](screenshots/sync_console.png)
 
+- **Scrobbler tab** - Shown while the optional [history scrobbler](scrobbler.md) is enabled: last and next poll, the last 24 hours of decisions, and every play found in the YouTube Music history with its estimated time and what was done with it (scrobbled, would scrobble in dry run, or skipped and why). **Poll now** runs a poll on demand.
 - **Stats bar** - At-a-glance counts: playlist tracks, overrides, blacklisted, not found, cached searches, and last sync time.
 - **YTM authentication** - Run `ytmusicapi browser` authentication interactively through the web UI - no terminal access needed.
 - **First-time setup wizard** - Guides you through `.env` creation, Last.fm credentials, and YouTube Music auth on first launch.
@@ -121,6 +122,7 @@ The web dashboard includes a built-in scheduler (powered by APScheduler) so you 
 
 - **Interval mode** - Run every N hours, optionally anchored to a start time (e.g., every 6 hours starting at midnight)
 - **Cron mode** - Use a cron expression for full control (e.g., `0 */6 * * *`)
+- **History scrobbler** - When enabled, the [history scrobbler](scrobbler.md) polls the YouTube Music history as its own job every `SCROBBLER_POLL_MINUTES` (default 2), whether or not the automated sync is on.
 - **Custom sync** - Optionally run custom playlist sync (tag & artist playlists) after each scheduled main sync via `AUTO_TAG_SYNC_ENABLED`. Use `AUTO_TAG_SYNC_FREQUENCY` to run it every N main syncs (e.g., `2` = every other sync).
 - Configure via the Settings modal in the UI, or via environment variables:
 
