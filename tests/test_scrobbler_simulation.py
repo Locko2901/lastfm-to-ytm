@@ -5,7 +5,7 @@ The full run behind the tables in docs/scrobbler.md takes about ten minutes
 reduced one and check that every simulated poll is a run of the real poller.
 """
 
-import importlib.util
+import importlib
 import itertools
 import random
 import sys
@@ -17,17 +17,18 @@ from src.scrobbler.played import DEFAULT_RULES
 
 pytestmark = pytest.mark.usefixtures("no_network")
 
-_SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "scrobbler_simulation.py"
+_SCRIPTS = str(Path(__file__).resolve().parents[1] / "scripts")
 
 
 @pytest.fixture(scope="module")
 def sim():
-    spec = importlib.util.spec_from_file_location("scrobbler_simulation", _SCRIPT)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules["scrobbler_simulation"] = module
-    spec.loader.exec_module(module)
-    yield module
-    sys.modules.pop("scrobbler_simulation", None)
+    """The simulation script, imported by name so that worker processes started fresh (forkserver, spawn) import it too."""
+    sys.path.append(_SCRIPTS)
+    try:
+        yield importlib.import_module("scrobbler_simulation")
+    finally:
+        sys.path.remove(_SCRIPTS)
+        sys.modules.pop("scrobbler_simulation", None)
 
 
 @pytest.fixture(scope="module")
