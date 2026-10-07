@@ -4,6 +4,47 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.8.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.7.0...v2.8.0) (2026-10-06)
+
+
+### Features
+
+* **lastfm:** signed client for web auth, track.scrobble and recent scrobbles ([062a4e0](https://github.com/Locko2901/lastfm-to-ytm/commit/062a4e0d72c7f5d5fe5a917d881a663ba6a67316))
+* **scrobbler:** scrobble new plays from the YouTube Music history ([87bf5d0](https://github.com/Locko2901/lastfm-to-ytm/commit/87bf5d01d554c70e69fcb9265b6dbac9da149329))
+* update checkbox inputs to use toggle-switch class for better styling ([f19fcd6](https://github.com/Locko2901/lastfm-to-ytm/commit/f19fcd6df1fc8ce964f7567306b77b51f593bfa9))
+* user-defined playlist export formats with saved templates ([c7739af](https://github.com/Locko2901/lastfm-to-ytm/commit/c7739af8dcfa7b94338aeac1a70b47f80f891c0e))
+* **web:** history scrobbler settings, Last.fm connect step and Scrobbler tab ([e578e4c](https://github.com/Locko2901/lastfm-to-ytm/commit/e578e4c650776aaf13c6c584d463f17ff27861b5))
+
+
+### Bug Fixes
+
+* **docker:** create lastfm home and bake .env.example into the image ([00a1966](https://github.com/Locko2901/lastfm-to-ytm/commit/00a196630ffeb7c87b821a90a33f48bae6f70e52))
+* **search:** split artist credits on "x", "+" and "vs" only between names ([8b854c2](https://github.com/Locko2901/lastfm-to-ytm/commit/8b854c254f58b31f7c123741c122de39385521e1))
+* **web:** colour the history badges and read missing switches as their defaults ([a0f278a](https://github.com/Locko2901/lastfm-to-ytm/commit/a0f278a771fd0b3720cc58db8a11985afca43d17))
+
+
+### Refactor
+
+* **db:** share the SQLite connection plumbing of the stores ([92c201f](https://github.com/Locko2901/lastfm-to-ytm/commit/92c201f3192b5a27901d02aa20c89ddebe79dc50))
+* **web:** share fetchJson, pagination, tab visibility and the warning box ([d9e287e](https://github.com/Locko2901/lastfm-to-ytm/commit/d9e287eddd6d1ea15c10946317351771d398a907))
+* **ytm:** share the sync's retry and the auth test's signed-out check ([0fd1874](https://github.com/Locko2901/lastfm-to-ytm/commit/0fd18745f84716024903f34c3e816994721d2e5a))
+
+
+### Documentation
+
+* document the history scrobbler ([7a4ab65](https://github.com/Locko2901/lastfm-to-ytm/commit/7a4ab65576c1f63e98cf6f944c313cbe84947a6b))
+* update CONTRIBUTING.md ([27b10c2](https://github.com/Locko2901/lastfm-to-ytm/commit/27b10c2bfac5d39878593df45a0fe9e292c18af0))
+
+
+### Tests
+
+* let the network guard allow local Unix sockets ([c252e0f](https://github.com/Locko2901/lastfm-to-ytm/commit/c252e0f954a973a9bf84fb9aa6a65ea7be603954))
+
+
+### Internationalization
+
+* extract the history scrobbler strings ([f7e3eac](https://github.com/Locko2901/lastfm-to-ytm/commit/f7e3eac4cf00d239f2b6ebb43cf6ad5b40785ce6))
+
 ## [2.7.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.6.0...v2.7.0) (2026-08-13)
 
 
