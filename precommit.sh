@@ -72,9 +72,9 @@ step "Docs: regenerate project structure tree"
 .venv/bin/python scripts/gen_structure.py \
   && pass "gen_structure" || fail "gen_structure"
 
-step "Docs: sync Docker Hub README from README.md"
-.venv/bin/python scripts/sync_docker_readme.py \
-  && pass "sync_docker_readme" || fail "sync_docker_readme"
+step "Docs: sync README.docker.md and docs/index.md from README.md"
+.venv/bin/python scripts/sync_readme.py \
+  && pass "sync_readme" || fail "sync_readme"
 
 # end
 printf "\n${GREEN}${BOLD}All checks passed!${RESET}\n"
