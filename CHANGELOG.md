@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.8.1](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.8.0...v2.8.1) (2026-10-13)
+
+
+### Bug Fixes
+
+* **docker:** Teleporter restore onto file mounts and the overwritten UTC zone ([fe53d13](https://github.com/Locko2901/lastfm-to-ytm/commit/fe53d139df6d9469c2f56e5686b0f8bb378ed6c7))
+
+
+### Documentation
+
+* add a compose template for Portainer and Unraid ([807aa43](https://github.com/Locko2901/lastfm-to-ytm/commit/807aa439d500d7794564e206ec820ee36e9fdd9a))
+* describe runtime/ in the generated structure tree ([4acb6c2](https://github.com/Locko2901/lastfm-to-ytm/commit/4acb6c2485b9fe423d8c4b1a2976f75ace96b14a))
+* regroup README highlights and sync them to the docs homepage ([35878c8](https://github.com/Locko2901/lastfm-to-ytm/commit/35878c845f50a88da13425c3bc3538a55f391c5a))
+
+
+### Build
+
+* **deps-dev:** bump brace-expansion from 5.0.7 to 5.0.12 ([#56](https://github.com/Locko2901/lastfm-to-ytm/issues/56)) ([daf4cac](https://github.com/Locko2901/lastfm-to-ytm/commit/daf4cac720e20e2485132b5daa13c78d18fa42d9))
+
+
+### Miscellaneous
+
+* let release-please bump package-lock.json ([0910371](https://github.com/Locko2901/lastfm-to-ytm/commit/091037170ad9a6a2d40a52e2d39e74b72007e96f))
+* mark run-docker.sh and precommit.sh executable ([fb0b834](https://github.com/Locko2901/lastfm-to-ytm/commit/fb0b834cd2486578d5188ea9ff32db01eb1ec7ce))
+
 ## [2.8.0](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.7.0...v2.8.0) (2026-10-06)
 
 
