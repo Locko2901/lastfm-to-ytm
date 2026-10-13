@@ -43,11 +43,10 @@ Prefer [uv](https://docs.astral.sh/uv/)? Use `uv pip install -e ".[dev,web]"` (a
 │   ├── static/         # CSS, JS, icons
 │   ├── templates/      # Jinja2 HTML templates
 │   └── translations/   # i18n catalogs
-├── cache/              # Runtime caches (gitignored)
 ├── config/             # User config files (overrides, custom playlists)
 ├── devops/             # Docker setup (Dockerfile, compose, entrypoint)
 ├── docs/               # This documentation (MkDocs)
-└── runtime/
+└── runtime/            # Runtime state: caches, databases, backups (gitignored)
 ```
 <!-- END STRUCTURE TREE -->
 

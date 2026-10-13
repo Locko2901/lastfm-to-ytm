@@ -31,7 +31,7 @@ EXCLUDE_DIRS = {"build", "site", "dist", "scripts", "tests", "node_modules", "__
 # Non-Python directories have no docstring to read
 DIR_DESCRIPTIONS = {
     "config": "User config files (overrides, custom playlists)",
-    "cache": "Runtime caches (gitignored)",
+    "runtime": "Runtime state: caches, databases, backups (gitignored)",
     "devops": "Docker setup (Dockerfile, compose, entrypoint)",
     "docs": "This documentation (MkDocs)",
     "web/templates": "Jinja2 HTML templates",
