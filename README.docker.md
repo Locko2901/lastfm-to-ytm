@@ -17,6 +17,8 @@ The Docker setup includes a web dashboard, a setup wizard, and a built-in schedu
 
 &rarr; **[Quick Start (Docker)](https://locko2901.github.io/lastfm-to-ytm/quickstart/)**
 
+Using Portainer or Unraid? Paste the [compose template](https://locko2901.github.io/lastfm-to-ytm/compose/) into your stack editor instead.
+
 Prefer not to use Docker? There's a [standalone CLI install](https://locko2901.github.io/lastfm-to-ytm/cli-install/) too. It runs the same sync engine; you handle scheduling yourself with cron/systemd. The Docker path is recommended for almost everyone.
 <!-- docker-sync:end -->
 

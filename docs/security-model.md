@@ -241,7 +241,7 @@ volumes:
   - ../config:/app/config
   - ../browser.json:/app/browser.json
   - ../.env:/app/.env
-  - ../.env.example:/app/.env.example:ro
+  - ../.channel:/app/.channel:ro
   - /etc/localtime:/etc/localtime:ro
 ```
 
