@@ -4,7 +4,7 @@
 
 ### Builder Stage
 
-Based on `python:3.11-slim`, this stage compiles everything:
+Based on `python:3.14-slim`, this stage compiles everything:
 
 1. **Python venv** - installs all dependencies (`gunicorn`, `flask`, `flask-babel`, `apscheduler`, `cryptography`, `argon2-cffi`) into `/opt/venv`
 2. **Babel compilation** - `pybabel compile -d web/translations` compiles `.po` &rarr; `.mo` catalogs
@@ -17,8 +17,10 @@ Based on `python:3.11-slim`, this stage compiles everything:
 Slim runtime image with only what's needed:
 
 - Installs `gosu`, `passwd`, `curl` (for health checks)
+- Replaces the `/etc/localtime` symlink with a regular UTC file. Docker follows a symlink when it mounts onto one, so mounting the host's `/etc/localtime` over the stock symlink would overwrite `/usr/share/zoneinfo/Etc/UTC` and make every `UTC` lookup return the host's zone
 - Creates non-root `lastfm` user/group
 - Copies compiled venv, source, minified assets, and translations from builder
+- Bakes in `.env.example` (the settings template the dashboard reconciles `.env` against), so it always matches the running version and is never mounted
 - Sets `PYTHONUNBUFFERED=1`, `PYTHONDONTWRITEBYTECODE=1`
 - Entrypoint: `docker-entrypoint.sh`
 - Default CMD: `gunicorn --config gunicorn.conf.py web.app:app`
@@ -31,8 +33,9 @@ Slim runtime image with only what's needed:
 The entrypoint handles permission mapping and file initialization:
 
 1. **UID/GID matching** - reads the owner UID/GID of the `/app/config` mount and remaps the `lastfm` user to match via `usermod`/`groupmod`. This prevents permission conflicts with host-mounted volumes.
-2. **File fixup** - creates `config/search_overrides.json` with empty structure if missing, fixes `.env` if it is accidentally a directory, ensures correct ownership on `runtime/` and `config/`
-3. **Privilege drop** - all subsequent commands run as the `lastfm` user via `gosu`
+2. **File fixup** - creates `config/search_overrides.json` with empty structure if missing, creates `.env` and `browser.json` if missing, ensures correct ownership on `runtime/` and `config/`. It can't repair a `.env`/`browser.json` that Docker mounted as a directory (because the host file didn't exist): removing a mount point fails and the container exits. The host files have to exist first - `run-docker.sh`, the installer, and the [compose template](compose.md)'s `init` service all take care of that
+3. **Timezone fallback** - if `TZ=UTC` is set *and* `/etc/localtime` is a mount, unsets `TZ` so the host's zone applies. Compose files from before the `/etc/localtime` fix set `TZ=UTC` as a fallback, and the mount used to win by overwriting the UTC zone
+4. **Privilege drop** - all subsequent commands run as the `lastfm` user via `gosu`
 
 ---
 
@@ -58,10 +61,10 @@ After forking, `post_fork()` initializes the APScheduler instance from env setti
 | Feature | Configuration |
 |---|---|
 | Port | `${YTMT_PORT:-2002}:2002` (configurable via env) |
-| Health check | `curl -f http://localhost:2002/` every 30s, 10s timeout, 3 retries, 10s start period |
+| Health check | `curl -f http://localhost:2002/api/healthz` every 30s, 10s timeout, 3 retries, 10s start period |
 | Memory | 512 MB limit, 128 MB reservation |
 | Restart | `unless-stopped` |
-| Timezone | Host `/etc/localtime` mounted read-only + `TZ` env fallback |
+| Timezone | Host `/etc/localtime` mounted read-only; `TZ` is passed through only when exported on the host, and then overrides it |
 
 **Volume mounts:**
 
@@ -71,8 +74,10 @@ After forking, `post_fork()` initializes the APScheduler instance from env setti
 | `config/` | `/app/config` | read-write |
 | `browser.json` | `/app/browser.json` | read-write |
 | `.env` | `/app/.env` | read-write |
-| `.env.example` | `/app/.env.example` | read-only |
+| `.channel` | `/app/.channel` | read-only |
 | `/etc/localtime` | `/etc/localtime` | read-only |
+
+`.env.example` isn't mounted - it's baked into the image (see [Production Stage](#production-stage)).
 
 The `image:` field in compose defaults to `lastfm-to-ytm-web:local` (the
 locally built tag) but can be overridden via the `YTMT_IMAGE` environment

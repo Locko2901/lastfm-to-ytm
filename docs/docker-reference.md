@@ -119,7 +119,7 @@ Available tags:
 !!! note
     `latest` only moves when a new release tag is published - it never points at an untagged `main` commit. Use `dev` if you want the bleeding edge.
 
-You can also bypass the launcher entirely - pulling and running the image with plain `docker` works fine, as long as you mount `runtime/`, `config/`, `.env`, and `browser.json` the same way [`devops/docker-compose.yml`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/devops/docker-compose.yml) does.
+You can also bypass the launcher entirely - pulling and running the image with plain `docker` works fine, as long as you mount `runtime/`, `config/`, `.env`, and `browser.json` the same way [`devops/docker-compose.yml`](https://github.com/Locko2901/lastfm-to-ytm/blob/main/devops/docker-compose.yml) does. Create `.env` and `browser.json` as files first: if they're missing, Docker mounts empty folders in their place and the container won't start. On Portainer, Unraid, or another compose UI, use the [compose template](compose.md), which handles this for you.
 
 ---
 
@@ -162,6 +162,10 @@ Click the pill to open the GitHub release for the changelog before upgrading. Th
     git pull
     ./run-docker.sh --rebuild
     ```
+
+=== "Compose (Portainer / Unraid)"
+
+    Redeploy the stack with a fresh image pull - see [Portainer / Unraid &rarr; Updating](compose.md#updating).
 
 For standalone CLI installs, see [CLI Install &rarr; Updating](cli-install.md#updating).
 

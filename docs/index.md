@@ -16,6 +16,8 @@ On top of that you get **weekly snapshot playlists** that archive your listening
 
     [:material-arrow-right: Quick Start (Docker)](quickstart.md)
 
+    Using Portainer or Unraid? Paste the [compose template](compose.md) instead.
+
 </div>
 
 ## Highlights

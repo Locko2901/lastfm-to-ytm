@@ -17,6 +17,7 @@ This applies equally to Docker (prebuilt and local-build) and standalone CLI ins
 | Prebuilt Docker (`./run-docker.sh --pull[=TAG]`) | `--pull`, `--pull=latest`, or `--pull=vX.Y.Z` | `--pull=dev` or `--pull=main` |
 | Local Docker build (`./run-docker.sh` after `git clone`) | You ran `git checkout vX.Y.Z` (a specific release) | Anything else - including a fresh `git clone` that lands on `main` |
 | Standalone Python (`python run.py`) | You ran `git checkout vX.Y.Z` | Anything else |
+| [Compose template](compose.md) (Portainer / Unraid) | `YTMT_CHANNEL=stable` (the default) | `YTMT_CHANNEL=dev` |
 
 For the two Docker paths, `run-docker.sh` writes the answer to a tiny `.channel` file in the project root (right next to `COMMIT_SHA`) and the dashboard reads it. For standalone, the dashboard asks `git` directly.
 
@@ -47,6 +48,16 @@ For the two Docker paths, `run-docker.sh` writes the answer to a tiny `.channel`
     git fetch --tags
     git checkout "$(git tag --sort=-v:refname | head -1)"
     ./run-docker.sh --rebuild
+    ```
+
+=== "Compose (Portainer / Unraid)"
+
+    Change the tag in both `image:` lines, set `YTMT_CHANNEL` to match, then redeploy with a fresh image pull:
+
+    ```yaml
+    image: ghcr.io/locko2901/lastfm-to-ytm:dev   # or :latest / :vX.Y.Z
+    environment:
+      - YTMT_CHANNEL=dev                         # or stable
     ```
 
 === "Standalone CLI"

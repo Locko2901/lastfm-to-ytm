@@ -20,6 +20,9 @@ This page covers the recommended **Docker** install. If you don't want to use Do
 
 The installer downloads just the launcher, the compose file, and `.env.example`, then pulls the prebuilt multi-arch image from GHCR. By default it pins to the **latest stable release** ([what's stable vs. dev?](channels.md)).
 
+!!! tip "Using Portainer or Unraid?"
+    Skip the installer and paste the [compose template](compose.md) into your stack editor instead.
+
 === "One-liner (recommended)"
 
     ```bash
