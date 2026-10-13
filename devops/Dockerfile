@@ -44,6 +44,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends gosu passwd cur
     && rm -rf /var/lib/apt/lists/* \
     && gosu nobody true
 
+RUN rm /etc/localtime && cp /usr/share/zoneinfo/Etc/UTC /etc/localtime
+
 RUN groupadd -r lastfm && useradd -r -m -d /home/lastfm -g lastfm lastfm
 
 COPY --from=builder /opt/venv /opt/venv

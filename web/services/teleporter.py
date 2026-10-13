@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import errno
 import json
 import logging
 import os
@@ -199,6 +200,25 @@ def export_config(password: str, *, cache_keys: list[str] | None = None) -> byte
     return _MAGIC + header + salt + nonce + ciphertext + tag
 
 
+def _write_restored_file(path: Path, content: str) -> None:
+    """Write ``content`` to ``path``, atomically where the mount allows it.
+
+    Docker bind-mounts ``.env`` and ``browser.json`` as single files, and a
+    rename onto a mount point fails (EBUSY), so those are rewritten in place.
+    """
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    try:
+        tmp.write_text(content, encoding="utf-8")
+        try:
+            tmp.replace(path)
+        except OSError as e:
+            if e.errno not in (errno.EBUSY, errno.EXDEV):
+                raise
+            path.write_text(content, encoding="utf-8")
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
 def import_config(data: bytes, password: str) -> dict[str, Any]:
     """Decrypt and restore config files. Returns summary dict."""
     plaintext = _decrypt_payload(data, password)
@@ -269,16 +289,12 @@ def import_config(data: bytes, password: str) -> dict[str, Any]:
 
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        tmp = path.with_suffix(path.suffix + ".tmp")
         try:
-            tmp.write_text(content, encoding="utf-8")
-            tmp.replace(path)
+            _write_restored_file(path, content)
             restored.append(key)
         except OSError:
             logger.error("Teleporter: failed to write %s", path)
             skipped.append(key)
-            if tmp.exists():
-                tmp.unlink()
 
     return {
         "restored": restored,

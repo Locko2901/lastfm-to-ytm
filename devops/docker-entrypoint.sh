@@ -27,4 +27,8 @@ chown lastfm:lastfm /app/.env 2>/dev/null || true
 chown lastfm:lastfm /app/browser.json 2>/dev/null || true
 chmod 664 /app/browser.json 2>/dev/null || true
 
+if [ "${TZ:-}" = "UTC" ] && mountpoint -q /etc/localtime; then
+    unset TZ
+fi
+
 exec gosu lastfm "$@"
