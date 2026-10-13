@@ -18,7 +18,7 @@ services:
       - /etc/localtime:/etc/localtime:ro  # host timezone
     environment:
       - PYTHONUNBUFFERED=1
-      - TZ=${TZ:-UTC}  # Fallback if /etc/localtime unavailable
+      - TZ  # Only set if exported on the host; overrides /etc/localtime
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:2002/api/healthz"]
       interval: 30s
