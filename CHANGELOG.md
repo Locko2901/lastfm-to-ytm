@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.8.2](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.8.1...v2.8.2) (2026-11-06)
+
+
+### Build
+
+* **deps-dev:** bump @biomejs/biome ([#48](https://github.com/Locko2901/lastfm-to-ytm/issues/48)) ([4df4845](https://github.com/Locko2901/lastfm-to-ytm/commit/4df4845971ea688a02a21bab9b96ed2a2fdd9ef8))
+* **deps-dev:** bump the python-dev group across 1 directory with 9 updates ([#60](https://github.com/Locko2901/lastfm-to-ytm/issues/60)) ([bc5cb05](https://github.com/Locko2901/lastfm-to-ytm/commit/bc5cb051cb01bd3fd3dd1b605b94a2ff50205ade))
+* **deps:** bump the python-prod group across 1 directory with 3 updates ([#51](https://github.com/Locko2901/lastfm-to-ytm/issues/51)) ([72af0ee](https://github.com/Locko2901/lastfm-to-ytm/commit/72af0ee96a0587de1ac53c643566286741c2e5c2))
+
 ## [2.8.1](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.8.0...v2.8.1) (2026-10-13)
 
 
