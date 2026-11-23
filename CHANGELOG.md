@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.8.3](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.8.2...v2.8.3) (2026-11-23)
+
+
+### Bug Fixes
+
+* **web:** stop .env comments loading as values and blocking settings saves ([d89d116](https://github.com/Locko2901/lastfm-to-ytm/commit/d89d1162108668aebce004b7e0734ed7966d3f9e))
+
+
+### Tests
+
+* **frontend:** don't rely on focus in the invalid-settings-field test ([2eae44e](https://github.com/Locko2901/lastfm-to-ytm/commit/2eae44e2d40480c470577389ba5873149685dfad))
+
 ## [2.8.2](https://github.com/Locko2901/lastfm-to-ytm/compare/v2.8.1...v2.8.2) (2026-11-06)
 
 
