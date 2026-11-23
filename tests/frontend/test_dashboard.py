@@ -63,12 +63,23 @@ def test_saving_reveals_an_invalid_field_on_another_page_instead_of_failing_sile
     page.evaluate("document.querySelector('[data-settings-section=\"webhooks\"] > .settings-section-title').click()")
     page.wait_for_selector('[data-settings-section="webhooks"].collapsed', state="attached")
     assert page.locator('.settings-page[data-settings-page="general"]').get_attribute("class").split() == ["settings-page", "active"]
+    page.evaluate(
+        """() => {
+          window.__reportedFields = []
+          const report = HTMLInputElement.prototype.reportValidity
+          HTMLInputElement.prototype.reportValidity = function () {
+            window.__reportedFields.push(this.id)
+            return report.call(this)
+          }
+        }"""
+    )
 
     page.evaluate("document.getElementById('settingsForm').requestSubmit()")
 
-    page.wait_for_selector('[data-settings-page="notifications"].active')
+    page.wait_for_selector('.settings-page[data-settings-page="notifications"].active')
     assert "collapsed" not in page.locator('[data-settings-section="webhooks"]').get_attribute("class").split()
-    assert page.evaluate("document.activeElement.id") == "WEBHOOK_URL"
+    assert page.locator("#WEBHOOK_URL").is_visible()
+    assert page.evaluate("window.__reportedFields") == ["WEBHOOK_URL"]
     assert posts == []
 
 

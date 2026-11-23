@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-13 08:03+0000\n"
+"POT-Creation-Date: 2026-11-23 10:03+0100\n"
 "PO-Revision-Date: 2026-03-13 15:44+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -84,18 +84,18 @@ msgstr ""
 msgid "Invalid start time: hour must be 0-23, minute 0-59"
 msgstr ""
 
-#: web/routes/api.py:369 web/static/js/modules/settings.js:171
-#: web/static/js/modules/settings.js:216
+#: web/routes/api.py:369 web/static/js/modules/settings.js:182
+#: web/static/js/modules/settings.js:227
 msgid "Failed to save settings"
 msgstr ""
 
-#: web/routes/api.py:399 web/static/js/modules/settings.js:355
-#: web/static/js/modules/settings.js:366
+#: web/routes/api.py:399 web/static/js/modules/settings.js:366
+#: web/static/js/modules/settings.js:377
 msgid "Failed to import settings"
 msgstr ""
 
-#: web/routes/api.py:408 web/static/js/modules/settings.js:374
-#: web/static/js/modules/settings.js:379
+#: web/routes/api.py:408 web/static/js/modules/settings.js:385
+#: web/static/js/modules/settings.js:390
 msgid "Could not download .env.example"
 msgstr ""
 
@@ -198,8 +198,8 @@ msgstr ""
 
 #: web/routes/api.py:1249 web/static/js/modules/history.js:1074
 #: web/static/js/modules/history.js:1083 web/static/js/modules/modals.js:671
-#: web/static/js/modules/modals.js:690 web/static/js/modules/settings.js:855
-#: web/static/js/modules/settings.js:864
+#: web/static/js/modules/modals.js:690 web/static/js/modules/settings.js:866
+#: web/static/js/modules/settings.js:875
 #: web/static/js/modules/teleporter.js:233
 #: web/static/js/modules/teleporter.js:242
 msgid "Import failed"
@@ -518,7 +518,7 @@ msgid "No cached playlists."
 msgstr ""
 
 #: web/static/js/modules/cacheAdmin.js:267
-#: web/static/js/modules/history.js:1076 web/static/js/modules/settings.js:857
+#: web/static/js/modules/history.js:1076 web/static/js/modules/settings.js:868
 msgid "tracks"
 msgstr ""
 
@@ -939,12 +939,12 @@ msgstr ""
 msgid "Invalid theme file"
 msgstr ""
 
-#: web/static/js/modules/history.js:216 web/static/js/modules/settings.js:882
+#: web/static/js/modules/history.js:216 web/static/js/modules/settings.js:893
 msgid "lookups"
 msgstr ""
 
 #: web/static/js/modules/history.js:216 web/static/js/modules/history.js:1076
-#: web/static/js/modules/settings.js:882
+#: web/static/js/modules/settings.js:893
 msgid "syncs"
 msgstr ""
 
@@ -1089,11 +1089,11 @@ msgid "rows pruned"
 msgstr ""
 
 #: web/static/js/modules/history.js:1028 web/static/js/modules/modals.js:635
-#: web/static/js/modules/settings.js:812
+#: web/static/js/modules/settings.js:823
 msgid "Please select a JSON file"
 msgstr ""
 
-#: web/static/js/modules/history.js:1044 web/static/js/modules/settings.js:825
+#: web/static/js/modules/history.js:1044 web/static/js/modules/settings.js:836
 #: web/templates/partials/_panel_history.html:56
 msgid "Tracks"
 msgstr ""
@@ -1111,11 +1111,11 @@ msgid "Actions"
 msgstr ""
 
 #: web/static/js/modules/history.js:1050 web/static/js/modules/modals.js:654
-#: web/static/js/modules/settings.js:831
+#: web/static/js/modules/settings.js:842
 msgid "Invalid JSON file"
 msgstr ""
 
-#: web/static/js/modules/history.js:1076 web/static/js/modules/settings.js:857
+#: web/static/js/modules/history.js:1076 web/static/js/modules/settings.js:868
 msgid "Imported:"
 msgstr ""
 
@@ -1943,122 +1943,122 @@ msgstr ""
 msgid "Failed to load settings"
 msgstr ""
 
-#: web/static/js/modules/settings.js:199
+#: web/static/js/modules/settings.js:210
 msgid "Settings saved successfully!"
 msgstr ""
 
-#: web/static/js/modules/settings.js:251
+#: web/static/js/modules/settings.js:262
 msgid "Settings saved. Restart the server to apply changes."
 msgstr ""
 
-#: web/static/js/modules/settings.js:252 web/static/js/modules/settings.js:422
+#: web/static/js/modules/settings.js:263 web/static/js/modules/settings.js:433
 msgid "Restart Now"
 msgstr ""
 
-#: web/static/js/modules/settings.js:275
+#: web/static/js/modules/settings.js:286
 msgid "Display settings changed. Reload the page to update."
 msgstr ""
 
-#: web/static/js/modules/settings.js:276
+#: web/static/js/modules/settings.js:287
 msgid "Reload"
 msgstr ""
 
-#: web/static/js/modules/settings.js:317
+#: web/static/js/modules/settings.js:328
 #, python-format
 msgid ""
 "Your configuration is missing %(count)s new setting(s) from a recent "
 "update."
 msgstr ""
 
-#: web/static/js/modules/settings.js:318
+#: web/static/js/modules/settings.js:329
 msgid "Import defaults"
 msgstr ""
 
-#: web/static/js/modules/settings.js:327
+#: web/static/js/modules/settings.js:338
 msgid "view on GitHub"
 msgstr ""
 
-#: web/static/js/modules/settings.js:338
+#: web/static/js/modules/settings.js:349
 msgid ""
 "The .env.example template is missing. Re-download it for your version to "
 "enable default imports."
 msgstr ""
 
-#: web/static/js/modules/settings.js:339
+#: web/static/js/modules/settings.js:350
 msgid "Download template"
 msgstr ""
 
-#: web/static/js/modules/settings.js:359
+#: web/static/js/modules/settings.js:370
 #, python-format
 msgid "Imported %(count)s setting(s). Backup saved as %(backup)s."
 msgstr ""
 
-#: web/static/js/modules/settings.js:361
+#: web/static/js/modules/settings.js:372
 #, python-format
 msgid "Imported %(count)s setting(s)."
 msgstr ""
 
-#: web/static/js/modules/settings.js:376
+#: web/static/js/modules/settings.js:387
 msgid "Downloaded the latest .env.example template."
 msgstr ""
 
-#: web/static/js/modules/settings.js:387
+#: web/static/js/modules/settings.js:398
 msgid "Enter a webhook URL first"
 msgstr ""
 
-#: web/static/js/modules/settings.js:398
+#: web/static/js/modules/settings.js:409
 msgid "Test webhook sent successfully!"
 msgstr ""
 
-#: web/static/js/modules/settings.js:400 web/static/js/modules/settings.js:403
+#: web/static/js/modules/settings.js:411 web/static/js/modules/settings.js:414
 msgid "Webhook test failed"
 msgstr ""
 
-#: web/static/js/modules/settings.js:411
+#: web/static/js/modules/settings.js:422
 msgid "Restarting..."
 msgstr ""
 
-#: web/static/js/modules/settings.js:416
+#: web/static/js/modules/settings.js:427
 msgid "Server restarting..."
 msgstr ""
 
-#: web/static/js/modules/settings.js:419
+#: web/static/js/modules/settings.js:430
 msgid "Failed to restart server"
 msgstr ""
 
-#: web/static/js/modules/settings.js:445
+#: web/static/js/modules/settings.js:456
 msgid "Server may have restarted. Please refresh manually."
 msgstr ""
 
-#: web/static/js/modules/settings.js:735 web/static/js/modules/settings.js:742
+#: web/static/js/modules/settings.js:746 web/static/js/modules/settings.js:753
 msgid "Not yet synced - run a sync to build the local history database."
 msgstr ""
 
-#: web/static/js/modules/settings.js:744
+#: web/static/js/modules/settings.js:755
 msgid "unique tracks"
 msgstr ""
 
-#: web/static/js/modules/settings.js:744 web/static/js/modules/sync.js:301
+#: web/static/js/modules/settings.js:755 web/static/js/modules/sync.js:301
 msgid "plays"
 msgstr ""
 
-#: web/static/js/modules/settings.js:759 web/static/js/modules/settings.js:764
+#: web/static/js/modules/settings.js:770 web/static/js/modules/settings.js:775
 msgid "Failed to clear Last.fm history"
 msgstr ""
 
-#: web/static/js/modules/settings.js:761
+#: web/static/js/modules/settings.js:772
 msgid "Last.fm history cleared"
 msgstr ""
 
-#: web/static/js/modules/settings.js:907
+#: web/static/js/modules/settings.js:918
 msgid "APScheduler not installed"
 msgstr ""
 
-#: web/static/js/modules/settings.js:920
+#: web/static/js/modules/settings.js:931
 msgid "Automation Active"
 msgstr ""
 
-#: web/static/js/modules/settings.js:920
+#: web/static/js/modules/settings.js:931
 msgid "Automation Disabled"
 msgstr ""
 
