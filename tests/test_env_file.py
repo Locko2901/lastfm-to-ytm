@@ -39,6 +39,18 @@ def test_parse_preserves_hash_without_space(monkeypatch, tmp_path):
     assert parse_env_file() == {"ACCENT": "#ff0000"}
 
 
+def test_parse_comment_right_after_equals_is_empty(monkeypatch, tmp_path):
+    _point_env_file(monkeypatch, tmp_path, "WEBHOOK_URL=# DEPRECATED (e.g. https://ntfy.sh/mytopic)\nB=#\tnote\n")
+    assert parse_env_file() == {"WEBHOOK_URL": "", "B": ""}
+
+
+def test_update_after_comment_right_after_equals_keeps_comment(monkeypatch, tmp_path):
+    env_file = _point_env_file(monkeypatch, tmp_path, "WEBHOOK_URL=# DEPRECATED\n")
+    update_env_file({"WEBHOOK_URL": "https://ntfy.sh/t"})
+    assert env_file.read_text(encoding="utf-8").strip() == "WEBHOOK_URL=https://ntfy.sh/t # DEPRECATED"
+    assert parse_env_file() == {"WEBHOOK_URL": "https://ntfy.sh/t"}
+
+
 def test_update_existing_key_in_place(monkeypatch, tmp_path):
     env_file = _point_env_file(monkeypatch, tmp_path, "LIMIT=10\nLASTFM_USER=alice\n")
     update_env_file({"LIMIT": "99"})

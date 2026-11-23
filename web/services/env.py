@@ -148,22 +148,32 @@ ALL_SETTINGS = [
 ]
 
 
-def _strip_inline_comment(value: str) -> str:
-    """Remove a trailing ``# ...`` inline comment from an .env value."""
+def _split_inline_comment(value: str) -> tuple[str, str]:
+    """Split a raw .env value into ``(value, comment)``.
+
+    A comment is a ``#`` preceded by whitespace (``KEY=value # note``), or a
+    ``# `` right after the ``=`` (``KEY=# note``), which is how an empty value
+    with a comment looks once the alignment spaces are gone. A ``#`` glued to
+    text stays part of the value (``ACCENT=#ff0000``). The returned comment
+    always starts with whitespace, so it can be re-appended after a new value.
+    """
+    if value[:2] in ("# ", "#\t"):
+        return "", " " + value
     for marker in (" #", "\t#"):
         idx = value.find(marker)
         if idx != -1:
-            return value[:idx]
-    return value
+            return value[:idx], value[idx:]
+    return value, ""
+
+
+def _strip_inline_comment(value: str) -> str:
+    """Remove the inline ``# ...`` comment from an .env value."""
+    return _split_inline_comment(value)[0]
 
 
 def _inline_comment(value: str) -> str:
-    """Return the trailing ``# ...`` inline comment (with leading space), or ``""``."""
-    for marker in (" #", "\t#"):
-        idx = value.find(marker)
-        if idx != -1:
-            return value[idx:]
-    return ""
+    """Return the inline ``# ...`` comment (with leading whitespace), or ``""``."""
+    return _split_inline_comment(value)[1]
 
 
 def _parse_env_path(path: Path) -> dict[str, str]:
@@ -211,12 +221,7 @@ def update_env_file(updates: dict[str, str]) -> None:
             key, _, old_value = stripped.partition("=")
             key = key.strip()
             if key in updates:
-                inline_comment = ""
-                for marker in (" #", "\t#"):
-                    idx = old_value.find(marker)
-                    if idx != -1:
-                        inline_comment = old_value[idx:]
-                        break
+                inline_comment = _inline_comment(old_value)
 
                 new_value = updates[key]
                 new_lines.append(f"{key}={new_value}{inline_comment}\n")

@@ -78,6 +78,15 @@ def test_reconcile_preserves_values_and_inserts_missing(env_paths):
     assert (env_file.parent / result["backup"]).exists()
 
 
+def test_reconcile_does_not_keep_comment_as_value(env_paths):
+    env_file, example_file = env_paths
+    example_file.write_text("WEBHOOK_URL=      # DEPRECATED\n", encoding="utf-8")
+    env_file.write_text("WEBHOOK_URL=# DEPRECATED\n", encoding="utf-8")
+    env.reconcile_env_file()
+    assert env.parse_env_file() == {"WEBHOOK_URL": ""}
+    assert env_file.read_text(encoding="utf-8").startswith("WEBHOOK_URL= # DEPRECATED")
+
+
 def test_reconcile_preserves_unknown_keys(env_paths):
     env_file, example_file = env_paths
     env_file.write_text("A=1\nCUSTOM_KEY=keepme\n", encoding="utf-8")

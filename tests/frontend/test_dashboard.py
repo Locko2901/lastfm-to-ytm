@@ -5,6 +5,7 @@ CI job), so they never break the lightweight test run.
 """
 
 import itertools
+import json
 
 import pytest
 
@@ -44,6 +45,31 @@ def test_settings_modal_opens(page):
     page.evaluate("window.showSettingsModal()")
     page.wait_for_selector("#settingsModal.active", state="visible")
     assert page.locator("#settingsModal.active").is_visible()
+
+
+def test_saving_reveals_an_invalid_field_on_another_page_instead_of_failing_silently(page, _demo):
+    settings = {**_demo.ROUTE_STUBS["**/api/settings"], "WEBHOOK_URL": "# DEPRECATED. Generic JSON POST endpoint"}
+    posts = []
+
+    def handle(route, request):
+        if request.method == "POST":
+            posts.append(request)
+        route.fulfill(status=200, content_type="application/json", body=json.dumps(settings))
+
+    page.route("**/api/settings", handle)
+    page.evaluate("window.showSettingsModal()")
+    page.wait_for_selector("#settingsModal.active", state="visible")
+    page.wait_for_function("document.getElementById('WEBHOOK_URL').value.startsWith('#')")
+    page.evaluate("document.querySelector('[data-settings-section=\"webhooks\"] > .settings-section-title').click()")
+    page.wait_for_selector('[data-settings-section="webhooks"].collapsed', state="attached")
+    assert page.locator('.settings-page[data-settings-page="general"]').get_attribute("class").split() == ["settings-page", "active"]
+
+    page.evaluate("document.getElementById('settingsForm').requestSubmit()")
+
+    page.wait_for_selector('[data-settings-page="notifications"].active')
+    assert "collapsed" not in page.locator('[data-settings-section="webhooks"]').get_attribute("class").split()
+    assert page.evaluate("document.activeElement.id") == "WEBHOOK_URL"
+    assert posts == []
 
 
 def test_teleporter_modal_opens(page):

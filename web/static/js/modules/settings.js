@@ -138,10 +138,21 @@ export async function loadSettings() {
   }
 }
 
+function reportFirstInvalidField(form) {
+  const field = [...form.elements].find(el => el.willValidate && !el.validity.valid)
+  if (!field) return false
+  const page = field.closest(".settings-page")?.dataset.settingsPage
+  if (page) document.querySelector(`.settings-nav-item[data-settings-nav="${page}"]`)?.click()
+  field.closest(".settings-section.collapsed")?.querySelector(":scope > .settings-section-title")?.click()
+  field.reportValidity()
+  return true
+}
+
 export async function saveSettings(event) {
   event.preventDefault()
 
   const form = document.getElementById("settingsForm")
+  if (reportFirstInvalidField(form)) return
   const settings = readFormSettings(form)
 
   const changedSettings = []
